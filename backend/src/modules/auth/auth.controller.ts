@@ -1,0 +1,41 @@
+import type { Request, Response } from "express";
+import { env } from "../../config/env";
+import { asyncHandler } from "../../utils/async-handler";
+import { sendMessage, sendSuccess } from "../../utils/http";
+import { authenticateUser } from "./auth.service";
+
+const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+function baseCookieOptions() {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: env.NODE_ENV === "production",
+    path: "/",
+  };
+}
+
+export const login = asyncHandler(async (req: Request, res: Response) => {
+  const { username, password } = req.body as {
+    username: string;
+    password: string;
+  };
+
+  const { user, token } = await authenticateUser(username, password);
+
+  res.cookie(env.COOKIE_NAME, token, {
+    ...baseCookieOptions(),
+    maxAge: COOKIE_MAX_AGE_MS,
+  });
+
+  return sendSuccess(res, { user });
+});
+
+export const logout = asyncHandler(async (_req: Request, res: Response) => {
+  res.clearCookie(env.COOKIE_NAME, baseCookieOptions());
+  return sendMessage(res, "Logged out successfully");
+});
+
+export const me = asyncHandler(async (req: Request, res: Response) => {
+  return sendSuccess(res, { user: req.user });
+});

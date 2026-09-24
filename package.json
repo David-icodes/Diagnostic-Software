@@ -1,0 +1,15 @@
+{
+  "name": "diagnostic-lis",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Diagnostic Centre / Laboratory Information System (LIS) — Anjali Diagnostics",
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev": "concurrently -n backend,frontend -c blue,green \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "seed": "npm --prefix backend run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
