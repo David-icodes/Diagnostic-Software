@@ -13,6 +13,12 @@ export async function authenticate(
   try {
     const token: string | undefined = req.cookies?.[env.COOKIE_NAME];
 
+    // TEMPORARY DIAGNOSTIC LOGGING (safe) — presence only, never the value.
+    // Remove these [auth] lines once the session flow is fixed.
+    console.log(
+      `[auth] protected request ${req.method} ${req.path} cookie present=${Boolean(token)}`,
+    );
+
     if (!token) {
       throw new ApiError(401, "Authentication required");
     }
@@ -20,6 +26,11 @@ export async function authenticate(
     const payload = verifyAuthToken(token);
 
     const user = await User.findById(payload.sub);
+
+    console.log(
+      `[auth] protected request ${req.method} ${req.path} user found=${Boolean(user)}`,
+    );
+
     if (!user) {
       throw new ApiError(401, "User no longer exists");
     }

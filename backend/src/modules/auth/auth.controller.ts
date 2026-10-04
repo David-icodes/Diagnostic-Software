@@ -27,10 +27,18 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   const { user, token } = await authenticateUser(username, password);
 
-  res.cookie(env.COOKIE_NAME, token, {
+  const cookieOptions = {
     ...baseCookieOptions(),
     maxAge: COOKIE_MAX_AGE_MS,
-  });
+  };
+
+  // TEMPORARY DIAGNOSTIC LOGGING (safe) — cookie attributes only, never the
+  // cookie value/token. Remove this [auth] line once the session flow is fixed.
+  console.log(
+    `[auth] session cookie configured name=${env.COOKIE_NAME} secure=${cookieOptions.secure} sameSite=${String(cookieOptions.sameSite)} httpOnly=${cookieOptions.httpOnly} path=${cookieOptions.path} maxAge=${cookieOptions.maxAge}`,
+  );
+
+  res.cookie(env.COOKIE_NAME, token, cookieOptions);
 
   return sendSuccess(res, { user });
 });
