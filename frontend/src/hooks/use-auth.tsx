@@ -39,9 +39,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginMutation = useMutation({
     mutationFn: loginRequest,
-    onSuccess: (response) => {
-      queryClient.setQueryData(ME_QUERY_KEY, response.user);
-    },
   });
 
   const logoutMutation = useMutation({
@@ -54,10 +51,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(
     async (credentials: LoginCredentials) => {
       const response = await loginMutation.mutateAsync(credentials);
+
+      // The HttpOnly session cookie is scoped to the API's own domain, so the
+      // browser cannot expose it to the frontend. Re-running GET /auth/me (with
+      // credentials) is the only reliable confirmation that the session was
+      // actually established before we enter the dashboard.
+      await queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
+
       router.push("/dashboard");
       return response.user;
     },
-    [loginMutation, router],
+    [loginMutation, queryClient, router],
   );
 
   const logout = useCallback(async () => {
