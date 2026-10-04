@@ -10,7 +10,7 @@ const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 function baseCookieOptions() {
   return {
     httpOnly: true,
-    sameSite: "lax" as const,
+    sameSite: env.COOKIE_SAMESITE,
     secure: env.NODE_ENV === "production",
     path: "/",
   };

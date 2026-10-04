@@ -1,19 +1,5 @@
-import mongooseImport from "mongoose";
+import mongoose from "mongoose";
 import { env } from "./env";
-
-// Cloudflare Workers/esbuild can expose the CommonJS `mongoose` export nested
-// under `.default`, while Node/tsx exposes it directly. Normalise both so
-// `mongoose.connection` / `mongoose.connect` always resolve.
-const mongoose =
-  (mongooseImport as unknown as { default?: typeof mongooseImport }).default ??
-  mongooseImport;
-
-/** Extra connection settings, e.g. a single short-lived pool for serverless runtimes. */
-export interface ConnectOptions {
-  maxPoolSize?: number;
-  minPoolSize?: number;
-  serverSelectionTimeoutMS?: number;
-}
 
 let listenersAttached = false;
 
@@ -22,7 +8,16 @@ function attachListeners(): void {
   listenersAttached = true;
 
   mongoose.connection.on("connected", () => {
-    console.log(`[db] MongoDB connected (${mongoose.connection.host})`);
+    const dbName = mongoose.connection.name;
+    console.log(
+      `[db] MongoDB connected (${mongoose.connection.host}, db: ${dbName})`,
+    );
+
+    if (dbName === "test") {
+      console.warn(
+        "[db] WARNING: connected to the 'test' database. The production MONGODB_URI must include the '/diagnostic_lis' database name.",
+      );
+    }
   });
 
   mongoose.connection.on("error", (err) => {
@@ -34,12 +29,30 @@ function attachListeners(): void {
   });
 }
 
-export async function connectDB(options: ConnectOptions = {}): Promise<void> {
+export async function connectDB(): Promise<void> {
   attachListeners();
 
   if (mongoose.connection.readyState === 1) {
     return;
   }
 
-  await mongoose.connect(env.MONGODB_URI, options);
+  await mongoose.connect(env.MONGODB_URI);
+}
+
+/**
+ * Non-sensitive connection state for the health endpoint.
+ * Never returns the URI, credentials or any environment value.
+ */
+export function getDatabaseStatus():
+  | "connected"
+  | "connecting"
+  | "disconnected" {
+  switch (mongoose.connection.readyState) {
+    case 1:
+      return "connected";
+    case 2:
+      return "connecting";
+    default:
+      return "disconnected";
+  }
 }

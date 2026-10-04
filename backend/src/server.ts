@@ -8,7 +8,7 @@ async function main(): Promise<void> {
 
   app.listen(env.PORT, () => {
     console.log(
-      `[server] Diagnostic LIS API running on http://localhost:${env.PORT} (${env.NODE_ENV})`,
+      `[server] Diagnostic LIS API listening on port ${env.PORT} (${env.NODE_ENV})`,
     );
   });
 }

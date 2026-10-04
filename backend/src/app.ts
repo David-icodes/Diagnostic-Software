@@ -3,6 +3,7 @@ import cors from "cors";
 import express, { type Request } from "express";
 import helmet from "helmet";
 import { env } from "./config/env";
+import { getDatabaseStatus } from "./config/db";
 import { errorHandler } from "./middleware/error-handler";
 import { notFound } from "./middleware/not-found";
 import whatsappRoutes from "./modules/whatsapp/whatsapp.routes";
@@ -42,6 +43,19 @@ app.use(
   }),
 );
 app.use(cookieParser());
+
+/**
+ * Unauthenticated health probe for the hosting platform (Render) and uptime
+ * checks. Returns no secrets — only a coarse database connection state.
+ * `GET /api/v1/health` remains available for the app's own clients.
+ */
+app.get("/health", (_req, res) => {
+  res.json({
+    success: true,
+    message: "Diagnostic LIS API is running",
+    database: getDatabaseStatus(),
+  });
+});
 
 // Meta calls this URL directly (it cannot send our session cookie), so it sits
 // outside /api/v1 and is authenticated by its HMAC signature instead.

@@ -9,6 +9,10 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(16, "JWT_SECRET must be at least 16 characters"),
   JWT_EXPIRES_IN: z.string().default("7d"),
   COOKIE_NAME: z.string().default("diagnostic_token"),
+  // Cookie SameSite policy. Defaults to "lax"; set to "none" (requires HTTPS,
+  // i.e. NODE_ENV=production) when the frontend and API are on different sites
+  // and the browser must send the session cookie cross-site.
+  COOKIE_SAMESITE: z.enum(["lax", "strict", "none"]).default("lax"),
   FRONTEND_URL: z.string().url().default("http://localhost:3000"),
   // Optional comma-separated allow-list. When set it takes precedence over
   // FRONTEND_URL, so a production origin can be configured without a wildcard.

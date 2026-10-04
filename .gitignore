@@ -3,15 +3,8 @@ node_modules/
 
 # Environment
 .env
-.env.local
-.env.*.local
+.env.*
 !.env.example
-
-# Cloudflare Workers
-.dev.vars
-.dev.vars.*
-.wrangler/
-worker-configuration.d.ts
 
 # Build outputs
 dist/
