@@ -1,53 +1,56 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-type StatisticTone = "blue" | "green" | "amber";
-
-const TONE_CLASSES: Record<StatisticTone, { icon: string }> = {
-  blue: { icon: "bg-blue-50 text-blue-700" },
-  green: { icon: "bg-emerald-50 text-emerald-600" },
-  amber: { icon: "bg-amber-50 text-amber-600" },
-};
 
 interface StatisticCardProps {
   title: string;
   value: number | string;
-  date: string;
+  hint?: string;
   icon: LucideIcon;
-  tone?: StatisticTone;
+  iconClassName?: string;
 }
 
+/**
+ * Metric tile from the dashboard summary row: the value sits in the upper-left
+ * with its label directly underneath, a soft tile icon in the upper-right, and
+ * a date line separated by a divider across the lower portion.
+ */
 export function StatisticCard({
   title,
   value,
-  date,
+  hint,
   icon: Icon,
-  tone = "blue",
+  iconClassName,
 }: StatisticCardProps) {
   return (
-    <Card className="border-border shadow-sm">
-      <CardContent className="flex items-center justify-between gap-3 p-4">
-        <div className="min-w-0">
-          <p className="truncate text-xs font-semibold uppercase tracking-wide text-slate-500">
-            {title}
-          </p>
-          <p className="mt-1 text-3xl font-bold leading-none text-slate-800">
-            {value}
-          </p>
-          <p className="mt-2 text-xs text-muted-foreground">{date}</p>
+    <Card className="h-[130px] border-border bg-card p-0 shadow-sm">
+      <div className="flex h-full flex-col px-4 py-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[28px] font-bold leading-none text-[#344256]">
+              {value}
+            </p>
+            <p className="mt-1.5 truncate text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+              {title}
+            </p>
+          </div>
+          <span
+            className={cn(
+              "flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary",
+              iconClassName,
+            )}
+          >
+            <Icon className="size-5" aria-hidden />
+          </span>
         </div>
-        <div
-          className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-lg",
-            TONE_CLASSES[tone].icon,
-          )}
-        >
-          <Icon className="size-5" />
-        </div>
-      </CardContent>
+        {hint ? (
+          <div className="mt-auto border-t border-border pt-2 text-[11px] text-slate-500">
+            {hint}
+          </div>
+        ) : null}
+      </div>
     </Card>
   );
 }

@@ -2,11 +2,11 @@
 
 import {
   ClipboardCheck,
-  FlaskConical,
   Microscope,
   ShieldCheck,
   Users,
 } from "lucide-react";
+import { BRAND_ASSETS, BrandMark } from "@/components/brand/brand-mark";
 import { LoginForm } from "@/components/auth/login-form";
 import { APP_CONFIG } from "@/lib/app-config";
 
@@ -32,18 +32,9 @@ export function LoginPage() {
           aria-hidden
         />
 
-        <div className="relative flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <FlaskConical className="size-6" />
-          </div>
-          <div>
-            <p className="text-base font-semibold text-white">
-              {APP_CONFIG.name}
-            </p>
-            <p className="text-xs text-sidebar-foreground/70">
-              Diagnostic Centre & LIS
-            </p>
-          </div>
+        <div className="relative flex items-center">
+          {/* Header lockup; its name text is already in the image. */}
+          <BrandMark src={BRAND_ASSETS.header} className="h-12 w-auto max-w-[240px]" />
         </div>
 
         <div className="relative max-w-md">
@@ -82,13 +73,8 @@ export function LoginPage() {
       <div className="flex min-h-screen items-center justify-center p-6">
         <div className="w-full max-w-md">
           {/* Mobile branding */}
-          <div className="mb-6 flex flex-col items-center gap-2 lg:hidden">
-            <div className="flex size-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <FlaskConical className="size-6" />
-            </div>
-            <p className="text-lg font-semibold text-slate-800">
-              {APP_CONFIG.name}
-            </p>
+          <div className="mb-5 flex flex-col items-center gap-2 lg:hidden">
+            <BrandMark src={BRAND_ASSETS.header} className="h-14 w-auto max-w-[260px]" />
             <p className="text-xs text-muted-foreground">
               {APP_CONFIG.tagline}
             </p>
@@ -101,12 +87,12 @@ export function LoginPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Enter your username and password to continue.
             </p>
-            <div className="mt-6">
+            <div className="mt-5">
               <LoginForm />
             </div>
           </div>
 
-          <p className="mt-6 text-center text-xs text-muted-foreground">
+          <p className="mt-5 text-center text-xs text-muted-foreground">
             © {currentYear} {APP_CONFIG.name}. All rights reserved.
           </p>
         </div>

@@ -1,0 +1,3811 @@
+LAB TEST PARAMETERS
+Total Records: 516
+
+============================================================
+LAB DEPARTMENT: BIO CHEMISTRY
+============================================================
+
+LAB TEST: 25 HYDROXY VITAMIN D
+------------------------------------------------------------
+
+1. Parameter Name: 25 (OH) VITAMIN-D TEST
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   < 20 Deficient
+   20-30 Insufficient
+   >30 Sufficient
+
+2. Parameter Name: Interpretation
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: Activated Partial Thromboplastin Time (APTT/PTTK)
+------------------------------------------------------------
+
+1. Parameter Name: Activated Partial Thromboplastin Time (APTT/PTTK)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: PATIENT VALUE
+   Order No: 2
+   Units: seconds
+   Reference Range:
+   26.0 to 34.3
+
+3. Parameter Name: CONTROL VALUE
+   Order No: 3
+   Units: seconds
+   Reference Range:
+   seconds
+
+4. Parameter Name: RATIO
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   0.8 to 1.2
+
+LAB TEST: ALBUMIN
+------------------------------------------------------------
+
+1. Parameter Name: Albumin
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: Alkaline Phosphatase
+------------------------------------------------------------
+
+1. Parameter Name: Alkaline Phosphatase
+   Order No: 1
+   Units: IU/L
+   Reference Range:
+   40-120
+
+LAB TEST: AMYLASE
+------------------------------------------------------------
+
+1. Parameter Name: SERUM AMYLASE
+   Order No: 1
+   Units: U/L
+   Reference Range:
+   28 - 100
+
+LAB TEST: ANTI CCP
+------------------------------------------------------------
+
+1. Parameter Name: ANTI CCP ANTIBODIES
+   Order No: 1
+   Units: U/mL
+   Reference Range:
+   <35.0
+
+LAB TEST: ANTI MULLERIN HORMONE(AMH)
+------------------------------------------------------------
+
+1. Parameter Name: ANTI MULLERIAN HORMONE(AMH)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   1.32-10.34
+
+LAB TEST: Anti Nuclear Antibody
+------------------------------------------------------------
+
+1. Parameter Name: Antti Nuclear Antibody(ANA)
+   Order No: 1
+   Units: s/co
+   Reference Range:
+   <0.9: Negative
+   0.91-1.10 Equivocal
+   >1.1: Positive
+
+LAB TEST: ANTI TPO
+------------------------------------------------------------
+
+1. Parameter Name: Microsomal/Thryroperoxidase Antibody (AMA)(TPO)
+   Order No: 1
+   Units: IU/mL
+   Reference Range:
+   < 34
+
+LAB TEST: ANTIBODY TO HEPATITIS C VIRUS(CLIA)
+------------------------------------------------------------
+
+1. Parameter Name: Hepatitis C Virus
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: APLA PROFILE
+------------------------------------------------------------
+
+1. Parameter Name: APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: PHOSPHOLIPID ANTIBODIES IgM
+   Order No: 2
+   Units: MPL U/mL
+   Reference Range:
+   < 10 Normal
+   > 10 Elevated
+
+3. Parameter Name: PHOSPHOLIPID ANTIBODIES IgG
+   Order No: 3
+   Units: GPL U/mL
+   Reference Range:
+   < 10 Normal
+   < 10 Elevated
+
+4. Parameter Name: LUPUS ANTICOAGULANT
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: LA Screen
+   Order No: 5
+   Units: Sec
+   Reference Range:
+   28-45
+
+6. Parameter Name: LA Confirm
+   Order No: 6
+   Units: Sec
+   Reference Range:
+   28 - 40
+
+7. Parameter Name: LA Screen/Confirm Ratio
+   Order No: 7
+   Units: Sec
+   Reference Range:
+   < 1.3 : Normal
+   1.3 - 1.8 : Moderate LA
+   1.8 - 2.4 : High LA
+   > 2.4 : Very High LA
+
+8. Parameter Name: CARDIOLIPIN IgG ANTIBODY
+   Order No: 8
+   Units: GPL U/ml
+   Reference Range:
+   < 10: Negative
+   > 10: Positive
+
+9. Parameter Name: CARDIOLIPIN IgM ANTIBODY
+   Order No: 9
+   Units: MPL U/ml
+   Reference Range:
+   < 7 \:Negative
+   > 7 \:Positive
+
+10. Parameter Name: BETA GLYCOPROTEIN ANTI BODY IgG
+   Order No: 10
+   Units: SGU
+   Reference Range:
+   < 20 Negative
+   > 20 Positive
+
+11. Parameter Name: BETA GLYCOPROTEIN ANTI BODY IgM
+   Order No: 11
+   Units: SGU
+   Reference Range:
+   < 20 Negative
+   > 20 Positive
+
+LAB TEST: ASO
+------------------------------------------------------------
+
+1. Parameter Name: ASO (Titres (Anti Streptolysin O)
+   Order No: 1
+   Units: IU/mL
+   Reference Range:
+   <200 IU/mL
+
+LAB TEST: BILIRUBIN
+------------------------------------------------------------
+
+1. Parameter Name: TOTAL BILIRUBIN
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   0.2-1.0 mg/dL
+
+2. Parameter Name: DIRECT BILIRUBIN
+   Order No: 2
+   Units: mg/dl
+   Reference Range:
+   0-0.2 mg/dL
+
+3. Parameter Name: INDIRECT BILIRUBIN
+   Order No: 3
+   Units: mg/dL
+   Reference Range:
+   [Not specified]
+
+LAB TEST: BILIRUBIN,PAEDIATRIC
+------------------------------------------------------------
+
+1. Parameter Name: TOTAL BILIRUBIN
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   Birth : Upto 3.5
+   1st Day : Upto 5.0
+   2nd Day : Upto 9.0
+   3rd - 5th Day : Upto 13.0
+
+2. Parameter Name: DIRECT BILIRUBIN
+   Order No: 2
+   Units: mg/dl
+   Reference Range:
+   0-0.2 mg/dl
+
+3. Parameter Name: INDIRECT BILIRUBIN
+   Order No: 3
+   Units: mg/dl
+   Reference Range:
+   [Not specified]
+
+LAB TEST: CA 125
+------------------------------------------------------------
+
+1. Parameter Name: Cancer Antigen 125
+   Order No: 1
+   Units: U/mL
+   Reference Range:
+   Female :0-35U/mL
+   Child :0-0U/mL
+
+LAB TEST: CARCINO EMBRYONIC ANTIGEN (CEA)
+------------------------------------------------------------
+
+1. Parameter Name: CARCINO EMBRYONIC ANTIGEN (CEA)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   Male :0-5.2
+   Female :0-3.3
+   Child :0-0
+
+LAB TEST: CORTISOL
+------------------------------------------------------------
+
+1. Parameter Name: CORTISOL SERUM
+   Order No: 1
+   Units: ug/dL
+   Reference Range:
+   4.8-19.9
+
+LAB TEST: Creatine Kinase MB (CK-MB)
+------------------------------------------------------------
+
+1. Parameter Name: Creatine Kinase MB (CK-MB)
+   Order No: 119
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: CREATININE PHOSPHOKINASE (CPK)
+------------------------------------------------------------
+
+1. Parameter Name: CREATININE PHOSPHOKINASE (CPK)
+   Order No: 1
+   Units: U/L
+   Reference Range:
+   < 190
+
+LAB TEST: D-DIMER
+------------------------------------------------------------
+
+1. Parameter Name: D- DIMER
+   Order No: 1
+   Units: ng/ml
+   Reference Range:
+   < 500 ng/ml
+
+LAB TEST: Dengue Profile
+------------------------------------------------------------
+
+1. Parameter Name: Dengue NSI -Ag - Rapid
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Dengue IgG
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: Dengue IgM
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: ESTRADIOL(E2)
+------------------------------------------------------------
+
+1. Parameter Name: ESTRADIOL(E2)
+   Order No: 1
+   Units: pg/mL
+   Reference Range:
+   30.9 – 90.4: Follicular Phase
+   60.4 – 533 : Ovulation phase
+   60.4 – 232 : Luteal Phase
+   < 138 : Postmenopausal
+
+LAB TEST: FBS (FASTING BLOOD SUGAR)
+------------------------------------------------------------
+
+1. Parameter Name: FASTING BLOOD SUGAR
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   70-110mg/dl
+
+2. Parameter Name: FASTING URINE SUGAR
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: FREE-T4 (THYROXINE)
+------------------------------------------------------------
+
+1. Parameter Name: FREE-T4 (THROXINE)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   0.87-1.85
+
+LAB TEST: FSH
+------------------------------------------------------------
+
+1. Parameter Name: Follicle Stimulating Hormone (FSH)
+   Order No: 1
+   Units: mIU/ml
+   Reference Range:
+   Follicular phase:3.5-12.5
+   Ovulation period:4.7-21.5
+   Luteal phase:1.7.21.5
+   Post-mentopause:25.8-134.8
+
+LAB TEST: Glomerular Filtration Rate (eGFR)
+------------------------------------------------------------
+
+1. Parameter Name: Glomerular Filtration Rate (eGFR)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: CREATININE
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   0.7-1.3
+
+3. Parameter Name: estimated Glomerular Filtration Rate (eGFR)
+   Order No: 3
+   Units: mL/min/1.73m²
+   Reference Range:
+   >90
+
+LAB TEST: GLUCOSE-FLUIDS
+------------------------------------------------------------
+
+1. Parameter Name: GLUCOSE
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   [Not specified]
+
+LAB TEST: HBA1C
+------------------------------------------------------------
+
+1. Parameter Name: Glycosylated Hemoglobin(HBA 1C)
+   Order No: 1
+   Units: %
+   Reference Range:
+   <4-6 NON DIABETIC
+   6-7 GOOD CONTROL
+   7-8 POOR CONTROL
+   >8 DIABETIC
+   >10.10 VERY POOR CONTROL
+
+2. Parameter Name: Estimated Average Glucose (EAG)
+   Order No: 2
+   Units: mg/dL
+   Reference Range:
+   <110 mg/dL Non Diabetic
+   110-140 mg/dL Excellent Control
+   140-180 mg/dL Fair Control
+   180-250 mg/dL Unsatisfactory Control
+   >250 mg/dL Poor Control
+
+3. Parameter Name: INTERPRETATION:
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: HCG
+------------------------------------------------------------
+
+1. Parameter Name: BETA HCG
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   Non pregnant woman <0.5-3.0
+   1-10 weeks:50-221796
+   11-15weeks:15205-227034
+   16-24weeks:5002-75445
+   25-40weeks:1501-69208
+
+LAB TEST: HEPATITIS B
+------------------------------------------------------------
+
+1. Parameter Name: HbsAg
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: HEPATITIS C
+------------------------------------------------------------
+
+1. Parameter Name: Hepatitis C Virus
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: HOMOCYSTEIN
+------------------------------------------------------------
+
+1. Parameter Name: Homocysteine
+   Order No: 1
+   Units: µmol/L
+   Reference Range:
+   5 -15 : Normal
+   16 – 30 : Mildly Elevated
+   31 – 75 : Elevated
+   >75 : Severely Elevated
+
+LAB TEST: HS TROP I
+------------------------------------------------------------
+
+1. Parameter Name: High Sensitive Troponin-I
+   Order No: 1
+   Units: ng/mL
+   Reference Range:
+   upto 0.3 ng/mL
+
+LAB TEST: Immunoglobulin (IgG)
+------------------------------------------------------------
+
+1. Parameter Name: Immunoglobin IgG
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   7.0-16.0
+
+LAB TEST: Immunoglobution (IgM)
+------------------------------------------------------------
+
+1. Parameter Name: Immunoglobulin M (IgM)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   0.40 – 2.3
+
+LAB TEST: INSULIN-FASTING
+------------------------------------------------------------
+
+1. Parameter Name: INSULIN-FASTING
+   Order No: 1
+   Units: uIU/ml
+   Reference Range:
+   2.5-25
+
+LAB TEST: Ionised Calcium
+------------------------------------------------------------
+
+1. Parameter Name: Ionised Calcium
+   Order No: 1
+   Units: mmol/L
+   Reference Range:
+   1.10 - 1.35 mmol/L
+
+LAB TEST: IRON
+------------------------------------------------------------
+
+1. Parameter Name: IRON SERUM
+   Order No: 1
+   Units: ug/dL
+   Reference Range:
+   33-193
+
+LAB TEST: IRON DEFICIENCY PROFILE
+------------------------------------------------------------
+
+1. Parameter Name: IRON
+   Order No: 1
+   Units: ug/dL
+   Reference Range:
+   33-193ug/dL
+
+2. Parameter Name: Unsaturated Iron Binding Capacity
+   Order No: 2
+   Units: ug/dL
+   Reference Range:
+   135-392ug/dL
+
+3. Parameter Name: Iron Binding Capacity - Total (TIBC)
+   Order No: 3
+   Units: ug/dL
+   Reference Range:
+   250-400 ug/dL
+
+4. Parameter Name: Transferrin
+   Order No: 4
+   Units: ug/dL
+   Reference Range:
+   176-280 ug/dL
+
+5. Parameter Name: Transferrin%
+   Order No: 5
+   Units: %
+   Reference Range:
+   20-50%
+
+6. Parameter Name: Ferritin
+   Order No: 6
+   Units: ng/mL
+   Reference Range:
+   6-175ng/mL
+
+LAB TEST: LDH
+------------------------------------------------------------
+
+1. Parameter Name: LDH
+   Order No: 1
+   Units: U/L
+   Reference Range:
+   135-225
+
+2. Parameter Name: LACTATE DEHYDROGEN (LDH)
+   Order No: 1
+   Units: U/L
+   Reference Range:
+   135 - 225
+
+3. Parameter Name: Sample Type
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: Sample Type
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: LFT (LIVER FUNCTION TEST)
+------------------------------------------------------------
+
+1. Parameter Name: Total Bilirubin
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   0.2-1mg/dl
+
+2. Parameter Name: Direct Bilirubin
+   Order No: 2
+   Units: mg/dl
+   Reference Range:
+   0-0.2 mg/dl
+
+3. Parameter Name: Indirect Bilirubin
+   Order No: 3
+   Units: mg/dl
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: Serum Glutamic Pyruvic Transaminase(SGPT)
+   Order No: 4
+   Units: IU/L
+   Reference Range:
+   <40 IU/L
+
+5. Parameter Name: Serum Glutamic-Oxaloacetic Transaminase(SGOT)
+   Order No: 5
+   Units: IU/L
+   Reference Range:
+   < 40 IU/L
+
+6. Parameter Name: Alkaline Phosphatase (ALP)
+   Order No: 6
+   Units: IU/L
+   Reference Range:
+   Adult 40 – 120 IU/L
+   <16 yrs upto 369 IU/L
+
+7. Parameter Name: Total Proteins
+   Order No: 7
+   Units: gms/dl
+   Reference Range:
+   6.4 - 8.3 gms/dl
+
+8. Parameter Name: Albumin
+   Order No: 8
+   Units: gms/dl
+   Reference Range:
+   3.5-5.2 gms/dl
+
+9. Parameter Name: Globulin
+   Order No: 9
+   Units: gms/dl
+   Reference Range:
+   2.5-4.0 gms/dl
+
+10. Parameter Name: A/G Ratio
+   Order No: 10
+   Units: [Not specified]
+   Reference Range:
+   0.8-2.0
+
+LAB TEST: LIPASE
+------------------------------------------------------------
+
+1. Parameter Name: Lipase
+   Order No: 1
+   Units: U/L
+   Reference Range:
+   13-60
+
+LAB TEST: LUTENIZING HORMONE(LH)
+------------------------------------------------------------
+
+1. Parameter Name: Luteinising Hormone (LH)
+   Order No: 1
+   Units: mIU/ml
+   Reference Range:
+   Follicular phase:1.9-11.6
+   Ovulation period:12.9-105.2
+   Luteal phase:0.8-10.5
+   Post-menopause:6.6-66.4
+
+LAB TEST: MAGNESIUM
+------------------------------------------------------------
+
+1. Parameter Name: SERUM MAGNESIUM
+   Order No: 115
+   Units: mEq/L
+   Reference Range:
+   1.3 - 2.5 mEq/L
+
+LAB TEST: NT- pro BNP
+------------------------------------------------------------
+
+1. Parameter Name: N-terminal pro-B-type natriuretic peptide (NT-proBNP)
+   Order No: 1
+   Units: pg/mL
+   Reference Range:
+   < 300 : Normal (Rule out)
+   300 - 450 : Borderline
+   > 450 : Elevated
+   > 5000 : High risk
+
+LAB TEST: OGTT
+------------------------------------------------------------
+
+1. Parameter Name: Fasting Blood Sugar
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   70-100 mg/dL
+
+2. Parameter Name: Fasting urine sugar
+   Order No: 2
+   Units: %
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: 0.5 Hour After Glucose
+   Order No: 3
+   Units: mg/dL
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: Urine Sugar
+   Order No: 4
+   Units: %
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: 1.0 Hour After Glucose
+   Order No: 5
+   Units: mg/dL
+   Reference Range:
+   <180 mg/dL
+
+6. Parameter Name: Urine Sugar
+   Order No: 6
+   Units: %
+   Reference Range:
+   [Not specified]
+
+7. Parameter Name: 1.5 Hour After glucose
+   Order No: 7
+   Units: mg/dL
+   Reference Range:
+   [Not specified]
+
+8. Parameter Name: Urine Sugar
+   Order No: 8
+   Units: %
+   Reference Range:
+   [Not specified]
+
+9. Parameter Name: 2.0 Hour After Glucose
+   Order No: 9
+   Units: mg/dL
+   Reference Range:
+   <140 mg/dL
+
+10. Parameter Name: Urine Suagar
+   Order No: 10
+   Units: %
+   Reference Range:
+   [Not specified]
+
+LAB TEST: PARA THYROID HORMONE-PTH
+------------------------------------------------------------
+
+1. Parameter Name: PARA THYROID HORMONE-PTH
+   Order No: 1
+   Units: pg/mL
+   Reference Range:
+   15.0 – 68.0 : 11 – 17 Yrs
+   15.0 – 65.0 : 18 – 100 Yrs
+
+LAB TEST: PHOSPHORUS
+------------------------------------------------------------
+
+1. Parameter Name: Phosphorus
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   2.5 - 4.5 mg/dL
+
+LAB TEST: PLBS
+------------------------------------------------------------
+
+1. Parameter Name: Post Lunch Blood Sugar Test
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   110-170mg/dl
+
+2. Parameter Name: Urine sugar
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: POTASSIUM
+------------------------------------------------------------
+
+1. Parameter Name: SERUM POTASSIUM
+   Order No: 1
+   Units: mmol/L
+   Reference Range:
+   3.5 - 5.5 mmol/L
+
+2. Parameter Name: Potassium
+   Order No: 1
+   Units: mmol/L
+   Reference Range:
+   3.5 - 5.0 mmol/L
+
+LAB TEST: PROCALCITONIN(PCT)
+------------------------------------------------------------
+
+1. Parameter Name: PROCALCITONIN
+   Order No: 1
+   Units: ng/mL
+   Reference Range:
+   <0.10ng/mL
+
+LAB TEST: PROGESTERONE
+------------------------------------------------------------
+
+1. Parameter Name: PROOGESTERONE
+   Order No: 1
+   Units: ng/mL
+   Reference Range:
+   FEMALE :
+   Follicular Phase:0.2-1.6
+   Ovulation phase:0.3-2.1
+   Luteal Phase:1.8-22.5
+   Postmenophause:<1.05
+   PREGNANCY FEMALES :
+   First Trimester:3.9-60
+   Second Trimester :15.4-60
+
+LAB TEST: PROLACTIN
+------------------------------------------------------------
+
+1. Parameter Name: PROLACTIN
+   Order No: 1
+   Units: ng/mL
+   Reference Range:
+   Males : 2.07 - 10.45 ng/ml
+   Females :2.76-15.042 ng/ml
+
+LAB TEST: PROTEINS-FLUID
+------------------------------------------------------------
+
+1. Parameter Name: Protein-Any Fluid
+   Order No: 1
+   Units: g/dl
+   Reference Range:
+   [Not specified]
+
+LAB TEST: PSA-TOTAL
+------------------------------------------------------------
+
+1. Parameter Name: Prostarate Specific Antigen Total
+   Order No: 1
+   Units: ng/mL
+   Reference Range:
+   <4.0
+
+LAB TEST: RA FACTOR
+------------------------------------------------------------
+
+1. Parameter Name: RA FACTOR
+   Order No: 1
+   Units: IU/ml
+   Reference Range:
+   Upto 20 IU/ml
+
+LAB TEST: RFT(RENAL FUNCTION TEST)
+------------------------------------------------------------
+
+1. Parameter Name: BLOOD UREA
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   15-45mg/dl
+
+2. Parameter Name: SERUM CREATININE
+   Order No: 2
+   Units: mg/dl
+   Reference Range:
+   Male :0.9-1.5mg/dl
+   Female :0.8-1.3mg/dl
+   Child :0.3-0.7mg/dl
+
+3. Parameter Name: SERUM URIC ACID
+   Order No: 3
+   Units: mg/dl
+   Reference Range:
+   Male :3.4-7mg/dl
+   Female :2.4-5.7mg/dl
+   Child :0-0mg/dl
+
+4. Parameter Name: SODIUM
+   Order No: 4
+   Units: mMol/L
+   Reference Range:
+   135-150
+
+5. Parameter Name: POTASSIUM
+   Order No: 5
+   Units: mMol/L
+   Reference Range:
+   3.5-5.0
+
+6. Parameter Name: CHLORIDE
+   Order No: 6
+   Units: mMol/L
+   Reference Range:
+   98-107
+
+7. Parameter Name: SERUM CALCIUM
+   Order No: 7
+   Units: mg/dL
+   Reference Range:
+   8.5-11
+
+8. Parameter Name: Note
+   Order No: 8
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: RHEUMATOID FACTOR
+------------------------------------------------------------
+
+1. Parameter Name: RHEUMATOID FACTOR (RF)
+   Order No: 1
+   Units: IU/mL
+   Reference Range:
+   <20
+
+LAB TEST: Salmonella IgG
+------------------------------------------------------------
+
+1. Parameter Name: Salmonella typhi IgG
+   Order No: 1
+   Units: s/co
+   Reference Range:
+   <1.0 Negative
+   >1.0 Positive
+
+LAB TEST: Salmonella IgM
+------------------------------------------------------------
+
+1. Parameter Name: Salmonella typhi IgM
+   Order No: 1
+   Units: s/co
+   Reference Range:
+   <1.0 Negative
+   >1.0 Positive
+
+LAB TEST: SERUM FERRTIN
+------------------------------------------------------------
+
+1. Parameter Name: FERRITIN
+   Order No: 1
+   Units: ng/mL
+   Reference Range:
+   Male :27-375ng/mL
+   Female :12-135ng/mL
+   Child :0-0ng/mL
+
+LAB TEST: SERUM PROTEINS
+------------------------------------------------------------
+
+1. Parameter Name: Protein
+   Order No: 1
+   Units: g/dl
+   Reference Range:
+   6.4 - 8.3 g/dl
+
+2. Parameter Name: Albumin
+   Order No: 2
+   Units: g/dl
+   Reference Range:
+   3.5 - 5.2 g/dl
+
+3. Parameter Name: Globulin
+   Order No: 3
+   Units: g/dl
+   Reference Range:
+   2.5 - 3.5 g/dl
+
+4. Parameter Name: A/G Ratio
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   0.8 - 2.0
+
+LAB TEST: SERUM SODIUM
+------------------------------------------------------------
+
+1. Parameter Name: SODIUM
+   Order No: 1
+   Units: mmol/L
+   Reference Range:
+   135 - 150 mmol/L
+
+LAB TEST: SGOT
+------------------------------------------------------------
+
+1. Parameter Name: SGOT
+   Order No: 1
+   Units: U/L
+   Reference Range:
+   Males : upto 35 U/L
+   Females: upto 31 U/L
+
+LAB TEST: SGPT
+------------------------------------------------------------
+
+1. Parameter Name: SGPT
+   Order No: 1
+   Units: U/L
+   Reference Range:
+   Males : upto 45 U/L
+   Females: upto 34 U/L
+
+LAB TEST: TESTOSTERONE TOTAL
+------------------------------------------------------------
+
+1. Parameter Name: TESTOSTERONE
+   Order No: 1
+   Units: ng/dL
+   Reference Range:
+   MALES: 241 - 827 ng/mL
+   FEMALES : 14 - 76 ng/ml
+
+LAB TEST: Thyroid Function Test (TFT)
+------------------------------------------------------------
+
+1. Parameter Name: Total Triiodo Thyronine [T3]
+   Order No: 1
+   Units: ng/dl
+   Reference Range:
+   105-269: 1-5 Yrs
+   8 - 241: 6 - 15 Yrs
+   70-210: 16-50 years
+   40-181: 51-90 years
+
+2. Parameter Name: Total Thyroxine [T4]
+   Order No: 2
+   Units: µg/dl
+   Reference Range:
+   5.1-14.1µg/dl
+
+3. Parameter Name: Thyroid Stimulating Hormone (TSH)
+   Order No: 3
+   Units: uIU/mL
+   Reference Range:
+   0.30 – 4.20
+   Pregnancy Reference Intervals
+   0.03-3.40 : First trimester
+   0.19-4.06 : Second trimester
+
+LAB TEST: THYROID STIMULATING HARMONE (TSH)
+------------------------------------------------------------
+
+1. Parameter Name: Thyroid Stimulating Harmone (TSH )
+   Order No: 116
+   Units: uIU/mL
+   Reference Range:
+   0.3-5.1uIU/mL
+   Pregnancy gestation
+   First Trimester 0.09-4.87
+   Second Trimester 0.47-4.79
+
+LAB TEST: Tissue Transglutaminase Antibody - IgA
+------------------------------------------------------------
+
+1. Parameter Name: Tissue Transglutaminase Antibody - IgA
+   Order No: 1
+   Units: U/mL
+   Reference Range:
+   < 20 : Negative
+   > 20 : Positive
+
+LAB TEST: Total Cholesterol
+------------------------------------------------------------
+
+1. Parameter Name: Total cholesterol
+   Order No: 323
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Total Cholestrol
+   Order No: 323
+   Units: mg/dl
+   Reference Range:
+   Desirable Blood Cholesterol :
+   <200 mg/dl
+   Borderline High Blood
+   Cholesterol: 200-239 mg/dl
+   High Blood Cholesterol :
+   >239 mg/dl
+
+LAB TEST: TOTAL IGE
+------------------------------------------------------------
+
+1. Parameter Name: TOTAL IGE
+   Order No: 1
+   Units: IU/mL
+   Reference Range:
+   [Not specified]
+
+LAB TEST: Total Thyroxine [T4]
+------------------------------------------------------------
+
+1. Parameter Name: Total Thyroxine [T4]
+   Order No: 1
+   Units: ug/dl
+   Reference Range:
+   6.3 - 21.5 :<1 Months
+   4.9-13.7 :1-11 Months
+   4.6-10.9 :> 18 Years
+   Pregancy
+   4.6-10.9 : 1st Trimester
+   4.6-18.5 : 2nd_3rd Trimester
+
+LAB TEST: Total Triiodo Thyronine [T3]
+------------------------------------------------------------
+
+1. Parameter Name: Total Triiodo Thyronine [T3]
+   Order No: 117
+   Units: ng/dl
+   Reference Range:
+   [Not specified]
+
+LAB TEST: Treponema Palladium Hemagglutination (TPHA)
+------------------------------------------------------------
+
+1. Parameter Name: Treponema Pallidum Hemagglutination (TPHA)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   Non - Reactive
+
+LAB TEST: UREA
+------------------------------------------------------------
+
+1. Parameter Name: Blood Urea
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   Males : <50 years 19-45 mg/dl
+   >50 years 18-55 mg/dl
+   Female : <50 years 13-40 mg/dl
+   >50 years 21-43 mg/dl
+
+2. Parameter Name: Creatinine
+   Order No: 2
+   Units: mg/dl
+   Reference Range:
+   Male :0.7-1.3mg/dl
+   Female :0.6-1.1mg/dl
+   Child :0.3-0.7 mg/dl
+
+LAB TEST: URINE ALBUMIN
+------------------------------------------------------------
+
+1. Parameter Name: URINE ALBUMIN
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: URINE PROTEIN/CREATININE RATIO
+------------------------------------------------------------
+
+1. Parameter Name: URINE PROTEIN & CREATININE RATIO
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: URINE PROTEIN
+   Order No: 2
+   Units: mg/L
+   Reference Range:
+   < 150
+
+3. Parameter Name: URINE CREATININE
+   Order No: 3
+   Units: mg/dL
+   Reference Range:
+   28 - 217
+
+4. Parameter Name: URINE PROTEIN CREATININE RATIO
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   <0.2 Normal
+   0.2-1.0 Low-Grade Proteinuria
+   1.0-5.0 Moderate Proteinuria
+   >5.0 High-Grade Proteinuria
+
+LAB TEST: VITAMIN - D
+------------------------------------------------------------
+
+1. Parameter Name: Vitamin-D
+   Order No: 2
+   Units: ng/ml
+   Reference Range:
+   Deficiency : < 10.0 ng/ml            
+   Sufficiency :30- 100 ng/ml
+   Insufficiency :10- 30 ng/ml
+   Toxicity : > 100 ng/ml
+
+LAB TEST: VITAMIN B12
+------------------------------------------------------------
+
+1. Parameter Name: Vitamin B12
+   Order No: 1
+   Units: pg/mL
+   Reference Range:
+   180-916
+
+2. Parameter Name: ENTERPRETATION
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+============================================================
+LAB DEPARTMENT: Hematology
+============================================================
+
+LAB TEST: Absolute Eosinophil Count (AEC)
+------------------------------------------------------------
+
+1. Parameter Name: Absolute Eosinophil Count
+   Order No: 1
+   Units: Cells/Cumm
+   Reference Range:
+   40-440Cells/Cumm
+
+LAB TEST: BLEEDING TIME CLOTTING TIME
+------------------------------------------------------------
+
+1. Parameter Name: BLEEDING TIME
+   Order No: 1
+   Units: Minutes
+   Reference Range:
+   1 - 3 Minutes
+
+2. Parameter Name: CLOTTING TIME
+   Order No: 2
+   Units: Minutes
+   Reference Range:
+   3 - 7 Minutes
+
+LAB TEST: BLOOD GROUP
+------------------------------------------------------------
+
+1. Parameter Name: Blood Group
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Rh Type
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: NOTE:-
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: COMPLETE BLOOD PICTURE
+------------------------------------------------------------
+
+1. Parameter Name: Haemoglobin
+   Order No: 1
+   Units: Grams %
+   Reference Range:
+   Male :13-17Grams %
+   Female :12-15Grams %
+   Child :11.0-15.5Grams %
+
+2. Parameter Name: Red Cell Count
+   Order No: 2
+   Units: mill/cumm
+   Reference Range:
+   Males : 4.5 - 5.5 mill/cumm
+   Females: 3.8 - 4.8 mill/cumm
+
+3. Parameter Name: Hematocrit ( PCV )
+   Order No: 3
+   Units: Vol %
+   Reference Range:
+   Male : 40-50 Vol %
+   Females : 36-46 Vol %
+
+4. Parameter Name: Total WBC count
+   Order No: 3
+   Units: cells/cumm
+   Reference Range:
+   4000-11000cells/cumm
+
+5. Parameter Name: Mean Corpuscular Volume(MCV)
+   Order No: 4
+   Units: fl
+   Reference Range:
+   83-101fl
+
+6. Parameter Name: Mean Corpuscular Hemoglobin(MCH)
+   Order No: 5
+   Units: pg
+   Reference Range:
+   27-32pg
+
+7. Parameter Name: Mean Corpuscular Hemoglobin Concentration(MCHC)
+   Order No: 6
+   Units: gm/dL
+   Reference Range:
+   31.5-34.5gm/dL
+
+8. Parameter Name: Red Cell Distribution Width(RDW-CV)
+   Order No: 7
+   Units: %
+   Reference Range:
+   11.6-14%
+
+9. Parameter Name: Platelet Count
+   Order No: 8
+   Units: Lakhs/cumm
+   Reference Range:
+   1.50 - 4.5 Lakhs/cumm
+
+10. Parameter Name: Total Leucocyte (WBC) count
+   Order No: 9
+   Units: cells/cumm
+   Reference Range:
+   4000-10000 cells/cumm
+
+11. Parameter Name: DIFFERENTIAL COUNT
+   Order No: 11
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+12. Parameter Name: Neutrophils
+   Order No: 12
+   Units: %
+   Reference Range:
+   40-75%
+
+13. Parameter Name: Lymphocytes
+   Order No: 13
+   Units: %
+   Reference Range:
+   20-40%
+
+14. Parameter Name: Eosinophils
+   Order No: 14
+   Units: %
+   Reference Range:
+   1-6%
+
+15. Parameter Name: Monocytes
+   Order No: 15
+   Units: %
+   Reference Range:
+   2-10%
+
+16. Parameter Name: Basophils
+   Order No: 16
+   Units: %
+   Reference Range:
+   0-1%
+
+17. Parameter Name: ESR 1st Hour
+   Order No: 16
+   Units: mm
+   Reference Range:
+   00 - 10 mm
+
+18. Parameter Name: PERIPHERAL SMEAR
+   Order No: 17
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+19. Parameter Name: ABSOLUTE EOSINOPHIL COUNT (AEC)
+   Order No: 17
+   Units: Cells/cumm
+   Reference Range:
+   40 - 440 Cells/cumm
+
+20. Parameter Name: R B C
+   Order No: 18
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+21. Parameter Name: W B C
+   Order No: 19
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+22. Parameter Name: PLATELETS
+   Order No: 20
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+23. Parameter Name: ADVISE
+   Order No: 21
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+24. Parameter Name: IMPRESSION
+   Order No: 22
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+25. Parameter Name: ERYTHROCYTE SEDIMENAION RATE
+   Order No: 23
+   Units: [Not specified]
+   Reference Range:
+   0-20
+
+LAB TEST: FIBRINOGEN
+------------------------------------------------------------
+
+1. Parameter Name: Fibrinogen
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   150-400
+
+LAB TEST: FLUID CELL COUNT
+------------------------------------------------------------
+
+1. Parameter Name: PHYSICAL EXAMINATION
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Color
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: Volume
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: Appearance
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: Reaction
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+6. Parameter Name: Sediment
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+7. Parameter Name: MICROSCOPIC EXAMINATION
+   Order No: 7
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+8. Parameter Name: Neutrophils
+   Order No: 8
+   Units: %
+   Reference Range:
+   [Not specified]
+
+9. Parameter Name: Lymphocytes
+   Order No: 9
+   Units: %
+   Reference Range:
+   [Not specified]
+
+10. Parameter Name: Eosinophils
+   Order No: 10
+   Units: %
+   Reference Range:
+   [Not specified]
+
+11. Parameter Name: Monocytes
+   Order No: 11
+   Units: %
+   Reference Range:
+   [Not specified]
+
+12. Parameter Name: Basophils
+   Order No: 12
+   Units: %
+   Reference Range:
+   [Not specified]
+
+LAB TEST: FOLIC ACID
+------------------------------------------------------------
+
+1. Parameter Name: Folic Acid
+   Order No: 1
+   Units: ng/mL
+   Reference Range:
+   < 3.9 : Deficient
+   4.0 – 5.8 : Indeterminate
+   > 5.9 : Normal
+
+LAB TEST: HAEMOGLOBIN
+------------------------------------------------------------
+
+1. Parameter Name: Haemoglobin
+   Order No: 1
+   Units: Grams
+   Reference Range:
+   Male :13-17 Grams %
+   Female :12-15 Grams %
+   Child :11.0-15.5 Grams %
+
+LAB TEST: HAEMOGRAM
+------------------------------------------------------------
+
+1. Parameter Name: Hemoglobin
+   Order No: 1
+   Units: gms/dl
+   Reference Range:
+   Male :13-17gms/dl
+   Female :12-15gms/dl
+   Child :0-0gms/dl
+
+2. Parameter Name: Red Cell Count
+   Order No: 2
+   Units: mill/cumm
+   Reference Range:
+   Male :4.5-5.5mill/cumm
+   Female :3.8-4.8mill/cumm
+   Child :0-0mill/cumm
+
+3. Parameter Name: P C V
+   Order No: 4
+   Units: Vol%
+   Reference Range:
+   40-50Vol%
+
+4. Parameter Name: M.C.V
+   Order No: 5
+   Units: fl
+   Reference Range:
+   83-101fl
+
+5. Parameter Name: M.C.H
+   Order No: 6
+   Units: pg
+   Reference Range:
+   27-32 pg
+
+6. Parameter Name: M.C.H.C
+   Order No: 7
+   Units: gms/dl
+   Reference Range:
+   32 - 36 gms/dl
+
+7. Parameter Name: R.D.W
+   Order No: 8
+   Units: %
+   Reference Range:
+   10-15%
+
+8. Parameter Name: Platelet Count
+   Order No: 9
+   Units: Lakhs/cumm
+   Reference Range:
+   1.50 - 4.20 Lakhs/cumm
+
+9. Parameter Name: Total Leucocyte(WBC) count
+   Order No: 10
+   Units: cells/cumm
+   Reference Range:
+   4000 - 10000 cells/cumm
+
+10. Parameter Name: DIFFERENTIAL COUNT
+   Order No: 11
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+11. Parameter Name: Neutrophils
+   Order No: 12
+   Units: %
+   Reference Range:
+   40-80 %
+
+12. Parameter Name: Lymphocytes
+   Order No: 13
+   Units: %
+   Reference Range:
+   20-40%
+
+13. Parameter Name: Eosinophils
+   Order No: 14
+   Units: %
+   Reference Range:
+   1-6%
+
+14. Parameter Name: Monocytes
+   Order No: 15
+   Units: %
+   Reference Range:
+   2-10%
+
+15. Parameter Name: Basophils
+   Order No: 16
+   Units: 00 %
+   Reference Range:
+   0-1 %
+
+16. Parameter Name: PERIPHERAL SMEAR
+   Order No: 17
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+17. Parameter Name: R B C
+   Order No: 18
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+18. Parameter Name: W B C
+   Order No: 19
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+19. Parameter Name: PLATELETS
+   Order No: 20
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+20. Parameter Name: Note
+   Order No: 21
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+21. Parameter Name: Advise
+   Order No: 22
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+22. Parameter Name: Impression
+   Order No: 23
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+23. Parameter Name: HAEMOGRAM
+   Order No: 112
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: HLA-B27
+------------------------------------------------------------
+
+1. Parameter Name: HLA B27 DNA - Qualitative
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: MALARIA
+------------------------------------------------------------
+
+1. Parameter Name: Malarial Parasite (Pv)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   NEGATIVE
+
+2. Parameter Name: Malarial Parasite (Pf)
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   NEGATIVE
+
+LAB TEST: PERIPHERAL SMEAR
+------------------------------------------------------------
+
+1. Parameter Name: Peripheral Smear
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Peripheral Smear
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: RBC:
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: RBC:
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: WBC:
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+6. Parameter Name: WBC:
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+7. Parameter Name: PLATELETS:
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+8. Parameter Name: PLATELETS:
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+9. Parameter Name: HEMOPARASITES:
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+10. Parameter Name: HEMOPARASITES:
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+11. Parameter Name: ATYPICAL CELLS/BLASTS:
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+12. Parameter Name: ATYPICAL CELLS/BLASTS:
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+13. Parameter Name: ADVISE:
+   Order No: 7
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+14. Parameter Name: IMPRESSION
+   Order No: 8
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+15. Parameter Name: NOTE
+   Order No: 8
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: Platelet count
+------------------------------------------------------------
+
+1. Parameter Name: Platelet count
+   Order No: 1
+   Units: Lakhs/cumm
+   Reference Range:
+   1.5-4.5
+
+LAB TEST: PT/INR
+------------------------------------------------------------
+
+1. Parameter Name: PROTHROMBIN TIME
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: PATIENT VOLUE
+   Order No: 2
+   Units: Seconds
+   Reference Range:
+   11-16
+
+3. Parameter Name: (MNPT) PT CONTTROL VOLUE
+   Order No: 3
+   Units: Seconds
+   Reference Range:
+   13.5
+
+4. Parameter Name: PATIENT RATIO
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: NORMAL INR
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   0.8-1.2
+
+6. Parameter Name: THERAPEUTIC INR (OAC THERAPY)
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   2.0-3.5
+
+LAB TEST: RETICULOCYTE COUNT
+------------------------------------------------------------
+
+1. Parameter Name: Reticulocyte Count
+   Order No: 1
+   Units: %
+   Reference Range:
+   0.5-2.5%
+   New born: 2.5-6%
+
+LAB TEST: TC/DC
+------------------------------------------------------------
+
+1. Parameter Name: TC & DC
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: PHYSICAL EXAMINATION
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: Volume
+   Order No: 3
+   Units: ml
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: Color
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: Appearance
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+6. Parameter Name: MICROSCOPIC EXAMINATION
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+7. Parameter Name: Total WBC count
+   Order No: 7
+   Units: /cumm
+   Reference Range:
+   /cumm
+
+8. Parameter Name: Polymorphs
+   Order No: 8
+   Units: %
+   Reference Range:
+   0 - 7 %
+
+9. Parameter Name: Lymphocytes
+   Order No: 9
+   Units: %
+   Reference Range:
+   28 - 96 %
+
+10. Parameter Name: RBC count
+   Order No: 10
+   Units: /HPF
+   Reference Range:
+   [Not specified]
+
+============================================================
+LAB DEPARTMENT: BIOCHEMISTRY
+============================================================
+
+LAB TEST: Albumin/Creatinine Ratio
+------------------------------------------------------------
+
+1. Parameter Name: Albumin/Creatinine Ratio
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Microalbumin
+   Order No: 2
+   Units: mg/L
+   Reference Range:
+   < 20.0
+
+3. Parameter Name: Creatinine
+   Order No: 3
+   Units: mg/dL
+   Reference Range:
+   28 - 217
+
+4. Parameter Name: Albumin/creatinine ratio
+   Order No: 4
+   Units: mg/g creat
+   Reference Range:
+   < 30.0 : Normal
+   30-300 : High
+   > 300 : Very High
+
+LAB TEST: ANTI CARDIOLIPIN IgG
+------------------------------------------------------------
+
+1. Parameter Name: CARDIOLIPIN IgG ANTIBODY
+   Order No: 1
+   Units: GPL U/ml
+   Reference Range:
+   < 10: Negative
+   > 10: Positive
+
+LAB TEST: ANTI CARDIOLIPIN IgM
+------------------------------------------------------------
+
+1. Parameter Name: CARDIOLIPIN IgM ANTIBODY
+   Order No: 1
+   Units: MPL U/ml
+   Reference Range:
+   < 7 \:Negative
+   > 7 \:Positive
+
+LAB TEST: APOLIPOPROTEIN B (APO-B)
+------------------------------------------------------------
+
+1. Parameter Name: Apolipoprotein b
+   Order No: 1
+   Units: g/L
+   Reference Range:
+   0.66 – 1.44
+
+LAB TEST: BETA 2 GLYCOPROTEIN ANTY BODY IgG
+------------------------------------------------------------
+
+1. Parameter Name: BETA 2 GLYCOPROTEIN ANTY BODY IgG
+   Order No: 1
+   Units: SGU
+   Reference Range:
+   < 20 Negative
+   > 20 Positive
+
+LAB TEST: BETA 2 GLYCOPROTEIN ANTY BODY IgM
+------------------------------------------------------------
+
+1. Parameter Name: BETA 2 GLYCOPROTEIN ANTY BODY IgM
+   Order No: 1
+   Units: SGU
+   Reference Range:
+   < 20 Negative
+   > 20 Positive
+
+LAB TEST: BETA HCG
+------------------------------------------------------------
+
+1. Parameter Name: Beta HCG
+   Order No: 1
+   Units: mIU/mL
+   Reference Range:
+   Non pregnant woman <0.5-3.0
+   1-10 weeks:50-221796
+   11-15weeks:15205-227034
+   16-24weeks:5002-75445
+   25-40weeks:1501-69208
+
+LAB TEST: BLOOD GROUPING & RH TYPING
+------------------------------------------------------------
+
+1. Parameter Name: BLOOD GROUPING
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Rh Typing
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: NOTE:-
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: BLOOD UREA
+------------------------------------------------------------
+
+1. Parameter Name: Blood Urea
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   15-45
+
+LAB TEST: BLOOD UREA SERUM CREATININE
+------------------------------------------------------------
+
+1. Parameter Name: BLOOD UREA
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   15-45
+
+2. Parameter Name: SERUM CREATININE
+   Order No: 2
+   Units: mg/dL
+   Reference Range:
+   Male :0.9-1.5mg/dL
+   Female :0.8-1.3mg/dL
+   Child :0-0mg/dL
+
+LAB TEST: BT/CT
+------------------------------------------------------------
+
+1. Parameter Name: BLEEDING TIME
+   Order No: 1
+   Units: minutes
+   Reference Range:
+   1-6minutes
+
+2. Parameter Name: CLOTTING TIME
+   Order No: 2
+   Units: minutes
+   Reference Range:
+   4-6minutes
+
+LAB TEST: c-peptide
+------------------------------------------------------------
+
+1. Parameter Name: C-PEPTIDE
+   Order No: 1
+   Units: ng/mL
+   Reference Range:
+   1.1-4.1
+
+LAB TEST: CHIKUNGUNYA IgM
+------------------------------------------------------------
+
+1. Parameter Name: Chikungunya-IgM
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   <1.0 Negative
+   >1.0 Positive
+
+LAB TEST: CRP (C - REACTIVE PROTEIN)
+------------------------------------------------------------
+
+1. Parameter Name: C- REACTIVE PROTEIN (CRP)
+   Order No: 1
+   Units: mg/L
+   Reference Range:
+   Upto 6.0 mg/L
+
+2. Parameter Name: Clinical Significance
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: CRP RF ASO
+------------------------------------------------------------
+
+1. Parameter Name: C-REACTIVE PROTEIN
+   Order No: 1
+   Units: mg/L
+   Reference Range:
+   0-6.0
+
+2. Parameter Name: RHEUMATOID FACTOR
+   Order No: 2
+   Units: IU/mL
+   Reference Range:
+   <20
+
+3. Parameter Name: ANTISTREPTOLYSIN
+   Order No: 3
+   Units: IU/mL
+   Reference Range:
+   <200
+
+LAB TEST: Dengue NSI
+------------------------------------------------------------
+
+1. Parameter Name: Dengue NSI
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: Erythrocyte sedimentation rate(Esr)
+------------------------------------------------------------
+
+1. Parameter Name: ESR  First Hour
+   Order No: 1
+   Units: mm/hr
+   Reference Range:
+   0 - 10 mm/hr
+
+2. Parameter Name: ESR 1st Hour
+   Order No: 1
+   Units: mm/Hour
+   Reference Range:
+   00-15 mm/Hour
+
+3. Parameter Name: ESR Second Hour
+   Order No: 2
+   Units: mm
+   Reference Range:
+   10 - 20 mm
+
+4. Parameter Name: HAEMOGLOBIN
+   Order No: 3
+   Units: g/dl
+   Reference Range:
+   12-16g/dl
+
+LAB TEST: FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR
+------------------------------------------------------------
+
+1. Parameter Name: FASTING PLASMA SUGAR
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   70-110mg/dl
+
+2. Parameter Name: CORRESPONDING URINE SUGAR
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: POST LUNCH BLOOD SUGAR
+   Order No: 3
+   Units: mg/dl
+   Reference Range:
+   110-170mg/dl
+
+4. Parameter Name: CORRESPONDING URINE SUGAR
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: FREE T3
+------------------------------------------------------------
+
+1. Parameter Name: FREE T3
+   Order No: 1
+   Units: ng/dL
+   Reference Range:
+   1.8-4.2
+
+LAB TEST: FREE T3 T4
+------------------------------------------------------------
+
+1. Parameter Name: FREE T3
+   Order No: 1
+   Units: ng/dL
+   Reference Range:
+   1.8-4.2
+
+2. Parameter Name: FREE T4
+   Order No: 2
+   Units: ng/dL
+   Reference Range:
+   0.87-1.85
+
+LAB TEST: FSH LH PRL (FLP)
+------------------------------------------------------------
+
+1. Parameter Name: Follicle-Stimulating Hormone(FSH)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   Follicular phase:3.5-12.5
+   Ovulation period:4.7-21.5
+   Luteal phase:1.7.21.5
+   Post-mentopause:25.8-134.8
+
+2. Parameter Name: LUTENIZING HORMONE(LH)
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   Follicular phase:1.9-11.6
+   Ovulation period:12.9-105.2
+   Luteal phase:0.8-10.5
+   Post-menopause:6.6-66.4
+
+3. Parameter Name: PROLACTIN(PRL)
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   Males : 2.07 - 10.45 ng/ml
+   Females :2.76-15.042 ng/ml
+
+LAB TEST: GLUCOSE CHALLANGE TEST (GCT)
+------------------------------------------------------------
+
+1. Parameter Name: Fasting Blood Sugar
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   70-110
+
+2. Parameter Name: After glucose 75 grams given
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: 1st hour glucose
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   < 180 mg/dL
+
+4. Parameter Name: 2nd hour glucose
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   < 155 mg/dL
+
+5. Parameter Name: Corresponding urine sugar
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: HCG PREGNANCY RAPID
+------------------------------------------------------------
+
+1. Parameter Name: HCG PREGNANCY RAPID
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: HEMOGLOBIN
+------------------------------------------------------------
+
+1. Parameter Name: Haemoglobin
+   Order No: 1
+   Units: g/dL
+   Reference Range:
+   Male :13-17g/dL
+   Female :12-15g/dL
+   Child :0-0g/dL
+
+LAB TEST: HEPATITIS C VIRUS RAPID
+------------------------------------------------------------
+
+1. Parameter Name: HEPATITIS C VIRUS
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance)
+------------------------------------------------------------
+
+1. Parameter Name: HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance)
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Glucose Plasma, Fasting
+   Order No: 2
+   Units: mg/dL
+   Reference Range:
+   70-110
+
+3. Parameter Name: Insulin Serum , Fasting
+   Order No: 3
+   Units: µU/mL
+   Reference Range:
+   2-25
+
+4. Parameter Name: Beta Cell Function (%B)
+   Order No: 4
+   Units: %
+   Reference Range:
+   80% – 100% : Normal
+   50% - 79% : Mild
+   <50 % : Severe
+
+5. Parameter Name: Insulin Sensitivity (%S)
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+6. Parameter Name: HOMA IR Index
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   < 1.0 : Optimal
+   1.0 - 1.9 : Early IR
+   1.9 - 2.9 : Significant IR
+   >2.9 : High Risk
+
+LAB TEST: HSV 1 & 2 IgG
+------------------------------------------------------------
+
+1. Parameter Name: Herpes simplex virus 1 & 2 IgG
+   Order No: 1
+   Units: s/co
+   Reference Range:
+   <0.9 Negative
+   0.9 -1.1 Equivocal
+   >1.2 Positive
+
+LAB TEST: HSV 1 & 2 IgM
+------------------------------------------------------------
+
+1. Parameter Name: Herpes simplex virus 1 & 2 IgM
+   Order No: 1
+   Units: s/co
+   Reference Range:
+   <0.9 Negative
+   0.9 -1.1 Equivocal
+   >1.2 Positive
+
+LAB TEST: HSV IgG,IgM
+------------------------------------------------------------
+
+1. Parameter Name: Herpes Simplex Virus 1 & 2 IgG
+   Order No: 1
+   Units: s/co
+   Reference Range:
+   <0.9 Negative
+   0.9 -1.1 Equivocal
+   >1.2 Positive
+
+2. Parameter Name: Herpes Simplex Virus 1 & 2 IgM
+   Order No: 2
+   Units: s/co
+   Reference Range:
+   <0.9 Negative
+   0.9 -1.1 Equivocal
+   >1.2 Positive
+
+3. Parameter Name: [Not specified]
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: Immunoglobulin A (IgA)
+------------------------------------------------------------
+
+1. Parameter Name: Immunoglobulin A (IgA)
+   Order No: 1
+   Units: g/L
+   Reference Range:
+   0.34 – 2.22
+
+LAB TEST: INSULIN POST PRANDIAL
+------------------------------------------------------------
+
+1. Parameter Name: INSULIN POST PRANDIAL
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   22-75
+
+LAB TEST: KIDNEY FUNCTION TEST (KFT)
+------------------------------------------------------------
+
+1. Parameter Name: SERUM CREATININE
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   Male :0.9-1.5
+   Female :0.8-1.3
+   Child :0-0
+
+2. Parameter Name: BLOOD UREA
+   Order No: 2
+   Units: mg%
+   Reference Range:
+   14-40mg%
+
+3. Parameter Name: SERUM URIC ACID
+   Order No: 3
+   Units: mg/dl
+   Reference Range:
+   Male :2.5-7
+   Female :1.5-6
+   Child :0-0
+
+4. Parameter Name: SERUM CALCIUM
+   Order No: 4
+   Units: mg/dl
+   Reference Range:
+   8.5-11
+
+LAB TEST: LIPID PROFILE
+------------------------------------------------------------
+
+1. Parameter Name: TOTAL CHOLESTEROL
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   <200 : Desirable
+   200-239 : Boderline isk
+   >240 : High risk
+
+2. Parameter Name: TRIGLYCERIDES CHOLESTEROL
+   Order No: 2
+   Units: mg/dl
+   Reference Range:
+   < 150 : Normal
+   150-199 : Borderline-High
+   200-499 : High
+   > 500 : Very High
+
+3. Parameter Name: HDL CHOLESTEROL
+   Order No: 3
+   Units: mg/dl
+   Reference Range:
+   Male :30-63mg/dl
+   Female :35-75mg/dl
+
+4. Parameter Name: LDL CHOLESTEROL
+   Order No: 4
+   Units: mg/dl
+   Reference Range:
+   Optimal : < 100 mg/dL
+   Near optimal: 100 - 129
+   Border line high: 130 -159
+   High: 160 - 189
+   Very high: > 190
+
+5. Parameter Name: VLDL CHOLESTEROL
+   Order No: 5
+   Units: mg/dL
+   Reference Range:
+   60-30 mg/dL
+
+6. Parameter Name: CHOL/HDL RATIO
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   UP TO 5.0
+
+7. Parameter Name: LDL/HDL RATIO
+   Order No: 7
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+8. Parameter Name: CHOL/TGL RATIO
+   Order No: 8
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+9. Parameter Name: Note:
+   Order No: 9
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: LIPOPROTEIN A (LP-A)
+------------------------------------------------------------
+
+1. Parameter Name: Lipoprotein a
+   Order No: 1
+   Units: nmol/L
+   Reference Range:
+   < 75
+
+LAB TEST: LUPAS ANTICOAGULANT
+------------------------------------------------------------
+
+1. Parameter Name: LUPAS ANTICOAGULANT
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: LA SCREEN
+   Order No: 2
+   Units: Sec
+   Reference Range:
+   28 - 45
+
+3. Parameter Name: LA CONFIRM
+   Order No: 3
+   Units: Sec
+   Reference Range:
+   28 - 40
+
+4. Parameter Name: LA SCREEN/CONFIRM RATIO
+   Order No: 4
+   Units: Sec
+   Reference Range:
+   < 1.3 : Normal
+   1.3 - 1.8 : Moderate LA
+   1.8 - 2.4 : High LA
+   > 2.4 : Very High LA
+
+LAB TEST: MANTOUX
+------------------------------------------------------------
+
+1. Parameter Name: Mantoux (Tuberculin)Test
+   Order No: 1
+   Units: mm
+   Reference Range:
+   Induration < 5  mm \:Negative
+   Induration 9 to 6 mm \:Equivocal
+   Induration > 10mm \:Positive
+
+2. Parameter Name: DOSE
+   Order No: 2
+   Units: TU
+   Reference Range:
+   [Not specified]
+
+LAB TEST: MICROFILARIA ANITIGEN
+------------------------------------------------------------
+
+1. Parameter Name: MICROFILARIA ANTIGEN
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: PHOSPHOLIPID ANTIBODIES IgG
+------------------------------------------------------------
+
+1. Parameter Name: PHOSPHOLIPID ANTIBODIES IgG
+   Order No: 1
+   Units: MPL U/mL
+   Reference Range:
+   < 10 Normal
+   > 10 Elevated
+
+LAB TEST: PHOSPHOLIPID ANTIBODIES IgM
+------------------------------------------------------------
+
+1. Parameter Name: PHOSPHOLIPID ANTIBODY IgM
+   Order No: 1
+   Units: GPL U/mL
+   Reference Range:
+   < 10 Normal
+   > 10 Elevated
+
+LAB TEST: PT/INR & APTT
+------------------------------------------------------------
+
+1. Parameter Name: PT WITH INR
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: TEST
+   Order No: 2
+   Units: Seconds
+   Reference Range:
+   10-14Seconds
+
+3. Parameter Name: CONTROL
+   Order No: 3
+   Units: Seconds
+   Reference Range:
+   11-13.5 Seconds
+
+4. Parameter Name: INR
+   Order No: 4
+   Units: Seconds
+   Reference Range:
+   1 - 1.4 Seconds
+
+5. Parameter Name: ACTIVATED PARTIAL THROMBOPLASTIN
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+6. Parameter Name: TEST
+   Order No: 6
+   Units: Seconds
+   Reference Range:
+   26 - 40 Seconds
+
+7. Parameter Name: CONTROL
+   Order No: 7
+   Units: Seconds
+   Reference Range:
+   27-32Seconds
+
+LAB TEST: RANDOM BLOOD SUGAR(RBS)
+------------------------------------------------------------
+
+1. Parameter Name: RANDOM BLOOD SUGAR
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   60 - 160 mg/dl
+
+LAB TEST: RBS,BT,CT
+------------------------------------------------------------
+
+1. Parameter Name: Random blood sugar
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   70-140
+
+2. Parameter Name: Bleeding Time
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   1 - 3 Mnts
+
+3. Parameter Name: Clottiing Time
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   3 - 7 Mnts
+
+LAB TEST: RENAL PROFILE 2 (RP2)
+------------------------------------------------------------
+
+1. Parameter Name: RANDOM BLOOD SUGAR
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   <140
+
+2. Parameter Name: SERUM CREATININE
+   Order No: 2
+   Units: mg/dl
+   Reference Range:
+   F 0.6-1.3
+   M 0.9-1.5
+
+3. Parameter Name: BLOOD UREA
+   Order No: 3
+   Units: mg/dl
+   Reference Range:
+   15-45
+
+4. Parameter Name: SERUM URIC ACID
+   Order No: 4
+   Units: mg/dl
+   Reference Range:
+   F 2.6-6.0
+   M 3.4-7.0
+
+5. Parameter Name: SERUM ELECTROLYTES
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+6. Parameter Name: SERUM SODIUM
+   Order No: 6
+   Units: mMol/L
+   Reference Range:
+   135-150
+
+7. Parameter Name: SERUM POTASSIUM
+   Order No: 7
+   Units: mMol/L
+   Reference Range:
+   3.5-5.5
+
+8. Parameter Name: SERUM CHLORIDE
+   Order No: 8
+   Units: mMol/L
+   Reference Range:
+   98-107
+
+LAB TEST: RENAL PROFILE-II
+------------------------------------------------------------
+
+1. Parameter Name: RANDOM BLOOD SUGAR
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   80-140
+
+2. Parameter Name: SERUM CREATININE
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   Male :0.9-1.5
+   Female :0.8-1.3
+   Child :0.3-0.7
+
+3. Parameter Name: BLOOD UREA
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   15-45
+
+4. Parameter Name: SERUM URICACID
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   Male :3.4-7
+   Female :2.4-5.7
+   Child :0-0
+
+5. Parameter Name: SERUM SODIUM
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   135-150
+
+6. Parameter Name: SERUM POTASSIUM
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   3.5-5
+
+7. Parameter Name: SERUM CHLORIDE
+   Order No: 7
+   Units: [Not specified]
+   Reference Range:
+   94-110
+
+LAB TEST: RUBELLA VIRUS IgG
+------------------------------------------------------------
+
+1. Parameter Name: RUBELLA IgG
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   < 0.9: Negative
+   0.9-1.1: Equivocal
+   >1.1 Positive
+
+LAB TEST: SALMONELLA TYPE IgG, IgM
+------------------------------------------------------------
+
+1. Parameter Name: Salmonella Type IgG
+   Order No: 1
+   Units: s/co
+   Reference Range:
+   <1.0 Negative
+   >1.0 Positive
+
+2. Parameter Name: Salmonella Type IgM
+   Order No: 2
+   Units: s/co
+   Reference Range:
+   <1.0 Negative
+   >1.0 Positive
+
+LAB TEST: SERUM CALCIUM
+------------------------------------------------------------
+
+1. Parameter Name: SERUM CALCIUM
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   8.6-11mg/dL
+
+LAB TEST: SERUM CREATININE
+------------------------------------------------------------
+
+1. Parameter Name: SERUM CREATININE
+   Order No: 1
+   Units: mg/dL
+   Reference Range:
+   Male :0.9-1.5mg/dL
+   Female :0.8-1.3mg/dL
+   Child :0-0mg/dL
+
+LAB TEST: SERUM ELECTROLYTES
+------------------------------------------------------------
+
+1. Parameter Name: SERUM SODIUM
+   Order No: 1
+   Units: mmol/L
+   Reference Range:
+   135-150 mmol/L
+
+2. Parameter Name: SERUM POTASSIUM
+   Order No: 2
+   Units: mmol/L
+   Reference Range:
+   3.5-5.0 mmol/L
+
+3. Parameter Name: SERUM CHLORIDE
+   Order No: 3
+   Units: mmol/L
+   Reference Range:
+   94-110 mmol/L
+
+4. Parameter Name: Ionised Calcium (iCa)
+   Order No: 4
+   Units: mmol/L
+   Reference Range:
+   1.10 - 1.35 mmol/L
+
+LAB TEST: SERUM URIC ACID
+------------------------------------------------------------
+
+1. Parameter Name: SERUM URIC ACID
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   Males : 3.5 - 7.2 mg/dl
+   Females : 2.6 - 6.0 mg/dl
+
+LAB TEST: SODIUM POTASSIUM
+------------------------------------------------------------
+
+1. Parameter Name: SERUM SODIUM
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   135 -155
+
+2. Parameter Name: SERUM POTASSIUM
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   3.5-5.5
+
+LAB TEST: THYROID PROFILE
+------------------------------------------------------------
+
+1. Parameter Name: Total Triiodo Thyronine [T3]
+   Order No: 1
+   Units: ng/dl
+   Reference Range:
+   58.0-162
+
+2. Parameter Name: Total Thyroxine [T4]
+   Order No: 2
+   Units: µg/dl
+   Reference Range:
+   5-12.5µg/dl
+
+3. Parameter Name: Thyroid Stimulating Hormone (TSH)
+   Order No: 3
+   Units: uIU/mL
+   Reference Range:
+   0.3-5.1uIU/mL
+
+LAB TEST: THYROID PROFILE-II
+------------------------------------------------------------
+
+1. Parameter Name: TriIodothyronine Free (FT3)
+   Order No: 1
+   Units: ng/dL
+   Reference Range:
+   1.8-4.2
+
+2. Parameter Name: Thyroxine - Free (FT4)
+   Order No: 2
+   Units: ng/dL
+   Reference Range:
+   0.87-1.85
+
+3. Parameter Name: Thyroid Stimmulating Hormone(TSH)
+   Order No: 3
+   Units: µIU/mL
+   Reference Range:
+   0.3-5.1
+
+LAB TEST: THYROID STIMULATING HARMONE (TSH)
+------------------------------------------------------------
+
+1. Parameter Name: Thyroid Stimulating Harmone (TSH )
+   Order No: 1
+   Units: uIU/mL
+   Reference Range:
+   0.3 – 4.2
+   Pregnancy Reference Intervals
+   0.03-3.40 : First trimester
+   0.19-4.06 : Second trimester
+
+LAB TEST: TRIGLYCERIDES
+------------------------------------------------------------
+
+1. Parameter Name: Triglycerides
+   Order No: 1
+   Units: mg/dl
+   Reference Range:
+   Normal : <161 mg/dl
+   High : 161-199 mg/dl
+   Hyper Triglycerdemic : 200-499 mg/dl
+   Very High : >499 mg/dl
+
+LAB TEST: TROPONIN- I
+------------------------------------------------------------
+
+1. Parameter Name: Troponin-I
+   Order No: 1
+   Units: ng/ml
+   Reference Range:
+   NEGATIVE
+
+LAB TEST: TSH
+------------------------------------------------------------
+
+1. Parameter Name: THYROID STIMULATING HORMONE
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   0.3-5.1uIU/mL
+   Pregnancy gestation
+   First Trimester 0.09-4.87
+   Second Trimester 0.47-4.79
+
+LAB TEST: UPT (URINE PRAGNANCY TEST)
+------------------------------------------------------------
+
+1. Parameter Name: PREGANCY FOR URINE TEST
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: URINE FOR CULTURE & SENSITIVITY
+------------------------------------------------------------
+
+1. Parameter Name: URINE FOR CULTURE AND SENSITIVITY
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: TEICOPLANIN
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: AZTREONAM
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: ERYTHROMYCIN
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: AZITHROMYCIN
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+6. Parameter Name: NITROFURANTOIN
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+7. Parameter Name: CO-TRIMOXAZOLE
+   Order No: 7
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+8. Parameter Name: PIPERACILLIN +    TAZOBACTAM
+   Order No: 8
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+9. Parameter Name: GENTAMYCIN
+   Order No: 11
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+10. Parameter Name: NETILMICIN
+   Order No: 12
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+11. Parameter Name: OFLOXACIN
+   Order No: 14
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+12. Parameter Name: LEVOFLOXACIN
+   Order No: 15
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+13. Parameter Name: GATIFLOXACIN
+   Order No: 17
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+14. Parameter Name: NORFLOXACIN
+   Order No: 18
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+15. Parameter Name: NALIDIXIC ACID
+   Order No: 19
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+16. Parameter Name: CEFAACLOR
+   Order No: 20
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+17. Parameter Name: CEFOTAXIME
+   Order No: 21
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+18. Parameter Name: CEFAPERAZONE+ SULBACTAM
+   Order No: 22
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+19. Parameter Name: IMIPENEM
+   Order No: 23
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+20. Parameter Name: MEROPENEM
+   Order No: 24
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+21. Parameter Name: RESISTANT (R) SENSITIVITY (S) DRUG NOT USED (-)
+   Order No: 25
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: URINE MICROALBUMiN
+------------------------------------------------------------
+
+1. Parameter Name: MICROALBUMIN
+   Order No: 1
+   Units: mg/L
+   Reference Range:
+   < 30.0
+
+LAB TEST: Venereal Disease Research Laboratory(VDRL)
+------------------------------------------------------------
+
+1. Parameter Name: VDRL
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Venereal Disease Research Laboratory
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: VITAMIN PROFILE
+------------------------------------------------------------
+
+1. Parameter Name: 25 HYDROXY VITAMIN D
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   < 20 Deficient
+   20-30 Insufficient
+   >30 Sufficient
+
+2. Parameter Name: VITAMIN B12
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   180-916
+
+============================================================
+LAB DEPARTMENT: PATHOLOGY
+============================================================
+
+LAB TEST: COMPLETE STOOL EXAMINATION
+------------------------------------------------------------
+
+1. Parameter Name: MACROSCOPIC
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: COLOUR
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: APPEARANCE
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: MUCUS
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: BLOOD
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+6. Parameter Name: CHEMICAL EXAMINATION
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+7. Parameter Name: REACTION
+   Order No: 7
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+8. Parameter Name: STOOL OF REDUCING SUBSTANCE
+   Order No: 8
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+9. Parameter Name: OCCULT BLOOD
+   Order No: 9
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+10. Parameter Name: MICROSCOPIC
+   Order No: 10
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+11. Parameter Name: OVA
+   Order No: 11
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+12. Parameter Name: CYSTS
+   Order No: 12
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+13. Parameter Name: PUS CELLS
+   Order No: 13
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+14. Parameter Name: RED BLOOD CELLS
+   Order No: 14
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+15. Parameter Name: EPITHEIAL CELLS
+   Order No: 15
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+16. Parameter Name: OTHERS
+   Order No: 16
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: COMPLETE URINE EXAMINATION
+------------------------------------------------------------
+
+1. Parameter Name: PHYSICAL EXAMINATION
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Colour
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   Colorless
+
+3. Parameter Name: Appearance
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: Reaction
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: Specific Gravity
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   1.015 - 1.030
+
+6. Parameter Name: PH
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   4.6-8.0
+
+7. Parameter Name: CHEMICAL EXAMINATION
+   Order No: 7
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+8. Parameter Name: Urine Protein
+   Order No: 8
+   Units: [Not specified]
+   Reference Range:
+   NIL
+
+9. Parameter Name: Urine Glucose
+   Order No: 9
+   Units: [Not specified]
+   Reference Range:
+   Nil
+
+10. Parameter Name: Urine Ketones
+   Order No: 10
+   Units: [Not specified]
+   Reference Range:
+   Negative
+
+11. Parameter Name: Bilirubin
+   Order No: 11
+   Units: [Not specified]
+   Reference Range:
+   Negative
+
+12. Parameter Name: Blood
+   Order No: 12
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+13. Parameter Name: Nitrite
+   Order No: 13
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+14. Parameter Name: MICROSCOPIC EXAMINATION
+   Order No: 14
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+15. Parameter Name: Pus cells
+   Order No: 15
+   Units: hpf
+   Reference Range:
+   1 - 2 /hpf
+
+16. Parameter Name: Epithelial cells
+   Order No: 16
+   Units: hpf
+   Reference Range:
+   1 - 2 /hpf
+
+17. Parameter Name: Red blood cells
+   Order No: 17
+   Units: hpf
+   Reference Range:
+   [Not specified]
+
+18. Parameter Name: Crystals
+   Order No: 18
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+19. Parameter Name: Casts
+   Order No: 19
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+20. Parameter Name: Others
+   Order No: 20
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: HIV
+------------------------------------------------------------
+
+1. Parameter Name: HIV I & II
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: SEMEN ANALYSIS
+------------------------------------------------------------
+
+1. Parameter Name: Volume
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   ml
+
+2. Parameter Name: PHYSICAL EXAMINATION
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+3. Parameter Name: Colour
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+4. Parameter Name: PLACE OF COLLECTION
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+5. Parameter Name: Reaction
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+6. Parameter Name: TIME OF COLLECTION
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+7. Parameter Name: PH
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+8. Parameter Name: LIQUIFACTION
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+9. Parameter Name: Viscocity
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+10. Parameter Name: PROCESSING TIME
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+11. Parameter Name: Liquefaction Time
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   minutes
+
+12. Parameter Name: VOLUME
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+13. Parameter Name: COLOUR
+   Order No: 6
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+14. Parameter Name: Microscopic Examination:
+   Order No: 7
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+15. Parameter Name: REACTION
+   Order No: 7
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+16. Parameter Name: Total Sperm Count
+   Order No: 8
+   Units: [Not specified]
+   Reference Range:
+   Million/ml
+
+17. Parameter Name: VISCOCITY
+   Order No: 8
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+18. Parameter Name: Sluggish Motile
+   Order No: 9
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+19. Parameter Name: Active Motile
+   Order No: 9
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+20. Parameter Name: MICROSCOPIC EXAMINATION
+   Order No: 9
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+21. Parameter Name: Non Motile
+   Order No: 10
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+22. Parameter Name: TOTAL SPERM COUNT
+   Order No: 10
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+23. Parameter Name: Normal Forms
+   Order No: 11
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+24. Parameter Name: MOTILITY RAPID
+   Order No: 11
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+25. Parameter Name: Abnormal Forms
+   Order No: 12
+   Units: cells/hpf
+   Reference Range:
+   [Not specified]
+
+26. Parameter Name: PROGRESSIVE
+   Order No: 12
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+27. Parameter Name: PUS Cells
+   Order No: 13
+   Units: cells/hpf
+   Reference Range:
+   0-3 cells/hpf
+
+28. Parameter Name: MORPHALOGY
+   Order No: 13
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+29. Parameter Name: RBC
+   Order No: 14
+   Units: cells/hpf
+   Reference Range:
+   0-3 cells/hpf
+
+30. Parameter Name: Epithelial cells
+   Order No: 15
+   Units: cells/hpf
+   Reference Range:
+   [Not specified]
+
+31. Parameter Name: PUS CELLS
+   Order No: 15
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+32. Parameter Name: Impression
+   Order No: 16
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+33. Parameter Name: EPTHELIAL CELLS
+   Order No: 16
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+34. Parameter Name: Note
+   Order No: 17
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+35. Parameter Name: Normal Morphology
+   Order No: 17
+   Units: %
+   Reference Range:
+   >4%
+
+36. Parameter Name: RED BLOOD CELLS
+   Order No: 17
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+37. Parameter Name: Types of abnormal forms
+   Order No: 18
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+38. Parameter Name: SPERMATOGONIA
+   Order No: 18
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+39. Parameter Name: IMPRESSION
+   Order No: 19
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+40. Parameter Name: Note:
+   Order No: 22
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: STOOL FOR OCCULT BLOOD
+------------------------------------------------------------
+
+1. Parameter Name: Stool for Occult Blood
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: URINE FOR KETONE BODIES
+------------------------------------------------------------
+
+1. Parameter Name: URINE KETONES
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+============================================================
+LAB DEPARTMENT: MICROBIOLOGY
+============================================================
+
+LAB TEST: HBSAG
+------------------------------------------------------------
+
+1. Parameter Name: HbsAg
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: Hemoglobinopathy (Hb Electrophoresis)
+------------------------------------------------------------
+
+1. Parameter Name: Hemoglobinopathies
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+2. Parameter Name: Total Hemoglobin
+   Order No: 2
+   Units: g/dl
+   Reference Range:
+   12.0 - 15.0
+
+3. Parameter Name: Total RBC Count
+   Order No: 3
+   Units: mln/cmm
+   Reference Range:
+   3.8 - 4.8
+
+4. Parameter Name: MCV
+   Order No: 4
+   Units: fl
+   Reference Range:
+   83 - 101
+
+5. Parameter Name: MCH
+   Order No: 5
+   Units: pg
+   Reference Range:
+   27 - 32
+
+6. Parameter Name: RDW - CV
+   Order No: 6
+   Units: %
+   Reference Range:
+   11.5 - 14.5
+
+7. Parameter Name: Hb A0 Level
+   Order No: 7
+   Units: %
+   Reference Range:
+   95-98
+
+8. Parameter Name: Hb A2 Level
+   Order No: 8
+   Units: %
+   Reference Range:
+   2.0 - 3.5
+
+9. Parameter Name: Hb F (Foetal Hb) Level
+   Order No: 9
+   Units: %
+   Reference Range:
+   < 1
+
+10. Parameter Name: Sickle cell Window
+   Order No: 10
+   Units: %
+   Reference Range:
+   00
+
+11. Parameter Name: Hb D -Window
+   Order No: 11
+   Units: %
+   Reference Range:
+   00
+
+12. Parameter Name: Hb C -Window
+   Order No: 12
+   Units: %
+   Reference Range:
+   00
+
+13. Parameter Name: Hb E -Window
+   Order No: 13
+   Units: %
+   Reference Range:
+   00
+
+14. Parameter Name: Unknown Variant
+   Order No: 14
+   Units: %
+   Reference Range:
+   00
+
+15. Parameter Name: Impression
+   Order No: 15
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+
+LAB TEST: SALMONELLA TYPHI
+------------------------------------------------------------
+
+1. Parameter Name: SALMONELLA TYPHI-IGG
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   NEGATIVE
+
+2. Parameter Name: SALMONELLA TYPHI-IGM
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   NEGATIVE
+
+LAB TEST: WIDAL
+------------------------------------------------------------
+
+1. Parameter Name: S.Typhi O
+   Order No: 1
+   Units: [Not specified]
+   Reference Range:
+   <1:80
+
+2. Parameter Name: S.Typhi H
+   Order No: 2
+   Units: [Not specified]
+   Reference Range:
+   <1:80
+
+3. Parameter Name: S.Paratyphi AH
+   Order No: 3
+   Units: [Not specified]
+   Reference Range:
+   <1:80
+
+4. Parameter Name: S.Paratyphi BH
+   Order No: 4
+   Units: [Not specified]
+   Reference Range:
+   <1:80
+
+5. Parameter Name: Note :
+   Order No: 5
+   Units: [Not specified]
+   Reference Range:
+   [Not specified]
+

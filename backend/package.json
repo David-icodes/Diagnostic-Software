@@ -9,7 +9,19 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "seed": "tsx src/scripts/seedAdmin.ts"
+    "typecheck:worker": "tsc -p tsconfig.worker.json",
+    "worker:dev": "wrangler dev",
+    "seed": "tsx src/scripts/seedAdmin.ts",
+    "seed:patients": "tsx src/scripts/seedDemoPatients.ts",
+    "seed:lab": "tsx src/scripts/seedLabCatalog.ts",
+    "seed:lab-parameters": "tsx src/scripts/seedLabTestParameters.ts",
+    "lab-parameters:flag-review": "tsx src/scripts/flagLabParameterReview.ts",
+    "seed:bills": "tsx src/scripts/seedDemoBills.ts",
+    "seed:db": "tsx src/scripts/seedDatabase.ts",
+    "import:reference-config": "tsx src/scripts/importOldLisReferenceConfig.ts"
+  },
+  "overrides": {
+    "iconv-lite": "0.6.3"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -23,12 +35,14 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261004.1",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.7",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "wrangler": "^4.147.0"
   }
 }

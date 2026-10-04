@@ -10,9 +10,21 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default("7d"),
   COOKIE_NAME: z.string().default("diagnostic_token"),
   FRONTEND_URL: z.string().url().default("http://localhost:3000"),
+  // Optional comma-separated allow-list. When set it takes precedence over
+  // FRONTEND_URL, so a production origin can be configured without a wildcard.
+  CORS_ORIGINS: z.string().optional().default(""),
   ADMIN_USERNAME: z.string().default("admin"),
   ADMIN_PASSWORD: z.string().optional().default(""),
   ADMIN_NAME: z.string().default("Administrator"),
+
+  // WhatsApp Cloud API. Kept optional so the server still starts before the
+  // webhook is configured; the webhook itself refuses to verify without a token.
+  WHATSAPP_PHONE_NUMBER_ID: z.string().optional().default(""),
+  WHATSAPP_WABA_ID: z.string().optional().default(""),
+  WHATSAPP_ACCESS_TOKEN: z.string().optional().default(""),
+  WHATSAPP_VERIFY_TOKEN: z.string().optional().default(""),
+  WHATSAPP_APP_SECRET: z.string().optional().default(""),
+  WHATSAPP_GRAPH_VERSION: z.string().default("v25.0"),
 });
 
 export type Env = z.infer<typeof envSchema>;

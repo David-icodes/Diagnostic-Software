@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { LoadingState } from "@/components/common/loading-state";
@@ -13,8 +13,9 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated, isLoading } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -22,6 +23,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       router.replace("/login");
     }
   }, [isLoading, isAuthenticated, router]);
+
+  // Any route change closes the mobile drawer, so navigating Home (or anywhere)
+  // never leaves the drawer overlaying the destination page.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const handleToggleSidebar = () => {
     if (window.matchMedia("(max-width: 767px)").matches) {
@@ -43,14 +50,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <Header onToggleSidebar={handleToggleSidebar} />
+      <Header onToggleSidebar={handleToggleSidebar} sidebarExpanded={!collapsed} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           collapsed={collapsed}
           mobileOpen={mobileOpen}
           onCloseMobile={() => setMobileOpen(false)}
+          onNavigate={() => setCollapsed(true)}
         />
-        <main className="flex-1 overflow-y-auto bg-background p-4 md:p-5 lg:p-6">
+        <main className="min-w-0 flex-1 overflow-y-auto bg-background p-3 md:p-4">
           {children}
         </main>
       </div>

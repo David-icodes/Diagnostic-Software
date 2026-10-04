@@ -16,7 +16,14 @@ export function proxy(request: NextRequest) {
     );
   }
 
-  if (pathname.startsWith("/dashboard") && !hasToken) {
+  if (
+    (pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/billing") ||
+      pathname.startsWith("/laboratory") ||
+      pathname.startsWith("/reports") ||
+      pathname.startsWith("/database")) &&
+    !hasToken
+  ) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);

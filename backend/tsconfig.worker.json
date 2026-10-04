@@ -1,0 +1,14 @@
+{
+  // Type-checks only the Cloudflare Workers entry point, with the Workers
+  // runtime types instead of the Node server types used by tsconfig.json.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["@cloudflare/workers-types"],
+    "noEmit": true,
+    "sourceMap": false
+  },
+  "include": ["src/worker.ts", "src/**/*.d.ts"],
+  "exclude": []
+}

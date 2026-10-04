@@ -40,7 +40,7 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-3">
       {errorMessage && (
         <div
           role="alert"
@@ -60,7 +60,7 @@ export function LoginForm() {
             type="text"
             autoComplete="username"
             placeholder="Enter your username"
-            className="h-10 pl-9"
+            className="h-8 pl-9"
             aria-invalid={Boolean(errors.username)}
             {...register("username")}
           />
@@ -79,7 +79,7 @@ export function LoginForm() {
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             placeholder="Enter your password"
-            className="h-10 pl-9 pr-10"
+            className="h-8 pl-9 pr-10"
             aria-invalid={Boolean(errors.password)}
             {...register("password")}
           />

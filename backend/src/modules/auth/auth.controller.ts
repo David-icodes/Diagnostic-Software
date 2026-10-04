@@ -2,7 +2,8 @@ import type { Request, Response } from "express";
 import { env } from "../../config/env";
 import { asyncHandler } from "../../utils/async-handler";
 import { sendMessage, sendSuccess } from "../../utils/http";
-import { authenticateUser } from "./auth.service";
+import { requireUserId } from "../../utils/require-user-id";
+import { authenticateUser, changePassword as changePasswordService } from "./auth.service";
 
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -38,4 +39,15 @@ export const logout = asyncHandler(async (_req: Request, res: Response) => {
 
 export const me = asyncHandler(async (req: Request, res: Response) => {
   return sendSuccess(res, { user: req.user });
+});
+
+/** Self-service password change for the signed-in user. */
+export const changePassword = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const { currentPassword, newPassword } = req.body as {
+    currentPassword: string;
+    newPassword: string;
+  };
+  await changePasswordService(userId, currentPassword, newPassword);
+  return sendMessage(res, "Password changed successfully");
 });

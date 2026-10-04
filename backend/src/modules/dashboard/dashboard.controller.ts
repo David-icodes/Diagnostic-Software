@@ -1,38 +1,53 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
+import {
+  getDueBills as getDueBillsService,
+  getRecentPatients as getRecentPatientsService,
+  getSummary as getSummaryService,
+  getTodayBills as getTodayBillsService,
+} from "./dashboard.service";
 
-function formatToday(): string {
-  const now = new Date();
-  const day = String(now.getDate()).padStart(2, "0");
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  return `${day}-${month}-${now.getFullYear()}`;
+function queryString(req: Request, key: string): string | undefined {
+  const value = req.query[key];
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
 }
 
-export const getSummary = asyncHandler(async (_req: Request, res: Response) => {
-  return sendSuccess(res, {
-    labBills: 13,
-    completedTests: 5,
-    pendingTests: 8,
-    date: formatToday(),
-  });
+function queryLimit(req: Request, fallback: number): number {
+  const parsed = Number(req.query.limit);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.min(100, Math.floor(parsed));
+}
+
+export const getSummary = asyncHandler(async (req: Request, res: Response) => {
+  return sendSuccess(
+    res,
+    await getSummaryService({ fromDate: queryString(req, "from"), toDate: queryString(req, "to") }),
+  );
 });
 
-// Demo data only — to be replaced by real queries in a later phase.
-const TODAY_BILLS = [
-  { billNo: "DIAG2026-3848", patientId: "GP20263252", patientName: "Demo Patient", age: "47 years", gender: "Female" },
-  { billNo: "DIAG2026-3847", patientId: "GP20263251", patientName: "Demo Patient", age: "6 years", gender: "Female" },
-  { billNo: "DIAG2026-3846", patientId: "GP20262216", patientName: "Demo Patient", age: "28 years", gender: "Male" },
-  { billNo: "DIAG2026-3845", patientId: "GP20263250", patientName: "Demo Patient", age: "28 years", gender: "Male" },
-  { billNo: "DIAG2026-3844", patientId: "GP20263180", patientName: "Demo Patient", age: "54 years", gender: "Male" },
-  { billNo: "DIAG2026-3843", patientId: "GP20263249", patientName: "Demo Patient", age: "65 years", gender: "Female" },
-  { billNo: "DIAG2026-3842", patientId: "GP20263248", patientName: "Demo Patient", age: "28 years", gender: "Female" },
-];
-
-export const getTodayBills = asyncHandler(async (_req: Request, res: Response) => {
-  return sendSuccess(res, TODAY_BILLS);
+export const getTodayBills = asyncHandler(async (req: Request, res: Response) => {
+  return sendSuccess(
+    res,
+    await getTodayBillsService({
+      fromDate: queryString(req, "from"),
+      toDate: queryString(req, "to"),
+      limit: queryLimit(req, 10),
+    }),
+  );
 });
 
-export const getDueBills = asyncHandler(async (_req: Request, res: Response) => {
-  return sendSuccess(res, []);
+export const getDueBills = asyncHandler(async (req: Request, res: Response) => {
+  return sendSuccess(res, await getDueBillsService({ limit: queryLimit(req, 10) }));
+});
+
+export const getRecentPatients = asyncHandler(async (req: Request, res: Response) => {
+  return sendSuccess(
+    res,
+    await getRecentPatientsService({
+      limit: queryLimit(req, 10),
+      fromDate: queryString(req, "from"),
+      toDate: queryString(req, "to"),
+    }),
+  );
 });

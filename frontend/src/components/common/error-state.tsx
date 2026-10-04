@@ -14,7 +14,7 @@ export function ErrorState({
   className,
 }: ErrorStateProps) {
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-3 py-10", className)}>
+    <div className={cn("flex flex-col items-center justify-center gap-2 py-6", className)}>
       <AlertCircle className="size-8 text-destructive" aria-hidden />
       <p className="max-w-sm text-center text-sm text-destructive">{message}</p>
       {onRetry && (

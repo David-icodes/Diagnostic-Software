@@ -6,14 +6,16 @@ export interface DashboardSummary {
 }
 
 export interface TodayBill {
+  id: string;
   billNo: string;
   patientId: string;
   patientName: string;
   age: string;
-  gender: "Male" | "Female";
+  gender: string;
 }
 
 export interface DueBill {
+  id: string;
   billNo: string;
   patientId: string;
   patientName: string;

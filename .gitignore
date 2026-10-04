@@ -7,6 +7,12 @@ node_modules/
 .env.*.local
 !.env.example
 
+# Cloudflare Workers
+.dev.vars
+.dev.vars.*
+.wrangler/
+worker-configuration.d.ts
+
 # Build outputs
 dist/
 build/

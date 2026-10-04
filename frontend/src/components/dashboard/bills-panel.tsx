@@ -1,117 +1,89 @@
 "use client";
 
 import { useState } from "react";
-import type { LucideIcon } from "lucide-react";
 import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { EmptyState } from "@/components/common/empty-state";
 import { ErrorState } from "@/components/common/error-state";
-import { BillsTable, type ColumnDef } from "@/components/dashboard/bills-table";
+import { LoadingState } from "@/components/common/loading-state";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-export type { ColumnDef } from "@/components/dashboard/bills-table";
-
-interface BillsPanelProps<T> {
+interface BillsPanelProps {
   title: string;
-  icon?: LucideIcon;
-  columns: ColumnDef<T>[];
-  rows: T[];
-  rowKey: (row: T, index: number) => string | number;
-  isLoading?: boolean;
-  isRefreshing?: boolean;
-  error?: Error | null;
-  onRefresh?: () => void;
-  onRetry?: () => void;
-  emptyMessage?: string;
-  maxHeightClass?: string;
+  isLoading: boolean;
+  isFetching: boolean;
+  isError: boolean;
+  errorMessage?: string | null;
+  onRefresh: () => void;
+  children: React.ReactNode;
 }
 
-export function BillsPanel<T>({
+/**
+ * Shared shell for the dashboard report panels: titled header with a refresh
+ * and a collapse toggle, then a fixed-height body that owns its own scrolling.
+ */
+export function BillsPanel({
   title,
-  icon: Icon,
-  columns,
-  rows,
-  rowKey,
-  isLoading = false,
-  isRefreshing = false,
-  error = null,
+  isLoading,
+  isFetching,
+  isError,
+  errorMessage,
   onRefresh,
-  onRetry,
-  emptyMessage = "No Records To Display",
-  maxHeightClass,
-}: BillsPanelProps<T>) {
-  const [collapsed, setCollapsed] = useState(false);
+  children,
+}: BillsPanelProps) {
+  const [expanded, setExpanded] = useState(true);
 
   return (
-    <Card className="flex flex-col border-border shadow-sm">
-      <CardHeader className="flex-row items-center gap-2 border-b border-border py-3">
-        {Icon && <Icon className="size-4 shrink-0 text-primary" />}
-        <CardTitle className="text-sm font-semibold text-slate-800">
+    <Card className="flex h-[clamp(320px,44vh,520px)] flex-col p-0 shadow-sm">
+      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <h2 className="truncate text-[15px] font-semibold text-slate-800">
           {title}
-        </CardTitle>
-        <div className="ml-auto flex items-center gap-1">
-          {onRefresh && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={onRefresh}
-              disabled={isRefreshing}
-              aria-label={`Refresh ${title}`}
-            >
-              <RefreshCw className={cn("size-4", isRefreshing && "animate-spin")} />
-            </Button>
-          )}
+        </h2>
+        <div className="flex shrink-0 items-center gap-1">
           <Button
+            type="button"
             variant="ghost"
-            size="icon-sm"
-            onClick={() => setCollapsed((value) => !value)}
-            aria-label={collapsed ? `Expand ${title}` : `Collapse ${title}`}
+            size="icon"
+            className="size-7 text-slate-500 hover:text-slate-800"
+            onClick={onRefresh}
+            disabled={isFetching}
+            aria-label={`Refresh ${title}`}
+            title="Refresh"
           >
-            {collapsed ? (
-              <ChevronDown className="size-4" />
-            ) : (
+            <RefreshCw className={cn("size-4", isFetching && "animate-spin")} />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-7 text-slate-500 hover:text-slate-800"
+            onClick={() => setExpanded((value) => !value)}
+            aria-expanded={expanded}
+            aria-label={expanded ? `Collapse ${title}` : `Expand ${title}`}
+            title={expanded ? "Collapse" : "Expand"}
+          >
+            {expanded ? (
               <ChevronUp className="size-4" />
+            ) : (
+              <ChevronDown className="size-4" />
             )}
           </Button>
         </div>
-      </CardHeader>
-
-      {!collapsed && (
-        <CardContent className="p-0">
+      </div>
+      {expanded ? (
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {isLoading ? (
-            <div className="flex flex-col gap-2 p-4" aria-busy>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="h-8 animate-pulse rounded bg-muted"
-                />
-              ))}
-            </div>
-          ) : error ? (
+            <LoadingState label={`Loading ${title.toLowerCase()}...`} />
+          ) : isError ? (
             <ErrorState
-              message={
-                error.message || "Failed to load data. Please try again."
-              }
-              onRetry={onRetry}
+              message={errorMessage ?? "Could not load this report."}
+              onRetry={onRefresh}
             />
-          ) : rows.length === 0 ? (
-            <EmptyState message={emptyMessage} />
           ) : (
-            <BillsTable
-              columns={columns}
-              rows={rows}
-              rowKey={rowKey}
-              maxHeightClass={maxHeightClass}
-            />
+            children
           )}
-        </CardContent>
-      )}
+        </div>
+      ) : null}
     </Card>
   );
 }

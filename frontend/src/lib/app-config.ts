@@ -8,6 +8,7 @@ export const APP_CONFIG = {
   shortName: "Anjali",
   tagline: "Diagnostic Centre & Laboratory Information System",
   supportLabel: "24x7 Support",
-  supportPhone: "+91 98765 43210",
+  /** Official support address shown in the header. */
+  supportEmail: "dprtechsolutionss@gmail.com",
   version: "0.1.0",
 } as const;

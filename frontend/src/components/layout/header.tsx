@@ -1,21 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ChevronDown,
-  FlaskConical,
   Headset,
-  Home,
+  KeyRound,
   LayoutGrid,
   Loader2,
   LogOut,
   Maximize2,
   Menu,
   Minimize2,
-  User,
+  UserCog,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { BRAND_ASSETS, BrandMark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,14 +27,16 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { APP_CONFIG } from "@/lib/app-config";
 import { useAuth } from "@/hooks/use-auth";
-import { cn, getInitials } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
+  sidebarExpanded: boolean;
 }
 
-export function Header({ onToggleSidebar }: HeaderProps) {
+export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
   const { user, logout } = useAuth();
+  const router = useRouter();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -65,34 +66,23 @@ export function Header({ onToggleSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border bg-white px-3 md:px-4">
+    <header className="flex h-[58px] shrink-0 items-center justify-between gap-2 border-b border-border bg-white px-4">
       <div className="flex min-w-0 items-center gap-1">
         <Button
           variant="ghost"
           size="icon"
           onClick={onToggleSidebar}
-          aria-label="Toggle sidebar"
+          aria-label={
+            sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"
+          }
+          aria-expanded={sidebarExpanded}
         >
           <Menu className="size-5" />
         </Button>
-        <Button variant="ghost" size="icon" asChild aria-label="Home">
-          <Link href="/dashboard">
-            <Home className="size-5" />
-          </Link>
-        </Button>
-        <Button variant="ghost" size="icon" asChild aria-label="My profile">
-          <Link href="/dashboard">
-            <User className="size-5" />
-          </Link>
-        </Button>
 
-        <div className="ml-1 flex min-w-0 items-center gap-2 border-l border-border pl-3">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded bg-primary text-primary-foreground">
-            <FlaskConical className="size-4" />
-          </div>
-          <span className="hidden truncate text-sm font-semibold text-slate-800 sm:block">
-            {APP_CONFIG.name}
-          </span>
+        <div className="ml-1 flex min-w-0 items-center border-l border-border pl-3">
+          {/* Wide header lockup; its name text is not duplicated beside it. */}
+          <BrandMark src={BRAND_ASSETS.header} className="h-10 w-auto max-w-[190px]" />
         </div>
       </div>
 
@@ -103,8 +93,8 @@ export function Header({ onToggleSidebar }: HeaderProps) {
             <p className="text-[11px] uppercase tracking-wide text-slate-400">
               {APP_CONFIG.supportLabel}
             </p>
-            <p className="text-xs font-medium text-slate-700">
-              {APP_CONFIG.supportPhone}
+            <p className="max-w-[180px] truncate text-xs font-medium text-slate-700">
+              {APP_CONFIG.supportEmail}
             </p>
           </div>
         </div>
@@ -137,11 +127,9 @@ export function Header({ onToggleSidebar }: HeaderProps) {
                 "hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
               )}
             >
-              <Avatar className="size-8 rounded-md bg-sidebar text-[11px] font-semibold text-sidebar-foreground">
-                <AvatarFallback>
-                  {getInitials(user?.name ?? user?.username)}
-                </AvatarFallback>
-              </Avatar>
+              <span className="flex size-8 items-center justify-center rounded-md bg-sidebar text-sidebar-foreground">
+                <UserCog className="size-4" />
+              </span>
               <span className="hidden text-left leading-tight lg:block">
                 <span className="block text-xs font-medium text-slate-800">
                   {user?.name ?? "User"}
@@ -161,8 +149,12 @@ export function Header({ onToggleSidebar }: HeaderProps) {
               </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem disabled>My Profile</DropdownMenuItem>
-            <DropdownMenuItem disabled>Settings</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => router.push("/change-password")}
+            >
+              <KeyRound className="size-4" />
+              Change Password
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => void handleLogout()}

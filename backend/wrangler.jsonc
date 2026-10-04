@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "diagnostic-lis-backend",
+  "main": "src/worker.ts",
+  // For compatibility dates of 2026-08-04 or later, Workers enables
+  // nodejs_compat + nodejs_compat_v2 (and process.env population from bindings)
+  // by default, so no compatibility_flags are required.
+  // Express on Workers also needs the node:http server modules, which are on by
+  // default from 2025-09-01 when Node.js compatibility is enabled.
+  "compatibility_date": "2026-10-01",
+  "observability": {
+    "enabled": true
+  },
+  // mongoose declares a browser UMD build ("browser": "./dist/browser.umd.js")
+  // which esbuild would otherwise select; its default export is not the Mongoose
+  // instance, so `mongoose.connection` is undefined. Point at the CommonJS entry
+  // that the Worker and the local Node server both expect.
+  "alias": {
+    "mongoose": "mongoose/index.js"
+  },
+  // Non-secret configuration only. Secrets (MONGODB_URI, JWT_SECRET,
+  // WHATSAPP_ACCESS_TOKEN, WHATSAPP_VERIFY_TOKEN, WHATSAPP_APP_SECRET) are added
+  // with `wrangler secret put <NAME>` and are never committed.
+  "vars": {
+    "NODE_ENV": "production",
+    "FRONTEND_URL": "http://localhost:3000",
+    "CORS_ORIGINS": "",
+    "WHATSAPP_PHONE_NUMBER_ID": "1333636249839249",
+    "WHATSAPP_WABA_ID": "1118607157344335",
+    "WHATSAPP_GRAPH_VERSION": "v25.0"
+  }
+}
