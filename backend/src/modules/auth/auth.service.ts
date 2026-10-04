@@ -9,15 +9,35 @@ export interface LoginResult {
   token: string;
 }
 
+/**
+ * Authenticates a username/password pair.
+ *
+ * TEMPORARY DIAGNOSTIC LOGGING (safe) — the `[auth]` lines below were added to
+ * pinpoint why production returns 401. They log only the username, an existence
+ * flag, the active flag, the role and a password-match boolean. They never log
+ * the submitted password, the stored hash, the JWT, cookies or any other secret.
+ * Remove the `[auth]` lines once the 401 is diagnosed.
+ */
 export async function authenticateUser(
   username: string,
   password: string,
 ): Promise<LoginResult> {
-  const user = await User.findOne({ username: username.toLowerCase() });
+  const normalizedUsername = username.toLowerCase();
+  console.log(`[auth] login attempt username=${normalizedUsername}`);
+
+  const user = await User.findOne({ username: normalizedUsername });
+  console.log(`[auth] user found=${Boolean(user)}`);
 
   if (!user) {
+    console.warn(
+      `[auth] login rejected: user not found (username=${normalizedUsername})`,
+    );
     throw new ApiError(401, "Invalid username or password");
   }
+
+  console.log(
+    `[auth] user active=${user.status === "active"} role=${user.role}`,
+  );
 
   if (user.status !== "active") {
     throw new ApiError(
@@ -27,9 +47,16 @@ export async function authenticateUser(
   }
 
   const passwordMatches = await verifyPassword(password, user.passwordHash);
+  console.log(`[auth] password match=${passwordMatches}`);
+
   if (!passwordMatches) {
+    console.warn(
+      `[auth] login rejected: password mismatch (username=${normalizedUsername})`,
+    );
     throw new ApiError(401, "Invalid username or password");
   }
+
+  console.log(`[auth] login accepted username=${normalizedUsername}`);
 
   const token = signAuthToken({
     sub: user.id,
