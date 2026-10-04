@@ -8,10 +8,13 @@ import { authenticateUser, changePassword as changePasswordService } from "./aut
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 function baseCookieOptions() {
+  const sameSite = env.COOKIE_SAMESITE;
+
   return {
     httpOnly: true,
-    sameSite: env.COOKIE_SAMESITE,
-    secure: env.NODE_ENV === "production",
+    sameSite,
+    // SameSite=None is only accepted by browsers together with Secure.
+    secure: env.NODE_ENV === "production" || sameSite === "none",
     path: "/",
   };
 }

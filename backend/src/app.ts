@@ -12,22 +12,60 @@ import v1Router from "./routes/v1";
 const app = express();
 
 /**
- * Browser origins allowed to call the API. `CORS_ORIGINS` (comma-separated)
- * takes precedence when set, otherwise the single `FRONTEND_URL` is used.
- * A wildcard is never allowed so credentials can stay enabled.
+ * Browser origins allowed to call the API.
+ *
+ * `CORS_ORIGINS` and `FRONTEND_URL` are both comma-separated lists and are
+ * combined, so setting either one is enough. Every entry is normalised to a
+ * bare origin — scheme + host (+ port) — so a trailing slash or a path
+ * (`https://app.example.com/login`) still matches the browser's `Origin`
+ * header, which never includes a path.
+ *
+ * Credentials are required for the session cookie, so a wildcard is never used.
  */
-function corsOrigins(): string[] | false {
-  const list = (env.CORS_ORIGINS || env.FRONTEND_URL)
+function normaliseOrigin(entry: string): string {
+  try {
+    return new URL(entry).origin;
+  } catch {
+    return entry.replace(/\/+$/, "");
+  }
+}
+
+function resolveCorsOrigins(): string[] {
+  const entries = [env.CORS_ORIGINS, env.FRONTEND_URL]
+    .join(",")
     .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-  return list.length > 0 ? list : false;
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map(normaliseOrigin);
+
+  return [...new Set(entries)];
+}
+
+const allowedOrigins = resolveCorsOrigins();
+
+if (allowedOrigins.length === 0) {
+  console.warn(
+    "[cors] No allowed origins configured — browser requests will be rejected.",
+  );
+} else {
+  console.log(`[cors] Allowed origins: ${allowedOrigins.join(", ")}`);
+
+  const onlyLocalhost = allowedOrigins.every(
+    (origin) =>
+      origin.startsWith("http://localhost") ||
+      origin.startsWith("http://127.0.0.1"),
+  );
+  if (env.NODE_ENV === "production" && onlyLocalhost) {
+    console.warn(
+      "[cors] NODE_ENV=production but only localhost origins are allowed. Set FRONTEND_URL (or CORS_ORIGINS) to the deployed frontend origin.",
+    );
+  }
 }
 
 app.use(helmet());
 app.use(
   cors({
-    origin: corsOrigins(),
+    origin: allowedOrigins.length > 0 ? allowedOrigins : false,
     credentials: true,
   }),
 );
