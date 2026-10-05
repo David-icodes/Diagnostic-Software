@@ -212,10 +212,14 @@ export function LabReprint() {
   const handleWhatsAppSend = async () => {
     const mobile = selectedPatient?.mobile?.trim() ?? "";
     const digits = toPhoneDigits(mobile);
+    // Meta template parameters must not contain line breaks or tabs.
+    const patientName = (selectedPatient?.fullName ?? "")
+      .replace(/[\r\n\t]+/g, " ")
+      .trim();
 
-    // Defensive: never call the API without a valid number from the selected
-    // patient. The recipient is always `patient.mobile` — it is never typed in
-    // here and never a hardcoded test number.
+    // Defensive: never call the API without a valid number/name from the
+    // selected patient. The recipient is always `patient.mobile` — it is never
+    // typed in here and never a hardcoded test number.
     if (!selectedBill || !mobile || digits.length < 10 || digits.length > 15) {
       setWhatsappOpen(false);
       setError(
@@ -225,23 +229,34 @@ export function LabReprint() {
       );
       return;
     }
+    if (!patientName) {
+      setWhatsappOpen(false);
+      setError("This patient does not have a name on record.");
+      return;
+    }
 
     setWhatsappSending(true);
     setError(null);
 
     try {
-      // Reuses the existing server-side sender (POST /api/whatsapp/test-message).
-      // PHASE 2: this is the single place to switch to the report-delivery
-      // template once the secure report URL exists — no new sender needed.
+      // Reuses the existing server-side sender (POST /api/whatsapp/test-message)
+      // and the approved `report_ready` Utility template. The recipient is the
+      // selected patient's stored mobile; body variable {{1}} is their full name.
       const result = await sendWhatsAppTestMessage({
         to: mobile,
-        templateName: "test_message",
+        templateName: "report_ready",
         languageCode: "en",
+        components: [
+          {
+            type: "body",
+            parameters: [{ type: "text", text: patientName }],
+          },
+        ],
       });
 
       setWhatsappOpen(false);
       setNotice(
-        `WhatsApp message accepted by Meta for ${selectedPatient?.fullName ?? "the patient"} (${mobile}). Message id: ${result.metaMessageId}`,
+        `WhatsApp message accepted by Meta for ${patientName} (${mobile}) using the report_ready template. Message id: ${result.metaMessageId}`,
       );
     } catch (sendError) {
       setError(
@@ -626,9 +641,9 @@ export function LabReprint() {
           </dl>
 
           <p className="text-xs text-muted-foreground">
-            The message is sent to the mobile number on this patient&apos;s record.
-            No PDF or report link is attached yet — delivery of the report itself
-            is the next phase.
+            Sends the approved <span className="font-medium">report_ready</span>{" "}
+            template to the mobile number on this patient&apos;s record, greeting
+            them by name. No report link is attached yet.
           </p>
 
           <div className="flex justify-end gap-2 pt-1">
