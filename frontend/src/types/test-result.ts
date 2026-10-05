@@ -108,6 +108,12 @@ export interface LabTestParameter {
   id: string;
   testId: string;
   parameterName: string;
+  /**
+   * Optional grouped heading the parameter is printed under on the report
+   * (e.g. "DIFFERENTIAL COUNT", "PERIPHERAL SMEAR"). Returned by the API; it
+   * was simply missing from this type.
+   */
+  subtitle?: string;
   displayOrder: number;
   resultType: ParameterResultType;
   unit?: string;

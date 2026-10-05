@@ -50,14 +50,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <Header onToggleSidebar={handleToggleSidebar} sidebarExpanded={!collapsed} />
+      {/* `contents` keeps the shell's flex geometry identical on screen, while
+          `print:hidden` removes the app chrome from printed reports. */}
+      <div className="contents print:hidden">
+        <Header onToggleSidebar={handleToggleSidebar} sidebarExpanded={!collapsed} />
+      </div>
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar
-          collapsed={collapsed}
-          mobileOpen={mobileOpen}
-          onCloseMobile={() => setMobileOpen(false)}
-          onNavigate={() => setCollapsed(true)}
-        />
+        <div className="contents print:hidden">
+          <Sidebar
+            collapsed={collapsed}
+            mobileOpen={mobileOpen}
+            onCloseMobile={() => setMobileOpen(false)}
+            onNavigate={() => setCollapsed(true)}
+          />
+        </div>
         <main className="min-w-0 flex-1 overflow-y-auto bg-background p-3 md:p-4">
           {children}
         </main>

@@ -1,13 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
   CheckCircle2,
   Home,
   Loader2,
-  Mail,
   MessageSquare,
   Printer,
   PrinterCheck,
@@ -16,10 +15,12 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { sendWhatsAppTestMessage } from "@/services/whatsapp";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { fetchLabBills } from "@/services/billing";
 import {
@@ -53,6 +54,14 @@ function toPatientBill(bill: LabBill) {
   return typeof bill.patientId === "object" ? bill.patientId : null;
 }
 
+/**
+ * Digits-only form of a stored mobile, used purely for validation. The value
+ * sent to the API is always the patient's own stored mobile field.
+ */
+function toPhoneDigits(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
 export function LabReprint() {
   const router = useRouter();
   const [mode, setMode] = useState<BillMode>("today");
@@ -72,6 +81,8 @@ export function LabReprint() {
   const [signatureId, setSignatureId] = useState<string>("");
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const [whatsappSending, setWhatsappSending] = useState(false);
 
   const billsQuery = useQuery({
     queryKey: [...queryKeys.labBills, "reprint", billParams],
@@ -121,6 +132,8 @@ export function LabReprint() {
     ? selectedBillTests.find((item) => item.testId === selectedTestId) ?? null
     : null;
 
+  const selectedPatient = selectedBill ? toPatientBill(selectedBill) : null;
+
   const selectedTechnician =
     techniciansQuery.data?.find((technician) => technician.id === signatureId) ?? null;
 
@@ -166,12 +179,79 @@ export function LabReprint() {
     setNotice("Marked for print — open the preview below and use Print.");
   };
 
-  const handleDemo = (channel: "mail" | "whatsapp") => {
-    setNotice(
-      channel === "mail"
-        ? "Send E-Mail is a demo placeholder — real dispatch will be available in a later phase."
-        : "Send WhatsApp is a demo placeholder — real dispatch will be available in a later phase.",
-    );
+  /**
+   * Opens the WhatsApp confirmation for the current selection. Nothing is sent
+   * here — selecting a bill/test must never dispatch a message.
+   */
+  const handleWhatsAppOpen = () => {
+    setNotice(null);
+    setError(null);
+
+    if (!selectedBill || !selectedTestId) {
+      setError("Select a bill and a test before sending on WhatsApp.");
+      return;
+    }
+
+    const mobile = selectedPatient?.mobile?.trim() ?? "";
+    if (!mobile) {
+      setError("This patient does not have a mobile number.");
+      return;
+    }
+
+    const digits = toPhoneDigits(mobile);
+    if (digits.length < 10 || digits.length > 15) {
+      setError(
+        `"${mobile}" is not a valid WhatsApp number for ${selectedPatient?.fullName ?? "this patient"}.`,
+      );
+      return;
+    }
+
+    setWhatsappOpen(true);
+  };
+
+  const handleWhatsAppSend = async () => {
+    const mobile = selectedPatient?.mobile?.trim() ?? "";
+    const digits = toPhoneDigits(mobile);
+
+    // Defensive: never call the API without a valid number from the selected
+    // patient. The recipient is always `patient.mobile` — it is never typed in
+    // here and never a hardcoded test number.
+    if (!selectedBill || !mobile || digits.length < 10 || digits.length > 15) {
+      setWhatsappOpen(false);
+      setError(
+        !mobile
+          ? "This patient does not have a mobile number."
+          : `"${mobile}" is not a valid WhatsApp number.`,
+      );
+      return;
+    }
+
+    setWhatsappSending(true);
+    setError(null);
+
+    try {
+      // Reuses the existing server-side sender (POST /api/whatsapp/test-message).
+      // PHASE 2: this is the single place to switch to the report-delivery
+      // template once the secure report URL exists — no new sender needed.
+      const result = await sendWhatsAppTestMessage({
+        to: mobile,
+        templateName: "test_message",
+        languageCode: "en",
+      });
+
+      setWhatsappOpen(false);
+      setNotice(
+        `WhatsApp message accepted by Meta for ${selectedPatient?.fullName ?? "the patient"} (${mobile}). Message id: ${result.metaMessageId}`,
+      );
+    } catch (sendError) {
+      setError(
+        sendError instanceof Error
+          ? sendError.message
+          : "The WhatsApp message could not be sent.",
+      );
+    } finally {
+      setWhatsappSending(false);
+    }
   };
 
   const handleClear = () => {
@@ -504,22 +584,84 @@ export function LabReprint() {
               <Printer />
               Print
             </Button>
-            <Button type="button" variant="outline" onClick={() => handleDemo("mail")}>
-              <Mail />
-              Send Mail
-            </Button>
-            <Button type="button" variant="outline" onClick={() => handleDemo("whatsapp")}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleWhatsAppOpen}
+              disabled={!selectedBill || !selectedTestId || whatsappSending}
+            >
               <MessageSquare />
-              Send Whatsapp
+              Send WhatsApp
             </Button>
           </div>
         </div>
       </div>
 
+      <Dialog
+        open={whatsappOpen}
+        onOpenChange={setWhatsappOpen}
+        title="Send Report on WhatsApp?"
+        centered
+      >
+        <div className="space-y-3">
+          <dl className="space-y-1.5 text-sm">
+            <div className="flex gap-2">
+              <dt className="w-20 shrink-0 text-muted-foreground">Patient:</dt>
+              <dd className="font-medium text-slate-800">
+                {selectedPatient?.fullName ?? "—"}
+              </dd>
+            </div>
+            <div className="flex gap-2">
+              <dt className="w-20 shrink-0 text-muted-foreground">Mobile:</dt>
+              <dd className="font-mono font-medium text-slate-800">
+                {selectedPatient?.mobile ?? "—"}
+              </dd>
+            </div>
+            <div className="flex gap-2">
+              <dt className="w-20 shrink-0 text-muted-foreground">Bill No:</dt>
+              <dd className="font-mono font-medium text-slate-800">
+                {selectedBill?.billNumber ?? "—"}
+              </dd>
+            </div>
+          </dl>
+
+          <p className="text-xs text-muted-foreground">
+            The message is sent to the mobile number on this patient&apos;s record.
+            No PDF or report link is attached yet — delivery of the report itself
+            is the next phase.
+          </p>
+
+          <div className="flex justify-end gap-2 pt-1">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setWhatsappOpen(false)}
+              disabled={whatsappSending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleWhatsAppSend}
+              disabled={whatsappSending}
+            >
+              {whatsappSending && <Loader2 className="size-4 animate-spin" />}
+              Send WhatsApp
+            </Button>
+          </div>
+        </div>
+      </Dialog>
+
       <PrintPreview
         bill={selectedBill}
         testName={selectedTest?.testName ?? ""}
         testCode={selectedTest?.testCode ?? ""}
+        departmentName={selectedTest?.departmentName ?? ""}
+        collectedOn={
+          selectedTestId
+            ? sampleByTest.get(selectedTestId)?.lastStatusChangeAt
+            : undefined
+        }
         parameters={parametersQuery.data ?? []}
         results={resultsQuery.data ?? []}
         technician={selectedTechnician}
@@ -530,10 +672,46 @@ export function LabReprint() {
   );
 }
 
+/**
+ * Print template.
+ *
+ * Reproduces the reference report (LReport432769) — A4, black on white, thin
+ * rules, no cards or dashboard styling. Every value comes from the selected
+ * record; only the letterhead/footer wording below is fixed report stationery.
+ */
+const REPORT_WORDMARK = "ANJALI";
+const REPORT_WORDMARK_SUB = "DIAGNOSTICS";
+const REPORT_REGD_NO = "Regd. No. 414/DM & HO/RR/2008";
+const REPORT_ADDRESS =
+  "Plot No. 347, HMT Hills, Opp. Community Hall, Beside Park, Opp. JNTU, Kukatpally, Hyderabad - 500 085.";
+const REPORT_CONTACT = "Contact : 9989 2209 38, 9440 6268 92, 040-40147350";
+
+/** `dd-mm-yyyy hh:mm AM/PM`, matching the reference report. */
+function formatReportDateTime(value?: string | Date | null): string {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  const pad = (part: number) => String(part).padStart(2, "0");
+  const hours = date.getHours();
+  const period = hours >= 12 ? "PM" : "AM";
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+  return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()} ${pad(hour12)}:${pad(date.getMinutes())} ${period}`;
+}
+
+function ReportInfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid grid-cols-[74pt_1fr] text-[8.5pt] leading-[13pt]">
+      <span className="font-bold uppercase">{label}</span>
+      <span>: {value}</span>
+    </div>
+  );
+}
+
 export function PrintPreview({
   bill,
   testName,
-  testCode,
+  departmentName,
+  collectedOn,
   parameters,
   results,
   technician,
@@ -542,7 +720,10 @@ export function PrintPreview({
 }: {
   bill: LabBill | null;
   testName: string;
-  testCode: string;
+  /** Present for callers that pass it; the reference report prints no test code. */
+  testCode?: string;
+  departmentName: string;
+  collectedOn?: string;
   parameters: LabTestParameter[];
   results: LabTestResult[];
   technician: LabTechnician | null;
@@ -550,6 +731,36 @@ export function PrintPreview({
   documentTitle: string;
 }) {
   const patient = bill ? toPatientBill(bill) : null;
+
+  // "REPORTED ON" is the newest entry across the test's results.
+  const reportedOn = results.reduce<string | undefined>((latest, result) => {
+    if (!result.enteredAt) return latest;
+    if (!latest) return result.enteredAt;
+    return new Date(result.enteredAt) > new Date(latest)
+      ? result.enteredAt
+      : latest;
+  }, undefined);
+
+  const resultByParameter = new Map(
+    results.map((result) => [result.parameterId, result] as const),
+  );
+
+  // Parameters grouped by their optional subtitle, in display order, so the
+  // reference's DIFFERENTIAL COUNT / PERIPHERAL SMEAR headings are produced from
+  // the real data instead of being hardcoded.
+  const groups: { subtitle: string; rows: LabTestParameter[] }[] = [];
+  for (const parameter of [...parameters].sort(
+    (a, b) => a.displayOrder - b.displayOrder,
+  )) {
+    const subtitle = (parameter.subtitle ?? "").trim();
+    const last = groups[groups.length - 1];
+    if (!last || last.subtitle !== subtitle) {
+      groups.push({ subtitle, rows: [parameter] });
+    } else {
+      last.rows.push(parameter);
+    }
+  }
+
   return (
     <section
       aria-label="Print preview"
@@ -557,88 +768,197 @@ export function PrintPreview({
       data-print-title={documentTitle}
     >
       {bill && patient && (
-        <div className="mx-auto max-w-2xl rounded-none border-0 p-4 text-sm text-slate-900">
-          <div className="border-b-2 border-slate-900 pb-2 text-center">
-            <h1 className="text-lg font-bold">Diagnostic Centre</h1>
-            <p className="text-xs">Clinical Laboratory Investigation Report</p>
+        <div className="mx-auto w-[186mm] bg-white font-serif text-[9pt] leading-[13pt] text-black">
+          {/* Letterhead */}
+          <div className="leading-none">
+            <p className="text-[26pt] font-bold uppercase leading-[26pt] tracking-[0.14em] text-[#005430]">
+              {REPORT_WORDMARK}
+            </p>
+            <p className="mt-[1mm] text-[11pt] font-bold uppercase tracking-[0.22em] text-[#d8180c]">
+              {REPORT_WORDMARK_SUB}
+            </p>
+            <p className="mt-[1.5mm] text-[7.5pt] font-bold">{REPORT_REGD_NO}</p>
           </div>
-          <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 text-xs">
-            <p>
-              <span className="font-semibold">Report No :</span> {bill.billNumber}
-            </p>
-            <p>
-              <span className="font-semibold">Report Date :</span>{" "}
-              {bill.createdAt ? formatDate(bill.createdAt) : "—"}
-            </p>
-            <p>
-              <span className="font-semibold">Patient Id :</span> {patient.patientId}
-            </p>
-            <p>
-              <span className="font-semibold">Patient Name :</span> {patient.fullName}
-            </p>
-            <p>
-              <span className="font-semibold">Sex :</span> {formatGender(patient.gender)}
-            </p>
-            <p>
-              <span className="font-semibold">Age :</span> {patient.age ?? "—"}
-            </p>
-            <p>
-              <span className="font-semibold">Test :</span> {testName} ({testCode})
-            </p>
-            <p>
-              <span className="font-semibold">Referred By :</span>{" "}
-              {bill.doctorName ?? "Self"}
-            </p>
+
+          <div className="mt-[2mm] border-t border-black" />
+
+          {/* Patient / bill information */}
+          <div className="mt-[1.5mm] grid grid-cols-2 gap-x-[6mm]">
+            <div>
+              <ReportInfoRow label="Patient Id" value={patient.patientId} />
+              <ReportInfoRow label="Name" value={patient.fullName} />
+              <ReportInfoRow
+                label="Gender / Age"
+                value={`${formatGender(patient.gender)}${
+                  patient.age !== undefined && patient.age !== null
+                    ? ` / ${patient.age} years`
+                    : ""
+                }`}
+              />
+              <ReportInfoRow label="Mobile No" value={patient.mobile} />
+              <ReportInfoRow label="Ref Dr." value={bill.doctorName ?? "Self"} />
+            </div>
+            <div>
+              <ReportInfoRow label="Bill No" value={bill.billNumber} />
+              <ReportInfoRow
+                label="Bill Date"
+                value={formatReportDateTime(bill.createdAt)}
+              />
+              <ReportInfoRow
+                label="Collected On"
+                value={formatReportDateTime(collectedOn)}
+              />
+              <ReportInfoRow
+                label="Reported On"
+                value={formatReportDateTime(reportedOn)}
+              />
+              <ReportInfoRow
+                label="Printed On"
+                value={formatReportDateTime(new Date())}
+              />
+            </div>
           </div>
-          <table className="mt-4 w-full border-collapse text-left text-xs">
+
+          <div className="mt-[1.5mm] border-t border-black" />
+
+          {/* Department + investigation title */}
+          <p className="mt-[2mm] text-center text-[10pt] font-bold uppercase">
+            Department of {departmentName || "—"}
+          </p>
+          <p className="mt-[1.5mm] text-center text-[11pt] font-bold uppercase">
+            {testName || "—"}
+          </p>
+
+          {/* Results */}
+          <table className="mt-[2mm] w-full table-fixed border-collapse text-left align-top">
+            <colgroup>
+              <col className="w-[35.7%]" />
+              <col className="w-[26.6%]" />
+              <col className="w-[12.9%]" />
+              <col className="w-[24.8%]" />
+            </colgroup>
             <thead>
-              <tr>
-                <th className="border border-slate-900 px-2 py-1">#</th>
-                <th className="border border-slate-900 px-2 py-1">Parameter</th>
-                <th className="border border-slate-900 px-2 py-1">Result</th>
-                <th className="border border-slate-900 px-2 py-1">Units</th>
-                <th className="border border-slate-900 px-2 py-1">Reference Range</th>
+              <tr className="border-t border-black text-[8.5pt] font-bold">
+                <th className="py-[1mm] pr-[2mm] text-left font-bold">
+                  Investigation
+                </th>
+                <th className="py-[1mm] pr-[2mm] text-left font-bold">Result</th>
+                <th className="py-[1mm] pr-[2mm] text-left font-bold">Units</th>
+                <th className="py-[1mm] text-left font-bold">
+                  Reference Range
+                </th>
+              </tr>
+              <tr className="border-t border-black">
+                <th colSpan={4} className="p-0" />
               </tr>
             </thead>
             <tbody>
-              {parameters.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="border border-slate-900 px-2 py-1">
+              {groups.length === 0 ? (
+                <tr className="border-b border-black">
+                  <td colSpan={4} className="py-[1mm]">
                     No results entered for this test.
                   </td>
                 </tr>
               ) : (
-                parameters.map((parameter) => {
-                  const value = results.find((r) => r.parameterId === parameter.id)?.result;
-                  return (
-                    <tr key={parameter.id}>
-                      <td className="border border-slate-900 px-2 py-1">{parameter.displayOrder}</td>
-                      <td className="border border-slate-900 px-2 py-1">{parameter.parameterName}</td>
-                      <td className="border border-slate-900 px-2 py-1 font-medium">
-                        {value === undefined || value === null || value === ""
-                          ? "—"
-                          : String(value)}
-                      </td>
-                      <td className="border border-slate-900 px-2 py-1">{parameter.unit ?? "—"}</td>
-                      <td className="border border-slate-900 px-2 py-1">
-                        {parameter.referenceRange ?? "—"}
-                      </td>
-                    </tr>
-                  );
-                })
+                groups.map((group) => (
+                  <Fragment key={`group-${group.subtitle || "main"}`}>
+                    {group.subtitle && (
+                      <tr className="break-inside-avoid">
+                        <td
+                          colSpan={4}
+                          className="pb-[0.5mm] pt-[2mm] font-bold uppercase"
+                        >
+                          {group.subtitle}
+                        </td>
+                      </tr>
+                    )}
+                    {group.rows.map((parameter) => {
+                      const result = resultByParameter.get(parameter.id);
+                      const value = result?.result;
+                      const method = result?.method ?? parameter.method;
+                      const abnormal =
+                        result?.referenceSnapshot?.flag === "OUT_OF_RANGE";
+                      return (
+                        <tr
+                          key={parameter.id}
+                          className="break-inside-avoid align-top"
+                        >
+                          <td className="py-[0.7mm] pr-[2mm]">
+                            <span className="font-bold">
+                              {parameter.parameterName}
+                            </span>
+                            {method ? (
+                              <span className="block text-[7.5pt] italic leading-[10pt]">
+                                (Method: {method})
+                              </span>
+                            ) : null}
+                          </td>
+                          <td
+                            className={cn(
+                              "py-[0.7mm] pr-[2mm]",
+                              abnormal && "font-bold",
+                            )}
+                          >
+                            {value === undefined ||
+                            value === null ||
+                            value === ""
+                              ? "—"
+                              : String(value)}
+                          </td>
+                          <td className="py-[0.7mm] pr-[2mm]">
+                            {result?.unit ?? parameter.unit ?? "—"}
+                          </td>
+                          <td className="py-[0.7mm]">
+                            {result?.referenceRange ??
+                              parameter.referenceRange ??
+                              "—"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </Fragment>
+                ))
               )}
             </tbody>
           </table>
-          <div className="mt-6 flex items-end justify-between text-xs">
-            <p className="text-muted-foreground">End of Report</p>
+
+          {/* Clinical note */}
+          <p className="mt-[3mm] text-[8pt]">
+            Note : Please Correlate Clinically if necessary kindly discuss.
+          </p>
+
+          <p className="mt-[2mm] text-center text-[9pt] font-bold">
+            ****** END OF REPORT ******
+          </p>
+
+          {/* Technician / QR / signature */}
+          <div className="mt-[5mm] grid grid-cols-[1fr_50pt_1fr] items-end gap-[4mm]">
+            <p className="text-[8.5pt] font-bold">Lab Technician</p>
+            {/* QR slot: the real code arrives with the secure report URL. */}
+            <div className="flex h-[50pt] w-[50pt] items-center justify-center border border-black text-[6pt] uppercase">
+              QR
+            </div>
             <div className="text-center">
-              <p className="border-t border-slate-900 px-6 pt-1">
-                {technician ? technician.name : "Lab Technician"}
-                {signatureNote ? ` (${signatureNote})` : ""}
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                {technician?.designation ?? "Signature"}
-              </p>
+              {technician?.name ? (
+                <p className="text-[9pt] font-bold">{technician.name}</p>
+              ) : (
+                <span className="block h-[10pt]" />
+              )}
+              <p className="text-[8.5pt] font-bold">Lab Technician</p>
+              {signatureNote ? (
+                <p className="text-[7pt] italic">{signatureNote}</p>
+              ) : null}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-[5mm] border-t border-black pt-[1.5mm]">
+            <div className="flex items-start justify-between gap-[4mm] text-[7.5pt] leading-[11pt]">
+              <div>
+                <p>{REPORT_ADDRESS}</p>
+                <p>{REPORT_CONTACT}</p>
+              </div>
+              <p className="whitespace-nowrap">Page 1 of 1</p>
             </div>
           </div>
         </div>
