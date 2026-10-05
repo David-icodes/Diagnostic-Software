@@ -26,6 +26,14 @@ export class ApiError extends Error {
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
 
+/**
+ * The API origin: `API_BASE_URL` without its `/api/v1` namespace. A few
+ * server-owned routes are mounted at `/api/...` on purpose (the Meta webhook
+ * cannot live under a versioned namespace it does not know about), and they
+ * must still be called with the same authenticated request — cookies included.
+ */
+const API_ORIGIN = API_BASE_URL.replace(/\/api\/v1\/?$/, "");
+
 type RequestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 type RequestOptions = {
@@ -36,11 +44,12 @@ type RequestOptions = {
 async function requestEnvelope<T>(
   path: string,
   options: RequestOptions = {},
+  baseUrl: string = API_BASE_URL,
 ): Promise<ApiEnvelope<T>> {
   let response: Response;
 
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    response = await fetch(`${baseUrl}${path}`, {
       method: options.method ?? "GET",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -72,6 +81,15 @@ export const api = {
     requestEnvelope<T>(path).then((envelope) => envelope.data as T),
   post: <T>(path: string, body?: unknown): Promise<T> =>
     requestEnvelope<T>(path, { method: "POST", body }).then(
+      (envelope) => envelope.data as T,
+    ),
+  /**
+   * POST to a route mounted on the API origin instead of under `/api/v1`.
+   * Same envelope handling, same `credentials: "include"` — so the session
+   * cookie travels exactly as it does for every other authenticated call.
+   */
+  postFromOrigin: <T>(path: string, body?: unknown): Promise<T> =>
+    requestEnvelope<T>(path, { method: "POST", body }, API_ORIGIN).then(
       (envelope) => envelope.data as T,
     ),
   put: <T>(path: string, body?: unknown): Promise<T> =>

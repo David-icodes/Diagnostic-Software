@@ -61,6 +61,7 @@ const ROLE_PERMISSIONS: Record<AuthUser["role"], readonly string[]> = {
     "lab.commission.write",
     "lab.client_tariff.read",
     "lab.client_tariff.write",
+    "whatsapp.send",
   ],
   staff: [
     "patient.delete",

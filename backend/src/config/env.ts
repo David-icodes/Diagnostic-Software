@@ -28,7 +28,10 @@ const envSchema = z.object({
   WHATSAPP_ACCESS_TOKEN: z.string().optional().default(""),
   WHATSAPP_VERIFY_TOKEN: z.string().optional().default(""),
   WHATSAPP_APP_SECRET: z.string().optional().default(""),
-  WHATSAPP_GRAPH_VERSION: z.string().default("v25.0"),
+  // Meta Graph API version. This is the project's existing name for the API
+  // version setting (you may know it as "WHATSAPP_API_VERSION"); it defaults to
+  // the version currently available in the Meta dashboard.
+  WHATSAPP_GRAPH_VERSION: z.string().default("v26.0"),
 });
 
 export type Env = z.infer<typeof envSchema>;

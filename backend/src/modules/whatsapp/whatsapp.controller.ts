@@ -1,4 +1,7 @@
 import type { Request, Response } from "express";
+import { asyncHandler } from "../../utils/async-handler";
+import { sendSuccess } from "../../utils/http";
+import { sendWhatsAppTemplateMessage } from "./whatsapp-send.service";
 import {
   handleWebhookPayload,
   verifyWebhookSignature,
@@ -47,3 +50,35 @@ export function receiveWebhook(req: Request, res: Response): Response {
 
   return res.status(200).json({ received: true });
 }
+
+/**
+ * POST /api/whatsapp/test-message
+ *
+ * Authenticated, admin-only internal test endpoint for the outbound Cloud API.
+ * It is never public: it sits behind `authenticate` + `requirePermission` on the
+ * route. The access token stays on the server and is never returned or logged.
+ */
+export const sendTestTemplate = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { to, templateName, languageCode, components } = req.body as {
+      to: string;
+      templateName: string;
+      languageCode: string;
+      components?: unknown[];
+    };
+
+    const result = await sendWhatsAppTemplateMessage({
+      to,
+      templateName,
+      languageCode,
+      components,
+    });
+
+    return sendSuccess(res, {
+      metaMessageId: result.metaMessageId,
+      waId: result.waId,
+      templateName,
+      languageCode,
+    });
+  },
+);

@@ -1,17 +1,36 @@
 import { Router } from "express";
-import { receiveWebhook, verifyWebhook } from "./whatsapp.controller";
+import { authenticate } from "../../middleware/authenticate";
+import { requirePermission } from "../../middleware/require-permission";
+import { validate } from "../../middleware/validate";
+import { sendTestTemplateSchema } from "../../validations/whatsapp";
+import {
+  receiveWebhook,
+  sendTestTemplate,
+  verifyWebhook,
+} from "./whatsapp.controller";
 
 /**
- * WhatsApp Cloud API webhook.
+ * WhatsApp Cloud API routes.
  *
- * Mounted at `/api/whatsapp` (outside `/api/v1`) because this URL is called by
- * Meta, not by our frontend. It is intentionally unauthenticated in the cookie
- * sense — Meta cannot send our session cookie — so authenticity is enforced by
- * the `X-Hub-Signature-256` check in the controller.
+ * Mounted at `/api/whatsapp`.
+ *
+ * The webhook pair is called by Meta, which cannot send our session cookie, so
+ * it is authenticated by the `X-Hub-Signature-256` check instead. The outbound
+ * test endpoint is ours, so it uses the normal `authenticate` +
+ * `requirePermission` middleware and is never public.
  */
 const router = Router();
 
 router.get("/webhook", verifyWebhook);
 router.post("/webhook", receiveWebhook);
+
+// Internal, admin-only outbound test. Not part of any business workflow yet.
+router.post(
+  "/test-message",
+  authenticate,
+  requirePermission("whatsapp.send"),
+  validate(sendTestTemplateSchema),
+  sendTestTemplate,
+);
 
 export default router;
