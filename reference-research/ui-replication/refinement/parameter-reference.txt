@@ -1,0 +1,308 @@
+- banner:
+  - link " Wilco":
+    - /url: Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- textbox
+- button ""
+- button ""
+- button "":
+  - generic: 
+- heading "Enter Test Result" [level=3]
+- table:
+  - rowgroup:
+    - row "Today Lab Bills Criteria Include Client Bills Completed":
+      - cell "Today Lab Bills":
+        - radio "Today Lab Bills" [checked]
+        - generic: Today Lab Bills
+      - cell "Criteria":
+        - radio "Criteria"
+        - generic: Criteria
+      - cell "Include Client Bills":
+        - checkbox "Include Client Bills" [checked]
+        - generic: Include Client Bills
+      - cell
+      - cell
+      - cell "Completed":
+        - text: Completed
+- table:
+  - rowgroup:
+    - row "Bill No Pat Id Pat Name Sex/Age Bill Date":
+      - columnheader
+      - columnheader "Bill No"
+      - columnheader "Pat Id"
+      - columnheader "Pat Name"
+      - columnheader "Sex/Age"
+      - columnheader "Bill Date"
+  - rowgroup:
+    - row "DIAG2026-4230 GP2026533 Mr.SRINIVAS Male/38 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4230"
+      - cell "GP2026533"
+      - cell "Mr.SRINIVAS"
+      - cell "Male/38 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4229 GP20263521 Ms.DIVYA Female/25 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4229"
+      - cell "GP20263521"
+      - cell "Ms.DIVYA"
+      - cell "Female/25 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4228 GP20263520 Mr.AKSHAY Male/21 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4228"
+      - cell "GP20263520"
+      - cell "Mr.AKSHAY"
+      - cell "Male/21 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4227 GP20263519 Mr.VENKATESWAR RAO Male/52 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4227"
+      - cell "GP20263519"
+      - cell "Mr.VENKATESWAR RAO"
+      - cell "Male/52 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4226 GP20261606 Mrs.LAKSHMI Female/61 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4226"
+      - cell "GP20261606"
+      - cell "Mrs.LAKSHMI"
+      - cell "Female/61 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4225 GP20263518 Mr.SHIVAPRASAD Male/36 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4225"
+      - cell "GP20263518"
+      - cell "Mr.SHIVAPRASAD"
+      - cell "Male/36 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4224 GP20263517 Mrs.S MOUNAVANI Female/34 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4224"
+      - cell "GP20263517"
+      - cell "Mrs.S MOUNAVANI"
+      - cell "Female/34 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4223 GP20262389 Mr.NARESH Male/43 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4223"
+      - cell "GP20262389"
+      - cell "Mr.NARESH"
+      - cell "Male/43 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4222 GP20263516 Mr.P CHARAN Male/24 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4222"
+      - cell "GP20263516"
+      - cell "Mr.P CHARAN"
+      - cell "Male/24 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4221 GP20263515 Ms.SUKANYA Female/35 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4221"
+      - cell "GP20263515"
+      - cell "Ms.SUKANYA"
+      - cell "Female/35 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4220 GP20263514 Mr.K NAGESH Male/40 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4220"
+      - cell "GP20263514"
+      - cell "Mr.K NAGESH"
+      - cell "Male/40 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4219 GP20263513 Mr.KOTAIAH Male/43 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4219"
+      - cell "GP20263513"
+      - cell "Mr.KOTAIAH"
+      - cell "Male/43 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4218 GP20263512 Mrs.INDIRAMMA Female/60 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4218"
+      - cell "GP20263512"
+      - cell "Mrs.INDIRAMMA"
+      - cell "Female/60 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4217 GP20263511 Mrs.JAYAMMA Female/53 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4217"
+      - cell "GP20263511"
+      - cell "Mrs.JAYAMMA"
+      - cell "Female/53 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4216 GP20263510 Mrs.MANJULA Female/39 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4216"
+      - cell "GP20263510"
+      - cell "Mrs.MANJULA"
+      - cell "Female/39 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4215 GP20263509 Mrs.BUJJI Female/27 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4215"
+      - cell "GP20263509"
+      - cell "Mrs.BUJJI"
+      - cell "Female/27 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4214 GP20263508 Mrs.SRAVANI Female/22 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4214"
+      - cell "GP20263508"
+      - cell "Mrs.SRAVANI"
+      - cell "Female/22 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4213 GP20263507 Mr.BHASKAR Male/53 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4213"
+      - cell "GP20263507"
+      - cell "Mr.BHASKAR"
+      - cell "Male/53 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4212 GP20263506 Mrs.M SHOBA Female/50 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4212"
+      - cell "GP20263506"
+      - cell "Mrs.M SHOBA"
+      - cell "Female/50 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4211 GP20263505 Mr.SHYAM Male/38 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4211"
+      - cell "GP20263505"
+      - cell "Mr.SHYAM"
+      - cell "Male/38 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4210 GP20263504 Mrs.K USHA Female/67 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4210"
+      - cell "GP20263504"
+      - cell "Mrs.K USHA"
+      - cell "Female/67 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4209 GP20263503 Mr.M KISTAIAH Male/70 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4209"
+      - cell "GP20263503"
+      - cell "Mr.M KISTAIAH"
+      - cell "Male/70 years"
+      - cell "08-10-2026"
+    - row "DIAG2026-4208 GP20263502 Mr.K DONGAIAH Male/66 years 08-10-2026":
+      - cell:
+      - cell "DIAG2026-4208"
+      - cell "GP20263502"
+      - cell "Mr.K DONGAIAH"
+      - cell "Male/66 years"
+      - cell "08-10-2026"
+- table:
+  - rowgroup:
+    - row "Print Dept Name Test Name Sample Out Lab Center":
+      - columnheader
+      - columnheader "Print"
+      - columnheader "Dept Name"
+      - columnheader "Test Name"
+      - columnheader "Sample"
+      - columnheader "Out"
+      - columnheader "Lab Center"
+      - columnheader
+  - rowgroup:
+    - 'row "BIOCHEMISTRY SERUM CREATININE Samples Collected By: AnjaliAdmin Collected Date: 08-10-2026 09:04 AM"':
+      - cell:
+      - cell:
+        - checkbox [checked] [active]
+      - cell "BIOCHEMISTRY"
+      - cell "SERUM CREATININE"
+      - 'cell "Samples Collected By: AnjaliAdmin Collected Date: 08-10-2026 09:04 AM"':
+        - 'checkbox "Samples Collected By: AnjaliAdmin Collected Date: 08-10-2026 09:04 AM" [checked] [disabled]'
+      - cell:
+        - checkbox
+      - cell
+      - cell:
+- generic: Select Signature to print
+- combobox:
+  - option "--Select--"
+  - option "Lab Technician" [selected]
+- checkbox "Include Header"
+- generic: Include Header
+- checkbox "Print On LetterHead"
+- generic: Print On LetterHead
+- checkbox "Print ONLY Entered Params"
+- generic: Print ONLY Entered Params
+- combobox:
+  - option "Continuous Print" [selected]
+  - option "Dept wise Print"
+  - option "Test wise Print"
+- table:
+  - rowgroup:
+    - row "Order Parameter Name Result Units Reference Range Method":
+      - columnheader "Order"
+      - columnheader "Parameter Name"
+      - columnheader "Result"
+      - columnheader "Units"
+      - columnheader "Reference Range"
+      - columnheader "Method"
+  - rowgroup:
+    - row "1 SERUM CREATININE 1.5 mg/dL 0.9-1.5 Kinetic & End point":
+      - cell "1"
+      - cell "SERUM CREATININE"
+      - cell "1.5":
+        - textbox [disabled]: "1.5"
+      - cell "mg/dL"
+      - cell "0.9-1.5"
+      - cell "Kinetic & End point"
+- button "Submit" [disabled]
+- button "Clear"
+- button "Home"
+- button "Print"
+- button "Send Mail"
+- button "Send Whatsapp"
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

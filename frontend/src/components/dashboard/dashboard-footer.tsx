@@ -14,7 +14,7 @@ export function DashboardFooter() {
   }
 
   return (
-    <footer className="mt-auto -mb-3 min-h-[72px] border-t border-border bg-slate-100/80 px-3 py-4 text-[11px] text-slate-600 md:-mb-4">
+    <footer className="lis-dashboard-footer mt-auto -mb-3 min-h-[72px] border-t border-border bg-slate-100/80 px-3 py-4 text-[11px] text-slate-600 md:-mb-4">
       <div className="flex min-h-[40px] flex-wrap items-center justify-end gap-2">
         <p className="text-right">{support.join(", ")}</p>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Home, Loader2, RotateCcw } from "lucide-react";
+import { Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -43,7 +43,7 @@ export function BillActionBar({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center justify-center gap-2",
+        "lis-bill-actions flex flex-wrap items-center justify-center gap-2",
         compact ? "pt-1" : "pt-4",
       )}
     >
@@ -70,7 +70,6 @@ export function BillActionBar({
         </Button>
       )}
       <Button type="button" variant="outline" onClick={handleHome}>
-        <Home />
         Home
       </Button>
     </div>

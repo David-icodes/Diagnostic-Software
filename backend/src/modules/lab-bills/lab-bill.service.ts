@@ -13,6 +13,7 @@ import { Department } from "../../models/department.model";
 import { Patient, type IPatient } from "../../models/patient.model";
 import { Doctor } from "../../models/doctor.model";
 import { LabClient } from "../../models/lab-client.model";
+import { OutsideLab } from "../../models/outside-lab.model";
 import { LabSample } from "../../models/lab-sample.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
 import { recordAudit } from "../audit/audit.service";
@@ -99,9 +100,10 @@ export function computeTotals(
   };
 }
 
-async function buildSnapshotItems(
+export async function buildSnapshotItems(
   items: NonNullable<CreateLabBillInput["items"]>,
   patientType: ILabBill["patientType"],
+  previous: IBillItem[] = [],
 ): Promise<IBillItem[]> {
   const testIds = items.map((item) => new Types.ObjectId(item.testId));
   const [tests, departments] = await Promise.all([
@@ -125,10 +127,26 @@ async function buildSnapshotItems(
     throw new ApiError(422, `Inactive tests cannot be billed: ${names.join(", ")}`);
   }
 
+  const outsideIds = [...new Set(items.filter((item) => item.out !== false && item.outsideLabId).map((item) => item.outsideLabId!))];
+  const centres = outsideIds.length ? await OutsideLab.find({ _id: { $in: outsideIds } }).exec() : [];
+  const centreMap = new Map(centres.map((centre) => [String(centre._id), centre]));
+  const previousMap = new Map(previous.map((item) => [String(item.testId), item]));
+  for (const item of items) {
+    if (!item.outsideLabId || item.out === false) continue;
+    const centre = centreMap.get(item.outsideLabId);
+    const retained = String(previousMap.get(item.testId)?.outsideLabId ?? "") === item.outsideLabId;
+    if (!centre || (!centre.active && !retained)) throw new ApiError(422, "Select an active outside lab for each outside test");
+  }
+  const assignedAt = new Date();
   return items.map((item) => {
     const test = testMap.get(item.testId)!;
     const unitPrice = resolveBillPrice(test, patientType);
     const quantity = item.quantity;
+    const old = previousMap.get(item.testId);
+    const explicit = item.out !== undefined || item.outsideLabId !== undefined;
+    const outsideId = explicit ? (item.out === false ? null : item.outsideLabId ?? null) : old?.outsideLabId;
+    const retained = outsideId && String(old?.outsideLabId ?? "") === String(outsideId);
+
     return {
       testId: test._id as Types.ObjectId,
       testCode: test.testCode,
@@ -138,6 +156,11 @@ async function buildSnapshotItems(
       unitPrice,
       quantity,
       total: round2(unitPrice * quantity),
+      ...(outsideId === undefined ? {} : {
+        outsideLabId: outsideId ? new Types.ObjectId(String(outsideId)) : null,
+        outsideLabName: outsideId ? centreMap.get(String(outsideId))?.name ?? old?.outsideLabName : undefined,
+        sentOutAt: outsideId ? (retained ? old?.sentOutAt : assignedAt) : null,
+      }),
     };
   });
 }
@@ -302,7 +325,8 @@ export async function modifyLabBill(
     }
   }
 
-  const snapshotItems = await buildSnapshotItems(input.items, bill.patientType);
+  await hydrateOutsideAssignments([bill]);
+  const snapshotItems = await buildSnapshotItems(input.items, bill.patientType, bill.items);
 
   // A test that already produced a sample or a result stays on the bill:
   // dropping it would orphan those records and silently rewrite history.
@@ -374,6 +398,24 @@ export async function modifyLabBill(
     .exec() as Promise<ILabBill>;
 }
 
+async function hydrateOutsideAssignments(bills: (ILabBill & { _id?: unknown })[]): Promise<void> {
+  if (!bills.length) return;
+  const samples = await LabSample.find({ billId: { $in: bills.map((bill) => bill._id) }, outsideLabId: { $ne: null } })
+    .select("billId testId outsideLabId sentOutAt").lean().exec();
+  const centres = samples.length ? await OutsideLab.find({ _id: { $in: samples.map((sample) => sample.outsideLabId) } }).select("name").lean().exec() : [];
+  const names = new Map(centres.map((centre) => [String(centre._id), centre.name]));
+  const pairs = new Map(samples.map((sample) => [`${sample.billId}:${sample.testId}`, sample]));
+  for (const bill of bills) for (const item of bill.items) {
+    if (item.outsideLabId !== undefined) continue;
+    const sample = pairs.get(`${bill._id}:${item.testId}`);
+    if (sample?.outsideLabId) {
+      item.outsideLabId = sample.outsideLabId;
+      item.outsideLabName = names.get(String(sample.outsideLabId));
+      item.sentOutAt = sample.sentOutAt;
+    }
+  }
+}
+
 export async function getLabBill(id: string): Promise<ILabBill> {
   if (!Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid bill ID");
@@ -386,6 +428,7 @@ export async function getLabBill(id: string): Promise<ILabBill> {
   if (!bill) {
     throw new ApiError(404, "Bill not found");
   }
+  await hydrateOutsideAssignments([bill]);
   return bill;
 }
 
@@ -463,6 +506,7 @@ export async function listLabBills({
       .exec(),
   ]);
 
+  await hydrateOutsideAssignments(data);
   return {
     data,
     pagination: {
@@ -492,6 +536,7 @@ export async function getLabBillByBillNumber(billNumber: string): Promise<ILabBi
   if (!bill) {
     throw new ApiError(404, "Bill not found");
   }
+  await hydrateOutsideAssignments([bill]);
   return bill;
 }
 

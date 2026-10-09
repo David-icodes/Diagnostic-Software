@@ -1,0 +1,42 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Lab Tariffs" [level=1]
+  - paragraph: Set OP, IP, Ins IP and ER prices for lab tests
+  - link "Home":
+    - /url: /dashboard
+  - heading "Department Tariff Set" [level=2]
+  - paragraph: Select a department to view and edit its tests
+  - generic: Select Department
+  - combobox "Select Department":
+    - option "--Select--" [selected]
+    - option "Biochemistry"
+    - option "Clinical Pathology"
+    - option "Hematology"
+    - option "Hormones"
+    - option "Immunology / Serology"
+    - option "Microbiology"
+    - option "Molecular Biology"
+    - option "Packages / Profiles"
+    - option "Pathology"
+    - option "Pharmacy Support"
+  - generic: Select a department to load its test price set

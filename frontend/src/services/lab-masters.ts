@@ -219,7 +219,9 @@ export function fetchCommissionMappings(
   const query = new URLSearchParams();
   query.set("doctorId", doctorId);
   query.set("departmentId", departmentId);
-  return api.get<CommissionMappingRow[]>(`/commission-mappings?${query.toString()}`);
+  return api
+    .get<{ data: CommissionMappingRow[] }>(`/commission-mappings?${query.toString()}`)
+    .then((response) => response.data);
 }
 
 export function assignCommissionMappings(
@@ -243,7 +245,9 @@ export function fetchClientTariffs(
   const query = new URLSearchParams();
   query.set("clientId", clientId);
   query.set("departmentId", departmentId);
-  return api.get<ClientTariffRow[]>(`/client-tariffs?${query.toString()}`);
+  return api
+    .get<{ data: ClientTariffRow[] }>(`/client-tariffs?${query.toString()}`)
+    .then((response) => response.data);
 }
 
 export function applyClientTariffs(

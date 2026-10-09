@@ -159,6 +159,10 @@ export interface LabSummaryResponse {
   data: LabSummaryReportRow[];
   pagination: ReportPagination;
   summary: {
+    totalBills: number;
+    income: number;
+    due: number;
+    profit: null;
     totalTests: number;
     totalDelayed: number;
     totalAmount: number;
@@ -342,6 +346,7 @@ export interface LabCollectionSummaryParams {
 export type ClientBillsOrderBy = "date_asc" | "date_desc";
 
 export interface ClientGeneratedLabBillRow {
+  paymentMode: string;
   id: string;
   billNumber: string;
   billDate: string;

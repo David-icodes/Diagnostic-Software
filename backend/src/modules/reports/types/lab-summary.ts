@@ -33,6 +33,10 @@ export interface LabSummaryMeta {
 }
 
 export interface LabSummarySummary {
+  totalBills: number;
+  income: number;
+  due: number;
+  profit: null;
   totalTests: number;
   totalDelayed: number;
   totalAmount: number;

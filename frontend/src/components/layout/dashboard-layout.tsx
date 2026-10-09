@@ -49,7 +49,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div data-sidebar-expanded={!collapsed} className="lis-shell flex h-screen flex-col overflow-hidden">
       {/* `contents` keeps the shell's flex geometry identical on screen, while
           `print:hidden` removes the app chrome from printed reports. */}
       <div className="contents print:hidden">
@@ -64,7 +64,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             onNavigate={() => setCollapsed(true)}
           />
         </div>
-        <main className="min-w-0 flex-1 overflow-y-auto bg-background p-3 md:p-4">
+        <main className="lis-content min-w-0 flex-1 overflow-y-auto bg-background">
           {children}
         </main>
       </div>

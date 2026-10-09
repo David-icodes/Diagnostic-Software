@@ -1,0 +1,98 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Doctor Designation" [level=3]
+- table:
+  - rowgroup:
+    - row "Doctor Designation":
+      - cell
+      - cell "Doctor Designation"
+      - cell:
+        - textbox
+      - cell
+    - row "Active Status Y":
+      - cell
+      - cell "Active Status"
+      - cell "Y":
+        - combobox [disabled]:
+          - option "--Select--"
+          - option "Y" [selected]
+          - option "N"
+      - cell
+- button "SUBMIT"
+- button "CLEAR"
+- button "HOME"
+- table:
+  - rowgroup:
+    - row "Sno Doc Desig Name Active Status":
+      - columnheader "Sno"
+      - columnheader "Doc Desig Name":
+        - link "Doc Desig Name":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdocdesdetails$ctl00$ctl02$ctl00$ctl01','')
+      - columnheader "Active Status":
+        - link "Active Status":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdocdesdetails$ctl00$ctl02$ctl00$ctl02','')
+      - columnheader
+- table:
+  - rowgroup:
+    - row "No records to display.":
+      - cell "No records to display.":
+        - generic: No records to display.
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

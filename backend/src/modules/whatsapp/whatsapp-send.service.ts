@@ -1,3 +1,4 @@
+import { ENGAGEMENT_FAILURE, maskedRecipient } from "./lis-delivery.service";
 import { env } from "../../config/env";
 import { ApiError } from "../../utils/api-error";
 
@@ -124,7 +125,7 @@ export async function sendWhatsAppTemplateMessage(
           code !== undefined ? `, code=${code}` : ""
         }): ${reason}`,
       );
-      throw new ApiError(502, `WhatsApp send failed: ${reason}`);
+      throw new ApiError(502, code === 131049 ? ENGAGEMENT_FAILURE : `WhatsApp send failed: ${reason}`, code === undefined ? undefined : { metaErrorCode: String(code) });
     }
 
     const metaMessageId = body?.messages?.[0]?.id;
@@ -138,8 +139,7 @@ export async function sendWhatsAppTemplateMessage(
       );
     }
 
-    console.log(`${LOG_PREFIX} Message accepted by Meta`);
-    console.log(`${LOG_PREFIX} Meta message id=${metaMessageId}`);
+    console.log(LOG_PREFIX, { templateName, languageCode, metaMessageId, recipient: maskedRecipient(to), status: "accepted" });
 
     return { metaMessageId, waId: body?.contacts?.[0]?.wa_id };
   } catch (error) {

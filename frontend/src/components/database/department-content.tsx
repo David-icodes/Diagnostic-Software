@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { invalidateMasterData } from "@/lib/master-data-cache";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Layers, Pencil, Power } from "lucide-react";
-import { ConfirmDialog } from "@/components/database/confirm-dialog";
+import { Layers, Pencil } from "lucide-react";
 import { DataTable } from "@/components/database/data-table";
 import { FormActions } from "@/components/database/form-actions";
 import { FormField } from "@/components/database/form-field";
@@ -18,7 +18,6 @@ import {
   createDatabaseDepartment,
   fetchDatabaseDepartments,
   getDatabaseOptions,
-  setDepartmentActive,
   updateDatabaseDepartment,
 } from "@/services/database";
 import type { Department } from "@/types/billing";
@@ -48,7 +47,7 @@ export function DepartmentContent() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
-  const [confirmTarget, setConfirmTarget] = useState<Department | null>(null);
+
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const optionsQuery = useQuery({
@@ -63,7 +62,7 @@ export function DepartmentContent() {
   });
 
   const invalidate = () => {
-    void queryClient.invalidateQueries({ queryKey: ["departments"] });
+    void invalidateMasterData(queryClient, "departments");
   };
 
   const saveMutation = useMutation({
@@ -92,14 +91,7 @@ export function DepartmentContent() {
     },
   });
 
-  const toggleMutation = useMutation({
-    mutationFn: ({ id, active }: { id: string; active: boolean }) =>
-      setDepartmentActive(id, active),
-    onSuccess: () => {
-      invalidate();
-      setConfirmTarget(null);
-    },
-  });
+
 
   const departmentTypes = optionsQuery.data?.departmentTypes ?? [];
 
@@ -125,7 +117,7 @@ export function DepartmentContent() {
 
   const handleSave = () => {
     if (form.name.trim().length < 2 || form.code.trim().length < 2) return;
-    void saveMutation.mutateAsync();
+    saveMutation.mutate();
   };
 
   const handleEdit = (department: Department) => {
@@ -195,25 +187,17 @@ export function DepartmentContent() {
           >
             <Pencil className="size-4" />
           </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label={row.active ? `Deactivate ${row.name}` : `Activate ${row.name}`}
-            onClick={() => setConfirmTarget(row)}
-          >
-            <Power className="size-4" />
-          </Button>
+          
         </div>
       ),
     },
   ];
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-department space-y-3">
       <PageHeader
         icon={Layers}
-        title="New Department"
+        title="Create Department"
         subtitle="Add and manage departments used across the lab"
       />
 
@@ -239,13 +223,34 @@ export function DepartmentContent() {
                   : "Failed to save"}
               </p>
             )}
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-0 sm:grid-cols-2">
               <FormField id="dept-name" label="Department Name" required>
                 <Input
                   id="dept-name"
                   value={form.name}
                   placeholder="e.g. HEMATOLOGY"
                   onChange={(event) => update({ name: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="dept-code" label="Short Name" required>
+                <Input
+                  id="dept-code"
+                  value={form.code}
+                  placeholder="e.g. HEMA"
+                  maxLength={10}
+                  onChange={(event) =>
+                    update({ code: event.target.value.toUpperCase() })
+                  }
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="dept-desc" label="Description">
+                <Input
+                  id="dept-desc"
+                  value={form.description}
+                  placeholder="Optional notes"
+                  onChange={(event) => update({ description: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
               </FormField>
@@ -264,18 +269,6 @@ export function DepartmentContent() {
                   ))}
                 </Select>
               </FormField>
-              <FormField id="dept-code" label="Short Name" required>
-                <Input
-                  id="dept-code"
-                  value={form.code}
-                  placeholder="e.g. HEMA"
-                  maxLength={10}
-                  onChange={(event) =>
-                    update({ code: event.target.value.toUpperCase() })
-                  }
-                  disabled={saveMutation.isPending}
-                />
-              </FormField>
               <FormField id="dept-sort" label="Sort Order">
                 <Input
                   id="dept-sort"
@@ -288,16 +281,9 @@ export function DepartmentContent() {
                 />
               </FormField>
             </div>
-            <FormField id="dept-desc" label="Description">
-              <Input
-                id="dept-desc"
-                value={form.description}
-                placeholder="Optional notes"
-                onChange={(event) => update({ description: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
+
             <FormActions
+              homeBeforeReset
               onSubmit={handleSave}
               onReset={() => {
                 setEditingId(null);
@@ -305,7 +291,7 @@ export function DepartmentContent() {
                 setFeedback(null);
               }}
               submitting={saveMutation.isPending}
-              submitLabel={editingId ? "Update" : "Save"}
+              submitLabel={editingId ? "Update" : "Submit"}
             />
           </div>
         </FormSection>
@@ -350,29 +336,7 @@ export function DepartmentContent() {
         </FormSection>
       </div>
 
-      <ConfirmDialog
-        open={confirmTarget !== null}
-        onOpenChange={(open) => {
-          if (!open) setConfirmTarget(null);
-        }}
-        title={confirmTarget?.active ? "Deactivate department?" : "Activate department?"}
-        description={
-          confirmTarget
-            ? `Do you want to ${confirmTarget.active ? "deactivate" : "activate"} "${confirmTarget.name}"?`
-            : undefined
-        }
-        confirmLabel={confirmTarget?.active ? "Deactivate" : "Activate"}
-        loading={toggleMutation.isPending}
-        onConfirm={() => {
-          if (confirmTarget) {
-            void toggleMutation.mutate({
-              id: confirmTarget.id,
-              active: !confirmTarget.active,
-            });
-            setConfirmTarget(null);
-          }
-        }}
-      />
+
     </div>
   );
 }

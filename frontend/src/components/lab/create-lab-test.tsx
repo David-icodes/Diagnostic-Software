@@ -1,10 +1,11 @@
 "use client";
 
+import { invalidateMasterData } from "@/lib/master-data-cache";
+
 import { useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Eye, FlaskConical, Pencil, Power } from "lucide-react";
+import { Eye, FlaskConical, Pencil } from "lucide-react";
 import { AddableDatalist } from "@/components/common/addable-datalist";
-import { ConfirmDialog } from "@/components/database/confirm-dialog";
 import { DataTable } from "@/components/database/data-table";
 import { FormField } from "@/components/database/form-field";
 import { FormSection } from "@/components/database/form-section";
@@ -16,13 +17,13 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { fetchDepartments } from "@/services/billing";
 import {
   createLabMasterTest,
   fetchLabMasterTests,
   fetchSpecimenOptions,
-  setLabTestActive,
   updateLabMasterTest,
 } from "@/services/lab-masters";
 import type { LabTestRow } from "@/types/lab-masters";
@@ -104,7 +105,7 @@ export function CreateLabTestContent() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [page, setPage] = useState(1);
-  const [confirmTarget, setConfirmTarget] = useState<LabTestRow | null>(null);
+
   const [viewTarget, setViewTarget] = useState<LabTestRow | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -141,7 +142,7 @@ export function CreateLabTestContent() {
   });
 
   const invalidate = () => {
-    void queryClient.invalidateQueries({ queryKey: ["lab-tests", "master"] });
+    void invalidateMasterData(queryClient, "lab-tests");
   };
 
   const saveMutation = useMutation({
@@ -188,14 +189,7 @@ export function CreateLabTestContent() {
     },
   });
 
-  const toggleMutation = useMutation({
-    mutationFn: ({ id, active }: { id: string; active: boolean }) =>
-      setLabTestActive(id, active),
-    onSuccess: () => {
-      invalidate();
-      setConfirmTarget(null);
-    },
-  });
+
 
   const update = (patch: Partial<TestFormState>) => {
     setForm((current) => ({ ...current, ...patch }));
@@ -216,7 +210,7 @@ export function CreateLabTestContent() {
     ) {
       return;
     }
-    void saveMutation.mutateAsync();
+    saveMutation.mutate();
   };
 
   const handleEdit = useCallback((test: LabTestRow) => {
@@ -320,17 +314,7 @@ export function CreateLabTestContent() {
             >
               <Pencil className="size-4" />
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label={
-                row.active ? `Deactivate ${row.testName}` : `Activate ${row.testName}`
-              }
-              onClick={() => setConfirmTarget(row)}
-            >
-              <Power className="size-4" />
-            </Button>
+            
           </div>
         ),
       },
@@ -343,7 +327,7 @@ export function CreateLabTestContent() {
     : null;
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-lab-test space-y-3">
       <PageHeader
         icon={FlaskConical}
         title="Create New Lab Test"
@@ -367,263 +351,263 @@ export function CreateLabTestContent() {
               {saveError}
             </p>
           )}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <FormField id="test-dept" label="Department Name" required>
-              <Select
-                id="test-dept"
-                className="h-8"
-                value={form.departmentId}
-                onChange={(event) => update({ departmentId: event.target.value })}
-                disabled={saveMutation.isPending}
-              >
-                <option value="">--Select--</option>
-                {departments.map((department) => (
-                  <option key={department.id} value={department.id}>
-                    {department.name}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <FormField id="test-code" label="Test Code" required>
-              <Input
-                id="test-code"
-                value={form.testCode}
-                placeholder="e.g. BS001"
-                maxLength={20}
-                onChange={(event) =>
-                  update({ testCode: event.target.value.toUpperCase() })
-                }
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-name" label="Test Name" required>
-              <Input
-                id="test-name"
-                value={form.testName}
-                placeholder="e.g. BLOOD SUGAR (F)"
-                onChange={(event) => update({ testName: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-short" label="Short Name" required>
-              <Input
-                id="test-short"
-                value={form.shortName}
-                placeholder="e.g. BS(F)"
-                onChange={(event) => update({ shortName: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-type" label="Test Type">
-              <Input
-                id="test-type"
-                value={form.testType}
-                placeholder="e.g. Biochemistry"
-                onChange={(event) => update({ testType: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-price" label="OP Price" required>
-              <Input
-                id="test-price"
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.price}
-                placeholder="0.00"
-                onChange={(event) => update({ price: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-price-ip" label="IP Price">
-              <Input
-                id="test-price-ip"
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.priceIp}
-                placeholder="0.00"
-                onChange={(event) => update({ priceIp: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-price-ins-ip" label="Ins IP Price">
-              <Input
-                id="test-price-ins-ip"
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.priceInsIp}
-                placeholder="0.00"
-                onChange={(event) => update({ priceInsIp: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-price-er" label="ER Price">
-              <Input
-                id="test-price-er"
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.priceEr}
-                placeholder="0.00"
-                onChange={(event) => update({ priceEr: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-doctor-price" label="Doctor Price">
-              <Input
-                id="test-doctor-price"
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.doctorPrice}
-                placeholder="0.00"
-                onChange={(event) => update({ doctorPrice: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-referral" label="Referral %">
-              <Input
-                id="test-referral"
-                type="number"
-                min={0}
-                max={100}
-                step="0.01"
-                value={form.referralPercent}
-                placeholder="0"
-                onChange={(event) => update({ referralPercent: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-result-mode" label="Result Type">
-              <Select
-                id="test-result-mode"
-                className="h-8"
-                value={form.resultMode}
-                onChange={(event) => update({ resultMode: event.target.value })}
-                disabled={saveMutation.isPending}
-              >
-                {RESULT_MODE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <FormField id="test-active" label="Active Status">
-              <label
-                htmlFor="test-active"
-                className="flex h-8 items-center gap-2 text-sm text-slate-700"
-              >
-                <Checkbox
-                  id="test-active"
-                  checked={form.active}
-                  onChange={(event) => update({ active: event.target.checked })}
+            <div className="lis-test-fields grid gap-0 sm:grid-cols-2">
+              <FormField id="test-dept" label="Department Name" required>
+                <Select
+                  id="test-dept"
+                  className="h-8"
+                  value={form.departmentId}
+                  onChange={(event) => update({ departmentId: event.target.value })}
+                  disabled={saveMutation.isPending}
+                >
+                  <option value="">--Select--</option>
+                  {departments.map((department) => (
+                    <option key={department.id} value={department.id}>
+                      {department.name}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+              <FormField id="test-name" label="Test Name" required>
+                <Input
+                  id="test-name"
+                  value={form.testName}
+                  placeholder="e.g. BLOOD SUGAR (F)"
+                  onChange={(event) => update({ testName: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
-                {form.active ? "Active" : "Inactive"}
-              </label>
-            </FormField>
-            <FormField id="test-cghs" label="CGHS Code">
-              <Input
-                id="test-cghs"
-                value={form.cghsCode}
-                placeholder="Optional"
-                onChange={(event) => update({ cghsCode: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-nims" label="NIMS Code">
-              <Input
-                id="test-nims"
-                value={form.nimsCode}
-                placeholder="Optional"
-                onChange={(event) => update({ nimsCode: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-railway" label="Railway Code">
-              <Input
-                id="test-railway"
-                value={form.railwayCode}
-                placeholder="Optional"
-                onChange={(event) => update({ railwayCode: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-nfc" label="NFC Code">
-              <Input
-                id="test-nfc"
-                value={form.nfcCode}
-                placeholder="Optional"
-                onChange={(event) => update({ nfcCode: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-sample" label="Sample Name">
-              <AddableDatalist
-                id="test-sample"
-                value={form.sampleType}
-                onChange={(value) => update({ sampleType: value })}
-                options={specimenQuery.data?.sampleTypes ?? []}
-                placeholder="e.g. Blood / Serum"
-              />
-            </FormField>
-            <FormField id="test-container" label="Tube Container">
-              <AddableDatalist
-                id="test-container"
-                value={form.containerType}
-                onChange={(value) => update({ containerType: value })}
-                options={specimenQuery.data?.containerTypes ?? []}
-                placeholder="e.g. Plain / EDTA"
-              />
-            </FormField>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <FormField id="test-desc" label="Description">
-              <Input
-                id="test-desc"
-                value={form.description}
-                placeholder="Optional notes"
-                onChange={(event) => update({ description: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-note-1" label="Report Note 1">
-              <Input
-                id="test-note-1"
-                value={form.reportNote1}
-                placeholder="Optional report note"
-                onChange={(event) => update({ reportNote1: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-note-2" label="Report Note 2">
-              <Input
-                id="test-note-2"
-                value={form.reportNote2}
-                placeholder="Optional report note"
-                onChange={(event) => update({ reportNote2: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="test-comments" label="Comments">
-              <Input
-                id="test-comments"
-                value={form.comments}
-                placeholder="Optional comments"
-                onChange={(event) => update({ comments: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-          </div>
+              </FormField>
+              <FormField id="test-cghs" label="CGHS Code">
+                <Input
+                  id="test-cghs"
+                  value={form.cghsCode}
+                  placeholder="Optional"
+                  onChange={(event) => update({ cghsCode: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-nims" label="NIMS Code">
+                <Input
+                  id="test-nims"
+                  value={form.nimsCode}
+                  placeholder="Optional"
+                  onChange={(event) => update({ nimsCode: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-railway" label="Railway Code">
+                <Input
+                  id="test-railway"
+                  value={form.railwayCode}
+                  placeholder="Optional"
+                  onChange={(event) => update({ railwayCode: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-nfc" label="NFC Code">
+                <Input
+                  id="test-nfc"
+                  value={form.nfcCode}
+                  placeholder="Optional"
+                  onChange={(event) => update({ nfcCode: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-code" label="Test Code" required>
+                <Input
+                  id="test-code"
+                  value={form.testCode}
+                  placeholder="e.g. BS001"
+                  maxLength={20}
+                  onChange={(event) =>
+                    update({ testCode: event.target.value.toUpperCase() })
+                  }
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-short" label="Short Name" required>
+                <Input
+                  id="test-short"
+                  value={form.shortName}
+                  placeholder="e.g. BS(F)"
+                  onChange={(event) => update({ shortName: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-desc" label="Description">
+                <Input
+                  id="test-desc"
+                  value={form.description}
+                  placeholder="Optional notes"
+                  onChange={(event) => update({ description: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-price" label="OP Price" required>
+                <Input
+                  id="test-price"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={form.price}
+                  placeholder="0.00"
+                  onChange={(event) => update({ price: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-active" label="Active Status">
+                <label
+                  htmlFor="test-active"
+                  className="flex h-8 items-center gap-2 text-sm text-slate-700"
+                >
+                  <Checkbox
+                    id="test-active"
+                    checked={form.active}
+                    onChange={(event) => update({ active: event.target.checked })}
+                    disabled={saveMutation.isPending}
+                  />
+                  {form.active ? "Active" : "Inactive"}
+                </label>
+              </FormField>
+              <FormField id="test-price-ip" label="IP Price">
+                <Input
+                  id="test-price-ip"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={form.priceIp}
+                  placeholder="0.00"
+                  onChange={(event) => update({ priceIp: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-price-er" label="ER Price">
+                <Input
+                  id="test-price-er"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={form.priceEr}
+                  placeholder="0.00"
+                  onChange={(event) => update({ priceEr: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-price-ins-ip" label="Ins IP Price">
+                <Input
+                  id="test-price-ins-ip"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={form.priceInsIp}
+                  placeholder="0.00"
+                  onChange={(event) => update({ priceInsIp: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-doctor-price" label="Doctor Price">
+                <Input
+                  id="test-doctor-price"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={form.doctorPrice}
+                  placeholder="0.00"
+                  onChange={(event) => update({ doctorPrice: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-comments" label="Comments">
+                <Textarea
+                  id="test-comments"
+                  value={form.comments}
+                  placeholder="Optional comments"
+                  onChange={(event) => update({ comments: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-referral" label="Referral %">
+                <Input
+                  id="test-referral"
+                  type="number"
+                  min={0}
+                  max={100}
+                  step="0.01"
+                  value={form.referralPercent}
+                  placeholder="0"
+                  onChange={(event) => update({ referralPercent: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-type" label="Test Type">
+                <Input
+                  id="test-type"
+                  value={form.testType}
+                  placeholder="e.g. Biochemistry"
+                  onChange={(event) => update({ testType: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-note-1" label="Report Note 1">
+                <Textarea
+                  id="test-note-1"
+                  value={form.reportNote1}
+                  placeholder="Optional report note"
+                  onChange={(event) => update({ reportNote1: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-note-2" label="Report Note 2">
+                <Textarea
+                  id="test-note-2"
+                  value={form.reportNote2}
+                  placeholder="Optional report note"
+                  onChange={(event) => update({ reportNote2: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="test-sample" label="Sample Name">
+                <AddableDatalist
+                  id="test-sample"
+                  value={form.sampleType}
+                  onChange={(value) => update({ sampleType: value })}
+                  options={specimenQuery.data?.sampleTypes ?? []}
+                  placeholder="e.g. Blood / Serum"
+                />
+              </FormField>
+              <FormField id="test-container" label="Tube Container">
+                <AddableDatalist
+                  id="test-container"
+                  value={form.containerType}
+                  onChange={(value) => update({ containerType: value })}
+                  options={specimenQuery.data?.containerTypes ?? []}
+                  placeholder="e.g. Plain / EDTA"
+                />
+              </FormField>
+              <FormField id="test-result-mode" label="Result Type">
+                <Select
+                  id="test-result-mode"
+                  className="h-8"
+                  value={form.resultMode}
+                  onChange={(event) => update({ resultMode: event.target.value })}
+                  disabled={saveMutation.isPending}
+                >
+                  {RESULT_MODE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+            </div>
+
           <LabActions
+            homeBeforeClear
             onSubmit={handleSave}
             onClear={clearForm}
             submitting={saveMutation.isPending}
             submitLabel={editingId ? "Update" : "Submit"}
-            homeHref="/laboratory"
+            homeHref="/dashboard"
           />
         </div>
       </FormSection>
@@ -697,29 +681,7 @@ export function CreateLabTestContent() {
         />
       </FormSection>
 
-      <ConfirmDialog
-        open={confirmTarget !== null}
-        onOpenChange={(open) => {
-          if (!open) setConfirmTarget(null);
-        }}
-        title={confirmTarget?.active ? "Deactivate lab test?" : "Activate lab test?"}
-        description={
-          confirmTarget
-            ? `Do you want to ${confirmTarget.active ? "deactivate" : "activate"} "${confirmTarget.testName}"?`
-            : undefined
-        }
-        confirmLabel={confirmTarget?.active ? "Deactivate" : "Activate"}
-        loading={toggleMutation.isPending}
-        onConfirm={() => {
-          if (confirmTarget) {
-            void toggleMutation.mutate({
-              id: confirmTarget.id,
-              active: !confirmTarget.active,
-            });
-            setConfirmTarget(null);
-          }
-        }}
-      />
+
 
       <Dialog
         open={viewTarget !== null}

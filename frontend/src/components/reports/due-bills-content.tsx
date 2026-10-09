@@ -1,8 +1,10 @@
 "use client";
 
+import { ReportPreview } from "@/components/reports/report-preview";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FileBarChart2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { ReportDateRange } from "@/components/reports/report-date-range";
 import { ReportSearchInput } from "@/components/reports/report-search-input";
@@ -281,10 +283,10 @@ export function DueBillsContent() {
 
   return (
     <>
-      <div className="mx-auto max-w-7xl space-y-3 p-4 print:hidden sm:p-6">
+      <div data-tmis-page="due-bills" className="lis-tmis lis-report-page space-y-3 print:hidden">
         <BillPageHeader
           icon={FileBarChart2}
-          title="Due Bills"
+          title="Dues Report"
           subtitle="List of generated bills with outstanding balance."
         />
 
@@ -293,7 +295,7 @@ export function DueBillsContent() {
           onClear={handleClear}
           searching={loading}
         >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="lis-due-filter-columns grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <ReportDateRange
               fromId="due-from-date"
               toId="due-to-date"
@@ -333,7 +335,7 @@ export function DueBillsContent() {
 
         <ReportSummary items={summaryItems} />
 
-        <Card>
+        <ReportPreview reportTitle="Due Bills Report" criteria={criteriaText} total={result?.pagination.total ?? 0} className="lis-tmis-document">
           {error ? (
             <CardContent className="px-2.5 py-5 text-center text-sm text-red-600">
               {error}
@@ -395,7 +397,7 @@ export function DueBillsContent() {
               )}
             </>
           )}
-        </Card>
+        </ReportPreview>
       </div>
 
       <ReportPrintSheet

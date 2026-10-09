@@ -206,7 +206,7 @@ export function OspPatientDetails({
   const lastRowClass = "border-b-0";
 
   return (
-    <div className="rounded-md border border-border/80 bg-white">
+    <div className="lis-osp-patient rounded-md border border-border/80 bg-white">
       <Row
         left={
           <Cell label="Name" error={nameError} className={leftColumnClass}>
@@ -224,9 +224,8 @@ export function OspPatientDetails({
             </Select>
             <Input
               aria-label="Patient name"
-              placeholder="Patient name"
               value={value.name}
-              onChange={(event) => set({ name: event.target.value })}
+              onChange={(event) => set({ name: event.target.value.toUpperCase() })}
               maxLength={60}
               aria-invalid={Boolean(nameError)}
               className={cn(inputHeight, "min-w-0 flex-1")}
@@ -239,7 +238,6 @@ export function OspPatientDetails({
               ref={dobRef}
               aria-label="Date of birth"
               type="date"
-              placeholder="dd-mm-yyyy"
               value={value.dateOfBirth}
               onChange={(event) => handleDobChange(event.target.value)}
               aria-invalid={Boolean(dobError)}
@@ -283,7 +281,6 @@ export function OspPatientDetails({
               inputMode="numeric"
               min={0}
               max={150}
-              placeholder="0"
               value={value.ageYears}
               onChange={(event) =>
                 set({ ageYears: sanitizeAgeInput(event.target.value) })
@@ -297,7 +294,6 @@ export function OspPatientDetails({
               inputMode="numeric"
               min={0}
               max={11}
-              placeholder="0"
               value={value.ageMonths}
               onChange={(event) =>
                 set({ ageMonths: sanitizeAgeInput(event.target.value) })
@@ -311,7 +307,6 @@ export function OspPatientDetails({
               inputMode="numeric"
               min={0}
               max={30}
-              placeholder="0"
               value={value.ageDays}
               onChange={(event) =>
                 set({ ageDays: sanitizeAgeInput(event.target.value) })
@@ -328,10 +323,9 @@ export function OspPatientDetails({
             <Input
               aria-label="Mobile number"
               inputMode="numeric"
-              placeholder="10-digit mobile"
               value={value.mobile}
               onChange={(event) =>
-                set({ mobile: event.target.value.replace(/[^0-9]/g, "").slice(0, 12) })
+                set({ mobile: event.target.value.replace(/[^0-9]/g, "").slice(0, 13) })
               }
               aria-invalid={Boolean(mobileError)}
               className={cn(inputHeight, "min-w-0 flex-1")}
@@ -343,7 +337,6 @@ export function OspPatientDetails({
             <Input
               aria-label="Email id"
               type="email"
-              placeholder="Email address"
               value={value.email}
               onChange={(event) => set({ email: event.target.value })}
               aria-invalid={Boolean(emailError)}
@@ -369,7 +362,6 @@ export function OspPatientDetails({
               aria-label="Address"
               rows={2}
               maxLength={45}
-              placeholder="Address"
               value={value.address}
               onChange={(event) => set({ address: event.target.value })}
               className="h-[60px] min-w-0 flex-1 resize-none"

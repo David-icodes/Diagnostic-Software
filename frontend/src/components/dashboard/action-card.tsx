@@ -23,7 +23,7 @@ export function ActionCard({
   href,
 }: ActionCardProps) {
   return (
-    <Card className="h-[130px] border-border bg-card p-0 shadow-sm transition-colors hover:border-primary/50">
+    <Card className="lis-action-card h-[130px] border-border bg-card p-0 shadow-sm transition-colors hover:border-primary/50">
       <Link
         href={href}
         className={cn(

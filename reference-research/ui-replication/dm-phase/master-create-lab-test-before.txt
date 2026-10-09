@@ -1,0 +1,384 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Create New Lab Test" [level=1]
+  - paragraph: Add and manage lab tests, prices and result configuration
+  - link "Home":
+    - /url: /dashboard
+  - text: Department Name
+  - generic: "*"
+  - combobox "Department Name *":
+    - option "--Select--" [selected]
+    - option "Biochemistry"
+    - option "Clinical Pathology"
+    - option "Hematology"
+    - option "Hormones"
+    - option "Immunology / Serology"
+    - option "Microbiology"
+    - option "Molecular Biology"
+    - option "Packages / Profiles"
+    - option "Pathology"
+    - option "Pharmacy Support"
+  - text: Test Name
+  - generic: "*"
+  - textbox "Test Name *":
+    - /placeholder: e.g. BLOOD SUGAR (F)
+  - generic: CGHS Code
+  - textbox "CGHS Code":
+    - /placeholder: Optional
+  - generic: NIMS Code
+  - textbox "NIMS Code":
+    - /placeholder: Optional
+  - generic: Railway Code
+  - textbox "Railway Code":
+    - /placeholder: Optional
+  - generic: NFC Code
+  - textbox "NFC Code":
+    - /placeholder: Optional
+  - text: Test Code
+  - generic: "*"
+  - textbox "Test Code *":
+    - /placeholder: e.g. BS001
+  - text: Short Name
+  - generic: "*"
+  - textbox "Short Name *":
+    - /placeholder: e.g. BS(F)
+  - generic: Description
+  - textbox "Description":
+    - /placeholder: Optional notes
+  - text: OP Price
+  - generic: "*"
+  - spinbutton "OP Price *"
+  - generic: Active Status
+  - checkbox "Active Status Active" [checked]
+  - text: Active
+  - generic: IP Price
+  - spinbutton "IP Price"
+  - generic: ER Price
+  - spinbutton "ER Price"
+  - generic: Ins IP Price
+  - spinbutton "Ins IP Price"
+  - generic: Doctor Price
+  - spinbutton "Doctor Price"
+  - generic: Comments
+  - textbox "Comments":
+    - /placeholder: Optional comments
+  - generic: Referral %
+  - spinbutton "Referral %"
+  - generic: Test Type
+  - textbox "Test Type":
+    - /placeholder: e.g. Biochemistry
+  - generic: Report Note 1
+  - textbox "Report Note 1":
+    - /placeholder: Optional report note
+  - generic: Report Note 2
+  - textbox "Report Note 2":
+    - /placeholder: Optional report note
+  - generic: Sample Name
+  - combobox "Sample Name"
+  - generic: Tube Container
+  - combobox "Tube Container"
+  - generic: Result Type
+  - combobox "Result Type":
+    - option "Parameter Based" [selected]
+    - option "Template Based"
+    - option "Simple Result"
+    - option "Calculated"
+  - button "Submit"
+  - button "Clear"
+  - link "Home":
+    - /url: /laboratory
+  - heading "List of Lab Tests" [level=2]
+  - paragraph: Configured tests with their prices
+  - combobox "Filter by department":
+    - option "All Departments" [selected]
+    - option "Biochemistry"
+    - option "Clinical Pathology"
+    - option "Hematology"
+    - option "Hormones"
+    - option "Immunology / Serology"
+    - option "Microbiology"
+    - option "Molecular Biology"
+    - option "Packages / Profiles"
+    - option "Pathology"
+    - option "Pharmacy Support"
+  - combobox "Filter by status":
+    - option "All Status" [selected]
+    - option "Active"
+    - option "Inactive"
+  - searchbox "Search tests..."
+  - table:
+    - rowgroup:
+      - row "S.No Dept Name Lab Test Name Test Code OP Price Status Action":
+        - columnheader "S.No"
+        - columnheader "Dept Name"
+        - columnheader "Lab Test Name"
+        - columnheader "Test Code"
+        - columnheader "OP Price"
+        - columnheader "Status"
+        - columnheader "Action"
+    - rowgroup:
+      - row "1 Biochemistry 25 HYDROXY VITAMIN D IMPBIO001 0.00 Active View 25 HYDROXY VITAMIN D Edit 25 HYDROXY VITAMIN D Deactivate 25 HYDROXY VITAMIN D":
+        - cell "1"
+        - cell "Biochemistry"
+        - cell "25 HYDROXY VITAMIN D"
+        - cell "IMPBIO001"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View 25 HYDROXY VITAMIN D Edit 25 HYDROXY VITAMIN D Deactivate 25 HYDROXY VITAMIN D":
+          - button "View 25 HYDROXY VITAMIN D":
+          - button "Edit 25 HYDROXY VITAMIN D":
+          - button "Deactivate 25 HYDROXY VITAMIN D":
+      - row "2 Biochemistry ALBUMIN IMPBIO003 0.00 Active View ALBUMIN Edit ALBUMIN Deactivate ALBUMIN":
+        - cell "2"
+        - cell "Biochemistry"
+        - cell "ALBUMIN"
+        - cell "IMPBIO003"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View ALBUMIN Edit ALBUMIN Deactivate ALBUMIN":
+          - button "View ALBUMIN":
+          - button "Edit ALBUMIN":
+          - button "Deactivate ALBUMIN":
+      - row "3 Biochemistry ALT (SGPT) BIO001 150.00 Active View ALT (SGPT) Edit ALT (SGPT) Deactivate ALT (SGPT)":
+        - cell "3"
+        - cell "Biochemistry"
+        - cell "ALT (SGPT)"
+        - cell "BIO001"
+        - cell "150.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View ALT (SGPT) Edit ALT (SGPT) Deactivate ALT (SGPT)":
+          - button "View ALT (SGPT)":
+          - button "Edit ALT (SGPT)":
+          - button "Deactivate ALT (SGPT)":
+      - row "4 Biochemistry AMYLASE IMPBIO006 0.00 Active View AMYLASE Edit AMYLASE Deactivate AMYLASE":
+        - cell "4"
+        - cell "Biochemistry"
+        - cell "AMYLASE"
+        - cell "IMPBIO006"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View AMYLASE Edit AMYLASE Deactivate AMYLASE":
+          - button "View AMYLASE":
+          - button "Edit AMYLASE":
+          - button "Deactivate AMYLASE":
+      - row "5 Biochemistry ANTI CARDIOLIPIN IgG IMPBIO007 0.00 Active View ANTI CARDIOLIPIN IgG Edit ANTI CARDIOLIPIN IgG Deactivate ANTI CARDIOLIPIN IgG":
+        - cell "5"
+        - cell "Biochemistry"
+        - cell "ANTI CARDIOLIPIN IgG"
+        - cell "IMPBIO007"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View ANTI CARDIOLIPIN IgG Edit ANTI CARDIOLIPIN IgG Deactivate ANTI CARDIOLIPIN IgG":
+          - button "View ANTI CARDIOLIPIN IgG":
+          - button "Edit ANTI CARDIOLIPIN IgG":
+          - button "Deactivate ANTI CARDIOLIPIN IgG":
+      - row "6 Biochemistry ANTI CARDIOLIPIN IgM IMPBIO008 0.00 Active View ANTI CARDIOLIPIN IgM Edit ANTI CARDIOLIPIN IgM Deactivate ANTI CARDIOLIPIN IgM":
+        - cell "6"
+        - cell "Biochemistry"
+        - cell "ANTI CARDIOLIPIN IgM"
+        - cell "IMPBIO008"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View ANTI CARDIOLIPIN IgM Edit ANTI CARDIOLIPIN IgM Deactivate ANTI CARDIOLIPIN IgM":
+          - button "View ANTI CARDIOLIPIN IgM":
+          - button "Edit ANTI CARDIOLIPIN IgM":
+          - button "Deactivate ANTI CARDIOLIPIN IgM":
+      - row "7 Biochemistry ANTI CCP IMPBIO009 0.00 Active View ANTI CCP Edit ANTI CCP Deactivate ANTI CCP":
+        - cell "7"
+        - cell "Biochemistry"
+        - cell "ANTI CCP"
+        - cell "IMPBIO009"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View ANTI CCP Edit ANTI CCP Deactivate ANTI CCP":
+          - button "View ANTI CCP":
+          - button "Edit ANTI CCP":
+          - button "Deactivate ANTI CCP":
+      - row "8 Biochemistry ANTI MULLERIN HORMONE(AMH) IMPBIO010 0.00 Active View ANTI MULLERIN HORMONE(AMH) Edit ANTI MULLERIN HORMONE(AMH) Deactivate ANTI MULLERIN HORMONE(AMH)":
+        - cell "8"
+        - cell "Biochemistry"
+        - cell "ANTI MULLERIN HORMONE(AMH)"
+        - cell "IMPBIO010"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View ANTI MULLERIN HORMONE(AMH) Edit ANTI MULLERIN HORMONE(AMH) Deactivate ANTI MULLERIN HORMONE(AMH)":
+          - button "View ANTI MULLERIN HORMONE(AMH)":
+          - button "Edit ANTI MULLERIN HORMONE(AMH)":
+          - button "Deactivate ANTI MULLERIN HORMONE(AMH)":
+      - row "9 Biochemistry ANTI TPO IMPBIO012 0.00 Active View ANTI TPO Edit ANTI TPO Deactivate ANTI TPO":
+        - cell "9"
+        - cell "Biochemistry"
+        - cell "ANTI TPO"
+        - cell "IMPBIO012"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View ANTI TPO Edit ANTI TPO Deactivate ANTI TPO":
+          - button "View ANTI TPO":
+          - button "Edit ANTI TPO":
+          - button "Deactivate ANTI TPO":
+      - row "10 Biochemistry ANTIBODY TO HEPATITIS C VIRUS(CLIA) IMPBIO013 0.00 Active View ANTIBODY TO HEPATITIS C VIRUS(CLIA) Edit ANTIBODY TO HEPATITIS C VIRUS(CLIA) Deactivate ANTIBODY TO HEPATITIS C VIRUS(CLIA)":
+        - cell "10"
+        - cell "Biochemistry"
+        - cell "ANTIBODY TO HEPATITIS C VIRUS(CLIA)"
+        - cell "IMPBIO013"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View ANTIBODY TO HEPATITIS C VIRUS(CLIA) Edit ANTIBODY TO HEPATITIS C VIRUS(CLIA) Deactivate ANTIBODY TO HEPATITIS C VIRUS(CLIA)":
+          - button "View ANTIBODY TO HEPATITIS C VIRUS(CLIA)":
+          - button "Edit ANTIBODY TO HEPATITIS C VIRUS(CLIA)":
+          - button "Deactivate ANTIBODY TO HEPATITIS C VIRUS(CLIA)":
+      - row "11 Biochemistry APLA PROFILE IMPBIO014 0.00 Active View APLA PROFILE Edit APLA PROFILE Deactivate APLA PROFILE":
+        - cell "11"
+        - cell "Biochemistry"
+        - cell "APLA PROFILE"
+        - cell "IMPBIO014"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View APLA PROFILE Edit APLA PROFILE Deactivate APLA PROFILE":
+          - button "View APLA PROFILE":
+          - button "Edit APLA PROFILE":
+          - button "Deactivate APLA PROFILE":
+      - row "12 Biochemistry APOLIPOPROTEIN B (APO-B) IMPBIO015 0.00 Active View APOLIPOPROTEIN B (APO-B) Edit APOLIPOPROTEIN B (APO-B) Deactivate APOLIPOPROTEIN B (APO-B)":
+        - cell "12"
+        - cell "Biochemistry"
+        - cell "APOLIPOPROTEIN B (APO-B)"
+        - cell "IMPBIO015"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View APOLIPOPROTEIN B (APO-B) Edit APOLIPOPROTEIN B (APO-B) Deactivate APOLIPOPROTEIN B (APO-B)":
+          - button "View APOLIPOPROTEIN B (APO-B)":
+          - button "Edit APOLIPOPROTEIN B (APO-B)":
+          - button "Deactivate APOLIPOPROTEIN B (APO-B)":
+      - row "13 Biochemistry ASO IMPBIO016 0.00 Active View ASO Edit ASO Deactivate ASO":
+        - cell "13"
+        - cell "Biochemistry"
+        - cell "ASO"
+        - cell "IMPBIO016"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View ASO Edit ASO Deactivate ASO":
+          - button "View ASO":
+          - button "Edit ASO":
+          - button "Deactivate ASO":
+      - row "14 Biochemistry AST (SGOT) BIO002 150.00 Active View AST (SGOT) Edit AST (SGOT) Deactivate AST (SGOT)":
+        - cell "14"
+        - cell "Biochemistry"
+        - cell "AST (SGOT)"
+        - cell "BIO002"
+        - cell "150.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View AST (SGOT) Edit AST (SGOT) Deactivate AST (SGOT)":
+          - button "View AST (SGOT)":
+          - button "Edit AST (SGOT)":
+          - button "Deactivate AST (SGOT)":
+      - row "15 Hematology Absolute Eosinophil Count (AEC) IMPHEM001 0.00 Active View Absolute Eosinophil Count (AEC) Edit Absolute Eosinophil Count (AEC) Deactivate Absolute Eosinophil Count (AEC)":
+        - cell "15"
+        - cell "Hematology"
+        - cell "Absolute Eosinophil Count (AEC)"
+        - cell "IMPHEM001"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View Absolute Eosinophil Count (AEC) Edit Absolute Eosinophil Count (AEC) Deactivate Absolute Eosinophil Count (AEC)":
+          - button "View Absolute Eosinophil Count (AEC)":
+          - button "Edit Absolute Eosinophil Count (AEC)":
+          - button "Deactivate Absolute Eosinophil Count (AEC)":
+      - row "16 Biochemistry Activated Partial Thromboplastin Time (APTT/PTTK) IMPBIO002 0.00 Active View Activated Partial Thromboplastin Time (APTT/PTTK) Edit Activated Partial Thromboplastin Time (APTT/PTTK) Deactivate Activated Partial Thromboplastin Time (APTT/PTTK)":
+        - cell "16"
+        - cell "Biochemistry"
+        - cell "Activated Partial Thromboplastin Time (APTT/PTTK)"
+        - cell "IMPBIO002"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View Activated Partial Thromboplastin Time (APTT/PTTK) Edit Activated Partial Thromboplastin Time (APTT/PTTK) Deactivate Activated Partial Thromboplastin Time (APTT/PTTK)":
+          - button "View Activated Partial Thromboplastin Time (APTT/PTTK)":
+          - button "Edit Activated Partial Thromboplastin Time (APTT/PTTK)":
+          - button "Deactivate Activated Partial Thromboplastin Time (APTT/PTTK)":
+      - row "17 Biochemistry Albumin/Creatinine Ratio IMPBIO004 0.00 Active View Albumin/Creatinine Ratio Edit Albumin/Creatinine Ratio Deactivate Albumin/Creatinine Ratio":
+        - cell "17"
+        - cell "Biochemistry"
+        - cell "Albumin/Creatinine Ratio"
+        - cell "IMPBIO004"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View Albumin/Creatinine Ratio Edit Albumin/Creatinine Ratio Deactivate Albumin/Creatinine Ratio":
+          - button "View Albumin/Creatinine Ratio":
+          - button "Edit Albumin/Creatinine Ratio":
+          - button "Deactivate Albumin/Creatinine Ratio":
+      - row "18 Biochemistry Alkaline Phosphatase IMPBIO005 0.00 Active View Alkaline Phosphatase Edit Alkaline Phosphatase Deactivate Alkaline Phosphatase":
+        - cell "18"
+        - cell "Biochemistry"
+        - cell "Alkaline Phosphatase"
+        - cell "IMPBIO005"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View Alkaline Phosphatase Edit Alkaline Phosphatase Deactivate Alkaline Phosphatase":
+          - button "View Alkaline Phosphatase":
+          - button "Edit Alkaline Phosphatase":
+          - button "Deactivate Alkaline Phosphatase":
+      - row "19 Biochemistry Anti Nuclear Antibody IMPBIO011 0.00 Active View Anti Nuclear Antibody Edit Anti Nuclear Antibody Deactivate Anti Nuclear Antibody":
+        - cell "19"
+        - cell "Biochemistry"
+        - cell "Anti Nuclear Antibody"
+        - cell "IMPBIO011"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View Anti Nuclear Antibody Edit Anti Nuclear Antibody Deactivate Anti Nuclear Antibody":
+          - button "View Anti Nuclear Antibody":
+          - button "Edit Anti Nuclear Antibody":
+          - button "Deactivate Anti Nuclear Antibody":
+      - row "20 Biochemistry BETA 2 GLYCOPROTEIN ANTY BODY IgG IMPBIO017 0.00 Active View BETA 2 GLYCOPROTEIN ANTY BODY IgG Edit BETA 2 GLYCOPROTEIN ANTY BODY IgG Deactivate BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+        - cell "20"
+        - cell "Biochemistry"
+        - cell "BETA 2 GLYCOPROTEIN ANTY BODY IgG"
+        - cell "IMPBIO017"
+        - cell "0.00"
+        - cell "Active":
+          - generic: Active
+        - cell "View BETA 2 GLYCOPROTEIN ANTY BODY IgG Edit BETA 2 GLYCOPROTEIN ANTY BODY IgG Deactivate BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+          - button "View BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+          - button "Edit BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+          - button "Deactivate BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+  - paragraph: Showing 1–20 of 183 records · Page 1 of 10
+  - button "Previous" [disabled]:
+    - text: Previous
+  - button "Next":
+    - text: Next

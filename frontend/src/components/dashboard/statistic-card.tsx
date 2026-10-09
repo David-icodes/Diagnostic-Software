@@ -25,20 +25,20 @@ export function StatisticCard({
   iconClassName,
 }: StatisticCardProps) {
   return (
-    <Card className="h-[130px] border-border bg-card p-0 shadow-sm">
+    <Card className="lis-statistic-card h-[130px] border-border bg-card p-0 shadow-sm">
       <div className="flex h-full flex-col px-4 py-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[28px] font-bold leading-none text-[#344256]">
+            <p className="lis-metric-value text-[28px] font-bold leading-none text-[#344256]">
               {value}
             </p>
-            <p className="mt-1.5 truncate text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            <p className="lis-metric-label mt-1.5 truncate text-[11px] font-semibold uppercase tracking-wide text-slate-500">
               {title}
             </p>
           </div>
           <span
             className={cn(
-              "flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary",
+              "lis-metric-icon flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary",
               iconClassName,
             )}
           >
@@ -46,7 +46,7 @@ export function StatisticCard({
           </span>
         </div>
         {hint ? (
-          <div className="mt-auto border-t border-border pt-2 text-[11px] text-slate-500">
+          <div className="lis-metric-date mt-auto border-t border-border pt-2 text-[11px] text-slate-500">
             {hint}
           </div>
         ) : null}

@@ -126,7 +126,7 @@ export function CancelLabBill() {
   const cancelDisabled = !bill || isCancelled || cancelMutation.isPending;
 
   return (
-    <div className="space-y-3">
+    <div className="lis-cancel space-y-3">
       <BillPageHeader
         icon={ShieldX}
         title="Cancel Lab Bill"

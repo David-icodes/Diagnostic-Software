@@ -145,6 +145,9 @@ export interface BillItem {
   unitPrice: number;
   quantity: number;
   total: number;
+  outsideLabId?: string | null;
+  outsideLabName?: string;
+  sentOutAt?: string | null;
 }
 
 export interface LabBill {
@@ -192,6 +195,8 @@ export interface CollectDueRequest {
 }
 
 export interface BillItemsRequest {
+  out?: boolean;
+  outsideLabId?: string | null;
   testId: string;
   quantity: number;
 }

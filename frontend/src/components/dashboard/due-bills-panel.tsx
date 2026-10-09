@@ -18,7 +18,7 @@ const columns: ColumnDef<DueBill>[] = [
     className: "w-[150px]",
     render: (bill) => (
       <Link
-        href={`/billing/osp/${bill.id}`}
+        href={`/laboratory/billing/collect-dues?billId=${encodeURIComponent(bill.id)}`}
         className="font-medium text-primary hover:underline"
       >
         {bill.billNo}

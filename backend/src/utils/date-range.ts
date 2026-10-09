@@ -21,7 +21,18 @@ export function parseLocalDayStart(value?: string | null): Date | undefined {
   if (!DATE_ONLY_REGEX.test(trimmed)) return undefined;
   const [year, month, day] = trimmed.split("-").map(Number);
   const date = new Date(year, month - 1, day);
-  return Number.isNaN(date.getTime()) ? undefined : date;
+  // The Date constructor normalises impossible dates (for example, October 32)
+  // into the following month. Reject those instead of silently querying a
+  // different business day.
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return undefined;
+  }
+  return date;
 }
 
 export interface LocalDayRange {

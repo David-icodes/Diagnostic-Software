@@ -1,9 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { localToday } from "@/lib/report-filter-state";
+import { ReportPreview } from "@/components/reports/report-preview";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileBarChart2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { ReportDateRange } from "@/components/reports/report-date-range";
 import { ReportSelect } from "@/components/reports/report-select";
@@ -21,7 +24,7 @@ import {
 } from "@/components/reports/report-export";
 import { fetchClients, fetchDoctors } from "@/services/billing";
 import { fetchClientGeneratedLabBills } from "@/services/reports";
-import { CLIENT_BILLS_ORDER_OPTIONS } from "@/types/reports";
+import { CLIENT_BILLS_ORDER_OPTIONS, payModeLabel } from "@/types/reports";
 import type {
   ClientGeneratedLabBillRow,
   ClientGeneratedLabBillsResponse,
@@ -48,12 +51,13 @@ const EMPTY_FILTERS: Filters = {
 };
 
 export function ClientGeneratedLabBillsContent() {
-  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [filters, setFilters] = useState<Filters>(() => ({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() }));
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [clients, setClients] = useState<ReportSelectOption[]>([]);
   const [doctors, setDoctors] = useState<ReportSelectOption[]>([]);
   const [result, setResult] = useState<ClientGeneratedLabBillsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const requestSequence = useRef(0);
   const [error, setError] = useState<string | null>(null);
   const [printRows, setPrintRows] = useState<ClientGeneratedLabBillRow[]>([]);
   const [printing, setPrinting] = useState(false);
@@ -111,31 +115,21 @@ export function ClientGeneratedLabBillsContent() {
     [buildParams],
   );
 
-  useEffect(() => {
-    fetchClientGeneratedLabBills(buildParams(1, EMPTY_FILTERS))
-      .then((response) => {
-        setResult(response);
-        setError(null);
-      })
-      .catch(() => {
-        setResult(null);
-        setError("Unable to load the report. Please try again.");
-      })
-      .finally(() => setLoading(false));
-  }, [buildParams]);
-
   const runFetch = useCallback(
     (targetPage: number, criteria: Filters) => {
+      const sequence = ++requestSequence.current;
       fetchClientGeneratedLabBills(buildParams(targetPage, criteria))
         .then((response) => {
+          if (sequence !== requestSequence.current) return;
           setResult(response);
           setError(null);
         })
         .catch(() => {
+          if (sequence !== requestSequence.current) return;
           setResult(null);
           setError("Unable to load the report. Please try again.");
         })
-        .finally(() => setLoading(false));
+        .finally(() => { if (sequence === requestSequence.current) setLoading(false); });
     },
     [buildParams],
   );
@@ -147,11 +141,10 @@ export function ClientGeneratedLabBillsContent() {
   }, [filters, runFetch]);
 
   const handleClear = useCallback(() => {
-    setFilters(EMPTY_FILTERS);
-    setApplied(EMPTY_FILTERS);
-    setLoading(true);
-    runFetch(1, EMPTY_FILTERS);
-  }, [runFetch]);
+    requestSequence.current += 1;
+    setFilters({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() });
+    setApplied(EMPTY_FILTERS); setResult(null); setPrintRows([]); setError(null); setLoading(false);
+  }, []);
 
   const handlePageChange = useCallback(
     (targetPage: number) => {
@@ -276,6 +269,7 @@ export function ClientGeneratedLabBillsContent() {
           </span>
         ),
       },
+      { key: "paymentMode", header: "Pay Mode", render: (row) => payModeLabel(row.paymentMode) || "—" },
       {
         key: "status",
         header: "Status",
@@ -308,6 +302,7 @@ export function ClientGeneratedLabBillsContent() {
       { key: "discountAmount", header: "Discount (Rs.)", render: (row) => formatMoney(row.discountAmount), align: "right" },
       { key: "netAmount", header: "Net (Rs.)", render: (row) => formatMoney(row.netAmount), align: "right" },
       { key: "paidAmount", header: "Paid (Rs.)", render: (row) => formatMoney(row.paidAmount), align: "right" },
+      { key: "paymentMode", header: "Pay Mode", render: (row) => payModeLabel(row.paymentMode) || "—" },
       { key: "dueAmount", header: "Balance (Rs.)", render: (row) => formatMoney(row.dueAmount), align: "right" },
     ],
     [],
@@ -371,15 +366,25 @@ export function ClientGeneratedLabBillsContent() {
 
   return (
     <>
-      <div className="mx-auto max-w-7xl space-y-3 p-4 print:hidden sm:p-6">
+      <div data-tmis-page="client-generated-lab-bills" className="lis-tmis lis-report-page space-y-3 print:hidden">
         <BillPageHeader
           icon={FileBarChart2}
           title="Client Generated Lab Bills"
           subtitle="Vendor / client billed lab bill list with payment details."
         />
 
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-4">
-          <div className="lg:col-span-3">
+        <div className="lis-client-report-layout grid grid-cols-1 gap-3 lg:grid-cols-4">
+          <ReportSelectionPanel
+            title="Client Name"
+            options={clients}
+            selected={filters.clientIds}
+            onToggle={toggleClient}
+            onSelectAll={(values) => setFilters((prev) => ({ ...prev, clientIds: values }))}
+            onClear={() => setFilters((prev) => ({ ...prev, clientIds: [] }))}
+            searchPlaceholder="Search client…"
+            maxHeightClassName="max-h-64"
+          />
+<div className="lg:col-span-3">
             <ReportFilterBar
               onSearch={handleSearch}
               onClear={handleClear}
@@ -411,21 +416,11 @@ export function ClientGeneratedLabBillsContent() {
               </div>
             </ReportFilterBar>
           </div>
-          <ReportSelectionPanel
-            title="Client Name"
-            options={clients}
-            selected={filters.clientIds}
-            onToggle={toggleClient}
-            onSelectAll={(values) => setFilters((prev) => ({ ...prev, clientIds: values }))}
-            onClear={() => setFilters((prev) => ({ ...prev, clientIds: [] }))}
-            searchPlaceholder="Search client…"
-            maxHeightClassName="max-h-64"
-          />
         </div>
 
         <ReportSummary items={summaryItems} />
 
-        <Card>
+        {(result || loading || error) && <ReportPreview reportTitle="Client Generated Lab Bills" criteria={criteriaText} total={result?.pagination.total ?? 0} className="lis-tmis-document">
           {error ? (
             <CardContent className="px-2.5 py-5 text-center text-sm text-red-600">
               {error}
@@ -462,7 +457,7 @@ export function ClientGeneratedLabBillsContent() {
               )}
             </>
           )}
-        </Card>
+        </ReportPreview>}
       </div>
 
       <ReportPrintSheet
@@ -497,6 +492,7 @@ export function ClientGeneratedLabBillsContent() {
           formatMoney(result?.summary.totalDiscount ?? 0),
           formatMoney(result?.summary.totalNet ?? 0),
           formatMoney(result?.summary.totalPaid ?? 0),
+          "",
           formatMoney(result?.summary.totalDue ?? 0),
         ]}
       />

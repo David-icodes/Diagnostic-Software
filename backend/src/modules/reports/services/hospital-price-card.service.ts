@@ -18,7 +18,7 @@ const TARIFFS_UNAVAILABLE_NOTE =
  * Hospital Price Card Report — the organisation's published price list.
  * Tariff tiers (OP/IP/ins-IP/ER) come from the lab-tariff master; a missing
  * tier is returned as `null` so the UI renders "—" instead of inventing
- * values. IP/ins-IP/ER columns fall back to the OP price when not configured.
+ * values. Unconfigured tiers remain null; no OP-price substitutions are made.
  */
 export async function listHospitalPriceCard(
   input: HospitalPriceCardQuery,
@@ -57,10 +57,10 @@ export async function listHospitalPriceCard(
     departmentName: departmentNameMap.get(String(test.departmentId)) ?? "Unassigned",
     testName: test.testName,
     opAmount: test.price,
-    ipAmount: test.priceIp ?? test.price,
-    insIpAmount: test.priceInsIp ?? test.priceIp ?? test.price,
-    erAmount: test.priceEr ?? test.price,
-    insErAmount: test.priceEr ?? test.price,
+    ipAmount: test.priceIp ?? null,
+    insIpAmount: test.priceInsIp ?? null,
+    erAmount: test.priceEr ?? null,
+    insErAmount: null,
   }));
 
   const meta: HospitalPriceCardMeta = {

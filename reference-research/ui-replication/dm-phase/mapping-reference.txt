@@ -1,0 +1,629 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Create New Lab Test Parameter" [level=3]
+- table:
+  - rowgroup:
+    - row "Parameters Parameters For Templates":
+      - cell "Parameters":
+        - radio "Parameters" [checked]
+        - generic: Parameters
+      - cell "Parameters For Templates":
+        - radio "Parameters For Templates"
+        - generic: Parameters For Templates
+- table:
+  - rowgroup:
+    - row "Department Name --Select-- Test Name --Select--":
+      - cell "Department Name"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+          - option "MICROBIOLOGY"
+          - option "Hematology"
+          - option "BIOCHEMISTRY"
+          - option "PATHOLOGY"
+          - option "BIO CHEMISTRY"
+      - cell
+      - cell
+      - cell "Test Name"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+      - cell
+    - row "Parameter/Subtitle ---Select--- Parameter Name":
+      - cell "Parameter/Subtitle"
+      - cell "---Select---":
+        - combobox:
+          - option "---Select---" [selected]
+          - option "Parameter"
+          - option "Subtitle"
+          - option "Only Text"
+      - cell
+      - cell
+      - cell "Parameter Name"
+      - cell:
+        - textbox
+      - cell
+    - row "Parameter Type Text OrderNo":
+      - cell "Parameter Type"
+      - cell "Text":
+        - combobox:
+          - option "Text" [selected]
+          - option "TextArea"
+          - option "Selection"
+      - cell
+      - cell
+      - cell "OrderNo"
+      - cell:
+        - textbox
+      - cell
+    - row "Default Value":
+      - cell "Default Value"
+      - cell:
+        - textbox
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell
+    - row "Units":
+      - cell "Units"
+      - cell:
+        - textbox
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell
+    - row "Active Status Y Method Name":
+      - cell "Active Status"
+      - cell "Y":
+        - combobox:
+          - option "--Select--"
+          - option "Y" [selected]
+          - option "N"
+      - cell
+      - cell
+      - cell "Method Name"
+      - cell:
+        - textbox
+      - cell
+    - row "General Range Gender Wise Range Reference Type Generic Only Reference Range Parameter From Parameter To  General 0 0":
+      - cell "General Range Gender Wise Range Reference Type Generic Only Reference Range Parameter From Parameter To  General 0 0":
+        - table:
+          - rowgroup:
+            - row "General Range Gender Wise Range Reference Type Generic Only Reference Range":
+              - cell "General Range":
+                - radio "General Range" [checked]
+                - generic: General Range
+              - cell "Gender Wise Range":
+                - radio "Gender Wise Range"
+                - generic: Gender Wise Range
+              - cell "Reference Type"
+              - cell "Generic":
+                - combobox:
+                  - option "Generic" [selected]
+                  - option "Age Wise"
+                  - option "Sex Wise"
+                  - option "Age & Sex Wise"
+              - cell
+              - cell "Only Reference Range":
+                - checkbox "Only Reference Range"
+                - generic: Only Reference Range
+            - row
+            - row "Parameter From Parameter To ":
+              - cell
+              - cell "Parameter From"
+              - cell "Parameter To"
+              - cell "":
+                - button ""
+              - cell:
+                - textbox
+            - row "General 0 0":
+              - cell "General"
+              - cell "0":
+                - textbox: "0"
+              - cell "0":
+                - textbox: "0"
+              - cell
+              - cell
+            - row:
+              - cell
+              - cell
+              - cell
+              - cell
+              - cell
+    - row "SUBMIT UPDATE HOME CLEAR":
+      - cell "SUBMIT UPDATE HOME CLEAR":
+        - button "SUBMIT"
+        - button "UPDATE" [disabled]
+        - button "HOME"
+        - button "CLEAR"
+- generic: Department Name
+- combobox:
+  - option "--Select--"
+  - option "MICROBIOLOGY"
+  - option "Hematology" [selected]
+  - option "BIOCHEMISTRY"
+  - option "PATHOLOGY"
+  - option "BIO CHEMISTRY"
+- generic: Test Name
+- combobox:
+  - option "--Select--"
+  - option "PT/INR"
+  - option "COMPLETE BLOOD PICTURE" [selected]
+  - option "PERIPHERAL SMEAR"
+  - option "RETICULOCYTE COUNT"
+  - option "Absolute Eosinophil Count (AEC)"
+  - option "ANTI THROMBIN III"
+  - option "BLEEDING TIME CLOTTING TIME"
+  - option "DIRECT COOMBS TEST (DCT)"
+  - option "INDIRECT COOMBS TEST (ICT)"
+  - option "ERYTHROPOIETIN"
+  - option "FIBRINOGEN"
+  - option "FIBRINOGEN DEGRADATION PRODUCT(FDP)"
+  - option "FLUID CELL COUNT"
+  - option "FOLIC ACID"
+  - option "HAEMOGLOBIN"
+  - option "HAEMOGRAM"
+  - option "HLA-B27"
+  - option "IMMATURE PLATELET FRACTION"
+  - option "LE CELLS"
+  - option "MALARIA"
+  - option "PERIPHERAL SMEAR"
+  - option "TC/DC"
+  - option "CELL BLOCK"
+  - option "FROZEN SECTION"
+  - option "LEUKEMIA PANEL"
+  - option "Platelet count"
+- table
+- table:
+  - rowgroup:
+    - row "S.No Lab Dept Lab Test Parameter Name Units Reference Range Order No View Edit Del":
+      - columnheader "S.No"
+      - columnheader "Lab Dept"
+      - columnheader "Lab Test"
+      - columnheader "Parameter Name"
+      - columnheader "Units"
+      - columnheader "Reference Range"
+      - columnheader "Order No"
+      - columnheader "View"
+      - columnheader "Edit"
+      - columnheader "Del"
+  - rowgroup:
+    - row "1 Hematology COMPLETE BLOOD PICTURE Haemoglobin Grams % Male :13-17Grams % Female :12-15Grams % Child :11.0-15.5Grams % 1":
+      - cell "1"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Haemoglobin"
+      - cell "Grams %"
+      - cell "Male :13-17Grams % Female :12-15Grams % Child :11.0-15.5Grams %":
+        - text: Male :13-17Grams %
+        - text: Female :12-15Grams %
+        - text: Child :11.0-15.5Grams %
+      - cell "1"
+      - cell:
+      - cell:
+      - cell:
+    - 'row "2 Hematology COMPLETE BLOOD PICTURE Red Cell Count mill/cumm Males : 4.5 - 5.5 mill/cumm Females: 3.8 - 4.8 mill/cumm 2"':
+      - cell "2"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Red Cell Count"
+      - cell "mill/cumm"
+      - 'cell "Males : 4.5 - 5.5 mill/cumm Females: 3.8 - 4.8 mill/cumm"':
+        - text: "Males : 4.5 - 5.5 mill/cumm"
+        - text: "Females: 3.8 - 4.8 mill/cumm"
+      - cell "2"
+      - cell:
+      - cell:
+      - cell:
+    - 'row "3 Hematology COMPLETE BLOOD PICTURE Hematocrit ( PCV ) Vol % Male : 40-50 Vol % Females : 36-46 Vol % 3"':
+      - cell "3"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Hematocrit ( PCV )"
+      - cell "Vol %"
+      - 'cell "Male : 40-50 Vol % Females : 36-46 Vol %"':
+        - text: "Male : 40-50 Vol %"
+        - text: "Females : 36-46 Vol %"
+      - cell "3"
+      - cell:
+      - cell:
+      - cell:
+    - row "4 Hematology COMPLETE BLOOD PICTURE Total WBC count cells/cumm 4000-11000cells/cumm 3":
+      - cell "4"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Total WBC count"
+      - cell "cells/cumm"
+      - cell "4000-11000cells/cumm": 4000-11000cells/cumm
+      - cell "3"
+      - cell:
+      - cell:
+      - cell:
+    - row "5 Hematology COMPLETE BLOOD PICTURE Mean Corpuscular Volume(MCV) fl 83-101fl 4":
+      - cell "5"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Mean Corpuscular Volume(MCV)"
+      - cell "fl"
+      - cell "83-101fl": 83-101fl
+      - cell "4"
+      - cell:
+      - cell:
+      - cell:
+    - row "6 Hematology COMPLETE BLOOD PICTURE Mean Corpuscular Hemoglobin(MCH) pg 27-32pg 5":
+      - cell "6"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Mean Corpuscular Hemoglobin(MCH)"
+      - cell "pg"
+      - cell "27-32pg": 27-32pg
+      - cell "5"
+      - cell:
+      - cell:
+      - cell:
+    - row "7 Hematology COMPLETE BLOOD PICTURE Mean Corpuscular Hemoglobin Concentration(MCHC) gm/dL 31.5-34.5gm/dL 6":
+      - cell "7"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Mean Corpuscular Hemoglobin Concentration(MCHC)"
+      - cell "gm/dL"
+      - cell "31.5-34.5gm/dL": 31.5-34.5gm/dL
+      - cell "6"
+      - cell:
+      - cell:
+      - cell:
+    - row "8 Hematology COMPLETE BLOOD PICTURE Red Cell Distribution Width(RDW-CV) % 11.6-14% 7":
+      - cell "8"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Red Cell Distribution Width(RDW-CV)"
+      - cell "%"
+      - cell "11.6-14%": 11.6-14%
+      - cell "7"
+      - cell:
+      - cell:
+      - cell:
+    - row "9 Hematology COMPLETE BLOOD PICTURE Platelet Count Lakhs/cumm 1.50 - 4.5 Lakhs/cumm 8":
+      - cell "9"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Platelet Count"
+      - cell "Lakhs/cumm"
+      - cell "1.50 - 4.5 Lakhs/cumm"
+      - cell "8"
+      - cell:
+      - cell:
+      - cell:
+    - row "10 Hematology COMPLETE BLOOD PICTURE Total Leucocyte (WBC) count cells/cumm 4000-10000 cells/cumm 9":
+      - cell "10"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Total Leucocyte (WBC) count"
+      - cell "cells/cumm"
+      - cell "4000-10000 cells/cumm": 4000-10000 cells/cumm
+      - cell "9"
+      - cell:
+      - cell:
+      - cell:
+    - row "11 Hematology COMPLETE BLOOD PICTURE DIFFERENTIAL COUNT 11":
+      - cell "11"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "DIFFERENTIAL COUNT"
+      - cell
+      - cell
+      - cell "11"
+      - cell:
+      - cell:
+      - cell:
+    - row "12 Hematology COMPLETE BLOOD PICTURE Neutrophils % 40-75% 12":
+      - cell "12"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Neutrophils"
+      - cell "%"
+      - cell "40-75%": 40-75%
+      - cell "12"
+      - cell:
+      - cell:
+      - cell:
+    - row "13 Hematology COMPLETE BLOOD PICTURE Lymphocytes % 20-40% 13":
+      - cell "13"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Lymphocytes"
+      - cell "%"
+      - cell "20-40%": 20-40%
+      - cell "13"
+      - cell:
+      - cell:
+      - cell:
+    - row "14 Hematology COMPLETE BLOOD PICTURE Eosinophils % 1-6% 14":
+      - cell "14"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Eosinophils"
+      - cell "%"
+      - cell "1-6%": 1-6%
+      - cell "14"
+      - cell:
+      - cell:
+      - cell:
+    - row "15 Hematology COMPLETE BLOOD PICTURE Monocytes % 2-10% 15":
+      - cell "15"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Monocytes"
+      - cell "%"
+      - cell "2-10%": 2-10%
+      - cell "15"
+      - cell:
+      - cell:
+      - cell:
+    - row "16 Hematology COMPLETE BLOOD PICTURE Basophils % 0-1% 16":
+      - cell "16"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "Basophils"
+      - cell "%"
+      - cell "0-1%": 0-1%
+      - cell "16"
+      - cell:
+      - cell:
+      - cell:
+    - row "17 Hematology COMPLETE BLOOD PICTURE ESR 1st Hour mm 00 - 10 mm 16":
+      - cell "17"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "ESR 1st Hour"
+      - cell "mm"
+      - cell "00 - 10 mm": 00 - 10 mm
+      - cell "16"
+      - cell:
+      - cell:
+      - cell:
+    - row "18 Hematology COMPLETE BLOOD PICTURE PERIPHERAL SMEAR 17":
+      - cell "18"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "PERIPHERAL SMEAR"
+      - cell
+      - cell
+      - cell "17"
+      - cell:
+      - cell:
+      - cell:
+    - row "19 Hematology COMPLETE BLOOD PICTURE ABSOLUTE EOSINOPHIL COUNT (AEC) Cells/cumm 40 - 440 Cells/cumm 17":
+      - cell "19"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "ABSOLUTE EOSINOPHIL COUNT (AEC)"
+      - cell "Cells/cumm"
+      - cell "40 - 440 Cells/cumm": 40 - 440 Cells/cumm
+      - cell "17"
+      - cell:
+      - cell:
+      - cell:
+    - row "20 Hematology COMPLETE BLOOD PICTURE R B C 18":
+      - cell "20"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "R B C"
+      - cell
+      - cell
+      - cell "18"
+      - cell:
+      - cell:
+      - cell:
+    - row "21 Hematology COMPLETE BLOOD PICTURE W B C 19":
+      - cell "21"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "W B C"
+      - cell
+      - cell
+      - cell "19"
+      - cell:
+      - cell:
+      - cell:
+    - row "22 Hematology COMPLETE BLOOD PICTURE PLATELETS 20":
+      - cell "22"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "PLATELETS"
+      - cell
+      - cell
+      - cell "20"
+      - cell:
+      - cell:
+      - cell:
+    - row "23 Hematology COMPLETE BLOOD PICTURE ADVISE 21":
+      - cell "23"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "ADVISE"
+      - cell
+      - cell
+      - cell "21"
+      - cell:
+      - cell:
+      - cell:
+    - row "24 Hematology COMPLETE BLOOD PICTURE IMPRESSION 22":
+      - cell "24"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "IMPRESSION"
+      - cell
+      - cell
+      - cell "22"
+      - cell:
+      - cell:
+      - cell:
+    - row "25 Hematology COMPLETE BLOOD PICTURE ERYTHROCYTE SEDIMENAION RATE 0-20 23":
+      - cell "25"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "ERYTHROCYTE SEDIMENAION RATE"
+      - cell
+      - cell "0-20": 0-20
+      - cell "23"
+      - cell:
+      - cell:
+      - cell:
+- heading "Reference Range Mapping" [level=3]
+- table:
+  - rowgroup:
+    - row "Age Wise Sex Wise Age & Sex Wise":
+      - cell "Age Wise":
+        - radio [checked]
+        - text: Age Wise
+      - cell "Sex Wise":
+        - radio
+        - text: Sex Wise
+      - cell
+      - cell "Age & Sex Wise":
+        - radio
+        - text: Age & Sex Wise
+      - cell
+      - cell
+    - row "Reference Value Type Numeric Age Type Year Age From Age To Reference Value From Reference Value To Display Value":
+      - cell "Reference Value Type Numeric Age Type Year Age From Age To Reference Value From Reference Value To Display Value":
+        - table:
+          - rowgroup:
+            - row "Reference Value Type Numeric":
+              - cell "Reference Value Type"
+              - cell "Numeric":
+                - combobox:
+                  - option "Numeric" [selected]
+                  - option "Text"
+              - cell
+              - cell
+            - row "Age Type Year":
+              - cell "Age Type"
+              - cell "Year":
+                - combobox:
+                  - option "Year" [selected]
+                  - option "Month"
+                  - option "Day"
+              - cell
+              - cell
+            - row "Age From Age To":
+              - cell "Age From"
+              - cell:
+                - textbox
+              - cell
+              - cell "Age To"
+              - cell:
+                - textbox
+              - cell
+            - row "Reference Value From Reference Value To":
+              - cell "Reference Value From"
+              - cell:
+                - textbox
+              - cell
+              - cell "Reference Value To"
+              - cell:
+                - textbox
+              - cell
+            - row "Display Value":
+              - cell "Display Value"
+              - cell:
+                - textbox
+              - cell
+              - cell
+              - cell
+              - cell
+- button "Submit"
+- button "Clear"
+- button "Close"
+- table:
+  - rowgroup:
+    - row "S.No Ref Type Ref Sex Value Type Age type Age From Age To Value From Value To Status Edit":
+      - columnheader "S.No"
+      - columnheader "Ref Type"
+      - columnheader "Ref Sex"
+      - columnheader "Value Type"
+      - columnheader "Age type"
+      - columnheader "Age From"
+      - columnheader "Age To"
+      - columnheader "Value From"
+      - columnheader "Value To"
+      - columnheader "Status"
+      - columnheader "Edit"
+      - columnheader
+- table:
+  - rowgroup:
+    - row "1 Sex Both Numeric Y 0 0 83 101 Y Edit":
+      - cell "1"
+      - cell "Sex"
+      - cell "Both"
+      - cell "Numeric"
+      - cell "Y"
+      - cell "0"
+      - cell "0"
+      - cell "83"
+      - cell "101"
+      - cell "Y"
+      - cell "Edit":
+        - img "Edit"
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

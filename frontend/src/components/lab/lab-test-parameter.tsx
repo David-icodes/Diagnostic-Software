@@ -203,7 +203,7 @@ function rangeLabel(row: ParameterRow): string {
               : "");
       return part ? `${GENDER_RANGE_LABELS[range.gender]} ${part}` : "";
     });
-    const composed = parts.filter(Boolean).join(" / ");
+    const composed = parts.filter(Boolean).join("\n");
     if (composed) return composed;
     return row.referenceRange?.trim() || "—";
   }
@@ -233,7 +233,7 @@ function CompactField({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("min-w-0", className)}>
+    <div className={cn("lis-compact-field min-w-0", className)}>
       <label
         htmlFor={id}
         className="mb-0.5 block truncate text-[11px] font-medium text-slate-600"
@@ -459,7 +459,7 @@ export function LabTestParameterContent() {
 
   const handleSave = () => {
     if (!testId || form.parameterName.trim().length < 1) return;
-    void saveMutation.mutateAsync();
+    saveMutation.mutate();
   };
 
   /**
@@ -586,7 +586,7 @@ export function LabTestParameterContent() {
         header: "Reference Range",
         className: "w-60",
         render: (row: ParameterRow) => (
-          <span className="block whitespace-normal break-words text-xs text-slate-600">
+          <span className="block whitespace-pre-line break-words text-xs text-slate-600">
             {rangeLabel(row)}
             {row.unit ? ` ${row.unit}` : ""}
             {row.needsLabReview ? (
@@ -675,12 +675,12 @@ export function LabTestParameterContent() {
   const genderPreview = genderRangePreview(form.genderRanges);
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-parameter-master space-y-3">
       <PageHeader
         icon={SlidersHorizontal}
         title="Create New Lab Test Parameter"
         subtitle="Configure parameters and reference ranges for lab tests"
-        homeHref="/laboratory"
+        homeHref="/dashboard"
         actions={
           <div className="flex items-center gap-1">
             <Button
@@ -758,7 +758,7 @@ export function LabTestParameterContent() {
 
       <div
         className={cn(
-          "rounded-lg bg-card p-3 ring-1 ring-foreground/10",
+          "lis-parameter-form rounded-lg bg-card p-3 ring-1 ring-foreground/10",
           expanded ? "w-full" : "mx-auto w-full max-w-[1400px]",
         )}
       >
@@ -776,7 +776,7 @@ export function LabTestParameterContent() {
             )}
 
             {/* ROWS 2-6 — identity, type, default, units, status/method */}
-            <div className="grid grid-cols-1 gap-x-4 gap-y-2.5 md:grid-cols-2">
+            <div className="lis-parameter-fields grid grid-cols-1 gap-x-4 gap-y-2.5 md:grid-cols-2">
               <CompactField id="param-dept" label="Department Name">
                 <Select
                   id="param-dept"
@@ -924,8 +924,8 @@ export function LabTestParameterContent() {
             </div>
 
             {/* SECTION 1 — range mode, reference type, only-range flag */}
-            <div className="rounded-lg border border-border/70 bg-slate-50/70 p-2.5">
-              <div className="grid grid-cols-1 gap-x-4 gap-y-2.5 md:grid-cols-[auto_auto_1fr] md:items-end">
+            <div className="lis-reference-config rounded-lg border border-border/70 bg-slate-50/70 p-2.5">
+              <div className="lis-reference-controls grid grid-cols-1 gap-x-4 gap-y-2.5 md:grid-cols-[auto_auto_1fr] md:items-end">
                 <fieldset className="flex flex-wrap items-center gap-4 pb-1.5 md:pb-0">
                   <legend className="sr-only">Reference range mode</legend>
                   {[
@@ -1278,7 +1278,7 @@ export function LabTestParameterContent() {
         confirmLabel="Delete parameter"
         loading={deleteMutation.isPending}
         onConfirm={() => {
-          if (confirmTarget) void deleteMutation.mutateAsync(confirmTarget.id);
+          if (confirmTarget) deleteMutation.mutate(confirmTarget.id);
         }}
       />
 

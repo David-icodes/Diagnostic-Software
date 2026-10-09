@@ -12,6 +12,7 @@ export interface TodayBill {
   patientName: string;
   age: string;
   gender: string;
+  completed: boolean;
 }
 
 export interface DueBill {

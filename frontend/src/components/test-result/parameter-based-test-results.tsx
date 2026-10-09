@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   useMutation,
   useQuery,
@@ -10,9 +11,9 @@ import {
   AlertCircle,
   Calculator,
   CheckCircle2,
-  ClipboardList,
   Loader2,
   PenLine,
+  Printer,
   Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,20 +24,30 @@ import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { BillActionBar } from "@/components/billing/bill-action-bar";
-import { fetchLabBills } from "@/services/billing";
+import { SampleOutsideControl } from "@/components/test-result/sample-outside-control";
+import { ResultPrintDialog } from "@/components/test-result/result-print-dialog";
+import { ResultReportUpload } from "@/components/test-result/result-report-upload";
+import { LisSendDialog } from "@/components/whatsapp/lis-send-dialog";
+import { allResultBillPages, initialResultBillParams, resultBillParams } from "@/lib/result-bill-list";
+import { orderedPrintIds, resultContextHref, sampleContextHref, sampleIsCollected, type SampleContext } from "@/lib/lab-workflows";
+import { fetchLabBill, fetchLabBills } from "@/services/billing";
 import {
   fetchBillResultEntry,
   fetchLabSamples,
   fetchLabTechnicians,
   fetchTestResults,
   submitTestResults,
+  fetchResultWorkflow,
+  checkResultReportEligibility,
 } from "@/services/test-results";
 import { formatDate, formatGender, cn } from "@/lib/utils";
+import { enteredNumber, previewFlag } from "@/lib/result-preview";
 import {
   resolveCalculations,
   type ResolvedCalculation,
 } from "@/lib/parameter-calculator";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
+import { submittedForTest, requireReportEligibility, type ResultPrintMode } from "@/lib/result-workflow";
 import { REFERENCE_MAPPING_LABELS } from "@/types/lab-masters";
 import type { BillListParams } from "@/services/billing";
 import type { LabBill } from "@/types/billing";
@@ -56,35 +67,6 @@ function todayInput(): string {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
   return `${now.getFullYear()}-${month}-${day}`;
-}
-
-/**
- * The backend decides which reference range applies and, on submit, which flag the
- * result gets. This mirrors that comparison only so the table can give live
- * feedback while a value is being typed; the saved flag always comes back on the
- * stored snapshot.
- */
-function previewFlag(
-  value: string | number | boolean | null | undefined,
-  reference: ReferenceResolution,
-): "in-range" | "out-of-range" | "not-comparable" {
-  if (typeof value !== "number" || !Number.isFinite(value)) return "not-comparable";
-  if (reference.valueType !== "NUMERIC") return "not-comparable";
-  if (reference.valueFrom === undefined && reference.valueTo === undefined) {
-    return "not-comparable";
-  }
-  if (reference.valueFrom !== undefined && value < reference.valueFrom) return "out-of-range";
-  if (reference.valueTo !== undefined && value > reference.valueTo) return "out-of-range";
-  return "in-range";
-}
-
-/** Numeric form of what the technician typed, or undefined when not a number. */
-function enteredNumber(value: string | boolean | undefined): number | undefined {
-  if (typeof value === "boolean") return undefined;
-  const raw = (value ?? "").trim();
-  if (!raw) return undefined;
-  const num = Number(raw.replace(",", "."));
-  return Number.isFinite(num) ? num : undefined;
 }
 
 /**
@@ -117,25 +99,34 @@ function toPatientBill(bill: LabBill) {
   return typeof bill.patientId === "object" ? bill.patientId : null;
 }
 
-export function ParameterBasedTestResults() {
+export function ParameterBasedTestResults({ context }: { context?: SampleContext }) {
+  const router = useRouter();
   const queryClient = useQueryClient();
-  const [mode, setMode] = useState<BillMode>("today");
-  const [includeClients, setIncludeClients] = useState(false);
-  const [fromDate, setFromDate] = useState(todayInput);
-  const [toDate, setToDate] = useState(todayInput);
-  const [billNumber, setBillNumber] = useState("");
-  const [patientName, setPatientName] = useState("");
+  const [mode, setMode] = useState<BillMode>(context?.returnFilters?.mode ?? (context ? "criteria" : "today"));
+  const [includeClients, setIncludeClients] = useState(context?.returnFilters?.includeClients ?? true);
+  const [fromDate, setFromDate] = useState(context?.returnFilters?.fromDate ?? todayInput());
+  const [toDate, setToDate] = useState(context?.returnFilters?.toDate ?? todayInput());
+  const [billNumber, setBillNumber] = useState(context?.returnFilters?.billNumber ?? context?.billNumber ?? "");
+  const [patientName, setPatientName] = useState(context?.returnFilters?.patientName ?? "");
+  const [quickSearch, setQuickSearch] = useState("");
 
-  const [billParams, setBillParams] = useState<BillListParams>({
-    status: "generated",
-    fromDate: todayInput(),
-    toDate: todayInput(),
-    limit: 50,
+  const [billParams, setBillParams] = useState<BillListParams>(() => initialResultBillParams(todayInput(), context));
+
+  const [selectedBillState, setSelectedBill] = useState<LabBill | null>(null);
+  const [contextBillId, setContextBillId] = useState(context?.billId ?? null);
+  const contextBillQuery = useQuery({
+    queryKey: [...queryKeys.labBills, "result-return", contextBillId],
+    queryFn: () => fetchLabBill(contextBillId as string), enabled: Boolean(contextBillId),
   });
-
-  const [selectedBill, setSelectedBill] = useState<LabBill | null>(null);
-  const [selectedTestId, setSelectedTestId] = useState<string | null>(null);
+  const selectedBill = selectedBillState ?? (contextBillId && contextBillQuery.data?.id === contextBillId ? contextBillQuery.data : null);
+  const [selectedTestId, setSelectedTestId] = useState<string | null>(context?.testId ?? null);
   const [printMarked, setPrintMarked] = useState<Record<string, boolean>>({});
+  const [printOpen, setPrintOpen] = useState(false);
+  const [whatsAppOpen, setWhatsAppOpen] = useState(false);
+  const [onlyEntered, setOnlyEntered] = useState(false);
+  const [printMode, setPrintMode] = useState<ResultPrintMode>("continuous");
+  const [checkingPrint, setCheckingPrint] = useState(false);
+  const [unconfirmedTests, setUnconfirmedTests] = useState<Record<string, boolean>>({});
   const [signatureId, setSignatureId] = useState<string>("");
   const [actionError, setActionError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -145,7 +136,7 @@ export function ParameterBasedTestResults() {
     // bill invalidates this list too; an unregistered key stayed cached and kept
     // showing records that no longer existed.
     queryKey: [...queryKeys.labBills, "result-entry", billParams],
-    queryFn: () => fetchLabBills(billParams),
+    queryFn: () => allResultBillPages((page) => fetchLabBills({ ...billParams, page })),
   });
 
   const techniciansQuery = useQuery({
@@ -178,8 +169,15 @@ export function ParameterBasedTestResults() {
     enabled: Boolean(selectedBill && selectedTestId),
   });
 
-  const bills = billsQuery.data?.data ?? [];
+  const bills = billsQuery.data ?? [];
   const selectedBillTests = selectedBill?.items ?? [];
+  const workflowQuery = useQuery({
+    queryKey: [...queryKeys.testResults, "workflow", selectedBill?.id],
+    queryFn: () => fetchResultWorkflow(selectedBill!.id), enabled: Boolean(selectedBill), staleTime: 0,
+  });
+  const testSubmitted = (testId: string) => !unconfirmedTests[`${selectedBill?.id}-${testId}`] &&
+    submittedForTest(workflowQuery.data, selectedBill?.id, testId);
+  const printIds = orderedPrintIds(selectedBillTests, printMarked).filter(testSubmitted);
 
   const selectedTest = selectedTestId
     ? selectedBillTests.find((item) => item.testId === selectedTestId) ?? null
@@ -196,13 +194,27 @@ export function ParameterBasedTestResults() {
 
   const submitMutation = useMutation({
     mutationFn: submitTestResults,
-    onSuccess: (data) => {
+    onMutate: (input) => {
+      setActionError(null);
+      setSuccessMessage(null);
+      setUnconfirmedTests((current) => ({ ...current, [`${input.billId}-${input.testId}`]: true }));
+      setPrintMarked((current) => ({ ...current, [input.testId]: false }));
+      setPrintOpen(false);
+    },
+    onSuccess: async (data, input) => {
+      const confirmed = await fetchResultWorkflow(input.billId);
+      queryClient.setQueryData([...queryKeys.testResults, "workflow", input.billId], confirmed);
+      if (!submittedForTest(confirmed, input.billId, input.testId)) {
+        setActionError("Results were saved but submission could not be confirmed. Reload before printing.");
+        return;
+      }
+      setUnconfirmedTests((current) => ({ ...current, [`${input.billId}-${input.testId}`]: false }));
       setSuccessMessage(
         `${data.results.length} result${data.results.length === 1 ? "" : "s"} saved for ${selectedTest?.testName ?? "test"}.`,
       );
       // Saved results change the bill's completion state, its samples and the
       // dashboard counters, so every dependent read is invalidated.
-      void invalidateRoots(
+      await invalidateRoots(
         queryClient,
         queryKeys.testResults,
         queryKeys.labBills,
@@ -219,60 +231,79 @@ export function ParameterBasedTestResults() {
   const sampleByTest = useMemo(() => {
     const map = new Map<string, LabSampleRow>();
     for (const row of billSamplesQuery.data?.data ?? []) {
-      map.set(row.testId, row);
+      if (row.billId === selectedBill?.id) map.set(row.testId, row);
     }
     return map;
-  }, [billSamplesQuery.data]);
+  }, [billSamplesQuery.data, selectedBill?.id]);
 
-  const runSearch = () => {
-    const next: BillListParams = { status: "generated", limit: 50 };
-    const withClients = includeClients;
-    if (!withClients) next.billType = "osp";
-    if (mode === "today") {
-      next.fromDate = todayInput();
-      next.toDate = todayInput();
-    } else {
-      if (fromDate) next.fromDate = fromDate;
-      if (toDate) next.toDate = toDate;
-      const bill = billNumber.trim();
-      const name = patientName.trim();
-      if (bill) next.search = bill;
-      if (name && !bill) next.search = name;
-    }
+  const applyBillSearch = (next: BillListParams) => {
     setBillParams(next);
+    setContextBillId(null);
     setSelectedBill(null);
     setSelectedTestId(null);
+    setPrintMarked({});
+    setPrintOpen(false);
     setActionError(null);
     setSuccessMessage(null);
+    window.history.replaceState(null, "", "/laboratory/test-result/parameter-based-test-results");
+  };
+
+  const runSearch = () => applyBillSearch(resultBillParams({ mode, today: todayInput(), includeClients, fromDate, toDate, billNumber, patientName, quickSearch }));
+
+  const rememberSelection = (bill: LabBill, testId: string | null) => {
+    if (!testId) return;
+    window.history.replaceState(null, "", resultContextHref({
+      billId: bill.id, billNumber: bill.billNumber, testId,
+      returnFilters: { mode, fromDate, toDate, billNumber, patientName, includeClients },
+    }));
   };
 
   const selectBill = (bill: LabBill) => {
+    setContextBillId(null);
     setSelectedBill(bill);
     setSelectedTestId(bill.items.length > 0 ? bill.items[0].testId : null);
     setPrintMarked({});
+    setPrintOpen(false);
     setActionError(null);
     setSuccessMessage(null);
+    rememberSelection(bill, bill.items[0]?.testId ?? null);
   };
 
   const selectTest = (testId: string) => {
     setSelectedTestId(testId);
     setActionError(null);
     setSuccessMessage(null);
+    if (selectedBill) rememberSelection(selectedBill, testId);
+  };
+
+  const openPrint = async () => {
+    if (!selectedBill || !printIds.length) { setActionError("Select submitted tests to print."); return; }
+    setCheckingPrint(true);
+    setActionError(null);
+    try {
+      const eligibility = await checkResultReportEligibility(selectedBill.id, printIds);
+      const patientId = typeof selectedBill.patientId === "object" ? selectedBill.patientId?.id : selectedBill.patientId;
+      if (!patientId) throw new Error("Select a patient before printing.");
+      requireReportEligibility(eligibility, selectedBill.id, patientId, printIds);
+      setPrintOpen(true);
+    } catch (error) { setActionError(error instanceof Error ? error.message : "Unable to verify report eligibility."); }
+    finally { setCheckingPrint(false); }
   };
 
   return (
-    <div className="space-y-3">
+    <div className="lis-results space-y-3">
       <BillPageHeader
         icon={PenLine}
         title="Enter Test Result"
         subtitle="Enter parameter based test results for a generated lab bill"
         actions={
-          <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
-            <ClipboardList className="size-3" />
-            Test Result
-          </Badge>
+          <div className="lis-result-header-search"><Input aria-label="Search result bills" value={quickSearch} onChange={(event) => setQuickSearch(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") runSearch(); }} />
+            <Button type="button" aria-label="Search" onClick={runSearch} disabled={billsQuery.isFetching}>{billsQuery.isFetching ? <Loader2 className="animate-spin" /> : <Search />}</Button></div>
         }
       />
+
+      {contextBillId && contextBillQuery.isPending && <p role="status">Restoring selected bill…</p>}
+      {contextBillId && contextBillQuery.isError && <p role="alert">Unable to restore the selected bill: {contextBillQuery.error.message}</p>}
 
       {successMessage && (
         <div
@@ -294,9 +325,7 @@ export function ParameterBasedTestResults() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-3 xl:grid-cols-5">
-        <Card className="border-border shadow-sm xl:col-span-3">
-          <CardContent className="p-0">
+      <div className="lis-result-filters">
             <div className="border-b border-border px-3 py-2">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                 Lab Bills
@@ -307,7 +336,7 @@ export function ParameterBasedTestResults() {
                     type="radio"
                     name="billMode"
                     checked={mode === "today"}
-                    onChange={() => setMode("today")}
+                    onChange={() => { setMode("today"); setQuickSearch(""); applyBillSearch(resultBillParams({ mode: "today", today: todayInput(), includeClients })); }}
                     className="size-3.5 accent-primary"
                   />
                   Today Lab Bills
@@ -326,11 +355,12 @@ export function ParameterBasedTestResults() {
                   <input
                     type="checkbox"
                     checked={includeClients}
-                    onChange={(event) => setIncludeClients(event.target.checked)}
+                    onChange={(event) => { setIncludeClients(event.target.checked); setBillParams((current) => ({ ...current, billType: event.target.checked ? undefined : "osp" })); }}
                     className="size-3.5 accent-primary"
                   />
                   Include Client Bills
                 </label>
+                <span className="lis-result-completed-key"><i aria-hidden="true" />Completed</span>
               </div>
               {mode === "criteria" && (
                 <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -359,7 +389,6 @@ export function ParameterBasedTestResults() {
                     <Input
                       id="resultBillNo"
                       type="text"
-                      placeholder="OSP202600010"
                       value={billNumber}
                       onChange={(event) => setBillNumber(event.target.value)}
                       className="h-8 font-mono uppercase"
@@ -370,7 +399,6 @@ export function ParameterBasedTestResults() {
                     <Input
                       id="resultPatientName"
                       type="text"
-                      placeholder="Search by name"
                       value={patientName}
                       onChange={(event) => setPatientName(event.target.value)}
                       className="h-8"
@@ -378,7 +406,7 @@ export function ParameterBasedTestResults() {
                   </div>
                 </div>
               )}
-              <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-border pt-2">
+              {mode === "criteria" && <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-border pt-2">
                 <Button type="button" onClick={runSearch} disabled={billsQuery.isFetching}>
                   {billsQuery.isFetching ? (
                     <Loader2 className="size-4 animate-spin" />
@@ -387,9 +415,14 @@ export function ParameterBasedTestResults() {
                   )}
                   Search
                 </Button>
-              </div>
+              </div>}
             </div>
-            <div className="overflow-x-auto">
+      </div>
+
+      <div className="lis-results-selection grid grid-cols-1 gap-3 xl:grid-cols-5">
+        <Card className="border-border shadow-sm xl:col-span-3">
+          <CardContent className="p-0">
+            <div className="lis-result-bill-list overflow-x-auto">
               <table className="min-w-full text-xs">
                 <thead>
                   <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -410,7 +443,7 @@ export function ParameterBasedTestResults() {
                   ) : bills.length === 0 ? (
                     <tr className="border-t border-border">
                       <td colSpan={5} className="px-3 py-6 text-center text-xs text-muted-foreground">
-                        No Records To Display
+                        {billsQuery.isError ? `Unable to load bills: ${billsQuery.error.message}` : "No Records To Display"}
                       </td>
                     </tr>
                   ) : (
@@ -420,6 +453,7 @@ export function ParameterBasedTestResults() {
                       return (
                         <tr
                           key={bill.id}
+                          aria-selected={selected}
                           onClick={() => selectBill(bill)}
                           className={cn(
                             "cursor-pointer border-t border-border transition-colors",
@@ -467,7 +501,7 @@ export function ParameterBasedTestResults() {
                   : "Select a bill to view its tests"}
               </p>
             </div>
-            <div className="overflow-x-auto">
+            <div className="lis-result-test-list overflow-x-auto">
               <table className="min-w-full text-xs">
                 <thead>
                   <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -477,23 +511,27 @@ export function ParameterBasedTestResults() {
                     <th className="px-3 py-1.5">Sample</th>
                     <th className="px-3 py-1.5">Out</th>
                     <th className="px-3 py-1.5">Lab Center</th>
+                    <th className="px-3 py-1.5">Upload</th>
                   </tr>
                 </thead>
                 <tbody>
                   {!selectedBill ? (
                     <tr className="border-t border-border">
-                      <td colSpan={6} className="px-3 py-6 text-center text-xs text-muted-foreground">
+                      <td colSpan={7} className="px-3 py-6 text-center text-xs text-muted-foreground">
                         Select a bill
                       </td>
                     </tr>
                   ) : (
                     selectedBillTests.map((item) => {
                       const sampleRow = sampleByTest.get(item.testId);
-                      const closed = sampleRow?.testStatus === "CLOSED";
+                      const collected = sampleIsCollected(sampleRow?.sampleStatus);
                       const selected = selectedTestId === item.testId;
+                      const submitted = testSubmitted(item.testId);
                       return (
                         <tr
                           key={item.testId}
+                          aria-selected={selected}
+                          data-submitted={submitted}
                           onClick={() => selectTest(item.testId)}
                           className={cn(
                             "cursor-pointer border-t border-border transition-colors",
@@ -505,6 +543,7 @@ export function ParameterBasedTestResults() {
                               type="checkbox"
                               aria-label={`Print ${item.testName}`}
                               checked={Boolean(printMarked[item.testId])}
+                              disabled={!submitted || submitMutation.isPending || workflowQuery.isFetching}
                               onChange={(event) =>
                                 setPrintMarked((current) => ({
                                   ...current,
@@ -518,22 +557,16 @@ export function ParameterBasedTestResults() {
                           <td className="px-3 py-1.5 text-slate-700">{item.departmentName}</td>
                           <td className="px-3 py-1.5">
                             <p className="text-xs font-medium text-slate-800">{item.testName}</p>
-                            <p className="font-mono text-[11px] text-muted-foreground">{item.testCode}</p>
                           </td>
                           <td className="px-3 py-1.5 text-slate-700">
-                            {sampleLabel(sampleRow?.sampleType)}
+                            {billSamplesQuery.isPending ? <span role="status">Loading…</span> : billSamplesQuery.isError || !sampleRow ? <span title="Sample status is not available">—</span> : collected ? <input type="checkbox" checked disabled aria-label={`Sample collected for ${item.testName}`} title={sampleLabel(sampleRow?.sampleType)} /> :
+                              <label onClick={(event) => event.stopPropagation()} className="lis-sample-in text-primary">
+                                <input type="checkbox" checked={false} aria-label={`Collect sample for ${item.testName}`}
+                                  onChange={() => router.push(sampleContextHref({ billId: selectedBill.id, billNumber: selectedBill.billNumber, testId: item.testId, sampleId: sampleRow.id,
+                                    returnFilters: { mode, fromDate, toDate, billNumber, patientName, includeClients } }))} className="size-3.5 accent-primary" /></label>}
                           </td>
-                          <td className="px-3 py-1.5">
-                            <span
-                              className={cn(
-                                "font-medium",
-                                closed ? "text-emerald-600" : "text-slate-400",
-                              )}
-                            >
-                              {closed ? "✓" : "—"}
-                            </span>
-                          </td>
-                          <td className="px-3 py-1.5 text-slate-700">{item.departmentName}</td>
+                          {sampleRow && !billSamplesQuery.isError ? <SampleOutsideControl key={`${sampleRow.id}-${sampleRow.outsideLabId === undefined ? item.outsideLabId ?? "" : sampleRow.outsideLabId ?? ""}-${sampleRow.sentOutAt ?? ""}`} sample={sampleRow} item={item} /> : <><td>—</td><td /></>}
+                          <td><ResultReportUpload key={`${selectedBill.id}-${item.testId}`} billId={selectedBill.id} testId={item.testId} testName={item.testName} /></td>
                         </tr>
                       );
                     })
@@ -541,12 +574,21 @@ export function ParameterBasedTestResults() {
                 </tbody>
               </table>
             </div>
+            {printIds.length > 0 && <div className="flex justify-end border-t border-border p-3">
+              <Button type="button" disabled={checkingPrint || submitMutation.isPending} onClick={openPrint}><Printer />{checkingPrint ? "Checking…" : "Print"}</Button>
+            </div>}
           </CardContent>
         </Card>
       </div>
 
-      {selectedBill && selectedTest && (
-        <div className="flex flex-wrap items-center justify-end gap-3">
+      {selectedBill && workflowQuery.isError && <p role="alert">Unable to verify submitted results and patient dues. Printing is unavailable: {workflowQuery.error.message}</p>}
+      <div className="flex justify-end">
+        <Button type="button" variant="outline" disabled={!selectedBill || !toPatientBill(selectedBill)?.mobile?.trim() || submitMutation.isPending} onClick={() => setWhatsAppOpen(true)}>Send WhatsApp</Button>
+      </div>
+      {selectedBill && workflowQuery.data?.hasOutstandingDue && !actionError?.includes("outstanding due") && <p role="alert" className="lis-result-due-message">This patient has an outstanding due. Report generation is not allowed. Results can still be entered and submitted.</p>}
+
+      {(
+        <div className="lis-result-print-settings flex flex-wrap items-center gap-3">
           <Label htmlFor="signatureSelect" className="text-sm">
             Select Signature to print :
           </Label>
@@ -564,6 +606,27 @@ export function ParameterBasedTestResults() {
               </option>
             ))}
           </Select>
+          <label><input type="checkbox" checked={onlyEntered} onChange={(event) => setOnlyEntered(event.target.checked)} />Print ONLY Entered Params</label>
+          <Select aria-label="Print layout" value={printMode} onChange={(event) => setPrintMode(event.target.value as ResultPrintMode)}>
+            <option value="continuous">Continuous Print</option><option value="department">Dept wise Print</option><option value="test">Test wise Print</option>
+          </Select>
+        </div>
+      )}
+
+      {!selectedBill && (
+        <div className="lis-empty-result-grid overflow-x-auto" aria-label="Parameter results">
+          <table className="w-full">
+            <thead>
+              <tr>
+                {["Order", "Parameter Name", "Result", "Units", "Reference Range", "Method"].map((label) => (
+                  <th key={label} className="text-left">{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colSpan={6}>Select a bill to view parameters</td></tr>
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -587,10 +650,11 @@ export function ParameterBasedTestResults() {
           parameters={selectedEntryParameters}
           existingResults={existingResultsQuery.data ?? []}
           patient={patientContext}
+          bill={selectedBill}
           testName={selectedTest.testName}
           testCode={selectedTest.testCode}
           testLinked={selectedTestEntry?.testLinked ?? false}
-          loading={billEntryQuery.isLoading}
+          loading={billEntryQuery.isLoading || existingResultsQuery.isLoading}
           submitting={submitMutation.isPending}
           onSubmit={(entries) => {
             if (!selectedBill || !selectedTestId) return;
@@ -602,6 +666,16 @@ export function ParameterBasedTestResults() {
           }}
         />
       )}
+      {printOpen && selectedBill && printIds.length > 0 && <ResultPrintDialog
+        bill={selectedBill} testIds={printIds}
+        technician={techniciansQuery.data?.find((row) => row.id === signatureId) ?? null}
+        initialOnlyEntered={onlyEntered} printMode={printMode}
+        onClose={() => setPrintOpen(false)} />}
+      {whatsAppOpen && selectedBill && <LisSendDialog key={selectedBill.id} input={{
+        patientId: typeof selectedBill.patientId === "object" ? selectedBill.patientId.id : selectedBill.patientId,
+        billId: selectedBill.id, testIds: printIds,
+        ...(signatureId ? { technicianId: signatureId } : {}), onlyEntered, printMode,
+      }} onClose={() => setWhatsAppOpen(false)} />}
     </div>
   );
 }
@@ -610,6 +684,7 @@ function ResultEntryTable({
   parameters,
   existingResults,
   patient,
+  bill,
   testName,
   testCode,
   testLinked,
@@ -620,6 +695,7 @@ function ResultEntryTable({
   parameters: BillTestParameter[];
   existingResults: LabTestResult[];
   patient: BillResultEntry | null;
+  bill: LabBill;
   testName: string;
   testCode: string;
   testLinked: boolean;
@@ -671,9 +747,8 @@ function ResultEntryTable({
     previewFlag(enteredNumber(textValues[parameter.parameterId]), parameter.reference);
 
   /**
-   * Calculators offered for this test. A parameter gets one only when the
-   * formula's dependencies are all present in the same test and unambiguous, so
-   * the button never appears where it could not compute a correct value.
+   * Calculators offered for uniquely identified result parameters. Missing or
+   * ambiguous dependencies are explained when the technician clicks the button.
    */
   const calculations = useMemo(() => {
     const map = new Map<string, ResolvedCalculation>();
@@ -805,7 +880,6 @@ function ResultEntryTable({
             type="number"
             inputMode="decimal"
             step="any"
-            placeholder="0.00"
             aria-label={`Result for ${parameter.parameterName}`}
             aria-invalid={abnormal || undefined}
             value={textValues[parameter.parameterId] ?? ""}
@@ -823,7 +897,6 @@ function ResultEntryTable({
         return (
           <textarea
             rows={2}
-            placeholder="Enter result"
             aria-label={`Result for ${parameter.parameterName}`}
             aria-invalid={abnormal || undefined}
             value={textValues[parameter.parameterId] ?? ""}
@@ -844,7 +917,6 @@ function ResultEntryTable({
         return (
           <Input
             type="text"
-            placeholder="Value"
             aria-label={`Result for ${parameter.parameterName}`}
             aria-invalid={abnormal || undefined}
             value={textValues[parameter.parameterId] ?? ""}
@@ -899,27 +971,27 @@ function ResultEntryTable({
       ) : (
       <Card className="border-border shadow-sm">
         <CardContent className="p-0">
-          <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-1.5">
+          <div className="lis-result-parameter-heading flex items-center justify-between gap-2 border-b border-border px-3 py-1.5">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
               Test Parameters
             </h3>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] text-muted-foreground">{testCode}</span>
+              <span className="font-mono text-[13px] text-muted-foreground">{testCode}</span>
               <Badge
                 variant="outline"
-                className="border-primary/20 bg-primary/5 py-0 text-[11px] text-primary"
+                className="border-primary/20 bg-primary/5 py-0 text-[13px] text-primary"
               >
                 {testName}
               </Badge>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-0.5 border-b border-border bg-slate-50/60 px-3 py-1 text-[11px] text-slate-600">
+          <div className="lis-result-patient flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-border bg-slate-50/60 px-3 py-2 text-[14px] text-slate-600">
             <span className="font-semibold uppercase tracking-wide text-slate-500">
               Patient
             </span>
-            <span className="font-mono text-slate-800">{patient?.patientId ?? "—"}</span>
-            <span className="font-medium text-slate-800">
+            <span className="font-mono text-slate-800">{patient?.patientCode ?? patient?.patientId ?? "—"}</span>
+            <span className="lis-result-patient-name font-semibold text-[17px] text-slate-800">
               {patient?.patientName ?? "—"}
             </span>
             <span>
@@ -931,6 +1003,9 @@ function ResultEntryTable({
             <span>
               Age <span className="font-medium text-slate-800">{ageLabel}</span>
             </span>
+            <span>Bill <strong>{bill.billNumber}</strong></span>
+            <span>Doctor <strong>{bill.doctorName ?? (typeof bill.referringDoctorId === "object" ? bill.referringDoctorId?.name : undefined) ?? "—"}</strong></span>
+            <span>Date <strong>{formatDate(bill.createdAt)}</strong></span>
           </div>
 
           {fieldError && (
@@ -942,11 +1017,10 @@ function ResultEntryTable({
               <span>{fieldError}</span>
             </div>
           )}
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[960px] table-fixed text-[11px]">
+          <div className="lis-parameter-result-grid overflow-x-auto">
+            <table className="w-full min-w-[960px] table-fixed text-[13px]">
               <colgroup>
                 <col className="w-10" />
-                <col className="w-32" />
                 <col className="w-52" />
                 <col className="w-48" />
                 <col className="w-20" />
@@ -954,9 +1028,8 @@ function ResultEntryTable({
                 {showMethod ? <col className="w-28" /> : null}
               </colgroup>
               <thead>
-                <tr className="bg-slate-100 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                  <th className="px-2 py-1">#</th>
-                  <th className="px-2 py-1">Lab Test Name</th>
+                <tr className="bg-slate-100 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="px-2 py-1">Order</th>
                   <th className="px-2 py-1">Parameter Name</th>
                   <th className="px-2 py-1">Result</th>
                   <th className="px-2 py-1">Units</th>
@@ -968,7 +1041,7 @@ function ResultEntryTable({
                 {parameters.length === 0 ? (
                   <tr className="border-t border-border">
                     <td
-                      colSpan={showMethod ? 7 : 6}
+                      colSpan={showMethod ? 6 : 5}
                       className="px-3 py-6 text-center text-xs text-muted-foreground"
                     >
                       No parameters defined for this test
@@ -992,13 +1065,7 @@ function ResultEntryTable({
                         <td className="px-2 py-1 text-slate-400">
                           {parameter.displayOrder}
                         </td>
-                        <td
-                          className="truncate px-2 py-1 text-[11px] text-slate-600"
-                          title={`${testName} (${testCode})`}
-                        >
-                          {testName}
-                        </td>
-                        <td className="px-2 py-1 text-[11px] font-medium text-slate-800">
+                        <td className="px-2 py-1 text-[13px] font-medium text-slate-800">
                           {parameter.parameterName}
                         </td>
                         <td className="px-2 py-1">
@@ -1009,7 +1076,7 @@ function ResultEntryTable({
                                 type="button"
                                 variant="outline"
                                 size="icon-sm"
-                                className="size-7 shrink-0"
+                                className="lis-calculate-button shrink-0"
                                 title={calculations.get(parameter.parameterId)!.formulaLabel}
                                 aria-label={`Calculate ${parameter.parameterName}`}
                                 onClick={() =>
@@ -1018,12 +1085,13 @@ function ResultEntryTable({
                                 disabled={submitting}
                               >
                                 <Calculator className="size-3.5" />
+                                Calculate
                               </Button>
                             ) : null}
                             {abnormal ? (
                               <span
                                 role="status"
-                                className="rounded bg-red-100 px-1 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-700"
+                                className="rounded bg-red-100 px-1 py-0.5 text-[13px] font-bold text-red-700"
                               >
                                 Abnormal
                               </span>
@@ -1036,7 +1104,7 @@ function ResultEntryTable({
                         <td className="px-2 py-1">
                           {unresolved ? (
                             <span
-                              className="block rounded bg-amber-100 px-1 text-[10px] font-semibold text-amber-800"
+                              className="block rounded bg-amber-100 px-1 text-[13px] font-semibold text-amber-800"
                               title={parameter.reference.reason}
                             >
                               {message}
@@ -1047,13 +1115,13 @@ function ResultEntryTable({
                                 {parameter.reference.displayValue || "—"}
                               </span>
                               <span
-                                className="mt-0.5 block text-[10px] uppercase tracking-wide text-slate-500"
+                                className="mt-0.5 block text-[12px] text-slate-500"
                                 title={parameter.reference.reason}
                               >
                                 {message}
                               </span>
                               {parameter.reference.source === "LEGACY" ? (
-                                <span className="mt-0.5 block text-[10px] italic text-slate-400">
+                                <span className="mt-0.5 block text-[12px] italic text-slate-400">
                                   Legacy reference — verify against the source report
                                 </span>
                               ) : null}

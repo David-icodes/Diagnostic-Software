@@ -48,6 +48,7 @@ export function TodayBillsPanel() {
         columns={columns}
         rows={data ?? []}
         rowKey={(bill) => bill.id}
+        completedRow={(bill) => bill.completed}
         maxHeightClass="min-h-0 flex-1"
       />
     </BillsPanel>

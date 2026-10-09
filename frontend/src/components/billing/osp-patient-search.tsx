@@ -32,8 +32,7 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
   const searchQuery = useQuery({
     queryKey: ["patients", "osp-search", search],
     queryFn: () => fetchPatients({ search: search || undefined, limit: 12 }),
-    enabled: open,
-    placeholderData: (previous) => previous,
+    enabled: open && Boolean(search),
   });
 
   const createMutation = useMutation({
@@ -64,11 +63,10 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
 
   return (
     <>
-      <div className="relative">
+      <div className="relative lis-patient-search">
         <div className="flex items-center gap-2">
           <Input
             type="search"
-            placeholder="Search patient..."
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
@@ -83,8 +81,8 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
                 setSearch(query.trim());
               }
             }}
-            className="h-8 w-[240px] md:w-[266px]"
-            aria-label="Search patient"
+            className="h-8 min-w-0 flex-1 md:w-[266px] md:flex-none"
+            aria-label="Search patient by name or mobile"
           />
           <Button
             type="button"
@@ -127,7 +125,7 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
                 blurTimer.current = window.setTimeout(() => setOpen(false), 120);
               }}
             />
-            <div className="absolute left-0 top-[calc(100%+4px)] z-30 w-[380px] overflow-hidden rounded-lg border border-border bg-card shadow-xl">
+            <div role="dialog" aria-label="Select existing patient" className="absolute left-0 top-[calc(100%+4px)] z-30 w-[440px] max-w-[calc(100vw-100px)] overflow-hidden rounded-lg border border-border bg-card shadow-xl">
               <div className="flex items-center justify-between border-b border-border px-2 py-1.5">
                 <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-600">
                   <Users className="size-3.5" />
@@ -136,14 +134,14 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
                 {selected && (
                   <span className="text-xs text-muted-foreground">
                     <span className="font-medium text-slate-700">
-                      {selected.fullName}
+                      {selected.fullName.toUpperCase()}
                     </span>{" "}
                     ({selected.patientId})
                   </span>
                 )}
               </div>
               <div className="max-h-[min(240px,44vh)] overflow-y-auto">
-                {searchQuery.isLoading ? (
+                {search && (searchQuery.isFetching || search !== query.trim()) ? (
                   <div className="flex flex-col gap-1.5 p-2" aria-busy>
                     {Array.from({ length: 4 }).map((_, index) => (
                       <div
@@ -152,7 +150,7 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
                       />
                     ))}
                   </div>
-                ) : rows.length === 0 ? (
+                ) : !search || rows.length === 0 ? (
                   <EmptyState
                     message={
                       search
@@ -167,11 +165,14 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
                         <button
                           type="button"
                           className="flex w-full items-center justify-between gap-3 px-2 py-1.5 text-left transition-colors hover:bg-muted"
-                          onMouseDown={() => {
+                          aria-pressed={selected?.id === patient.id}
+                          disabled={searchQuery.isFetching}
+                          onClick={() => {
                             if (blurTimer.current !== null) {
                               window.clearTimeout(blurTimer.current);
                             }
                             onSelect(patient);
+                            if (searchTimer.current !== null) window.clearTimeout(searchTimer.current);
                             setOpen(false);
                             setQuery("");
                             setSearch("");
@@ -179,7 +180,7 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
                         >
                           <span className="min-w-0">
                             <span className="block truncate text-xs font-medium text-slate-800">
-                              {patient.fullName}
+                              {patient.fullName.toUpperCase()}
                               <Badge variant="outline" className="ml-2">
                                 {patient.patientId}
                               </Badge>

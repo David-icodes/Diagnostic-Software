@@ -32,7 +32,7 @@ import { ClientPicker } from "@/components/billing/client-picker";
 import { ConfirmDialog } from "@/components/database/confirm-dialog";
 import {
   TestSelector,
-  type SelectedTestItem,
+  type OutsideChoice, type SelectedTestItem,
 } from "@/components/billing/test-selector";
 import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { BillingPaymentSection } from "@/components/billing/billing-payment-section";
@@ -43,6 +43,7 @@ import {
   updatePatient,
 } from "@/services/patients";
 import { toDateInputValue } from "@/lib/utils";
+import { patientNameForUpdate } from "@/lib/lab-workflows";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { patientFormSchema, type PatientFormValues } from "@/validations/patient";
 import type { Patient } from "@/types/patient";
@@ -103,7 +104,7 @@ function patientToDetails(patient: Patient): PatientDetails {
 
   return {
     title,
-    name,
+    name: name.toUpperCase(),
     dateOfBirth: dob,
     gender: genderLabel(patient.gender),
     ageYears: String(years || ""),
@@ -141,7 +142,7 @@ function detailsToPatientValues(details: PatientDetails): PatientFormValues {
   const gender = genderToStoredValue(details.gender);
   const age = detailsAgeYears(details);
   return {
-    firstName: details.name.trim(),
+    firstName: details.name.trim().toUpperCase(),
     lastName: "",
     gender: gender as PatientFormValues["gender"],
     dateOfBirth: details.dateOfBirth,
@@ -299,6 +300,9 @@ export function RemoteLabBillForm({
       if (items.length === 0) {
         throw new ApiError("Add at least one test to the bill.", 400);
       }
+      if (items.some((item) => (item.out ?? Boolean(item.outsideLabId)) && !item.outsideLabId)) {
+        throw new ApiError("Select an outside lab for every test marked Out.");
+      }
       if (paidExceedsNet) {
         throw new ApiError("Paid amount cannot exceed the net amount.", 400);
       }
@@ -323,7 +327,10 @@ export function RemoteLabBillForm({
           );
         }
         patientForBill = selectedPatient
-          ? await updatePatient(selectedPatient.id, parsed.data)
+          ? await updatePatient(selectedPatient.id, {
+              ...parsed.data,
+              ...patientNameForUpdate(parsed.data, selectedPatient, details.name.trim() === patientToDetails(selectedPatient).name),
+            })
           : await createPatient(parsed.data, { allowDuplicateMobile }).catch(
               (error) => {
                 // The backend asks for a decision when the mobile is already on
@@ -372,6 +379,8 @@ export function RemoteLabBillForm({
         items: items.map((item) => ({
           testId: item.testId,
           quantity: item.quantity,
+          out: Boolean(item.out ?? item.outsideLabId),
+          outsideLabId: item.outsideLabId ?? null,
         })),
         discountPercent: submitDiscount.percent,
         discountAmount: submitDiscount.amount,
@@ -409,7 +418,7 @@ export function RemoteLabBillForm({
     },
   });
 
-  const handleAddTest = (test: LabTest, departmentName: string) => {
+  const handleAddTest = (test: LabTest, departmentName: string, outside: OutsideChoice = {}) => {
     setItems((current) => {
       if (current.some((item) => item.testId === test.id)) return current;
       return [
@@ -421,6 +430,7 @@ export function RemoteLabBillForm({
           departmentName,
           unitPrice: test.price,
           quantity: 1,
+          ...outside,
         },
       ];
     });
@@ -472,14 +482,14 @@ const submitGenerated = () => {
     if (createMutation.isPending) return;
     setFormError(null);
     setPendingStatus("generated");
-    void createMutation.mutateAsync({ status: "generated" });
+    createMutation.mutate({ status: "generated" });
 };
 
 const saveDraft = () => {
     if (createMutation.isPending) return;
     setFormError(null);
     setPendingStatus("draft");
-    void createMutation.mutateAsync({ status: "draft" });
+    createMutation.mutate({ status: "draft" });
 };
 
 // Reuses the already-registered patient and resumes the bill that the duplicate
@@ -496,14 +506,17 @@ const reuseExistingPatient = async () => {
           detailsToPatientValues(details),
         );
         if (parsed.success) {
-          resolved = await updatePatient(patient.id, parsed.data);
+          resolved = await updatePatient(patient.id, {
+            ...parsed.data,
+            ...patientNameForUpdate(parsed.data, patient, details.name.trim() === patientToDetails(patient).name),
+          });
         }
       }
       handlePatientSelect(resolved);
       setDuplicatePatient(null);
       setPendingStatus(null);
       if (status) {
-        void createMutation.mutateAsync({ status });
+        createMutation.mutate({ status });
       }
     } catch (error) {
       setDuplicatePatient(null);
@@ -554,7 +567,7 @@ const createSeparatePatient = async () => {
   );
 
   return (
-    <div className="space-y-3 rounded-md border border-border/80 bg-white px-4 py-3 shadow-sm">
+    <div data-vendor={isVendor} className="lis-bill-form space-y-3 rounded-md border border-border/80 bg-white px-4 py-3 shadow-sm">
       <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 pb-2">
         <h1 className="font-heading text-[18px] font-medium leading-tight text-slate-800">
           {isVendor
@@ -618,7 +631,7 @@ const createSeparatePatient = async () => {
             {selectedPatient ? (
               <>
                 <span className="font-medium text-slate-800">
-                  {selectedPatient.fullName}
+                  {selectedPatient.fullName.toUpperCase()}
                 </span>
                 <span className="text-muted-foreground">
                   {" "}· {selectedPatient.patientId} · {selectedPatient.mobile}
@@ -638,6 +651,8 @@ const createSeparatePatient = async () => {
           </Button>
         </div>
       )}
+
+      {isVendor && <section className="lis-vendor-client" aria-label="Billing client">{leftSecondary}</section>}
 
       <section aria-label="Test selection">
         <TestSelector
@@ -667,7 +682,7 @@ const createSeparatePatient = async () => {
         onDiscountAmountChange={handleDiscountAmountChange}
         discountInvalid={discountInvalid}
         discountSource={discountSource}
-        leftSecondary={leftSecondary}
+        leftSecondary={isVendor ? undefined : leftSecondary}
       />
 
       <BillActionBar

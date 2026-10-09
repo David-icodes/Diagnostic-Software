@@ -1,6 +1,7 @@
 export type ClientBillsOrderBy = "date_asc" | "date_desc";
 
 export interface ClientGeneratedLabBillRow {
+  paymentMode: string;
   id: string;
   billNumber: string;
   billDate: string;

@@ -14,14 +14,11 @@ import {
   Minimize2,
   UserCog,
 } from "lucide-react";
-import { BRAND_ASSETS, BrandMark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
@@ -66,8 +63,9 @@ export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
   };
 
   return (
-    <header className="flex h-[58px] shrink-0 items-center justify-between gap-2 border-b border-border bg-white px-4">
+    <header className="lis-app-header flex h-[60px] shrink-0 items-center justify-between gap-2 border-b border-border bg-white pr-4">
       <div className="flex min-w-0 items-center gap-1">
+        <div aria-hidden="true" className="lis-header-rail h-[60px] shrink-0" />
         <Button
           variant="ghost"
           size="icon"
@@ -81,19 +79,18 @@ export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
         </Button>
 
         <div className="ml-1 flex min-w-0 items-center border-l border-border pl-3">
-          {/* Wide header lockup; its name text is not duplicated beside it. */}
-          <BrandMark src={BRAND_ASSETS.header} className="h-10 w-auto max-w-[190px]" />
+          <span className="lis-header-name">ANJALI DIAGNOSTICS</span>
         </div>
       </div>
 
       <div className="flex items-center gap-1">
-        <div className="mr-1 hidden items-center gap-2 rounded-lg border border-border bg-slate-50 px-3 py-1 md:flex">
+        <div className="mr-1 hidden items-center gap-2 px-3 py-1 md:flex">
           <Headset className="size-4 text-slate-500" />
           <div className="leading-tight">
             <p className="text-[11px] uppercase tracking-wide text-slate-400">
               {APP_CONFIG.supportLabel}
             </p>
-            <p className="max-w-[180px] truncate text-xs font-medium text-slate-700">
+            <p className="text-[13px] font-medium text-[#76321f]">
               {APP_CONFIG.supportEmail}
             </p>
           </div>
@@ -122,12 +119,13 @@ export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
           <DropdownMenuTrigger asChild>
             <button
               type="button"
+              aria-label="User menu"
               className={cn(
-                "flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors",
+                "flex items-center gap-2 rounded-none px-2 py-1.5 transition-colors",
                 "hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
               )}
             >
-              <span className="flex size-8 items-center justify-center rounded-md bg-sidebar text-sidebar-foreground">
+              <span className="flex size-8 items-center justify-center rounded-full bg-slate-100 text-slate-600">
                 <UserCog className="size-4" />
               </span>
               <span className="hidden text-left leading-tight lg:block">
@@ -142,33 +140,29 @@ export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>
-              <span className="block truncate">{user?.name}</span>
-              <span className="block truncate text-xs font-normal text-muted-foreground">
-                @{user?.username}
-              </span>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => router.push("/change-password")}
             >
               <KeyRound className="size-4" />
               Change Password
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => void handleLogout()}
-              disabled={isLoggingOut}
-            >
-              {isLoggingOut ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <LogOut className="size-4" />
-              )}
-              Logout
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Logout"
+          title="Logout"
+          onClick={() => void handleLogout()}
+          disabled={isLoggingOut}
+        >
+          {isLoggingOut ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <LogOut className="size-4" />
+          )}
+        </Button>
       </div>
     </header>
   );

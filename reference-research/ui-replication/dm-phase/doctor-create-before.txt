@@ -1,0 +1,249 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Create Doctor" [level=1]
+  - paragraph: Register a new doctor or edit an existing one
+  - link "Home":
+    - /url: /dashboard
+  - text: First Name
+  - generic: "*"
+  - textbox "First Name *":
+    - /placeholder: First name
+  - generic: Middle Name
+  - textbox "Middle Name":
+    - /placeholder: Middle name
+  - text: Last Name
+  - generic: "*"
+  - textbox "Last Name *":
+    - /placeholder: Last name
+  - generic: Short Name
+  - textbox "Short Name":
+    - /placeholder: e.g. Dr. A
+  - generic: Gender
+  - combobox "Gender":
+    - option "Select--" [selected]
+    - option "Male"
+    - option "Female"
+    - option "Other"
+  - generic: Qualification
+  - textbox "Qualification":
+    - /placeholder: e.g. MBBS, DM
+  - generic: Phone
+  - textbox "Phone":
+    - /placeholder: Landline
+  - generic: Mobile
+  - textbox "Mobile":
+    - /placeholder: 10-digit mobile
+  - generic: Email
+  - textbox "Email":
+    - /placeholder: doctor@example.com
+  - generic: City
+  - textbox "City"
+  - generic: Specialisation
+  - combobox "Specialisation":
+    - option "Select--" [selected]
+    - option "Cardiology"
+    - option "Dermatology"
+    - option "General Medicine"
+    - option "Nephrology"
+    - option "Neurology Care"
+    - option "Orthopedics"
+    - option "Pathology"
+    - option "Pediatrics"
+    - option "Radiology"
+  - generic: Designation
+  - combobox "Designation":
+    - option "Select--" [selected]
+  - generic: Doctor Type
+  - combobox "Doctor Type":
+    - option "Select--" [selected]
+    - option "General Practitioner"
+    - option "Consultant"
+    - option "Visiting Consultant"
+    - option "Specialist"
+    - option "Surgeon"
+    - option "Physician"
+  - generic: Doctor Department
+  - combobox "Doctor Department":
+    - option "Select--" [selected]
+    - option "Biochemistry"
+    - option "Hematology"
+    - option "Microbiology"
+    - option "Pathology"
+    - option "Immunology / Serology"
+    - option "Hormones"
+    - option "Molecular Biology"
+    - option "Clinical Pathology"
+    - option "Packages / Profiles"
+    - option "Pharmacy Support"
+  - generic: Address
+  - textbox "Address"
+  - generic: Online App. Display
+  - combobox "Online App. Display":
+    - option "Y" [selected]
+    - option "N"
+  - generic: OP Consultation Fee
+  - spinbutton "OP Consultation Fee"
+  - generic: Hospital Fee
+  - spinbutton "Hospital Fee"
+  - generic: IP Consultation Fee
+  - spinbutton "IP Consultation Fee"
+  - generic: ER Consultation Fee
+  - spinbutton "ER Consultation Fee"
+  - generic: Max Free Visits
+  - spinbutton "Max Free Visits"
+  - generic: Max Free Days Visits
+  - spinbutton "Max Free Days Visits"
+  - generic: Employee ID
+  - textbox "Employee ID":
+    - /placeholder: e.g. EMP-001
+  - generic: Room Number
+  - textbox "Room Number":
+    - /placeholder: e.g. 204
+  - button "Submit"
+  - link "Home":
+    - /url: /dashboard
+  - button "Clear"
+  - heading "Doctor List" [level=2]
+  - paragraph: All registered doctors
+  - searchbox "Search doctors..."
+  - table:
+    - rowgroup:
+      - row "S.No Doctor Designation Specialisation Mobile Employee ID Status Action":
+        - columnheader "S.No"
+        - columnheader "Doctor"
+        - columnheader "Designation"
+        - columnheader "Specialisation"
+        - columnheader "Mobile"
+        - columnheader "Employee ID"
+        - columnheader "Status"
+        - columnheader "Action"
+    - rowgroup:
+      - row "1 Dr.ANJALI — — — — Active Edit Dr.ANJALI Deactivate Dr.ANJALI":
+        - cell "1"
+        - cell "Dr.ANJALI":
+          - paragraph: Dr.ANJALI
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Dr.ANJALI Deactivate Dr.ANJALI":
+          - button "Edit Dr.ANJALI":
+          - button "Deactivate Dr.ANJALI":
+      - row "2 Meenal K Venkatesh — — 9000000001 — Active Edit Meenal K Venkatesh Deactivate Meenal K Venkatesh":
+        - cell "2"
+        - cell "Meenal K Venkatesh":
+          - paragraph: Meenal K Venkatesh
+        - cell "—"
+        - cell "—"
+        - cell "9000000001"
+        - cell "—"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Meenal K Venkatesh Deactivate Meenal K Venkatesh":
+          - button "Edit Meenal K Venkatesh":
+          - button "Deactivate Meenal K Venkatesh":
+      - row "3 Dr. Legacy Test — Cardiologist 9876543210 — Inactive Edit Dr. Legacy Test Activate Dr. Legacy Test":
+        - cell "3"
+        - cell "Dr. Legacy Test":
+          - paragraph: Dr. Legacy Test
+        - cell "—"
+        - cell "Cardiologist"
+        - cell "9876543210"
+        - cell "—"
+        - cell "Inactive":
+          - generic: Inactive
+        - cell "Edit Dr. Legacy Test Activate Dr. Legacy Test":
+          - button "Edit Dr. Legacy Test":
+          - button "Activate Dr. Legacy Test":
+      - row "4 Suresh Raj Kumar — — — — Inactive Edit Suresh Raj Kumar Activate Suresh Raj Kumar":
+        - cell "4"
+        - cell "Suresh Raj Kumar":
+          - paragraph: Suresh Raj Kumar
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "Inactive":
+          - generic: Inactive
+        - cell "Edit Suresh Raj Kumar Activate Suresh Raj Kumar":
+          - button "Edit Suresh Raj Kumar":
+          - button "Activate Suresh Raj Kumar":
+      - row "5 Dr. Priya Sharma Senior Consultant General Medicine — — Active Edit Dr. Priya Sharma Deactivate Dr. Priya Sharma":
+        - cell "5"
+        - cell "Dr. Priya Sharma":
+          - paragraph: Dr. Priya Sharma
+        - cell "Senior Consultant"
+        - cell "General Medicine"
+        - cell "—"
+        - cell "—"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Dr. Priya Sharma Deactivate Dr. Priya Sharma":
+          - button "Edit Dr. Priya Sharma":
+          - button "Deactivate Dr. Priya Sharma":
+      - row "6 Dr. Ramesh Gupta Consultant Cardiology — — Active Edit Dr. Ramesh Gupta Deactivate Dr. Ramesh Gupta":
+        - cell "6"
+        - cell "Dr. Ramesh Gupta":
+          - paragraph: Dr. Ramesh Gupta
+        - cell "Consultant"
+        - cell "Cardiology"
+        - cell "—"
+        - cell "—"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Dr. Ramesh Gupta Deactivate Dr. Ramesh Gupta":
+          - button "Edit Dr. Ramesh Gupta":
+          - button "Deactivate Dr. Ramesh Gupta":
+      - row "7 Dr. Kavita Nair — Infectious Diseases 9876510002 — Active Edit Dr. Kavita Nair Deactivate Dr. Kavita Nair":
+        - cell "7"
+        - cell "Dr. Kavita Nair":
+          - paragraph: Dr. Kavita Nair
+        - cell "—"
+        - cell "Infectious Diseases"
+        - cell "9876510002"
+        - cell "—"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Dr. Kavita Nair Deactivate Dr. Kavita Nair":
+          - button "Edit Dr. Kavita Nair":
+          - button "Deactivate Dr. Kavita Nair":
+      - row "8 Dr. Anil Mehta — General Medicine 9876510001 — Active Edit Dr. Anil Mehta Deactivate Dr. Anil Mehta":
+        - cell "8"
+        - cell "Dr. Anil Mehta":
+          - paragraph: Dr. Anil Mehta
+        - cell "—"
+        - cell "General Medicine"
+        - cell "9876510001"
+        - cell "—"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Dr. Anil Mehta Deactivate Dr. Anil Mehta":
+          - button "Edit Dr. Anil Mehta":
+          - button "Deactivate Dr. Anil Mehta":
+  - paragraph: Showing 1–8 of 8 records · Page 1 of 1
+  - button "Previous" [disabled]:
+    - text: Previous
+  - button "Next" [disabled]:
+    - text: Next

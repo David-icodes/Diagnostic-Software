@@ -5,6 +5,7 @@ import { LabBill } from "../../models/lab-bill.model";
 import { LabBillPayment } from "../../models/lab-bill-payment.model";
 import { LabSample } from "../../models/lab-sample.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
+import { LabReportUpload } from "../../models/lab-report-upload.model";
 import { generatePatientId } from "../../utils/id-generator";
 import { recordAudit } from "../audit/audit.service";
 
@@ -39,8 +40,8 @@ export interface PaginatedResult<T> {
  *
  * `LabTestResult` and `LabSample` carry both `patientId` and `billId`,
  * `LabBill` carries `patientId` with its items embedded, and `LabBillPayment`
- * only carries `billId`. Those four collections hold every operational record
- * belonging to a registration; nothing else in the schema references a patient.
+ * only carries `billId`. Uploaded reports also carry both registration and bill
+ * IDs and are removed with the clinical children.
  */
 export interface DeletePatientResult {
   /** Identifier of the registration that was removed. */
@@ -277,6 +278,8 @@ export async function deletePatient(
   // Children first so a mid-way failure can only leave unreferenced rows, never
   // live clinical data pointing at a registration that no longer exists.
   const results = await LabTestResult.deleteMany(resultFilter);
+  // Report attachments belong to the same registration and must not outlive its cleanup.
+  await LabReportUpload.deleteMany(resultFilter);
   const samples = await LabSample.deleteMany(sampleFilter);
   const payments = billIds.length
     ? await LabBillPayment.deleteMany(paymentsFilter)

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Package, Pencil, Plus, Trash2 } from "lucide-react";
+import { Package, Pencil, ChevronsRight, Trash2 } from "lucide-react";
 import { DataTable } from "@/components/database/data-table";
 import { FormActions } from "@/components/database/form-actions";
 import { FormField } from "@/components/database/form-field";
@@ -17,10 +17,10 @@ import {
   createPackage,
   fetchDatabaseDepartments,
   fetchPackages,
-  getDatabaseOptions,
   updatePackage,
 } from "@/services/database";
 import type { LabPackage, PackageItem } from "@/types/database";
+import { packageDraftPayload } from "@/lib/package-draft";
 import { formatMoney } from "@/lib/utils";
 
 const PAGE_LIMIT = 20;
@@ -44,11 +44,13 @@ const EMPTY_FORM: PackageFormState = {
   name: "",
   packageType: "Lab",
   amount: "",
-  insAmount: "",
+  insAmount: "0",
 };
 
 export function PackageCreateContent() {
   const queryClient = useQueryClient();
+  const [departmentSearch, setDepartmentSearch] = useState("");
+  const [testSearch, setTestSearch] = useState("");
   const [form, setForm] = useState<PackageFormState>(EMPTY_FORM);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState("");
   const [selectedTestId, setSelectedTestId] = useState("");
@@ -57,11 +59,6 @@ export function PackageCreateContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
-
-  const optionsQuery = useQuery({
-    queryKey: ["database-options"],
-    queryFn: getDatabaseOptions,
-  });
 
   const departmentsQuery = useQuery({
     queryKey: ["departments", "database", "all"],
@@ -76,13 +73,15 @@ export function PackageCreateContent() {
 
   const testsQuery = useQuery({
     queryKey: ["lab-tests", "package", selectedDepartmentId],
-    queryFn: () =>
-      fetchLabTests({
-        departmentId: selectedDepartmentId || undefined,
-        status: "active",
-        page: 1,
-        limit: 100,
-      }),
+    queryFn: async () => {
+      const first = await fetchLabTests({ departmentId: selectedDepartmentId === "all" ? undefined : selectedDepartmentId, status: "active", page: 1, limit: 100 });
+      const items = [...first.items];
+      for (let page = 2; page <= first.pagination.totalPages; page++) {
+        const next = await fetchLabTests({ departmentId: selectedDepartmentId === "all" ? undefined : selectedDepartmentId, status: "active", page, limit: 100 });
+        items.push(...next.items);
+      }
+      return { ...first, items };
+    },
     enabled: Boolean(selectedDepartmentId),
   });
 
@@ -92,16 +91,7 @@ export function PackageCreateContent() {
 
   const saveMutation = useMutation({
     mutationFn: () => {
-      const payload = {
-        name: form.name.trim(),
-        packageType: form.packageType,
-        amount: Number(form.amount) || 0,
-        insAmount: form.insAmount.trim() === "" ? undefined : Number(form.insAmount),
-        items: items.map((item) => ({
-          testId: item.testId,
-          departmentId: item.departmentId,
-        })),
-      };
+      const payload = packageDraftPayload(form, items);
       return editingId ? updatePackage(editingId, payload) : createPackage(payload);
     },
     onSuccess: () => {
@@ -162,6 +152,11 @@ export function PackageCreateContent() {
       })),
     );
     setFeedback(null);
+    setSelectedDepartmentId("");
+    setSelectedTestId("");
+    setTestSearch("");
+    setDepartmentSearch("");
+    saveMutation.reset();
   };
 
   const update = (patch: Partial<PackageFormState>) => {
@@ -169,11 +164,12 @@ export function PackageCreateContent() {
   };
 
   const handleSave = () => {
-    if (form.name.trim().length < 2) return;
-    void saveMutation.mutateAsync();
+    try { packageDraftPayload(form, items); }
+    catch (reason) { setFeedback(reason instanceof Error ? reason.message : "Check package details"); return; }
+    setFeedback(null);
+    saveMutation.mutate();
   };
 
-  const packageTypes = optionsQuery.data?.packageTypes ?? [];
 
   const columns = [
     { key: "sno", header: "S.No", align: "center" as const, className: "w-16", render: (_row: LabPackage, index: number) => (page - 1) * PAGE_LIMIT + index + 1 },
@@ -223,182 +219,54 @@ export function PackageCreateContent() {
   ];
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-package space-y-3">
       <PageHeader
         icon={Package}
         title="Create Package"
         subtitle="Combine lab tests into a billable package"
       />
 
-      <div className="grid gap-3 lg:grid-cols-3">
-        <FormSection title="Package Details" description="Name and pricing for the package">
-          <div className="space-y-3">
-            {feedback && (
-              <p className="rounded-md bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20">
-                {feedback}
-              </p>
-            )}
-            {saveMutation.isError && (
-              <p className="rounded-md bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive ring-1 ring-destructive/20">
-                {saveMutation.error instanceof Error
-                  ? saveMutation.error.message
-                  : "Failed to save package"}
-              </p>
-            )}
-            <FormField id="pkg-name" label="Package Name" required>
-              <Input
-                id="pkg-name"
-                value={form.name}
-                placeholder="e.g. FEVER PROFILE"
-                onChange={(event) => update({ name: event.target.value })}
-                disabled={saveMutation.isPending}
-              />
-            </FormField>
-            <FormField id="pkg-type" label="Package Type" required>
-              <Select
-                id="pkg-type"
-                value={form.packageType}
-                onChange={(event) => update({ packageType: event.target.value })}
-                disabled={saveMutation.isPending}
-              >
-                {packageTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <FormField id="pkg-amount" label="Package Amount" required>
-                <Input
-                  id="pkg-amount"
-                  type="number"
-                  min={0}
-                  value={form.amount}
-                  placeholder="0.00"
-                  onChange={(event) => update({ amount: event.target.value })}
-                  disabled={saveMutation.isPending}
-                />
-              </FormField>
-              <FormField id="pkg-ins" label="Package Amount In">
-                <Input
-                  id="pkg-ins"
-                  type="number"
-                  min={0}
-                  value={form.insAmount}
-                  placeholder="0.00"
-                  onChange={(event) => update({ insAmount: event.target.value })}
-                  disabled={saveMutation.isPending}
-                />
-              </FormField>
-            </div>
-          </div>
-        </FormSection>
-
-        <FormSection title="Select Tests" description="Pick a department and choose tests to include">
-          <div className="space-y-3">
-            <FormField id="pkg-dept" label="Department" required>
-              <Select
-                id="pkg-dept"
-                value={selectedDepartmentId}
-                onChange={(event) => {
-                  setSelectedDepartmentId(event.target.value);
-                  setSelectedTestId("");
-                }}
-                disabled={saveMutation.isPending}
-              >
-                <option value="">Select--</option>
-                {departments.map((record) => (
-                  <option key={record.id} value={record.id}>
-                    {record.name}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <FormField id="pkg-test" label="Test">
-              <div className="space-y-1.5">
-                <Select
-                  id="pkg-test"
-                  value={selectedTestId}
-                  disabled={!selectedDepartmentId || saveMutation.isPending}
-                  onChange={(event) => setSelectedTestId(event.target.value)}
-                >
-                  <option value="">
-                    {selectedDepartmentId ? "Select a test" : "Select a department first"}
-                  </option>
-                  {tests.map((test) => (
-                    <option key={test.id} value={test.id}>
-                      {test.testCode} — {test.testName}
-                    </option>
-                  ))}
-                </Select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={handleAddTest}
-                  disabled={
-                    !selectedTestId ||
-                    items.some((item) => item.testId === selectedTestId)
-                  }
-                >
-                  <Plus />
-                  Add Test
-                </Button>
-              </div>
-            </FormField>
-          </div>
-        </FormSection>
-
-        <FormSection
-          title="Selected Tests"
-          description={`${items.length} test${items.length === 1 ? "" : "s"} added`}
-          actions={
-            items.length > 0 ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive"
-                onClick={() => setItems([])}
-              >
-                <Trash2 />
-                Clear All
-              </Button>
-            ) : undefined
-          }
-        >
-          {items.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              No tests selected yet
-            </p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {items.map((item) => (
-                <li key={item.testId} className="flex items-center justify-between gap-2 py-1.5">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-800">
-                      {item.testName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.departmentName}
-                    </p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label={`Remove ${item.testName}`}
-                    onClick={() => handleRemoveItem(item.testId)}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </FormSection>
+      <div className="lis-package-details">
+        <FormField id="pkg-name" label="Package Name" required>
+          <Input id="pkg-name" value={form.name} maxLength={150} onChange={(event) => update({ name: event.target.value })} disabled={saveMutation.isPending} />
+        </FormField>
+        <FormField id="pkg-amount" label="Package Amount" required>
+          <Input id="pkg-amount" type="number" min={0} step="0.01" value={form.amount} onChange={(event) => update({ amount: event.target.value })} disabled={saveMutation.isPending} />
+        </FormField>
+        <FormField id="pkg-ins" label="Package Amount Ins">
+          <Input id="pkg-ins" type="number" min={0} step="0.01" value={form.insAmount} onChange={(event) => update({ insAmount: event.target.value })} disabled={saveMutation.isPending} />
+        </FormField>
+      </div>
+      {feedback && <p role="status" className="text-xs text-slate-700">{feedback}</p>}
+      {saveMutation.isError && <p role="alert" className="text-xs text-destructive">{saveMutation.error instanceof Error ? saveMutation.error.message : "Failed to save package"}</p>}
+      <div className="lis-package-selector">
+        <div className="lis-package-list">
+          <label htmlFor="pkg-dept">* Departments</label>
+          <Input aria-label="Search package departments" placeholder="Search..." value={departmentSearch} onChange={(event) => setDepartmentSearch(event.target.value)} disabled={saveMutation.isPending} />
+          <Select id="pkg-dept" size={10} value={selectedDepartmentId} disabled={saveMutation.isPending} onChange={(event) => { setSelectedDepartmentId(event.target.value); setSelectedTestId(""); setTestSearch(""); }}>
+            <option value="">Select--</option><option value="all">ALL</option>
+            {departments.filter((record) => record.id === selectedDepartmentId || record.name.toLowerCase().includes(departmentSearch.toLowerCase())).map((record) => <option key={record.id} value={record.id}>{record.name}</option>)}
+          </Select>
+        </div>
+        <div className="lis-package-list">
+          <label htmlFor="pkg-test">* Lab Tests</label>
+          <Input aria-label="Search package tests" placeholder="Search..." value={testSearch} disabled={!selectedDepartmentId || saveMutation.isPending} onChange={(event) => setTestSearch(event.target.value)} />
+          <Select id="pkg-test" size={10} value={selectedTestId} disabled={!selectedDepartmentId || saveMutation.isPending || testsQuery.isPending} onChange={(event) => setSelectedTestId(event.target.value)}>
+            <option value="">{testsQuery.isFetching ? "Loading tests…" : "Select a test"}</option>
+            {tests.filter((test) => test.testName.toLowerCase().includes(testSearch.toLowerCase())).map((test) => <option key={test.id} value={test.id} disabled={items.some((item) => item.testId === test.id)}>{test.testName}</option>)}
+          </Select>
+          {testsQuery.isError && <p role="alert" className="text-xs text-destructive">Unable to load tests.</p>}
+        </div>
+        <Button type="button" variant="outline" size="icon-sm" aria-label="Transfer selected package test" onClick={handleAddTest} disabled={saveMutation.isPending || !selectedTestId || !tests.some((test) => test.id === selectedTestId) || items.some((item) => item.testId === selectedTestId)}><ChevronsRight /></Button>
+        <div className="lis-selected-package-tests">
+          <h3>Selected Lab Tests</h3>
+          <DataTable data={items} rowKey={(item) => item.testId} emptyMessage="No tests selected yet" columns={[
+            { key: "remove", header: "Del", render: (item) => <Button type="button" variant="ghost" size="icon-sm" disabled={saveMutation.isPending} aria-label={`Remove ${item.testName}`} onClick={() => handleRemoveItem(item.testId)}><Trash2 className="size-3.5" /></Button> },
+            { key: "sno", header: "S No", render: (_item, index) => index + 1 },
+            { key: "department", header: "Dept Name", render: (item) => item.departmentName },
+            { key: "test", header: "Lab Test Name", render: (item) => item.testName },
+          ]} />
+        </div>
       </div>
 
       <FormActions
@@ -410,6 +278,9 @@ export function PackageCreateContent() {
           setSelectedDepartmentId("");
           setSelectedTestId("");
           setFeedback(null);
+          setDepartmentSearch("");
+          setTestSearch("");
+          saveMutation.reset();
         }}
         submitting={saveMutation.isPending}
         submitLabel={editingId ? "Update" : "Save"}

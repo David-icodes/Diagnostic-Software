@@ -17,6 +17,7 @@ export function DoctorSpecialisationContent() {
       subtitle="Add and manage doctor specialisations"
       formTitle="Add New Specialisation"
       recordLabel="Specialisation"
+      queryRoot="doctor-specialisations"
       placeholder="e.g. Cardiologist"
       services={{
         fetch: fetchSpecialisations,

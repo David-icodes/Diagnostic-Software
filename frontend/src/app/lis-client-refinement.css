@@ -1,0 +1,77 @@
+/* Client-requested bill states and report grid refinements; print templates unchanged. */
+.lis-dashboard .lis-bills-panel tr[data-completed="true"] :is(td,a) { color: #266fb0; font-weight: 600; }
+.lis-dashboard .lis-bills-panel tr[data-completed="true"] { border-left: 3px solid #266fb0; }
+.lis-dashboard .lis-bills-panel tr[data-completed="true"]:hover { background: #e8f2fa; }
+.lis-dashboard .lis-bills-panel table { width: 100%; min-width: 0; }
+.lis-dashboard .lis-bills-panel :is(th,td) { width: auto; white-space: normal; overflow-wrap: anywhere; }
+.lis-dashboard .lis-bills-panel th:nth-child(1) { width: 5%; }
+.lis-dashboard .lis-bills-panel th:nth-child(2) { width: 20%; }
+.lis-dashboard .lis-bills-panel th:nth-child(3) { width: 17%; }
+.lis-dashboard .lis-bills-panel th:nth-child(4) { width: 25%; }
+.lis-sample-in { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.lis-result-patient strong { color: #344256; font-weight: 600; }
+.lis-content { overflow-x: visible; min-width: 0; }
+.lis-content :is(input,select,textarea) { max-width: 100%; box-sizing: border-box; }
+.lis-content .lis-tmis .lis-report-table { table-layout: fixed; width: 100%; min-width: 0; }
+.lis-content .lis-tmis .lis-report-table :is(th,td) { width: auto; min-width: 0; white-space: normal !important; overflow-wrap: anywhere; padding: 4px 4px; }
+.lis-content .lis-tmis .lis-report-table th { background: #4c68a2; color: white; font: bold 13px/18px "Times New Roman",serif; text-transform: none; letter-spacing: normal; border: 1px solid #6b85b5; }
+.lis-content .lis-tmis .lis-report-table td { font: 12px/19px Arial,sans-serif; color: #515151; border: 1px solid #e3e3e3; }
+.lis-content .lis-tmis .lis-report-table tbody tr { background: white; }
+.lis-content .lis-tmis .lis-report-table tbody tr:hover { background: #f5f8fc; }
+.lis-content .lis-tmis .lis-report-table tbody tr.bg-blue-50 { background: #e8f2fa; }
+.lis-content .lis-tmis .lis-report-table :is(span,p) { white-space: normal; overflow-wrap: anywhere; }
+.lis-content .lis-tmis .lis-report-table [data-slot="badge"] { height: auto; min-height: 20px; max-width: 100%; padding: 2px 3px; line-height: 14px; overflow: visible; }
+.lis-content .lis-tmis .lis-report-table .truncate { white-space: normal; overflow: visible; text-overflow: clip; }
+.lis-content .lis-tmis .lis-report-table [data-column="sNo"] { width: 3%; }
+.lis-content .lis-tmis .lis-report-table [data-column="patientName"] { width: 10%; }
+.lis-content .lis-tmis .lis-report-table [data-column="test"] { width: 12%; }
+.lis-content .lis-tmis .lis-report-table [data-column="address"] { width: 22%; }
+.lis-content .lis-generated-report .lis-report-table :is(th,td) { width: auto; }
+.lis-content .lis-generated-report .lis-report-table [data-column="sNo"] { width: 3%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="billDate"] { width: 7%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="billNumber"] { width: 8%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="patientId"] { width: 7%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="patientName"] { width: 8%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="doctorName"] { width: 8%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="tests"] { width: 12%; }
+.lis-content .lis-generated-report .lis-report-table :is([data-column="totalAmount"],[data-column="discountAmount"],[data-column="netAmount"],[data-column="paidAmount"],[data-column="dueAmount"],[data-column="collectedBy"],[data-column="patientType"]) { width: 5%; }
+.lis-content .lis-generated-report .lis-report-table :is([data-column="payModeLabel"],[data-column="paymentStatus"]) { width: 6%; }
+.lis-content .lis-generated-report .lis-report-table td span { font-size: inherit; }
+.lis-content .lis-tmis .lis-report-toolbar { background: linear-gradient(#f7f5e9,#d8d7c7); }
+.lis-content .lis-tmis > section { display: flex; flex-direction: column; width: 100%; }
+.lis-content .lis-tmis > section > .lis-report-toolbar { order: -1; }
+.lis-content .lis-generated-report .lis-report-table [data-column="billNumber"] { width: 9%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="patientId"] { width: 8%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="patientName"] { width: 9%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="doctorName"] { width: 7%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="tests"] { width: 10%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="collectedBy"] { width: 6%; }
+.lis-content .lis-generated-report .lis-report-table [data-column="patientType"] { width: 4%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table [data-column="sNo"] { width: 2.5%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table [data-column="billNumber"] { width: 7.5%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table [data-column="reportDate"] { width: 6%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table :is([data-column="patientId"],[data-column="upId"]) { width: 6.5%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table [data-column="patientName"] { width: 8%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table [data-column="test"] { width: 10%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table :is([data-column="patientType"],[data-column="labStatus"],[data-column="approvedOn"],[data-column="delayedTat"]) { width: 4%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table :is([data-column="department"],[data-column="sampleStatus"],[data-column="collectedOn"],[data-column="approvalStatus"],[data-column="enteredOn"]) { width: 5%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table :is([data-column="approvedBy"],[data-column="enteredBy"]) { width: 3%; }
+.lis-content [data-tmis-page="lab-summary"] .lis-report-table [data-column="amount"] { width: 6%; }
+.lis-content .lis-parameter-result-grid table { min-width: 0; width: 100%; }
+.lis-parameter-result-grid col:nth-child(1) { width: 4%; }
+.lis-parameter-result-grid col:nth-child(2) { width: 22%; }
+.lis-parameter-result-grid col:nth-child(3) { width: 24%; }
+.lis-parameter-result-grid col:nth-child(4) { width: 10%; }
+.lis-parameter-result-grid col:nth-child(5) { width: 26%; }
+.lis-parameter-result-grid col:nth-child(6) { width: 14%; }
+.lis-parameter-result-grid :is(input,select,textarea) { max-width: 100%; }
+.lis-parameter-result-grid td { overflow-wrap: anywhere; }
+.lis-content .lis-data-grid table { width: 100%; min-width: 0; table-layout: fixed; }
+.lis-content .lis-data-grid :is(th,td) { width: auto; min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+.lis-content .lis-data-grid td .whitespace-pre-line { white-space: pre-line; }
+.lis-header-name { color: #5a769d; }
+@media (max-width: 767px) {
+  .lis-patient-search > div:first-child { flex-wrap: wrap; }
+  .lis-header-name { white-space: normal; font-size: 17px; }
+  .lis-result-patient-name { flex-basis: 100%; }
+}

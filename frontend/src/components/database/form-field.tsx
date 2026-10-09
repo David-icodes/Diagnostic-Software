@@ -24,7 +24,7 @@ export function FormField({
   children,
 }: FormFieldProps) {
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("lis-form-field space-y-1.5", className)}>
       <Label htmlFor={id}>
         {label}
         {required && <span className="text-destructive"> *</span>}

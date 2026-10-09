@@ -18,6 +18,8 @@ import {
   type ReferenceResolution,
 } from "../../utils/reference-resolver";
 import { recordAudit } from "../audit/audit.service";
+import { AuditLog } from "../../models/audit-log.model";
+import { SUBMISSION_PENDING, SUBMISSION_CONFIRMED } from "./result-workflow.service";
 
 /** Upper bound for free-text results (e.g. microscopy notes). */
 const RESULT_TEXT_MAX = 2000;
@@ -361,6 +363,9 @@ export async function submitTestResults(
   const unknownParameters = input.entries.filter(
     (entry) => !parameterMap.has(entry.parameterId),
   );
+  if (!input.entries.length || new Set(input.entries.map((entry) => entry.parameterId)).size !== input.entries.length) {
+    throw new ApiError(422, "Submit at least one result with unique parameter IDs");
+  }
   if (unknownParameters.length > 0) {
     throw new ApiError(
       422,
@@ -388,8 +393,15 @@ export async function submitTestResults(
   // duplicates, and every overwrite pushes the previous value into
   // `revisions` and bumps `version`, so no clinical value is ever lost or
   // written without its author and timestamp.
-  await Promise.all(
-    input.entries.map(async (entry) => {
+  // A durable confirmation uses the existing audit model. It is deliberately
+  // strict (not best-effort): a partial multi-row save must never unlock Print.
+  // Save its anchor first, so any later partial save remains linked to this log.
+  const first = input.entries[0];
+  const anchor = await LabTestResult.findOne({ billId: bill._id, testId: input.testId, parameterId: first.parameterId }).exec();
+  const anchorId = anchor?._id ?? new Types.ObjectId();
+  const confirmation = await AuditLog.create({ user: enteredBy, action: SUBMISSION_PENDING,
+    entityType: "LabTestResult", entity: anchorId, timestamp: now });
+  const saveEntry = async (entry: typeof first) => {
       const parameter = parameterMap.get(entry.parameterId)!;
       const existing = await LabTestResult.findOne({
         billId: bill._id,
@@ -399,6 +411,7 @@ export async function submitTestResults(
 
       if (!existing) {
         await LabTestResult.create({
+          ...(entry === first && !anchor ? { _id: anchorId } : {}),
           billId: bill._id,
           patientId: bill.patientId,
           testId: input.testId,
@@ -442,8 +455,13 @@ export async function submitTestResults(
         now,
       );
       await existing.save();
-    }),
-  );
+  };
+  await saveEntry(first);
+  const writes = await Promise.allSettled(input.entries.slice(1).map(saveEntry));
+  const failed = writes.find((write): write is PromiseRejectedResult => write.status === "rejected");
+  if (failed) throw failed.reason;
+  confirmation.action = SUBMISSION_CONFIRMED;
+  await confirmation.save();
 
   await recordAudit({
     user: userId,

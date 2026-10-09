@@ -1,0 +1,198 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Create Department" [level=3]
+- table:
+  - rowgroup:
+    - row "Name Short Name":
+      - cell "Name"
+      - cell:
+        - textbox
+      - cell
+      - cell "Short Name"
+      - cell:
+        - textbox
+      - cell
+    - row "Description Type --Select--":
+      - cell "Description"
+      - cell:
+        - textbox
+      - cell
+      - cell "Type"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+          - option "Lab & X-Ray"
+          - option "Service"
+          - option "Doctors"
+          - option "Pharmacy"
+          - option "Stores"
+          - option "Inventory"
+          - option "CRM"
+      - cell
+    - row "Display Flag Y":
+      - cell "Display Flag"
+      - cell "Y":
+        - combobox [disabled]:
+          - option "--Select--"
+          - option "Y" [selected]
+          - option "N"
+      - cell
+    - row:
+      - cell
+    - row "SUBMIT HOME CLEAR":
+      - cell "SUBMIT HOME CLEAR":
+        - button "SUBMIT"
+        - button "HOME"
+        - button "CLEAR"
+- textbox
+- button ""
+- table:
+  - rowgroup:
+    - row "Sno Hosp Dept Name Hosp Dept Desc Hosp Dept Type Active Status":
+      - columnheader "Sno"
+      - columnheader "Hosp Dept Name":
+        - link "Hosp Dept Name":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl02$ctl00$ctl01','')
+      - columnheader "Hosp Dept Desc":
+        - link "Hosp Dept Desc":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl02$ctl00$ctl03','')
+      - columnheader "Hosp Dept Type":
+        - link "Hosp Dept Type":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl02$ctl00$ctl04','')
+      - columnheader "Active Status":
+        - link "Active Status":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl02$ctl00$ctl05','')
+      - columnheader
+- table:
+  - rowgroup:
+    - row "1 MICROBIOLOGY Lab & X-Ray Y Edit":
+      - cell "1"
+      - cell "MICROBIOLOGY"
+      - cell
+      - cell "Lab & X-Ray"
+      - cell "Y"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl04$btnSelect','')
+    - row "2 Hematology Lab & X-Ray Y Edit":
+      - cell "2"
+      - cell "Hematology"
+      - cell
+      - cell "Lab & X-Ray"
+      - cell "Y"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl06$btnSelect','')
+    - row "3 BIOCHEMISTRY Lab & X-Ray Y Edit":
+      - cell "3"
+      - cell "BIOCHEMISTRY"
+      - cell
+      - cell "Lab & X-Ray"
+      - cell "Y"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl08$btnSelect','')
+    - row "4 PATHOLOGY Lab & X-Ray Y Edit":
+      - cell "4"
+      - cell "PATHOLOGY"
+      - cell
+      - cell "Lab & X-Ray"
+      - cell "Y"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl10$btnSelect','')
+    - row "5 GENERAL Doctors Y Edit":
+      - cell "5"
+      - cell "GENERAL"
+      - cell
+      - cell "Doctors"
+      - cell "Y"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl12$btnSelect','')
+    - row "6 BIO CHEMISTRY Lab & X-Ray Y Edit":
+      - cell "6"
+      - cell "BIO CHEMISTRY"
+      - cell
+      - cell "Lab & X-Ray"
+      - cell "Y"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl14$btnSelect','')
+    - row "7 Dr.KRISHNAVENI Lab & X-Ray N Edit":
+      - cell "7"
+      - cell "Dr.KRISHNAVENI"
+      - cell
+      - cell "Lab & X-Ray"
+      - cell "N"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl16$btnSelect','')
+    - row "8 collection 1 --Select-- N Edit":
+      - cell "8"
+      - cell "collection 1"
+      - cell
+      - cell "--Select--"
+      - cell "N"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdepartments$ctl00$ctl18$btnSelect','')
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

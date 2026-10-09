@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { localToday } from "@/lib/report-filter-state";
 import { Badge } from "@/components/ui/badge";
 import { ReportDateRange } from "@/components/reports/report-date-range";
 import { ReportSearchInput } from "@/components/reports/report-search-input";
@@ -15,7 +16,6 @@ import {
 import { ReportTitleBar } from "@/components/reports/report-title-bar";
 import { ReportPreview } from "@/components/reports/report-preview";
 import { ReportToolbar } from "@/components/reports/report-toolbar";
-import { ReportTruncatedCell } from "@/components/reports/report-truncated-cell";
 import { useReportFind } from "@/components/reports/use-report-find";
 import { formatCriteriaDate } from "@/components/reports/report-export";
 import {
@@ -37,7 +37,7 @@ import type {
   ReportPaymentStatus,
   ReportSelectOption,
 } from "@/types/reports";
-import { formatDate, formatMoney } from "@/lib/utils";
+import { formatDateTime, formatMoney } from "@/lib/utils";
 
 const PRESET_LIMIT = 20;
 
@@ -86,14 +86,15 @@ function toCsv(values: string[]): string | undefined {
 }
 
 export function GeneratedLabBillsContent() {
-  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [filters, setFilters] = useState<Filters>(() => ({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() }));
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [departments, setDepartments] = useState<ReportSelectOption[]>([]);
   const [doctors, setDoctors] = useState<ReportSelectOption[]>([]);
   const [payModes, setPayModes] = useState<ReportSelectOption[]>(PAY_MODE_OPTIONS);
   const [collectors, setCollectors] = useState<ReportSelectOption[]>([]);
   const [result, setResult] = useState<GeneratedLabBillsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const requestSequence = useRef(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -158,31 +159,21 @@ export function GeneratedLabBillsContent() {
     [],
   );
 
-  useEffect(() => {
-    fetchGeneratedLabBills(buildParams(1, EMPTY_FILTERS))
-      .then((response) => {
-        setResult(response);
-        setError(null);
-      })
-      .catch(() => {
-        setResult(null);
-        setError("Unable to load the report. Please try again.");
-      })
-      .finally(() => setLoading(false));
-  }, [buildParams]);
-
   const runFetch = useCallback(
     (targetPage: number, criteria: Filters) => {
+      const sequence = ++requestSequence.current;
       fetchGeneratedLabBills(buildParams(targetPage, criteria))
         .then((response) => {
+          if (sequence !== requestSequence.current) return;
           setResult(response);
           setError(null);
         })
         .catch(() => {
+          if (sequence !== requestSequence.current) return;
           setResult(null);
           setError("Unable to load the report. Please try again.");
         })
-        .finally(() => setLoading(false));
+        .finally(() => { if (sequence === requestSequence.current) setLoading(false); });
     },
     [buildParams],
   );
@@ -194,11 +185,11 @@ export function GeneratedLabBillsContent() {
   }, [filters, runFetch]);
 
   const handleClear = useCallback(() => {
-    setFilters(EMPTY_FILTERS);
+    requestSequence.current += 1;
+    setFilters({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() });
     setApplied(EMPTY_FILTERS);
-    setLoading(true);
-    runFetch(1, EMPTY_FILTERS);
-  }, [runFetch]);
+    setResult(null); setError(null); setLoading(false);
+  }, []);
 
   const handlePageChange = useCallback(
     (targetPage: number) => {
@@ -259,10 +250,11 @@ export function GeneratedLabBillsContent() {
   ]);
 
   const columns: ReportColumn<GeneratedLabBillReportRow>[] = useMemo(
-    () => [
+    () => {
+      const fields: ReportColumn<GeneratedLabBillReportRow>[] = [
       {
         key: "sNo",
-        header: "S No",
+        header: "SNo",
         className: "w-12",
         align: "center",
         render: (row) => serialById.get(row.id) ?? "",
@@ -275,21 +267,21 @@ export function GeneratedLabBillsContent() {
       },
       {
         key: "billDate",
-        header: "Date",
+        header: "Bill Date",
         className: "w-24 whitespace-nowrap",
-        render: (row) => formatDate(row.billDate),
+        render: (row) => formatDateTime(row.billDate),
       },
       {
         key: "patientName",
-        header: "Patient Name",
+        header: "Name",
         className: "w-40",
         render: (row) => (
-          <ReportTruncatedCell value={row.patientName} className="font-medium" />
+          <span className="font-medium">{row.patientName}</span>
         ),
       },
       {
         key: "patientId",
-        header: "GPId",
+        header: "Pat Id",
         className: "w-28 whitespace-nowrap",
         render: (row) => row.patientId,
       },
@@ -301,17 +293,17 @@ export function GeneratedLabBillsContent() {
       },
       {
         key: "tests",
-        header: "Tests",
+        header: "Lab Test",
         className: "w-56",
         render: (row) => (
-          <ReportTruncatedCell value={row.tests.join(", ")} />
+          <span>{row.tests.join(", ")}</span>
         ),
       },
       {
         key: "doctorName",
-        header: "Doctor",
+        header: "Dr Name",
         className: "w-36",
-        render: (row) => <ReportTruncatedCell value={row.doctorName} />,
+        render: (row) => row.doctorName,
       },
       {
         key: "totalAmount",
@@ -322,7 +314,7 @@ export function GeneratedLabBillsContent() {
       },
       {
         key: "discountAmount",
-        header: "Discount",
+        header: "Dscnt",
         className: "w-24 whitespace-nowrap text-right",
         align: "right",
         render: (row) => formatMoney(row.discountAmount),
@@ -342,14 +334,16 @@ export function GeneratedLabBillsContent() {
         key: "payModeLabel",
         header: "Pay Mode",
         className: "w-28",
-        render: (row) => <ReportTruncatedCell value={row.payModeLabel} />,
+        render: (row) => row.payModeLabel,
       },
       {
         key: "collectedBy",
-        header: "Collected By",
+        header: "User",
         className: "w-36",
-        render: (row) => <ReportTruncatedCell value={row.collectedBy} />,
+        render: (row) => row.collectedBy,
       },
+      { key: "paidAmount", header: "Paid", align: "right", render: (row) => formatMoney(row.paidAmount) },
+      { key: "dueAmount", header: "Balance", align: "right", render: (row) => formatMoney(row.dueAmount) },
       {
         key: "paymentStatus",
         header: "Payment Status",
@@ -376,7 +370,10 @@ export function GeneratedLabBillsContent() {
           );
         },
       },
-    ],
+      ];
+      const order = ["sNo", "billDate", "billNumber", "patientId", "patientName", "doctorName", "tests", "totalAmount", "discountAmount", "netAmount", "paidAmount", "dueAmount", "collectedBy", "payModeLabel", "patientType", "paymentStatus"];
+      return order.map((key) => fields.find((column) => column.key === key)!);
+    },
     [serialById],
   );
 
@@ -431,9 +428,9 @@ export function GeneratedLabBillsContent() {
   }, [applied, collectors, departments, doctors, payModes]);
 
   return (
-    <div className="mx-auto flex max-w-[1800px] flex-col gap-2 p-2 sm:p-3">
+    <div data-tmis-page="generated-lab-bills" className="lis-tmis lis-generated-report mx-auto flex max-w-[1800px] flex-col gap-2 p-2 sm:p-3">
       <ReportTitleBar
-        title="Generated Lab Bills Report"
+        title="Generated Lab Bills"
         subtitle="Generated lab bills with stored prices, discounts, payment mode and collector."
       />
 
@@ -443,75 +440,8 @@ export function GeneratedLabBillsContent() {
         onClear={handleClear}
         searching={loading}
       >
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
-          <ReportDateRange
-            fromId="glb-from-date"
-            toId="glb-to-date"
-            fromValue={filters.fromDate}
-            toValue={filters.toDate}
-            onFromChange={(value) => setFilter("fromDate", value)}
-            onToChange={(value) => setFilter("toDate", value)}
-          />
-          <ReportSearchInput
-            id="glb-bill-number"
-            label="Bill No"
-            value={filters.billNumber}
-            onChange={(value) => setFilter("billNumber", value)}
-            placeholder="e.g. OSP202600001"
-          />
-          <ReportSearchInput
-            id="glb-patient-id"
-            label="GPId"
-            value={filters.patientId}
-            onChange={(value) => setFilter("patientId", value)}
-            placeholder="e.g. GP202600001"
-          />
-          <ReportSearchInput
-            id="glb-patient-name"
-            label="Patient Name"
-            value={filters.patientName}
-            onChange={(value) => setFilter("patientName", value)}
-            placeholder="Enter patient name"
-          />
-          <ReportSelect
-            id="glb-department"
-            label="Department"
-            value={filters.departmentId}
-            onChange={(value) => setFilter("departmentId", value)}
-            options={departments}
-          />
-          <ReportSelect
-            id="glb-payment-status"
-            label="Payment Status"
-            value={filters.paymentStatus}
-            onChange={(value) => setFilter("paymentStatus", value)}
-            options={PAYMENT_STATUS_OPTIONS}
-          />
-          <ReportSelect
-            id="glb-order-by"
-            label="Date Order"
-            value={filters.orderBy}
-            onChange={(value) =>
-              setFilter("orderBy", (value || "date_desc") as GeneratedLabBillsOrder)
-            }
-            options={ORDER_OPTIONS}
-            placeholder="Newest first"
-          />
-          <div className="flex items-end pb-2">
-            <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-700">
-              <input
-                id="glb-discounted-only"
-                type="checkbox"
-                checked={filters.discountedOnly}
-                onChange={(event) => setFilter("discountedOnly", event.target.checked)}
-                className="size-3.5 accent-primary"
-              />
-              Discounted bills only
-            </label>
-          </div>
-        </div>
-
-        <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
+        <div className="lis-generated-filter-columns">
+        <div className="lis-generated-filter-lists mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
           <ReportSelectionPanel
             bare
             title="Patient Type"
@@ -561,9 +491,75 @@ export function GeneratedLabBillsContent() {
             maxHeightClassName="max-h-32"
           />
         </div>
+        <div className="lis-generated-filter-criteria grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+          <ReportDateRange
+            fromId="glb-from-date"
+            toId="glb-to-date"
+            fromValue={filters.fromDate}
+            toValue={filters.toDate}
+            onFromChange={(value) => setFilter("fromDate", value)}
+            onToChange={(value) => setFilter("toDate", value)}
+          />
+          <ReportSearchInput
+            id="glb-bill-number"
+            label="Bill No"
+            value={filters.billNumber}
+            onChange={(value) => setFilter("billNumber", value)}
+          />
+          <ReportSearchInput
+            id="glb-patient-id"
+            label="GPId"
+            value={filters.patientId}
+            onChange={(value) => setFilter("patientId", value)}
+          />
+          <ReportSearchInput
+            id="glb-patient-name"
+            label="Patient Name"
+            value={filters.patientName}
+            onChange={(value) => setFilter("patientName", value)}
+          />
+          <ReportSelect
+            id="glb-department"
+            label="Department"
+            value={filters.departmentId}
+            onChange={(value) => setFilter("departmentId", value)}
+            options={departments}
+          />
+          <ReportSelect
+            id="glb-payment-status"
+            label="Payment Status"
+            value={filters.paymentStatus}
+            onChange={(value) => setFilter("paymentStatus", value)}
+            options={PAYMENT_STATUS_OPTIONS}
+          />
+          <ReportSelect
+            id="glb-order-by"
+            label="Date Order"
+            value={filters.orderBy}
+            onChange={(value) =>
+              setFilter("orderBy", (value || "date_desc") as GeneratedLabBillsOrder)
+            }
+            options={ORDER_OPTIONS}
+            placeholder="Newest first"
+          />
+          <div className="flex items-end pb-2">
+            <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-700">
+              <input
+                id="glb-discounted-only"
+                type="checkbox"
+                checked={filters.discountedOnly}
+                onChange={(event) => setFilter("discountedOnly", event.target.checked)}
+                className="size-3.5 accent-primary"
+              />
+              Discounted bills only
+            </label>
+          </div>
+        </div>
+
+        </div>
       </ReportFilterBar>
 
-      <ReportPreview
+      {(result || loading || error) && <ReportPreview
         reportTitle="Generated Lab Bills Report"
         criteria={criteriaText}
         total={result?.pagination.total ?? 0}
@@ -599,7 +595,7 @@ export function GeneratedLabBillsContent() {
             )}
           </>
         )}
-      </ReportPreview>
+      </ReportPreview>}
     </div>
   );
 }

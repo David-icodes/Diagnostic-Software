@@ -20,26 +20,25 @@ import {
 import type { CommissionMappingRow } from "@/types/lab-masters";
 import { cn, formatMoney } from "@/lib/utils";
 
+import { resolveCommissionDraft } from "@/lib/commission-draft";
+
 interface CommissionDraft {
   percent: string;
   amount: string;
 }
 
-function toNum(value: string | undefined): number | undefined {
-  if (value === undefined) return undefined;
-  const trimmed = value.trim();
-  if (trimmed === "") return undefined;
-  const parsed = Number(trimmed);
-  return Number.isNaN(parsed) ? undefined : parsed;
-}
-
 export function DoctorCommissionMappingContent() {
   const queryClient = useQueryClient();
+  const [testSearch, setTestSearch] = useState("");
   const [doctorId, setDoctorId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
+  const [doctorSearch, setDoctorSearch] = useState("");
+  const [departmentSearch, setDepartmentSearch] = useState("");
   const [drafts, setDrafts] = useState<Record<string, CommissionDraft>>({});
   const [selected, setSelected] = useState<Record<string, boolean>>({});
-  const [overwrite, setOverwrite] = useState(false);
+  const [copyMode, setCopyMode] = useState(false);
+  const [copyDoctorIds, setCopyDoctorIds] = useState<string[]>([]);
+  const [copyConfirmOpen, setCopyConfirmOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [notice, setNotice] = useState<{
     kind: "success" | "warn" | "error";
@@ -48,7 +47,7 @@ export function DoctorCommissionMappingContent() {
 
   const doctorsQuery = useQuery({
     queryKey: ["doctors", "lab-master"],
-    queryFn: () => fetchDoctors({ limit: 100, status: "active" }),
+    queryFn: () => fetchDoctors({ limit: 500, status: "active" }),
   });
 
   const departmentsQuery = useQuery({
@@ -70,18 +69,13 @@ export function DoctorCommissionMappingContent() {
   });
 
   const saveMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: (overwriteExisting: boolean) => {
       const rows = (mappingsQuery.data ?? [])
         .filter((row) => selected[row.testId])
         .map((row) => {
-          const draft = drafts[row.testId];
-          return {
-            testId: row.testId,
-            commissionPercent: toNum(draft?.percent),
-            commissionAmount: toNum(draft?.amount),
-          };
+          return { testId: row.testId, ...resolveCommissionDraft(row, drafts[row.testId]) };
         });
-      return assignCommissionMappings(doctorId, departmentId, rows, overwrite);
+      return assignCommissionMappings(doctorId, departmentId, rows, overwriteExisting);
     },
     onSuccess: (result) => {
       setSelected({});
@@ -98,11 +92,36 @@ export function DoctorCommissionMappingContent() {
       showNotice(
         "error",
         error instanceof Error
-          ? `${error.message}${overwrite ? "" : " Please tick the \"Copy The Above Tariff Set\" box to overwrite."}`
+          ? error.message
           : "Failed to assign commission",
       );
     },
   });
+
+  const copyMutation = useMutation({
+    mutationFn: async () => {
+      const mappings = (mappingsQuery.data ?? []).filter((row) => selected[row.testId]).map((row) => ({ testId: row.testId, ...resolveCommissionDraft(row, drafts[row.testId]) }));
+      let copied = 0;
+      for (const targetId of copyDoctorIds) {
+        try {
+          await assignCommissionMappings(targetId, departmentId, mappings, true);
+          copied += 1;
+        } catch (error) {
+          throw new Error(`Copied to ${copied} doctor(s). ${error instanceof Error ? error.message : "Copy failed"}`);
+        }
+      }
+      return copied;
+    },
+    onSuccess: (copied) => {
+      setCopyMode(false);
+      setCopyDoctorIds([]);
+      void queryClient.invalidateQueries({ queryKey: ["commission-mappings"] });
+      showNotice("success", `Commission set copied to ${copied} doctor(s)`);
+    },
+    onError: (error) => showNotice("error", error instanceof Error ? error.message : "Copy failed"),
+  });
+
+  const busy = saveMutation.isPending || copyMutation.isPending;
 
   const showNotice = (kind: "success" | "warn" | "error", text: string) => {
     setNotice({ kind, text });
@@ -118,11 +137,12 @@ export function DoctorCommissionMappingContent() {
     [selected],
   );
 
-  const allSelected = rows.length > 0 && rows.every((row) => selected[row.testId]);
+  const visibleRows = rows.filter((row) => row.testName.toLowerCase().includes(testSearch.toLowerCase()));
+  const allSelected = visibleRows.length > 0 && visibleRows.every((row) => selected[row.testId]);
 
   const toggleAll = (checked: boolean) => {
-    const next: Record<string, boolean> = {};
-    for (const row of rows) next[row.testId] = checked;
+    const next = { ...selected };
+    for (const row of visibleRows) next[row.testId] = checked;
     setSelected(next);
   };
 
@@ -139,17 +159,18 @@ export function DoctorCommissionMappingContent() {
       showNotice("warn", "Select at least one test to assign commission");
       return;
     }
-    if (overwrite) {
+    if (rows.some((row) => selected[row.testId] && (row.commissionPercent !== undefined || row.commissionAmount !== undefined))) {
       setConfirmOpen(true);
     } else {
-      void saveMutation.mutateAsync();
+      saveMutation.mutate(false);
     }
   };
 
   const handleClear = () => {
     setSelected({});
     setDrafts({});
-    setOverwrite(false);
+    setCopyMode(false);
+    setCopyDoctorIds([]);
     setNotice(null);
   };
 
@@ -170,7 +191,7 @@ export function DoctorCommissionMappingContent() {
                 [row.testId]: event.target.checked,
               }))
             }
-            disabled={saveMutation.isPending}
+            disabled={busy}
           />
         ),
       },
@@ -212,7 +233,7 @@ export function DoctorCommissionMappingContent() {
               onChange={(event) =>
                 updateDraft(row.testId, { percent: event.target.value })
               }
-              disabled={saveMutation.isPending}
+              disabled={busy}
             />
           </div>
         ),
@@ -233,20 +254,20 @@ export function DoctorCommissionMappingContent() {
               onChange={(event) =>
                 updateDraft(row.testId, { amount: event.target.value })
               }
-              disabled={saveMutation.isPending}
+              disabled={busy}
             />
           </div>
         ),
       },
     ],
-    [selected, drafts, saveMutation.isPending],
+    [selected, drafts, busy],
   );
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-commission space-y-3">
       <PageHeader
         icon={Handshake}
-        title="Dr & Dept Wise Commission Mapping"
+        title="Doctor Lab Test Commission Mapping"
         subtitle="Assign referral commission by doctor and department"
       />
 
@@ -256,46 +277,58 @@ export function DoctorCommissionMappingContent() {
       >
         <div className="grid gap-3 sm:grid-cols-2 lg:max-w-3xl">
           <FormField id="comm-doctor" label="Select Doctor" required>
+            <div className="lis-master-listbox">
+            <Input aria-label="Search doctors" placeholder="Search Doctor..." value={doctorSearch} onChange={(event) => setDoctorSearch(event.target.value)} />
             <Select
               id="comm-doctor"
+              disabled={busy}
+              size={10}
               className="h-8"
               value={doctorId}
               onChange={(event) => {
                 setDoctorId(event.target.value);
                 setSelected({});
                 setDrafts({});
-                setOverwrite(false);
+                setCopyMode(false);
+                setCopyDoctorIds([]);
                 setNotice(null);
               }}
             >
               <option value="">--Select--</option>
-              {doctors.map((doctor) => (
+              {doctors.filter((doctor) => doctor.id === doctorId || doctor.name.toLowerCase().includes(doctorSearch.toLowerCase())).map((doctor) => (
                 <option key={doctor.id} value={doctor.id}>
                   {doctor.name}
                 </option>
               ))}
             </Select>
+            </div>
           </FormField>
           <FormField id="comm-dept" label="Select Department" required>
+            <div className="lis-master-listbox">
+            <Input aria-label="Search departments" placeholder="Search Department..." value={departmentSearch} onChange={(event) => setDepartmentSearch(event.target.value)} />
             <Select
               id="comm-dept"
+              disabled={busy}
+              size={10}
               className="h-8"
               value={departmentId}
               onChange={(event) => {
                 setDepartmentId(event.target.value);
                 setSelected({});
                 setDrafts({});
-                setOverwrite(false);
+                setCopyMode(false);
+                setCopyDoctorIds([]);
                 setNotice(null);
               }}
             >
               <option value="">--Select--</option>
-              {departments.map((department) => (
+              {departments.filter((department) => department.id === departmentId || department.name.toLowerCase().includes(departmentSearch.toLowerCase())).map((department) => (
                 <option key={department.id} value={department.id}>
                   {department.name}
                 </option>
               ))}
             </Select>
+            </div>
           </FormField>
         </div>
       </FormSection>
@@ -309,6 +342,7 @@ export function DoctorCommissionMappingContent() {
         }
       >
         <div className="space-y-3">
+          <div className="lis-dm-table-search"><Input aria-label="Search lab tests" placeholder="Search Lab Tests..." value={testSearch} onChange={(event) => setTestSearch(event.target.value)} /></div>
           {notice && (
             <p
               className={cn(
@@ -329,52 +363,67 @@ export function DoctorCommissionMappingContent() {
             <>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <label className="flex items-center gap-2 text-xs font-medium text-slate-600">
-                  <Checkbox checked={allSelected} onChange={(event) => toggleAll(event.target.checked)} />
+                  <Checkbox aria-label="Select All" disabled={busy || visibleRows.length === 0} checked={allSelected} onChange={(event) => toggleAll(event.target.checked)} />
                   Select All
                 </label>
                 <label className="flex items-center gap-2 text-xs font-medium text-slate-600">
                   <Checkbox
-                    checked={overwrite}
-                    onChange={(event) => setOverwrite(event.target.checked)}
+                    checked={copyMode}
+                    disabled={busy || selectedCount === 0}
+                    onChange={(event) => { setCopyMode(event.target.checked); setCopyDoctorIds([]); }}
                   />
                   Copy The Above Tariff Set
                 </label>
               </div>
               <DataTable
-                data={rows}
+                data={visibleRows}
                 rowKey={(row) => row.testId}
                 loading={mappingsQuery.isLoading}
                 emptyMessage="No tests found in this department"
                 columns={columns}
               />
-              <LabActions
-                onSubmit={handleSubmit}
-                onClear={handleClear}
-                submitting={saveMutation.isPending}
-                submitLabel="Submit"
-                homeHref="/laboratory"
-              />
+
             </>
           ) : (
-            <div className="rounded-lg border border-dashed border-border px-3 py-5 text-center text-sm text-muted-foreground">
-              Select a doctor and department to load its commission set
-            </div>
+            <DataTable data={[]} rowKey={(row) => row.testId} columns={columns} emptyMessage="Select a doctor and department to load its commission set" />
           )}
         </div>
       </FormSection>
+
+      {copyMode && (
+        <FormSection title="Select Doctors">
+          <label className="flex items-center gap-2 text-xs">
+            <Checkbox disabled={busy} aria-label="Select all destination doctors" checked={doctors.length > 0 && doctors.every((doctor) => copyDoctorIds.includes(doctor.id))} onChange={(event) => setCopyDoctorIds(event.target.checked ? doctors.map((doctor) => doctor.id) : [])} />All
+          </label>
+          <div className="lis-commission-copy-doctors">
+            {doctors.map((doctor) => <label key={doctor.id} className="flex items-center gap-2 text-xs"><Checkbox disabled={busy} aria-label={`Copy to ${doctor.name}`} checked={copyDoctorIds.includes(doctor.id)} onChange={(event) => setCopyDoctorIds((ids) => event.target.checked ? [...ids, doctor.id] : ids.filter((id) => id !== doctor.id))} />{doctor.name}</label>)}
+          </div>
+          <button type="button" className="lis-commission-copy-button" disabled={busy} onClick={() => { if (selectedCount === 0 || copyDoctorIds.length === 0) showNotice("warn", "Select tests and destination doctors to copy"); else setCopyConfirmOpen(true); }}>Copy</button>
+        </FormSection>
+      )}
+      <ConfirmDialog open={copyConfirmOpen} onOpenChange={setCopyConfirmOpen} title="Copy commission set?" description={`Copy ${selectedCount} selected test(s) to ${copyDoctorIds.length} doctor(s)? Existing values for these selected tests will be updated.`} confirmLabel="Copy" loading={copyMutation.isPending} onConfirm={() => { setCopyConfirmOpen(false); copyMutation.mutate(); }} />
+
+      <LabActions
+        disabled={!enabled}
+        onSubmit={copyMode ? undefined : handleSubmit}
+        onClear={handleClear}
+        submitting={busy}
+        submitLabel="Submit"
+        homeHref="/dashboard"
+      />
 
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={(open) => {
           if (!open) setConfirmOpen(false);
         }}
-        title="Copy The Above Tariff Set?"
+        title="Update existing commissions?"
         description="The selected tests already have a commission mapping. Continue will overwrite the existing commission for the selected tests."
         confirmLabel="Yes, Overwrite"
         loading={saveMutation.isPending}
         onConfirm={() => {
           setConfirmOpen(false);
-          void saveMutation.mutateAsync();
+          saveMutation.mutate(true);
         }}
       />
     </div>

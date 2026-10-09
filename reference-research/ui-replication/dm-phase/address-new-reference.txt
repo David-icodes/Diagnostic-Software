@@ -1,0 +1,101 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Create Location Master" [level=3]
+- table:
+  - rowgroup:
+    - row "Country --Select--":
+      - cell "Country"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+      - cell:
+        - textbox
+      - cell
+    - row "State --Select--":
+      - cell "State"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+      - cell:
+        - textbox [disabled]
+      - cell
+    - row "District --Select--":
+      - cell "District"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+      - cell:
+        - textbox [disabled]
+      - cell
+    - row "City --Select--":
+      - cell "City"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+      - cell:
+        - textbox [disabled]
+      - cell
+    - row "Submit Reset HOME":
+      - cell "Submit Reset HOME":
+        - button "Submit"
+        - button "Reset"
+        - button "HOME"
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

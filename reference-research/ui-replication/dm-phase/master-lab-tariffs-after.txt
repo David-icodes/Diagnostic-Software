@@ -1,0 +1,52 @@
+- button "Open Next.js Dev Tools":
+  - text: Compiling
+  - generic: .
+  - generic: .
+  - generic: .
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Lab Test Tariffs" [level=1]
+  - paragraph: Set OP, IP, Ins IP and ER prices for lab tests
+  - link "Home":
+    - /url: /dashboard
+  - generic: Select Department
+  - combobox "Select Department":
+    - option "--Select--" [selected]
+  - table:
+    - rowgroup:
+      - row "Select S.No Dept Name Test Name OP Price IP Price Ins IP Price ER Price":
+        - columnheader "Select"
+        - columnheader "S.No"
+        - columnheader "Dept Name"
+        - columnheader "Test Name"
+        - columnheader "OP Price"
+        - columnheader "IP Price"
+        - columnheader "Ins IP Price"
+        - columnheader "ER Price"
+    - rowgroup:
+      - row "Select a department to load its test price set":
+        - cell "Select a department to load its test price set":
+          - paragraph: Select a department to load its test price set
+  - button "Save" [disabled]
+  - link "Home":
+    - /url: /dashboard
+  - button "Clear"

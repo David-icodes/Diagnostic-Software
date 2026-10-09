@@ -32,6 +32,15 @@ const envSchema = z.object({
   // version setting (you may know it as "WHATSAPP_API_VERSION"); it defaults to
   // the version currently available in the Meta dashboard.
   WHATSAPP_GRAPH_VERSION: z.string().default("v26.0"),
+  // Exact Meta languages for the new workflows. Empty means unavailable; never
+  // inherit the legacy report_ready language or guess a locale.
+  WHATSAPP_LAB_REPORT_READY_LANGUAGE: z.string().trim().default(""),
+  WHATSAPP_LAB_INVOICE_READY_LANGUAGE: z.string().trim().default(""),
+  WHATSAPP_PATIENT_THANK_YOU_LANGUAGE: z.string().trim().default(""),
+  // Retained compatibility setting. New LIS flows now default local numbers to India (+91).
+  WHATSAPP_LOCAL_COUNTRY_CODE: z.string().trim().regex(/^\d{1,3}$|^$/).default(""),
+  // API origin used by the isolated authenticated PDF renderer.
+  WHATSAPP_RENDER_API_ORIGIN: z.string().url().default("http://localhost:5000"),
 });
 
 export type Env = z.infer<typeof envSchema>;

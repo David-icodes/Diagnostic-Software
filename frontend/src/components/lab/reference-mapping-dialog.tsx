@@ -394,7 +394,7 @@ export function ReferenceMappingDialog({
       return;
     }
     setError(null);
-    void saveMutation.mutateAsync();
+    saveMutation.mutate();
   };
 
   const mappings = useMemo(
@@ -412,7 +412,7 @@ export function ReferenceMappingDialog({
       onOpenChange={onOpenChange}
       centered
       bodyClassName="flex min-h-0 flex-1 flex-col p-0"
-      className="w-[72vw] min-w-[900px] max-w-[1200px] max-h-[calc(100vh-2rem)] rounded-none border border-slate-300 bg-white shadow-md ring-0"
+      className="lis-reference-mapping w-[72vw] min-w-[900px] max-w-[1200px] max-h-[calc(100vh-2rem)] rounded-none border border-slate-300 bg-white shadow-md ring-0"
       // The modal has no visible close cross in the reference layout; the Close
       // button, the overlay and Escape all still dismiss it.
       title={undefined}
@@ -837,7 +837,7 @@ export function ReferenceMappingDialog({
         confirmLabel="Delete mapping"
         loading={deleteMutation.isPending}
         onConfirm={() => {
-          if (deleteTarget) void deleteMutation.mutateAsync(deleteTarget);
+          if (deleteTarget) deleteMutation.mutate(deleteTarget);
         }}
       />
     </Dialog>
@@ -991,7 +991,7 @@ function ValueBoundsRow({
           onChange={(event) => update({ valueFrom: event.target.value })}
         />
         {narrative ? (
-          <p className="mt-1 text-[11px] leading-snug text-slate-500">
+          <p className="mt-1 text-[13px] leading-snug text-slate-500">
             A text range is written in Display Value.
           </p>
         ) : null}

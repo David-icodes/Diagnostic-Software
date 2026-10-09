@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
+    "pdf:install": "playwright install chromium",
+    "build:deployment": "npm run pdf:install && npm run build",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
     "seed": "tsx src/scripts/seedAdmin.ts",
@@ -26,7 +28,9 @@
     "express": "^4.21.2",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "libphonenumber-js": "^1.13.15",
     "mongoose": "^8.9.5",
+    "playwright": "^1.64.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {

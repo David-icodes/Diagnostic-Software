@@ -6,12 +6,13 @@ import { usePathname } from "next/navigation";
 import {
   ChevronDown,
   Database,
-  FileText,
+  ChartNoAxesCombined,
   FlaskConical,
   Home,
+  ChevronRight,
+  Users,
   type LucideIcon,
 } from "lucide-react";
-import { APP_CONFIG } from "@/lib/app-config";
 import { cn } from "@/lib/utils";
 
 interface SidebarLeaf {
@@ -37,7 +38,7 @@ interface SidebarTopLevel {
 const LABORATORY_GROUPS: SidebarGroup[] = [
   {
     key: "lab-bill",
-    label: "LAB BILL",
+    label: "Lab Bill",
     items: [
       { label: "OSP Lab Bill", href: "/billing/osp/new" },
       { label: "Cancel Lab Bill", href: "/laboratory/billing/cancel" },
@@ -48,7 +49,7 @@ const LABORATORY_GROUPS: SidebarGroup[] = [
   },
   {
     key: "test-result",
-    label: "TEST RESULT",
+    label: "Test Result",
     items: [
       {
         label: "Sample Collections",
@@ -62,7 +63,7 @@ const LABORATORY_GROUPS: SidebarGroup[] = [
   },
   {
     key: "reprint",
-    label: "REPRINT",
+    label: "Reprint",
     items: [
       {
         label: "Lab Reprint",
@@ -75,7 +76,7 @@ const LABORATORY_GROUPS: SidebarGroup[] = [
 const REPORTS_GROUPS: SidebarGroup[] = [
   {
     key: "reports-list",
-    label: "REPORTS",
+    label: "Diagnostics",
     items: [
       { label: "Generated Lab Bills", href: "/reports/generated-lab-bills" },
       { label: "Lab Summary Report", href: "/reports/lab-summary" },
@@ -84,7 +85,7 @@ const REPORTS_GROUPS: SidebarGroup[] = [
         href: "/reports/osp-registration",
       },
       {
-        label: "Referral Doctor Commission",
+        label: "Referral Dr Commission",
         href: "/reports/referral-doctor-commission",
       },
       {
@@ -92,16 +93,28 @@ const REPORTS_GROUPS: SidebarGroup[] = [
         href: "/reports/lab-collection-summary",
       },
       {
-        label: "Client Lab Generated Bills",
+        label: "Client Lab Generated Bills Report",
         href: "/reports/client-generated-lab-bills",
       },
       {
         label: "Outside Sent LabTest Details",
         href: "/reports/outside-sent-lab-tests",
       },
-      { label: "Dues", href: "/reports/due-bills" },
-      { label: "Cancelled Bills", href: "/reports/cancelled-bills" },
-      { label: "Bill-wise Collection", href: "/reports/bills-wise-collection" },
+    ],
+  },
+  {
+    key: "reports-billing",
+    label: "Billing",
+    items: [
+      { label: "DUEs", href: "/reports/due-bills" },
+      { label: "CANCELLED BILLS", href: "/reports/cancelled-bills" },
+      { label: "Bill wise Collection", href: "/reports/bills-wise-collection" },
+    ],
+  },
+  {
+    key: "reports-pm",
+    label: "PM",
+    items: [
       {
         label: "Hospital Price Card",
         href: "/reports/hospital-price-card",
@@ -113,7 +126,7 @@ const REPORTS_GROUPS: SidebarGroup[] = [
 const DATABASE_GROUPS: SidebarGroup[] = [
   {
     key: "database-doctor",
-    label: "DOCTOR",
+    label: "Doctor",
     items: [
       { label: "Create Doctor", href: "/database/doctor/create" },
       {
@@ -128,7 +141,7 @@ const DATABASE_GROUPS: SidebarGroup[] = [
   },
   {
     key: "database-common",
-    label: "COMMON",
+    label: "Common",
     items: [
       { label: "New Address", href: "/database/address/new" },
       { label: "New Department", href: "/database/department/new" },
@@ -137,16 +150,16 @@ const DATABASE_GROUPS: SidebarGroup[] = [
   },
   {
     key: "database-lab-master",
-    label: "LAB MASTER",
+    label: "LIS",
     items: [
-      { label: "Create New Lab Test", href: "/laboratory/master/create-lab-test" },
+      { label: "New Lab Test", href: "/laboratory/master/create-lab-test" },
       { label: "New Lab Test Parameter", href: "/laboratory/master/lab-test-parameter" },
       { label: "Lab Tariffs", href: "/laboratory/master/lab-tariffs" },
       {
-        label: "Dr & Dept Commission",
+        label: "Dr & Dept Wise Commission Mapping",
         href: "/laboratory/master/doctor-commission-mapping",
       },
-      { label: "Client Lab Tariffs", href: "/laboratory/master/client-lab-tariffs" },
+      { label: "Client Wise Lab tariffs", href: "/laboratory/master/client-lab-tariffs" },
     ],
   },
 ];
@@ -164,15 +177,22 @@ const NAV_ITEMS: SidebarTopLevel[] = [
       pathname.startsWith("/laboratory/test-result"),
   },
   {
+    key: "useradmin",
+    label: "UserAdmin",
+    icon: Users,
+    group: [{ key: "settings", label: "Settings", items: [{ label: "Change Password", href: "/change-password" }] }],
+    isPathMatch: (pathname) => pathname === "/change-password",
+  },
+  {
     key: "reports",
-    label: "Reports",
-    icon: FileText,
+    label: "TMIS",
+    icon: ChartNoAxesCombined,
     group: REPORTS_GROUPS,
     isPathMatch: (pathname) => pathname.startsWith("/reports"),
   },
   {
     key: "database",
-    label: "Database",
+    label: "DM",
     icon: Database,
     group: DATABASE_GROUPS,
     isPathMatch: (pathname) =>
@@ -180,8 +200,8 @@ const NAV_ITEMS: SidebarTopLevel[] = [
   },
 ];
 
-const FLYOUT_GAP = 6;
-const FLYOUT_WIDTH = 240;
+const FLYOUT_GAP = 0;
+const FLYOUT_WIDTH = 220;
 const FLYOUT_MAX_HEIGHT = 560;
 const FLYOUT_VIEWPORT_EDGE = 12;
 /**
@@ -329,17 +349,6 @@ export function Sidebar({
     [cancelPendingClose, flyoutEligible, measureFlyout],
   );
 
-  const toggleFlyout = useCallback(
-    (item: SidebarTopLevel, anchor: HTMLElement) => {
-      if (flyoutSection === item.key) {
-        closeFlyoutNow();
-      } else {
-        openFlyout(item, anchor);
-      }
-    },
-    [closeFlyoutNow, flyoutSection, openFlyout],
-  );
-
   const toggleTop = (item: SidebarTopLevel) => {
     setExpandedSection((current) => (current === item.key ? null : item.key));
   };
@@ -429,18 +438,18 @@ export function Sidebar({
   }, [flyoutSection, flyoutEligible, closeFlyoutNow]);
 
   const topBtnBase = cn(
-    "flex min-h-9 w-full items-center gap-3 rounded-md text-[13px] font-medium text-sidebar-foreground/90 transition-colors",
+    "lis-nav-top flex min-h-10 w-full items-center gap-3 rounded-none text-[13px] font-medium text-sidebar-foreground/90 transition-colors",
     "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
   );
 
   const leafBase = cn(
-    "flex w-full items-center rounded-md py-[5px] pl-4 pr-2 text-[13px] leading-tight transition-colors",
+    "lis-nav-leaf flex w-full items-center rounded-none py-[5px] pl-4 pr-2 text-[13px] leading-tight transition-colors",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
   );
 
   const groupHeading = cn(
-    "select-none px-3 pb-0.5 pt-2.5 text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/55",
+    "lis-nav-heading select-none px-3 pb-0.5 pt-2.5 text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/55",
   );
 
   const renderLeaf = (leaf: SidebarLeaf, index: number) => {
@@ -461,7 +470,8 @@ export function Sidebar({
             onClick={() => navigateAndClose()}
             className={classes}
           >
-            <span className="truncate">{leaf.label}</span>
+            <ChevronRight aria-hidden className="lis-nav-caret" />
+            <span>{leaf.label}</span>
           </Link>
         </li>
       );
@@ -476,7 +486,8 @@ export function Sidebar({
             "text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
           )}
         >
-          <span className="truncate">{leaf.label}</span>
+          <ChevronRight aria-hidden className="lis-nav-caret" />
+          <span>{leaf.label}</span>
         </button>
       </li>
     );
@@ -493,7 +504,6 @@ export function Sidebar({
     if (!flyoutEligible || !flyoutSection || !flyoutPos) return null;
     const item = NAV_ITEMS.find((entry) => entry.key === flyoutSection);
     if (!item) return null;
-    const Icon = item.icon;
     return (
       <div
         ref={flyoutRef}
@@ -506,7 +516,7 @@ export function Sidebar({
           if (next && event.currentTarget.contains(next)) return;
           scheduleFlyoutClose();
         }}
-        className="fixed z-50 w-60"
+        className="lis-nav-flyout fixed z-50 w-[220px]"
       >
         <div aria-hidden className="absolute -left-3 inset-y-0 w-3" />
         <div
@@ -515,17 +525,16 @@ export function Sidebar({
           aria-label={`${item.label} section links`}
           style={{ maxHeight: flyoutPos.maxHeight }}
           className={cn(
-            "flex flex-col overflow-hidden rounded-lg border border-sidebar-border bg-sidebar text-sidebar-foreground",
-            "shadow-xl shadow-black/30",
+            "flex flex-col overflow-hidden rounded-none border border-sidebar-border bg-sidebar text-sidebar-foreground",
+            "shadow-sm",
           )}
         >
-          <div className="flex shrink-0 items-center gap-2 border-b border-sidebar-border px-3 py-2">
-            <Icon className="size-[18px] shrink-0 text-sidebar-primary" />
+          <div className="lis-nav-flyout-title flex shrink-0 items-center gap-2 border-b border-sidebar-border px-3 py-2">
             <span className="truncate text-[13px] font-semibold text-sidebar-primary-foreground">
               {item.label}
             </span>
           </div>
-          <div className="min-h-0 flex-1 overscroll-contain overflow-y-auto px-1.5 py-1.5">
+          <div className="lis-nav-groups min-h-0 flex-1 overscroll-contain overflow-y-auto px-1.5 py-1.5">
             {item.group ? (
               item.group.map((group) => (
                 <div key={group.key}>
@@ -571,7 +580,7 @@ export function Sidebar({
             type="button"
             onClick={(event) =>
               flyoutEligible
-                ? toggleFlyout(item, event.currentTarget)
+                ? openFlyout(item, event.currentTarget)
                 : toggleTop(item)
             }
             aria-expanded={flyoutEligible ? flyoutOpen : isOpen}
@@ -584,7 +593,7 @@ export function Sidebar({
               topActive && "bg-sidebar-accent/70 text-sidebar-accent-foreground",
             )}
           >
-            <Icon className="size-[18px] shrink-0" />
+            <Icon className="lis-sidebar-icon" />
             {expandedView && (
               <>
                 <span className="truncate">{item.label}</span>
@@ -599,7 +608,7 @@ export function Sidebar({
           </button>
 
           {expandedView && isOpen && groups && (
-            <div className="space-y-px px-1.5 pb-1.5">
+            <div className="lis-nav-groups space-y-px px-1.5 pb-1.5">
               {groups.map((group) => (
                 <div key={group.key}>
                   <p className={groupHeading}>{group.label}</p>
@@ -631,7 +640,7 @@ export function Sidebar({
               onClick={() => navigateAndClose()}
               className={linkClasses}
             >
-              <Icon className="size-[18px] shrink-0" />
+              <Icon className="lis-sidebar-icon" />
               <span className="truncate">{item.label}</span>
             </Link>
           ) : (
@@ -640,7 +649,7 @@ export function Sidebar({
               onClick={() => showComingSoon(item.label)}
               className={cn(linkClasses, "justify-center px-3")}
             >
-              <Icon className="size-[18px] shrink-0" />
+              <Icon className="lis-sidebar-icon" />
               {expandedView && <span className="truncate">{item.label}</span>}
             </button>
           )}
@@ -661,7 +670,7 @@ export function Sidebar({
             title={item.label}
             className={cn(topBtnBase, "justify-center px-0", active && "bg-sidebar-accent/70")}
           >
-            <Icon className="size-[18px] shrink-0" />
+            <Icon className="lis-sidebar-icon" />
           </Link>
         </li>
       );
@@ -678,13 +687,13 @@ export function Sidebar({
       >
         <button
           type="button"
-          onClick={(event) => toggleFlyout(item, event.currentTarget)}
+          onClick={(event) => openFlyout(item, event.currentTarget)}
           aria-expanded={flyoutOpen}
           aria-controls={id}
           aria-label={item.label}
           className={cn(topBtnBase, "justify-center px-0", active && "bg-sidebar-accent/70")}
         >
-          <Icon className="size-[18px] shrink-0" />
+          <Icon className="lis-sidebar-icon" />
         </button>
       </li>
     );
@@ -702,29 +711,23 @@ export function Sidebar({
 
       <aside
         ref={asideRef}
+        data-expanded={expandedView}
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex flex-col bg-sidebar text-sidebar-foreground",
+          "lis-sidebar fixed inset-y-0 left-0 z-40 flex flex-col bg-sidebar text-sidebar-foreground",
           "md:relative transition-[width,transform] duration-200",
-          mobileOpen ? "w-60 translate-x-0" : "-translate-x-full md:translate-x-0",
-          collapsed ? "md:w-14" : "md:w-60",
+          mobileOpen ? "w-[220px] translate-x-0" : "-translate-x-full md:translate-x-0",
+          collapsed ? "md:w-[60px]" : "md:w-[220px]",
         )}
       >
-        <nav className="flex-1 space-y-0.5 overflow-y-auto p-1">
+        <nav className="flex-1 space-y-0.5 overflow-y-auto py-0">
           {NAV_ITEMS.map((item) => renderTopLevel(item))}
         </nav>
 
-        <div className="border-t border-sidebar-border p-1.5">
-          {notice && (
+        {notice && (
             <p className="px-2 py-1 text-xs text-amber-300">
               {notice} — Coming Soon
             </p>
-          )}
-          {expandedView && (
-            <p className="px-2 py-1 text-[11px] text-sidebar-foreground/40">
-              v{APP_CONFIG.version}
-            </p>
-          )}
-        </div>
+        )}
       </aside>
 
       {renderActiveFlyout()}

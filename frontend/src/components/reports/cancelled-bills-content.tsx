@@ -1,8 +1,10 @@
 "use client";
 
+import { ReportPreview } from "@/components/reports/report-preview";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FileBarChart2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { ReportDateRange } from "@/components/reports/report-date-range";
 import { ReportSelectionPanel } from "@/components/reports/report-selection-panel";
@@ -292,10 +294,10 @@ export function CancelledBillsContent() {
 
   return (
     <>
-      <div className="mx-auto max-w-7xl space-y-3 p-4 print:hidden sm:p-6">
+      <div data-tmis-page="cancelled-bills" className="lis-tmis lis-report-page space-y-3 print:hidden">
         <BillPageHeader
           icon={FileBarChart2}
-          title="Cancelled Bills"
+          title="Cancelled Bills Report"
           subtitle="List of cancelled bills with cancellation remarks."
         />
 
@@ -304,46 +306,7 @@ export function CancelledBillsContent() {
           onClear={handleClear}
           searching={loading}
         >
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-12">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:col-span-4">
-              <ReportDateRange
-                fromId="cancelled-from-date"
-                toId="cancelled-to-date"
-                fromValue={filters.fromDate}
-                toValue={filters.toDate}
-                onFromChange={(value) => setFilter("fromDate", value)}
-                onToChange={(value) => setFilter("toDate", value)}
-              />
-              <div className="space-y-1.5">
-                <span className="text-xs font-medium">Report Type</span>
-                <div className="flex items-center gap-3 rounded-md border border-slate-200 bg-white px-2.5 py-1.5">
-                  <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-700">
-                    <input
-                      type="radio"
-                      name="cancelled-mode"
-                      checked={filters.mode === "summary"}
-                      onChange={() => {
-                        setFilter("mode", "summary");
-                      }}
-                      className="size-3.5 accent-primary"
-                    />
-                    Summary
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-700">
-                    <input
-                      type="radio"
-                      name="cancelled-mode"
-                      checked={filters.mode === "detailed"}
-                      onChange={() => {
-                        setFilter("mode", "detailed");
-                      }}
-                      className="size-3.5 accent-primary"
-                    />
-                    Detailed
-                  </label>
-                </div>
-              </div>
-            </div>
+          <div className="lis-cancelled-layout grid grid-cols-1 gap-3 lg:grid-cols-12">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:col-span-8">
               <ReportSelectionPanel
                 title="Bill Type"
@@ -397,12 +360,51 @@ export function CancelledBillsContent() {
                 maxHeightClassName="max-h-40"
               />
             </div>
+<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:col-span-4">
+              <ReportDateRange
+                fromId="cancelled-from-date"
+                toId="cancelled-to-date"
+                fromValue={filters.fromDate}
+                toValue={filters.toDate}
+                onFromChange={(value) => setFilter("fromDate", value)}
+                onToChange={(value) => setFilter("toDate", value)}
+              />
+              <div className="space-y-1.5">
+                <span className="text-xs font-medium">Report Type</span>
+                <div className="flex items-center gap-3 rounded-md border border-slate-200 bg-white px-2.5 py-1.5">
+                  <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-700">
+                    <input
+                      type="radio"
+                      name="cancelled-mode"
+                      checked={filters.mode === "summary"}
+                      onChange={() => {
+                        setFilter("mode", "summary");
+                      }}
+                      className="size-3.5 accent-primary"
+                    />
+                    Summary
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-700">
+                    <input
+                      type="radio"
+                      name="cancelled-mode"
+                      checked={filters.mode === "detailed"}
+                      onChange={() => {
+                        setFilter("mode", "detailed");
+                      }}
+                      className="size-3.5 accent-primary"
+                    />
+                    Detailed
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
         </ReportFilterBar>
 
         <ReportSummary items={summaryItems} />
 
-        <Card>
+        <ReportPreview reportTitle="Cancelled Bills Report" criteria={criteriaText} total={result?.pagination.total ?? 0} className="lis-tmis-document">
           {error ? (
             <CardContent className="px-2.5 py-5 text-center text-sm text-red-600">
               {error}
@@ -452,7 +454,7 @@ export function CancelledBillsContent() {
               )}
             </>
           )}
-        </Card>
+        </ReportPreview>
       </div>
 
       <ReportPrintSheet

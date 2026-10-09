@@ -1,11 +1,11 @@
 "use client";
 
 import { Fragment, useMemo, useState } from "react";
+import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
   CheckCircle2,
-  Home,
   Loader2,
   MessageSquare,
   Printer,
@@ -20,25 +20,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { LisSendDialog } from "@/components/whatsapp/lis-send-dialog";
 import { sendWhatsAppTestMessage } from "@/services/whatsapp";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { fetchLabBills } from "@/services/billing";
 import {
   fetchLabSamples,
   fetchLabTechnicians,
-  fetchLabTestParameters,
-  fetchTestResults,
 } from "@/services/test-results";
 import { formatDate, formatGender, cn } from "@/lib/utils";
 import { queryKeys } from "@/lib/query-keys";
 import { useRouter } from "next/navigation";
 import type { BillListParams } from "@/services/billing";
+import { hasEnteredResult } from "@/lib/lab-workflows";
+import { reportReferenceText } from "@/lib/report-reference";
+import { enteredNumber, previewFlag } from "@/lib/result-preview";
+import { InvoicePrintDialog } from "@/components/test-result/invoice-print-dialog";
 import type { LabBill } from "@/types/billing";
 import type {
   LabSampleRow,
   LabTestParameter,
   LabTechnician,
   LabTestResult,
+  ReferenceResolution,
 } from "@/types/test-result";
 
 type BillMode = "today" | "criteria";
@@ -82,7 +86,9 @@ export function LabReprint() {
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const [lisWhatsappOpen, setLisWhatsappOpen] = useState(false);
   const [whatsappSending, setWhatsappSending] = useState(false);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
 
   const billsQuery = useQuery({
     queryKey: [...queryKeys.labBills, "reprint", billParams],
@@ -101,21 +107,6 @@ export function LabReprint() {
     enabled: Boolean(selectedBill),
   });
 
-  const parametersQuery = useQuery({
-    queryKey: [...queryKeys.labTestParameters, "reprint", selectedTestId],
-    queryFn: () =>
-      selectedTestId ? fetchLabTestParameters(selectedTestId) : Promise.resolve([]),
-    enabled: Boolean(selectedBill && selectedTestId),
-  });
-
-  const resultsQuery = useQuery({
-    queryKey: [...queryKeys.testResults, selectedBill?.id, selectedTestId],
-    queryFn: () =>
-      selectedBill && selectedTestId
-        ? fetchTestResults(selectedBill.id, selectedTestId)
-        : Promise.resolve([]),
-    enabled: Boolean(selectedBill && selectedTestId),
-  });
 
   const bills = billsQuery.data?.data ?? [];
   const selectedBillTests = selectedBill?.items ?? [];
@@ -134,8 +125,6 @@ export function LabReprint() {
 
   const selectedPatient = selectedBill ? toPatientBill(selectedBill) : null;
 
-  const selectedTechnician =
-    techniciansQuery.data?.find((technician) => technician.id === signatureId) ?? null;
 
   const runSearch = () => {
     const next: BillListParams = { status: "generated", limit: 50 };
@@ -171,12 +160,12 @@ export function LabReprint() {
   };
 
   const handleSubmit = () => {
-    if (!selectedBill || !selectedTestId) {
-      setError("Select a bill and a test before submitting for print.");
+    if (!selectedBill) {
+      setError("Select a bill before opening its invoice.");
       return;
     }
     setError(null);
-    setNotice("Marked for print — open the preview below and use Print.");
+    setInvoiceOpen(true);
   };
 
   /**
@@ -265,22 +254,17 @@ export function LabReprint() {
 
   const handleHome = () => router.push("/dashboard");
 
-  const printableName = (): string => {
-    if (!selectedBill) return "Accession";
-    return selectedBill.billNumber;
-  };
-
   return (
-    <div className="space-y-3">
+    <div className="lis-reprint space-y-3">
       <div className="print:hidden">
         <BillPageHeader
           icon={PrinterCheck}
           title="Lab Reprint"
-          subtitle="Reprint a generated investigation report for a selected bill and test"
+          subtitle="Preview and reprint the investigation bill"
           actions={
             <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
               <Printer className="size-3" />
-              Test Result
+              Bill Reprint
             </Badge>
           }
         />
@@ -361,7 +345,6 @@ export function LabReprint() {
                     <Input
                       id="reprintBillNo"
                       type="text"
-                      placeholder="OSP202600010"
                       value={billNumber}
                       onChange={(event) => setBillNumber(event.target.value)}
                       className="h-8 font-mono uppercase"
@@ -372,7 +355,6 @@ export function LabReprint() {
                     <Input
                       id="reprintPatientName"
                       type="text"
-                      placeholder="Search by name"
                       value={patientName}
                       onChange={(event) => setPatientName(event.target.value)}
                       className="h-8"
@@ -436,6 +418,7 @@ export function LabReprint() {
                           return (
                             <tr
                               key={bill.id}
+                              aria-selected={selected}
                               onClick={() => selectBill(bill)}
                               className={cn(
                                 "cursor-pointer border-t border-border transition-colors",
@@ -569,7 +552,7 @@ export function LabReprint() {
             <Button
               type="button"
               onClick={handleSubmit}
-              disabled={!selectedBill || !selectedTestId}
+              disabled={!selectedBill}
             >
               <PrinterCheck />
               Submit
@@ -579,18 +562,17 @@ export function LabReprint() {
               Clear
             </Button>
             <Button type="button" variant="outline" onClick={handleHome}>
-              <Home />
               Home
             </Button>
-            <Button type="button" onClick={() => window.print()}>
+            <Button type="button" disabled={!selectedBill} onClick={handleSubmit}>
               <Printer />
               Print
             </Button>
             <Button
               type="button"
               variant="outline"
-              onClick={handleWhatsAppOpen}
-              disabled={!selectedBill || !selectedTestId || whatsappSending}
+              onClick={() => setLisWhatsappOpen(true)}
+              disabled={!selectedBill || !selectedPatient?.mobile?.trim() || whatsappSending}
             >
               <MessageSquare />
               Send WhatsApp
@@ -599,6 +581,13 @@ export function LabReprint() {
         </div>
       </div>
 
+      {lisWhatsappOpen && selectedBill && <LisSendDialog key={selectedBill.id} input={{
+        patientId: typeof selectedBill.patientId === "object" ? selectedBill.patientId.id : selectedBill.patientId,
+        billId: selectedBill.id, workflow: "lab-reprint", testIds: selectedTestId ? [selectedTestId] : [],
+        ...(signatureId ? { technicianId: signatureId } : {}), onlyEntered: false, printMode: "continuous",
+      }} onClose={() => setLisWhatsappOpen(false)} onLegacyReportReady={() => {
+        setLisWhatsappOpen(false); handleWhatsAppOpen();
+      }} />}
       <Dialog
         open={whatsappOpen}
         onOpenChange={setWhatsappOpen}
@@ -654,22 +643,7 @@ export function LabReprint() {
         </div>
       </Dialog>
 
-      <PrintPreview
-        bill={selectedBill}
-        testName={selectedTest?.testName ?? ""}
-        testCode={selectedTest?.testCode ?? ""}
-        departmentName={selectedTest?.departmentName ?? ""}
-        collectedOn={
-          selectedTestId
-            ? sampleByTest.get(selectedTestId)?.lastStatusChangeAt
-            : undefined
-        }
-        parameters={parametersQuery.data ?? []}
-        results={resultsQuery.data ?? []}
-        technician={selectedTechnician}
-        signatureNote={signatureId ? selectedTechnician?.signatureNote : undefined}
-        documentTitle={printableName()}
-      />
+      {invoiceOpen && selectedBill && <InvoicePrintDialog bill={selectedBill} onClose={() => setInvoiceOpen(false)} />}
     </div>
   );
 }
@@ -719,6 +693,12 @@ export function PrintPreview({
   technician,
   signatureNote,
   documentTitle,
+  visible = false,
+  includeHeader = true,
+  letterhead = false,
+  onlyEntered = false,
+  resolvedReferences,
+  referenceResolutions,
 }: {
   bill: LabBill | null;
   testName: string;
@@ -731,6 +711,12 @@ export function PrintPreview({
   technician: LabTechnician | null;
   signatureNote?: string;
   documentTitle: string;
+  visible?: boolean;
+  includeHeader?: boolean;
+  letterhead?: boolean;
+  onlyEntered?: boolean;
+  resolvedReferences?: Record<string, string>;
+  referenceResolutions?: Record<string, ReferenceResolution>;
 }) {
   const patient = bill ? toPatientBill(bill) : null;
 
@@ -754,6 +740,7 @@ export function PrintPreview({
   for (const parameter of [...parameters].sort(
     (a, b) => a.displayOrder - b.displayOrder,
   )) {
+    if (onlyEntered && !hasEnteredResult(resultByParameter.get(parameter.id)?.result)) continue;
     const subtitle = (parameter.subtitle ?? "").trim();
     const last = groups[groups.length - 1];
     if (!last || last.subtitle !== subtitle) {
@@ -766,13 +753,15 @@ export function PrintPreview({
   return (
     <section
       aria-label="Print preview"
-      className="hidden print:block"
+      className={visible ? "block" : "hidden print:block"}
       data-print-title={documentTitle}
     >
       {bill && patient && (
-        <div className="mx-auto w-[186mm] bg-white font-serif text-[9pt] leading-[13pt] text-black">
+        <div className="lis-report-paper mx-auto w-[186mm] bg-white font-serif text-[9pt] leading-[13pt] text-black">
           {/* Letterhead */}
-          <div className="leading-none">
+          {(includeHeader || letterhead) ? <div className={cn("lis-clinical-letterhead leading-none", letterhead && "invisible")} aria-label={letterhead ? "Reserved letterhead space" : undefined} aria-hidden={letterhead || undefined}>
+            <Image src="/Main logo.png" alt="Anjali Diagnostics logo" width={1254} height={1254} unoptimized loading="eager" className="lis-clinical-logo" />
+            <div>
             <p className="text-[26pt] font-bold uppercase leading-[26pt] tracking-[0.14em] text-[#005430]">
               {REPORT_WORDMARK}
             </p>
@@ -780,12 +769,13 @@ export function PrintPreview({
               {REPORT_WORDMARK_SUB}
             </p>
             <p className="mt-[1.5mm] text-[7.5pt] font-bold">{REPORT_REGD_NO}</p>
-          </div>
+            </div>
+          </div> : null}
 
           <div className="mt-[2mm] border-t border-black" />
 
           {/* Patient / bill information */}
-          <div className="mt-[1.5mm] grid grid-cols-2 gap-x-[6mm]">
+          <div className="lis-clinical-info mt-[1.5mm] grid grid-cols-2 gap-x-[6mm]">
             <div>
               <ReportInfoRow label="Patient Id" value={patient.patientId} />
               <ReportInfoRow label="Name" value={patient.fullName} />
@@ -878,8 +868,11 @@ export function PrintPreview({
                       const result = resultByParameter.get(parameter.id);
                       const value = result?.result;
                       const method = result?.method ?? parameter.method;
-                      const abnormal =
-                        result?.referenceSnapshot?.flag === "OUT_OF_RANGE";
+                      const reference = referenceResolutions?.[parameter.id];
+                      const numericValue = typeof value === "number" ? value : enteredNumber(typeof value === "string" ? value : undefined);
+                      const abnormal = reference
+                        ? previewFlag(numericValue, reference) === "out-of-range"
+                        : result?.referenceSnapshot?.flag === "OUT_OF_RANGE";
                       return (
                         <tr
                           key={parameter.id}
@@ -911,9 +904,7 @@ export function PrintPreview({
                             {result?.unit ?? parameter.unit ?? "—"}
                           </td>
                           <td className="py-[0.7mm]">
-                            {result?.referenceRange ??
-                              parameter.referenceRange ??
-                              "—"}
+                            {reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange) || "—"}
                           </td>
                         </tr>
                       );
@@ -924,6 +915,7 @@ export function PrintPreview({
             </tbody>
           </table>
 
+          <div className="lis-clinical-ending">
           {/* Clinical note */}
           <p className="mt-[3mm] text-[8pt]">
             Note : Please Correlate Clinically if necessary kindly discuss.
@@ -933,13 +925,9 @@ export function PrintPreview({
             ****** END OF REPORT ******
           </p>
 
-          {/* Technician / QR / signature */}
-          <div className="mt-[5mm] grid grid-cols-[1fr_50pt_1fr] items-end gap-[4mm]">
+          {/* Technician / signature */}
+          <div className="mt-[5mm] grid grid-cols-2 items-end gap-[4mm]">
             <p className="text-[8.5pt] font-bold">Lab Technician</p>
-            {/* QR slot: the real code arrives with the secure report URL. */}
-            <div className="flex h-[50pt] w-[50pt] items-center justify-center border border-black text-[6pt] uppercase">
-              QR
-            </div>
             <div className="text-center">
               {technician?.name ? (
                 <p className="text-[9pt] font-bold">{technician.name}</p>
@@ -952,16 +940,15 @@ export function PrintPreview({
               ) : null}
             </div>
           </div>
-
           {/* Footer */}
-          <div className="mt-[5mm] border-t border-black pt-[1.5mm]">
+          <div className="lis-clinical-address mt-[5mm] border-t border-black pt-[1.5mm]">
             <div className="flex items-start justify-between gap-[4mm] text-[7.5pt] leading-[11pt]">
               <div>
                 <p>{REPORT_ADDRESS}</p>
                 <p>{REPORT_CONTACT}</p>
               </div>
-              <p className="whitespace-nowrap">Page 1 of 1</p>
             </div>
+          </div>
           </div>
         </div>
       )}

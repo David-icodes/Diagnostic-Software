@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { localToday } from "@/lib/report-filter-state";
 import { Badge } from "@/components/ui/badge";
 import { ReportDateRange } from "@/components/reports/report-date-range";
 import { ReportSearchInput } from "@/components/reports/report-search-input";
@@ -74,15 +75,16 @@ const EMPTY_FILTERS: Filters = {
 };
 
 export function LabSummaryContent() {
-  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [filters, setFilters] = useState<Filters>(() => ({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() }));
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [departments, setDepartments] = useState<ReportSelectOption[]>([]);
   const [tests, setTests] = useState<TestOption[]>([]);
   const [result, setResult] = useState<LabSummaryResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [printRows, setPrintRows] = useState<LabSummaryReportRow[]>([]);
   const [printing, setPrinting] = useState(false);
+  const requestSequence = useRef(0);
 
   useEffect(() => {
     Promise.all([
@@ -149,31 +151,21 @@ export function LabSummaryContent() {
     [buildParams],
   );
 
-  useEffect(() => {
-    fetchLabSummary(buildParams(1, EMPTY_FILTERS))
-      .then((response) => {
-        setResult(response);
-        setError(null);
-      })
-      .catch(() => {
-        setResult(null);
-        setError("Unable to load the report. Please try again.");
-      })
-      .finally(() => setLoading(false));
-  }, [buildParams]);
-
   const runFetch = useCallback(
     (targetPage: number, criteria: Filters) => {
+      const request = ++requestSequence.current;
       fetchLabSummary(buildParams(targetPage, criteria))
         .then((response) => {
+          if (request !== requestSequence.current) return;
           setResult(response);
           setError(null);
         })
         .catch(() => {
+          if (request !== requestSequence.current) return;
           setResult(null);
           setError("Unable to load the report. Please try again.");
         })
-        .finally(() => setLoading(false));
+        .finally(() => { if (request === requestSequence.current) setLoading(false); });
     },
     [buildParams],
   );
@@ -185,11 +177,13 @@ export function LabSummaryContent() {
   }, [filters, runFetch]);
 
   const handleClear = useCallback(() => {
-    setFilters(EMPTY_FILTERS);
+    requestSequence.current += 1;
+    setFilters({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() });
     setApplied(EMPTY_FILTERS);
-    setLoading(true);
-    runFetch(1, EMPTY_FILTERS);
-  }, [runFetch]);
+    setLoading(false);
+    setResult(null);
+    setError(null);
+  }, []);
 
   const handlePageChange = useCallback(
     (targetPage: number) => {
@@ -261,19 +255,9 @@ export function LabSummaryContent() {
     ].join("  ·  ");
   }, [result]);
 
-  const noteLines = useMemo(() => {
-    if (!result?.meta) return [];
-    const lines = [];
-    lines.push(
-      `Lab Status: ${result.meta.labStatusBasis}. Approval Status: ${result.meta.approvalStatusBasis}.`,
-    );
-    if (result.meta.delayedTatHours) {
-      lines.push(
-        `A test marked "Delayed" has no result entry within ${result.meta.delayedTatHours} hours of the bill date.`,
-      );
-    }
-    return lines;
-  }, [result]);
+  const printSummaryLine = result
+    ? `${summaryLine} · Income : ${formatMoney(result.summary.income)} · Due : ${formatMoney(result.summary.due)} (${result.summary.totalBills} whole bills) · Profit : unavailable (expense calculation unavailable)`
+    : "";
 
   const columns: ReportColumn<LabSummaryReportRow>[] = useMemo(
     () => [
@@ -550,7 +534,7 @@ export function LabSummaryContent() {
 
   return (
     <>
-      <div className="mx-auto flex max-w-[1800px] flex-col gap-2 p-2 print:hidden sm:p-3">
+      <div data-tmis-page="lab-summary" className="lis-tmis lis-report-page flex flex-col gap-2 print:hidden">
         <ReportTitleBar
           title="Lab Summary Report"
           subtitle="Per-test lab status, sample workflow, result entry and delayed TAT."
@@ -562,7 +546,35 @@ export function LabSummaryContent() {
           onClear={handleClear}
           searching={loading}
         >
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+          <div className="lis-summary-layout grid gap-2">
+<div className="lis-summary-lists grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <ReportSelectionPanel
+              bare
+              title="Department"
+              selectAllLabel="All"
+              options={departments}
+              selected={filters.departmentIds}
+              onToggle={(value) => toggleSelection("departmentIds", value)}
+              onSelectAll={(values) => selectAll("departmentIds", values)}
+              onClear={() => clearSelections("departmentIds")}
+              searchPlaceholder="Search department…"
+              maxHeightClassName="max-h-32"
+            />
+            <ReportSelectionPanel
+              bare
+              title="Test"
+              selectAllLabel="All"
+              options={scopedTestOptions}
+              selected={filters.testIds}
+              onToggle={(value) => toggleSelection("testIds", value)}
+              onSelectAll={(values) => selectAll("testIds", values)}
+              onClear={() => clearSelections("testIds")}
+              searchPlaceholder="Search Test"
+              maxHeightClassName="max-h-32"
+            />
+            
+          </div>
+<div className="lis-summary-criteria grid grid-cols-2 gap-2">
             <ReportDateRange
               fromId="ls-from-date"
               toId="ls-to-date"
@@ -571,7 +583,19 @@ export function LabSummaryContent() {
               onFromChange={(value) => setFilter("fromDate", value)}
               onToChange={(value) => setFilter("toDate", value)}
             />
-            <ReportSearchInput
+            <ReportSelectionPanel
+              bare
+              title="Patient Type"
+              selectAllLabel="All"
+              options={REPORT_PATIENT_TYPE_OPTIONS}
+              selected={filters.patientTypes}
+              onToggle={(value) => toggleSelection("patientTypes", value)}
+              onSelectAll={(values) => selectAll("patientTypes", values)}
+              onClear={() => clearSelections("patientTypes")}
+              searchPlaceholder="Search patient type…"
+              maxHeightClassName="max-h-32"
+            />
+<ReportSearchInput
               id="ls-bill-number"
               label="Bill Number"
               value={filters.billNumber}
@@ -607,56 +631,17 @@ export function LabSummaryContent() {
               </label>
             </div>
           </div>
-
-          <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-3">
-            <ReportSelectionPanel
-              bare
-              title="Department"
-              selectAllLabel="All"
-              options={departments}
-              selected={filters.departmentIds}
-              onToggle={(value) => toggleSelection("departmentIds", value)}
-              onSelectAll={(values) => selectAll("departmentIds", values)}
-              onClear={() => clearSelections("departmentIds")}
-              searchPlaceholder="Search department…"
-              maxHeightClassName="max-h-32"
-            />
-            <ReportSelectionPanel
-              bare
-              title="Test"
-              selectAllLabel="All"
-              options={scopedTestOptions}
-              selected={filters.testIds}
-              onToggle={(value) => toggleSelection("testIds", value)}
-              onSelectAll={(values) => selectAll("testIds", values)}
-              onClear={() => clearSelections("testIds")}
-              searchPlaceholder="Search Test"
-              maxHeightClassName="max-h-32"
-            />
-            <ReportSelectionPanel
-              bare
-              title="Patient Type"
-              selectAllLabel="All"
-              options={REPORT_PATIENT_TYPE_OPTIONS}
-              selected={filters.patientTypes}
-              onToggle={(value) => toggleSelection("patientTypes", value)}
-              onSelectAll={(values) => selectAll("patientTypes", values)}
-              onClear={() => clearSelections("patientTypes")}
-              searchPlaceholder="Search patient type…"
-              maxHeightClassName="max-h-32"
-            />
-          </div>
+</div>
         </ReportFilterBar>
 
-        {noteLines.length > 0 && (
-          <div className="space-y-0.5 rounded-md border border-border bg-muted/40 px-2.5 py-1.5 text-[11px] text-muted-foreground">
-            {noteLines.map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        )}
+        <div className="lis-summary-financial" aria-label="Bill financial summary">
+          <p>Income <strong>{result ? formatMoney(result.summary.income) : EM_DASH}</strong></p>
+          <p>Due <strong>{result ? formatMoney(result.summary.due) : EM_DASH}</strong></p>
+          <p>Profit <strong>{EM_DASH}</strong> <span>Expense calculation unavailable</span></p>
+          <p className="lis-summary-basis">{result ? `${result.summary.totalBills} matching bills · whole-bill paid amounts and balances, counted once` : "Choose filters and click Show to view the report."}</p>
+        </div>
 
-<ReportPreview
+        {(result || loading || error) && <ReportPreview
         reportTitle="Lab Summary"
         criteria={criteriaText}
         total={result?.pagination.total ?? 0}
@@ -696,7 +681,7 @@ export function LabSummaryContent() {
               )}
             </>
           )}
-        </ReportPreview>
+        </ReportPreview>}
       </div>
 
       <ReportPrintSheet
@@ -706,7 +691,7 @@ export function LabSummaryContent() {
         subtitle="Status-wise summary of lab tests"
         criteria={criteriaText}
         generatedAt={new Date().toISOString()}
-        summaryNote={summaryLine || undefined}
+        summaryNote={printSummaryLine || undefined}
         totals={printTotals}
       />
     </>

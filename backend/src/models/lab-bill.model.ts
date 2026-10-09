@@ -14,6 +14,9 @@ export interface IBillItem {
   unitPrice: number;
   quantity: number;
   total: number;
+  outsideLabId?: Types.ObjectId | null;
+  outsideLabName?: string;
+  sentOutAt?: Date | null;
 }
 
 export interface ILabBill {
@@ -62,6 +65,9 @@ const billItemSchema = new Schema<IBillItem>(
     unitPrice: { type: Number, required: true, min: 0 },
     quantity: { type: Number, required: true, min: 1, max: 100 },
     total: { type: Number, required: true, min: 0 },
+    outsideLabId: { type: Schema.Types.ObjectId, ref: "OutsideLab" },
+    outsideLabName: { type: String, trim: true },
+    sentOutAt: { type: Date },
   },
   { _id: false },
 );

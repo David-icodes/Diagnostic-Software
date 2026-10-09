@@ -56,7 +56,7 @@ export function ReportPreview({
       )}
     >
       {showBranding && (
-        <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b border-border/70 px-3 py-2">
+        <header className="lis-report-brand-header flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b border-border/70 px-3 py-2">
           <div className="flex min-w-0 items-start gap-2.5">
             {branding.logo && (
               // A configured logo path is an arbitrary deployment asset, so the
@@ -67,12 +67,12 @@ export function ReportPreview({
                 width={40}
                 height={40}
                 unoptimized
-                className="size-10 shrink-0 object-contain"
+                className="lis-report-main-logo size-10 shrink-0 object-contain"
               />
             )}
             <div className="min-w-0 text-[11px] leading-tight text-muted-foreground">
               {branding.name && (
-                <p className="truncate text-[13px] font-semibold text-slate-800">
+                <p className="lis-report-centre-name text-[13px] font-semibold text-slate-800">
                   {branding.name}
                 </p>
               )}
@@ -81,9 +81,6 @@ export function ReportPreview({
                 <p key={line}>{line}</p>
               ))}
             </div>
-          </div>
-          <div className="shrink-0 text-right text-[11px] leading-tight text-muted-foreground">
-            <p>Total {unitLabel}: {total ?? 0}</p>
           </div>
         </header>
       )}
@@ -98,7 +95,7 @@ export function ReportPreview({
           )}
         </div>
         <div className="shrink-0 text-right text-[11px] leading-tight text-muted-foreground">
-          {!showBranding && (
+          {(
             <p>
               Total {unitLabel}: {total ?? 0}
             </p>

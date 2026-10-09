@@ -51,7 +51,7 @@ const basePatientSchema = z
       .min(0, "Age must be between 0 and 150")
       .max(150, "Age must be between 0 and 150")
       .optional(),
-    mobile: z.string().regex(MOBILE_REGEX, "Enter a valid 10-digit mobile number"),
+    mobile: z.string().regex(/^\d{1,13}$/, "Enter 1 to 13 digits for the mobile number"),
     email: z
       .string()
       .trim()

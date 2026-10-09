@@ -1,8 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { localToday } from "@/lib/report-filter-state";
+import { ReportPreview } from "@/components/reports/report-preview";
+
+import { useCallback, useMemo, useRef, useState } from "react";
 import { FileBarChart2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { ReportDateRange } from "@/components/reports/report-date-range";
 import { ReportFilterBar } from "@/components/reports/report-filter-bar";
@@ -33,10 +36,11 @@ interface Filters {
 const EMPTY_FILTERS: Filters = { fromDate: "", toDate: "" };
 
 export function LabCollectionSummaryContent() {
-  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [filters, setFilters] = useState<Filters>(() => ({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() }));
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [result, setResult] = useState<LabCollectionSummaryResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const requestSequence = useRef(0);
   const [error, setError] = useState<string | null>(null);
   const [printRows, setPrintRows] = useState<LabCollectionSummaryRow[]>([]);
   const [printing, setPrinting] = useState(false);
@@ -60,31 +64,21 @@ export function LabCollectionSummaryContent() {
     [buildParams],
   );
 
-  useEffect(() => {
-    fetchLabCollectionSummary(buildParams(1, EMPTY_FILTERS))
-      .then((response) => {
-        setResult(response);
-        setError(null);
-      })
-      .catch(() => {
-        setResult(null);
-        setError("Unable to load the report. Please try again.");
-      })
-      .finally(() => setLoading(false));
-  }, [buildParams]);
-
   const runFetch = useCallback(
     (targetPage: number, criteria: Filters) => {
+      const sequence = ++requestSequence.current;
       fetchLabCollectionSummary(buildParams(targetPage, criteria))
         .then((response) => {
+          if (sequence !== requestSequence.current) return;
           setResult(response);
           setError(null);
         })
         .catch(() => {
+          if (sequence !== requestSequence.current) return;
           setResult(null);
           setError("Unable to load the report. Please try again.");
         })
-        .finally(() => setLoading(false));
+        .finally(() => { if (sequence === requestSequence.current) setLoading(false); });
     },
     [buildParams],
   );
@@ -96,11 +90,10 @@ export function LabCollectionSummaryContent() {
   }, [filters, runFetch]);
 
   const handleClear = useCallback(() => {
-    setFilters(EMPTY_FILTERS);
-    setApplied(EMPTY_FILTERS);
-    setLoading(true);
-    runFetch(1, EMPTY_FILTERS);
-  }, [runFetch]);
+    requestSequence.current += 1;
+    setFilters({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() });
+    setApplied(EMPTY_FILTERS); setResult(null); setPrintRows([]); setError(null); setLoading(false);
+  }, []);
 
   const handlePageChange = useCallback(
     (targetPage: number) => {
@@ -120,19 +113,21 @@ export function LabCollectionSummaryContent() {
     formatDate(row.reportDate),
   ]);
 
+  const expenseUnavailable = result?.meta?.expensesUnavailable !== false;
+
   const summaryItems = useMemo(() => {
     if (!result) return [];
     return [
       { label: "Total Lab Amount", value: formatMoney(result.summary.totalLabAmount) },
-      { label: "Total Expenses", value: formatMoney(result.summary.totalExpenses) },
-      { label: "Profit", value: formatMoney(result.summary.profit) },
-      { label: "Profit %", value: `${result.summary.profitPercent}%` },
+      { label: "Total Expenses", value: expenseUnavailable ? "Unavailable" : formatMoney(result.summary.totalExpenses) },
+      { label: "Profit", value: expenseUnavailable ? "Unavailable" : formatMoney(result.summary.profit) },
+      { label: "Profit %", value: expenseUnavailable ? "Unavailable" : `${result.summary.profitPercent}%` },
     ];
-  }, [result]);
+  }, [result, expenseUnavailable]);
 
   const expenseNote = useMemo(() => {
     if (!result?.meta?.expensesUnavailable) return null;
-    return result.meta.expensesNote;
+    return "Expenses and profit unavailable";
   }, [result]);
 
   const columns: ReportColumn<LabCollectionSummaryRow>[] = useMemo(
@@ -156,10 +151,10 @@ export function LabCollectionSummaryContent() {
         key: "expenses",
         header: "Expenses",
         align: "right",
-        render: (row) => formatMoney(row.expenses),
+        render: (row) => expenseUnavailable ? "Unavailable" : formatMoney(row.expenses),
       },
     ],
-    [],
+    [expenseUnavailable],
   );
 
   const printColumns: PrintColumn<LabCollectionSummaryRow>[] = useMemo(
@@ -174,11 +169,11 @@ export function LabCollectionSummaryContent() {
       {
         key: "expenses",
         header: "Expenses (Rs.)",
-        render: (row) => formatMoney(row.expenses),
+        render: (row) => expenseUnavailable ? "Unavailable" : formatMoney(row.expenses),
         align: "right",
       },
     ],
-    [],
+    [expenseUnavailable],
   );
 
   const criteriaText = useMemo(
@@ -216,10 +211,10 @@ export function LabCollectionSummaryContent() {
 
   return (
     <>
-      <div className="mx-auto max-w-7xl space-y-3 p-4 print:hidden sm:p-6">
+      <div data-tmis-page="lab-collection-summary" className="lis-tmis lis-report-page space-y-3 print:hidden">
         <BillPageHeader
           icon={FileBarChart2}
-          title="Lab Collection Summary"
+          title="Lab Income And Expense"
           subtitle="Date-wise lab income collection summary."
         />
 
@@ -248,7 +243,7 @@ export function LabCollectionSummaryContent() {
 
         <ReportSummary items={summaryItems} />
 
-        <Card>
+        {(result || loading || error) && <ReportPreview reportTitle="Lab Income And Expense" criteria={criteriaText} total={result?.pagination.total ?? 0} className="lis-tmis-document">
           {error ? (
             <CardContent className="px-2.5 py-5 text-center text-sm text-red-600">
               {error}
@@ -285,7 +280,7 @@ export function LabCollectionSummaryContent() {
               )}
             </>
           )}
-        </Card>
+        </ReportPreview>}
       </div>
 
       <ReportPrintSheet
@@ -297,19 +292,13 @@ export function LabCollectionSummaryContent() {
         generatedAt={new Date().toISOString()}
         summaryNote={
           result
-            ? `Total Lab Amount : ${formatMoney(
-                result.summary.totalLabAmount,
-              )}  ·  Total Expenses : ${formatMoney(
-                result.summary.totalExpenses,
-              )}  ·  Profit : ${formatMoney(
-                result.summary.profit,
-              )}  ·  Profit % : ${result.summary.profitPercent}%`
+            ? `Total Lab Amount : ${formatMoney(result.summary.totalLabAmount)} | Expenses : ${expenseUnavailable ? "Unavailable" : formatMoney(result.summary.totalExpenses)} | Profit : ${expenseUnavailable ? "Unavailable" : formatMoney(result.summary.profit)} | Profit % : ${expenseUnavailable ? "Unavailable" : `${result.summary.profitPercent}%`}`
             : undefined
         }
         totals={[
           "Total",
           formatMoney(result?.summary.totalLabAmount ?? 0),
-          formatMoney(result?.summary.totalExpenses ?? 0),
+          expenseUnavailable ? "Unavailable" : formatMoney(result?.summary.totalExpenses ?? 0),
         ]}
       />
     </>

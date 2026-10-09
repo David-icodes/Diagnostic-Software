@@ -116,7 +116,7 @@ export async function assignCommissionMappings(
   if (!input.overwrite && existing.length > 0) {
     throw new ApiError(
       409,
-      `This doctor already has ${existing.length} commission mapping(s) for this department. Tick "Copy The Above Tariff Set" and confirm to replace them.`,
+      `This doctor already has ${existing.length} commission mapping(s) for this department. Confirm the update to replace the selected mappings.`,
     );
   }
 

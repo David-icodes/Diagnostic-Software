@@ -26,6 +26,7 @@ interface BillsTableProps<T> {
   maxHeightClass?: string;
   emptyMessage?: string;
   footer?: React.ReactNode;
+  completedRow?: (row: T) => boolean;
 }
 
 export function BillsTable<T>({
@@ -35,6 +36,7 @@ export function BillsTable<T>({
   maxHeightClass = "max-h-[430px]",
   emptyMessage = "No Records To Display",
   footer,
+  completedRow,
 }: BillsTableProps<T>) {
   return (
     <div className={cn("overflow-auto", maxHeightClass)}>
@@ -71,6 +73,8 @@ export function BillsTable<T>({
             rows.map((row, index) => (
               <TableRow
                 key={rowKey(row, index)}
+                data-completed={completedRow?.(row) || undefined}
+                title={completedRow ? (completedRow(row) ? "Completed bill — all tests completed" : "Pending bill") : undefined}
                 className="border-b border-border transition-colors hover:bg-slate-50"
               >
                 {columns.map((column) => (

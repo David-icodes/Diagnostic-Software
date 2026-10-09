@@ -54,7 +54,7 @@ export const patientFormSchema = z
       ])
       .transform((value) => (Number.isNaN(value) ? undefined : value))
       .optional(),
-    mobile: z.string().regex(MOBILE_REGEX, "Enter a valid 10-digit mobile number"),
+    mobile: z.string().regex(/^\d{1,13}$/, "Enter 1 to 13 digits for the mobile number"),
     email: z
       .union([z.email("Enter a valid email address"), z.literal("")])
       .optional(),

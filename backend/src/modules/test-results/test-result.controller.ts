@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
 import { requireUserId } from "../../utils/require-user-id";
+import { getResultWorkflow as workflowService, assertResultReportAllowed } from "./result-workflow.service";
 import {
   getBillResultEntry as getBillResultEntryService,
   listTestParameters as listTestParametersService,
@@ -50,3 +51,10 @@ export const submitTestResults = asyncHandler(
     });
   },
 );
+
+export const getResultWorkflow = asyncHandler(async (req: Request, res: Response) =>
+  sendSuccess(res, await workflowService(String(req.query.billId ?? ""))));
+
+export const checkReportEligibility = asyncHandler(async (req: Request, res: Response) =>
+  sendSuccess(res, await assertResultReportAllowed(String(req.query.billId ?? ""),
+    String(req.query.testIds ?? "").split(",").filter(Boolean))));

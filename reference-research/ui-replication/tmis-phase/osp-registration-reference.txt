@@ -1,0 +1,449 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "General Patient Registration Report" [level=3]
+- table:
+  - rowgroup:
+    - row "From Date 08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup. To Date 08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup. Gender ALL":
+      - cell "From Date"
+      - cell "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+              - cell "08-Oct-26 12:00 AM":
+                - textbox: 08-Oct-26 12:00 AM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+      - cell
+      - cell "To Date"
+      - cell "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+              - cell "08-Oct-26 11:59 PM":
+                - textbox: 08-Oct-26 11:59 PM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+      - cell
+      - cell "Gender"
+      - cell "ALL":
+        - combobox:
+          - option "ALL" [selected]
+          - option "Male"
+          - option "Female"
+    - row "Mobile No Name Bill Type ALL":
+      - cell "Mobile No"
+      - cell:
+        - textbox
+      - cell
+      - cell "Name"
+      - cell:
+        - textbox
+      - cell
+      - cell "Bill Type"
+      - cell "ALL":
+        - combobox:
+          - option "ALL" [selected]
+          - option "Services"
+          - option "Lab"
+          - option "Pharmacy"
+    - row "Show Clear Home":
+      - cell
+      - cell "Show Clear Home":
+        - button "Show"
+        - button "Clear"
+        - button "Home"
+- table:
+  - rowgroup:
+    - row:
+      - cell
+    - row "First Page Previous Page 1 of 1 Next Page Last Page Go back to the parent report Find | Next Refresh":
+      - cell "First Page Previous Page 1 of 1 Next Page Last Page Go back to the parent report Find | Next Refresh":
+        - table:
+          - rowgroup:
+            - row "First Page Previous Page 1 of 1 Next Page Last Page":
+              - cell "First Page":
+                - table "First Page":
+                  - rowgroup:
+                    - row "First Page":
+                      - cell "First Page":
+                        - button "First Page" [disabled]
+              - cell
+              - cell "Previous Page":
+                - table "Previous Page":
+                  - rowgroup:
+                    - row "Previous Page":
+                      - cell "Previous Page":
+                        - button "Previous Page" [disabled]
+              - cell
+              - cell "1":
+                - textbox "Current Page": "1"
+              - cell
+              - cell "of"
+              - cell
+              - cell "1"
+              - cell
+              - cell "Next Page":
+                - table "Next Page":
+                  - rowgroup:
+                    - row "Next Page":
+                      - cell "Next Page":
+                        - button "Next Page" [disabled]
+              - cell
+              - cell "Last Page":
+                - table "Last Page":
+                  - rowgroup:
+                    - row "Last Page":
+                      - cell "Last Page":
+                        - button "Last Page" [disabled]
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row "Go back to the parent report":
+              - cell "Go back to the parent report":
+                - table "Go back to the parent report":
+                  - rowgroup:
+                    - row "Go back to the parent report":
+                      - cell "Go back to the parent report":
+                        - button "Go back to the parent report" [disabled]
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row "Find | Next":
+              - cell:
+                - textbox "Find Text in Report"
+              - cell
+              - cell "Find":
+                - link "Find":
+                  - /url: "#"
+              - cell
+              - cell "|"
+              - cell
+              - cell "Next":
+                - link "Next":
+                  - /url: "#"
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row:
+              - cell:
+                - table "Export":
+                  - rowgroup:
+                    - row:
+                      - cell:
+                        - link:
+                          - /url: javascript:void(0)
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row "Refresh":
+              - cell "Refresh":
+                - table "Refresh":
+                  - rowgroup:
+                    - row "Refresh":
+                      - cell "Refresh":
+                        - button "Refresh"
+    - 'row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL S No Date GP Id Name Age Gender Mobile Address Bill for 1 Powered by Wilco Solutions"':
+      - 'cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL S No Date GP Id Name Age Gender Mobile Address Bill for 1 Powered by Wilco Solutions"':
+        - table:
+          - rowgroup:
+            - 'row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL S No Date GP Id Name Age Gender Mobile Address Bill for 1 Powered by Wilco Solutions"':
+              - 'cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL S No Date GP Id Name Age Gender Mobile Address Bill for 1 Powered by Wilco Solutions"':
+                - table:
+                  - rowgroup:
+                    - 'row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                      - 'cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                        - table:
+                          - rowgroup:
+                            - row:
+                              - cell
+                              - cell
+                              - cell
+                            - row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                              - cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                - table:
+                                  - rowgroup:
+                                    - row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                      - cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                        - table:
+                                          - rowgroup:
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell:
+                                              - cell
+                                            - row "Anjali Diagnostics":
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell "Anjali Diagnostics":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Anjali Diagnostics":
+                                                      - cell "Anjali Diagnostics":
+                                                        - generic: Anjali Diagnostics
+                                              - cell
+                                            - row "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                                      - cell "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                                        - generic: Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell
+                            - 'row "Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                              - cell
+                              - 'cell "Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                                - table:
+                                  - rowgroup:
+                                    - 'row "Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                                      - 'cell "Total: 0 GP Patients Report Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                                        - table:
+                                          - rowgroup:
+                                            - 'row "Total: 0"':
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell "Total:":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Total:":
+                                                      - cell "Total:":
+                                                        - generic: "Total:"
+                                              - cell
+                                              - cell "0":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "0":
+                                                      - cell "0":
+                                                        - generic: "0"
+                                              - cell
+                                            - row "GP Patients Report":
+                                              - cell
+                                              - cell "GP Patients Report":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "GP Patients Report":
+                                                      - cell "GP Patients Report":
+                                                        - generic: GP Patients Report
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - 'row "Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                                              - cell
+                                              - cell
+                                              - 'cell "Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                                                - table:
+                                                  - rowgroup:
+                                                    - 'row "Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                                                      - 'cell "Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"':
+                                                        - generic: "Date : 08-10-26 12:00 AM-08-10-26 11:59 PM Bill Type :ALL"
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell
+                              - cell
+                    - row "S No Date GP Id Name Age Gender Mobile Address Bill for":
+                      - cell "S No Date GP Id Name Age Gender Mobile Address Bill for":
+                        - table:
+                          - rowgroup:
+                            - row "S No Date GP Id Name Age Gender Mobile Address Bill for":
+                              - cell "S No Date GP Id Name Age Gender Mobile Address Bill for":
+                                - table:
+                                  - rowgroup:
+                                    - row "S No Date GP Id Name Age Gender Mobile Address Bill for":
+                                      - cell
+                                      - cell
+                                      - cell "S No Date GP Id Name Age Gender Mobile Address Bill for":
+                                        - table:
+                                          - rowgroup:
+                                            - row "S No Date GP Id Name Age Gender Mobile Address Bill for":
+                                              - cell "S No Date GP Id Name Age Gender Mobile Address Bill for":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row:
+                                                      - cell
+                                                      - cell
+                                                      - cell
+                                                      - cell
+                                                      - cell
+                                                      - cell
+                                                      - cell
+                                                      - cell
+                                                      - cell
+                                                      - cell
+                                                    - row "S No Date GP Id Name Age Gender Mobile Address Bill for":
+                                                      - cell
+                                                      - cell "S No":
+                                                        - generic: S No
+                                                      - cell "Date":
+                                                        - table:
+                                                          - rowgroup:
+                                                            - row "Date":
+                                                              - cell "Date"
+                                                              - cell:
+                                                      - cell "GP Id":
+                                                        - generic: GP Id
+                                                      - cell "Name":
+                                                        - generic: Name
+                                                      - cell "Age":
+                                                        - generic: Age
+                                                      - cell "Gender":
+                                                        - generic: Gender
+                                                      - cell "Mobile":
+                                                        - generic: Mobile
+                                                      - cell "Address":
+                                                        - generic: Address
+                                                      - cell "Bill for":
+                                                        - generic: Bill for
+                                      - cell
+                                    - row:
+                                      - cell
+                                      - cell
+                    - row "1 Powered by Wilco Solutions":
+                      - cell "1 Powered by Wilco Solutions":
+                        - table:
+                          - rowgroup:
+                            - row:
+                              - cell
+                              - cell
+                            - row "1 Powered by Wilco Solutions":
+                              - cell "1 Powered by Wilco Solutions":
+                                - table:
+                                  - rowgroup:
+                                    - row "1 Powered by Wilco Solutions":
+                                      - cell "1 Powered by Wilco Solutions":
+                                        - table:
+                                          - rowgroup:
+                                            - row "1 Powered by Wilco Solutions":
+                                              - cell
+                                              - cell
+                                              - cell "1":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "1":
+                                                      - cell "1":
+                                                        - generic: "1"
+                                              - cell
+                                              - cell "Powered by Wilco Solutions":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Powered by Wilco Solutions":
+                                                      - cell "Powered by Wilco Solutions":
+                                                        - generic: Powered by Wilco Solutions
+                                            - row:
+                                              - cell
+                                              - cell
+                              - cell
+                            - row:
+                              - cell
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

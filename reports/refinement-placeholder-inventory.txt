@@ -1,0 +1,124 @@
+frontend/src\components\whatsapp\whatsapp-test-panel.tsx:142:                placeholder="e.g. 919876543210"
+frontend/src\components\database\search-input.tsx:37:        placeholder={placeholder}
+frontend/src\components\database\package-create-content.tsx:254:                placeholder="e.g. FEVER PROFILE"
+frontend/src\components\database\package-create-content.tsx:280:                  placeholder="0.00"
+frontend/src\components\database\package-create-content.tsx:291:                  placeholder="0.00"
+frontend/src\components\database\package-create-content.tsx:303:              <Input aria-label="Search package departments" placeholder="Search..." value={departmentSearch} onChange={(event) => setDepartmentSearch(event.target.value)} />
+frontend/src\components\database\package-create-content.tsx:324:                <Input aria-label="Search package tests" placeholder="Search..." value={testSearch} onChange={(event) => setTestSearch(event.target.value)} />
+frontend/src\components\database\package-create-content.tsx:412:        actions={<SearchInput value={search} onChange={setSearch} placeholder="Search packages..." />}
+frontend/src\components\database\master-content.tsx:40:  placeholder: string;
+frontend/src\components\database\master-content.tsx:227:                placeholder={placeholder}
+frontend/src\components\database\master-content.tsx:250:          actions={<SearchInput value={search} onChange={setSearch} placeholder="Search records..." />}
+frontend/src\components\ui\input.tsx:10:        "h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+frontend/src\components\database\location-content.tsx:332:                placeholder={`Enter new ${label} name`}
+frontend/src\components\patients\patients-list-content.tsx:132:            placeholder="Search by ID, name or mobile..."
+frontend/src\components\ui\textarea.tsx:12:        "w-full min-w-0 resize-y rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 md:text-sm",
+frontend/src\components\database\doctor-specialisation-content.tsx:21:      placeholder="e.g. Cardiologist"
+frontend/src\components\database\doctor-designation-content.tsx:21:      placeholder="e.g. Senior Consultant"
+frontend/src\components\database\doctor-create-content.tsx:334:  const numberInput = (id: string, value: string, setter: (v: string) => void, placeholder: string) => (
+frontend/src\components\database\doctor-create-content.tsx:340:      placeholder={placeholder}
+frontend/src\components\database\doctor-create-content.tsx:382:                  placeholder="e.g. EMP-001"
+frontend/src\components\database\doctor-create-content.tsx:391:                  placeholder="First name"
+frontend/src\components\database\doctor-create-content.tsx:400:                  placeholder="Middle name"
+frontend/src\components\database\doctor-create-content.tsx:409:                  placeholder="Last name"
+frontend/src\components\database\doctor-create-content.tsx:418:                  placeholder="e.g. Dr. A"
+frontend/src\components\database\doctor-create-content.tsx:442:                  placeholder="e.g. MBBS, DM"
+frontend/src\components\database\doctor-create-content.tsx:451:                  placeholder="Landline"
+frontend/src\components\database\doctor-create-content.tsx:460:                  placeholder="10-digit mobile"
+frontend/src\components\database\doctor-create-content.tsx:471:                  placeholder="doctor@example.com"
+frontend/src\components\database\doctor-create-content.tsx:480:                  placeholder="City"
+frontend/src\components\database\doctor-create-content.tsx:553:                  placeholder="Address"
+frontend/src\components\database\doctor-create-content.tsx:624:                  placeholder="e.g. 204"
+frontend/src\components\database\doctor-create-content.tsx:649:          actions={<SearchInput value={search} onChange={setSearch} placeholder="Search doctors..." />}
+frontend/src\components\patients\patient-form.tsx:122:                  placeholder="First name"
+frontend/src\components\patients\patient-form.tsx:137:                  placeholder="Last name"
+frontend/src\components\patients\patient-form.tsx:188:                  placeholder="Years"
+frontend/src\components\patients\patient-form.tsx:251:                    placeholder="Email address"
+frontend/src\components\patients\patient-form.tsx:266:                    placeholder="10-digit mobile"
+frontend/src\components\patients\patient-form.tsx:288:                    placeholder="Street, house no., area"
+frontend/src\components\patients\patient-form.tsx:302:                    placeholder="City"
+frontend/src\components\patients\patient-form.tsx:316:                    placeholder="State"
+frontend/src\components\patients\patient-form.tsx:331:                    placeholder="6-digit pincode"
+frontend/src\components\database\department-content.tsx:248:                  placeholder="e.g. HEMATOLOGY"
+frontend/src\components\database\department-content.tsx:257:                  placeholder="e.g. HEMA"
+frontend/src\components\database\department-content.tsx:269:                  placeholder="Optional notes"
+frontend/src\components\database\department-content.tsx:334:              <SearchInput value={search} onChange={setSearch} placeholder="Search departments..." />
+frontend/src\components\lab\lab-test-parameter.tsx:825:                  placeholder="Optional"
+frontend/src\components\lab\lab-test-parameter.tsx:833:                  placeholder="e.g. Glucose"
+frontend/src\components\lab\lab-test-parameter.tsx:871:                  placeholder="Optional"
+frontend/src\components\lab\lab-test-parameter.tsx:881:                  placeholder="e.g. mg/dL"
+frontend/src\components\lab\lab-test-parameter.tsx:903:                  placeholder="e.g. GOD-POD"
+frontend/src\components\lab\lab-test-parameter.tsx:918:                    placeholder="e.g. Normal, High, Low"
+frontend/src\components\lab\lab-test-parameter.tsx:1056:                              placeholder="Range text"
+frontend/src\components\lab\lab-test-parameter.tsx:1076:                          placeholder="From"
+frontend/src\components\lab\lab-test-parameter.tsx:1086:                          placeholder="To"
+frontend/src\components\lab\lab-test-parameter.tsx:1094:                          placeholder="Range text"
+frontend/src\components\lab\lab-test-parameter.tsx:1127:                      placeholder={
+frontend/src\components\lab\lab-test-parameter.tsx:1235:              placeholder="Search parameters..."
+frontend/src\components\lab\lab-tariffs.tsx:53:      placeholder="—"
+frontend/src\components\test-result\parameter-based-test-results.tsx:838:              "w-full min-w-0 resize-y rounded-md border border-input bg-transparent px-2 py-1 text-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring disabled:opacity-50",
+frontend/src\components\common\addable-datalist.tsx:43:        placeholder={placeholder}
+frontend/src\components\lab\create-lab-test.tsx:394:                  placeholder="e.g. BLOOD SUGAR (F)"
+frontend/src\components\lab\create-lab-test.tsx:403:                  placeholder="Optional"
+frontend/src\components\lab\create-lab-test.tsx:412:                  placeholder="Optional"
+frontend/src\components\lab\create-lab-test.tsx:421:                  placeholder="Optional"
+frontend/src\components\lab\create-lab-test.tsx:430:                  placeholder="Optional"
+frontend/src\components\lab\create-lab-test.tsx:439:                  placeholder="e.g. BS001"
+frontend/src\components\lab\create-lab-test.tsx:451:                  placeholder="e.g. BS(F)"
+frontend/src\components\lab\create-lab-test.tsx:460:                  placeholder="Optional notes"
+frontend/src\components\lab\create-lab-test.tsx:472:                  placeholder="0.00"
+frontend/src\components\lab\create-lab-test.tsx:498:                  placeholder="0.00"
+frontend/src\components\lab\create-lab-test.tsx:510:                  placeholder="0.00"
+frontend/src\components\lab\create-lab-test.tsx:522:                  placeholder="0.00"
+frontend/src\components\lab\create-lab-test.tsx:534:                  placeholder="0.00"
+frontend/src\components\lab\create-lab-test.tsx:543:                  placeholder="Optional comments"
+frontend/src\components\lab\create-lab-test.tsx:556:                  placeholder="0"
+frontend/src\components\lab\create-lab-test.tsx:565:                  placeholder="e.g. Biochemistry"
+frontend/src\components\lab\create-lab-test.tsx:574:                  placeholder="Optional report note"
+frontend/src\components\lab\create-lab-test.tsx:583:                  placeholder="Optional report note"
+frontend/src\components\lab\create-lab-test.tsx:594:                  placeholder="e.g. Blood / Serum"
+frontend/src\components\lab\create-lab-test.tsx:603:                  placeholder="e.g. Plain / EDTA"
+frontend/src\components\lab\create-lab-test.tsx:674:              placeholder="Search tests..."
+frontend/src\components\billing\test-selector.tsx:101:              placeholder="Search departments..."
+frontend/src\components\billing\test-selector.tsx:174:              placeholder="Search tests..."
+frontend/src\components\lab\client-lab-tariffs.tsx:213:              placeholder="0.00"
+frontend/src\components\lab\client-lab-tariffs.tsx:239:            <Input aria-label="Search clients" placeholder="Search Client..." value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} />
+frontend/src\components\lab\client-lab-tariffs.tsx:264:            <Input aria-label="Search departments" placeholder="Search Department..." value={departmentSearch} onChange={(event) => setDepartmentSearch(event.target.value)} />
+frontend/src\components\lab\client-lab-tariffs.tsx:299:          <div className="lis-dm-table-search"><Input aria-label="Search lab tests" placeholder="Search Lab Tests..." value={testSearch} onChange={(event) => setTestSearch(event.target.value)} /></div>
+frontend/src\components\billing\doctor-picker.tsx:176:                placeholder="Search by name or specialization..."
+frontend/src\components\billing\doctor-picker.tsx:236:                  placeholder="e.g. Dr. Ramesh Gupta"
+frontend/src\components\billing\doctor-picker.tsx:247:                    placeholder="e.g. MBBS, MD"
+frontend/src\components\billing\doctor-picker.tsx:257:                    placeholder="e.g. Cardiology"
+frontend/src\components\lab\doctor-commission-mapping.tsx:214:              placeholder="0"
+frontend/src\components\lab\doctor-commission-mapping.tsx:235:              placeholder="0.00"
+frontend/src\components\lab\doctor-commission-mapping.tsx:263:            <Input aria-label="Search doctors" placeholder="Search Doctor..." value={doctorSearch} onChange={(event) => setDoctorSearch(event.target.value)} />
+frontend/src\components\lab\doctor-commission-mapping.tsx:288:            <Input aria-label="Search departments" placeholder="Search Department..." value={departmentSearch} onChange={(event) => setDepartmentSearch(event.target.value)} />
+frontend/src\components\lab\doctor-commission-mapping.tsx:323:          <div className="lis-dm-table-search"><Input aria-label="Search lab tests" placeholder="Search Lab Tests..." value={testSearch} onChange={(event) => setTestSearch(event.target.value)} /></div>
+frontend/src\components\billing\referring-doctor-field.tsx:102:              placeholder="Doctor.."
+frontend/src\components\billing\referring-doctor-field.tsx:252:              placeholder="e.g. Dr. Ramesh Gupta"
+frontend/src\components\billing\referring-doctor-field.tsx:263:                placeholder="e.g. MBBS, MD"
+frontend/src\components\billing\referring-doctor-field.tsx:273:                placeholder="e.g. Cardiology"
+frontend/src\components\reports\report-search-input.tsx:29:        placeholder={placeholder}
+frontend/src\components\reports\report-toolbar.tsx:112:            placeholder="Type to find"
+frontend/src\components\reports\referral-doctor-commission-content.tsx:480:                  placeholder="e.g. GP202600001"
+frontend/src\components\reports\hospital-price-card-content.tsx:286:              placeholder="All"
+frontend/src\components\reports\hospital-price-card-content.tsx:294:              placeholder="--Select--"
+frontend/src\components\reports\hospital-price-card-content.tsx:302:              placeholder="--Select--"
+frontend/src\components\reports\hospital-price-card-content.tsx:310:              placeholder="All"
+frontend/src\components\reports\generated-lab-bills-content.tsx:551:            placeholder="Newest first"
+frontend/src\components\reports\lab-summary-content.tsx:619:              placeholder="e.g. OSP202600001"
+frontend/src\components\billing\patient-picker.tsx:146:                placeholder="Search by name, mobile or patient ID..."
+frontend/src\components\reports\due-bills-content.tsx:312:              placeholder="e.g. GP202600001"
+frontend/src\components\billing\client-picker.tsx:98:            placeholder="Search by name, code or city..."
+frontend/src\components\billing\cancel-lab-bill.tsx:172:                placeholder="OSP202600001"
+frontend/src\components\billing\cancel-lab-bill.tsx:318:              placeholder="Enter reason for cancellation..."
+frontend/src\components\reports\report-selection-panel.tsx:90:            placeholder={searchPlaceholder}
+frontend/src\components\auth\login-form.tsx:62:            placeholder="Enter your username"
+frontend/src\components\auth\login-form.tsx:81:            placeholder="Enter your password"
+frontend/src\components\reports\osp-registration-content.tsx:353:            placeholder="Enter mobile number"
+frontend/src\components\reports\osp-registration-content.tsx:360:            placeholder="Enter patient name"
+frontend/src\components\billing\modify-lab-bill.tsx:587:                      placeholder="Search departments..."
+frontend/src\components\billing\modify-lab-bill.tsx:656:                      placeholder="Search tests..."
+frontend/src\components\billing\lab-bill-placeholder.tsx:10:              <input aria-label={`${label} search — select a bill first`} placeholder="Search..." disabled />
+frontend/src\components\reports\bills-wise-collection-content.tsx:406:                placeholder="e.g. GP202600001"
+frontend/src\components\reports\bills-wise-collection-content.tsx:415:                  placeholder="Date (Desc)"

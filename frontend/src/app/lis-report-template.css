@@ -1,0 +1,61 @@
+/* Report-only corrections measured against LReport433206.pdf (A4 / Times). */
+.lis-results tr[aria-selected="true"] .lis-sample-in {
+  color: white !important; text-decoration-color: white;
+}
+.lis-results tr[aria-selected="true"] input[type="checkbox"] { accent-color: white; opacity: 1; }
+.lis-sample-return { color: white !important; }
+.lis-report-paper {
+  position: relative; isolation: isolate; width: 188mm;
+  font-family: "Times New Roman", Times, serif; font-size: 10pt; line-height: 11.5pt;
+  overflow-wrap: anywhere;
+}
+.lis-report-paper::before {
+  content: ""; position: absolute; z-index: -1; inset: 60mm 0 25mm;
+  background: url("/Main%20logo.png") center / 90mm auto no-repeat; opacity: .045;
+  pointer-events: none;
+}
+.lis-clinical-letterhead { display: flex; align-items: center; gap: 5mm; height: 29mm; }
+.lis-clinical-logo { width: 25mm; height: 25mm; flex: 0 0 25mm; object-fit: contain; }
+.lis-invoice-brand::before { display: none; }
+.lis-invoice-logo { width: 12mm; height: 12mm; object-fit: contain; }
+.lis-clinical-letterhead p:first-child { font-size: 22pt; line-height: 24pt; }
+.lis-clinical-info { border: 1px solid black; margin-top: 0; padding: 1mm; column-gap: 5mm; }
+.lis-clinical-info > div > div { grid-template-columns: 88pt 1fr; font-size: 9pt; line-height: 13pt; }
+.lis-clinical-info + div { display: none; }
+.lis-report-paper > p { font-size: 10pt; }
+.lis-report-paper > p:nth-of-type(2) { margin-top: 4mm; }
+.lis-report-paper table { font-size: 10pt; line-height: 11.5pt; }
+.lis-report-paper th { font-size: 9pt; }
+.lis-report-paper td { padding-top: .75mm; padding-bottom: .75mm; white-space: pre-wrap; vertical-align: top; }
+.lis-report-paper td:first-child > span.block { font-size: 8pt; line-height: 9pt; }
+.lis-report-paper table { break-after: avoid; }
+.lis-report-paper tbody tr:nth-last-child(-n+3) { break-after: avoid; }
+.lis-report-paper col:nth-child(1) { width: 34.5%; }
+.lis-report-paper col:nth-child(2) { width: 26%; }
+.lis-report-paper col:nth-child(3) { width: 13%; }
+.lis-report-paper col:nth-child(4) { width: 26.5%; }
+.lis-clinical-ending { break-inside: avoid; }
+.lis-clinical-ending > p:first-child { margin-top: 2mm; font-size: 9pt; }
+.lis-clinical-ending > p:nth-child(2) { margin-top: 5mm; font-size: 9pt; }
+.lis-clinical-ending > div { margin-top: 8mm; }
+.lis-clinical-ending .lis-clinical-address { margin-top: 3mm; font-size: 8pt; line-height: 10pt; }
+.lis-clinical-page-watermark, .lis-invoice-page-watermark { display: none; }
+@media print {
+  .lis-report-paper { width: 188mm; }
+  .lis-report-paper::before, .lis-invoice-paper::before { display: none; }
+  .lis-clinical-page-watermark, .lis-invoice-page-watermark {
+    display: block; position: fixed !important; z-index: -1; pointer-events: none;
+    top: 85mm; left: 49mm; width: 90mm; height: 90mm;
+    opacity: .045;
+    print-color-adjust: exact;
+  }
+  .lis-invoice-page-watermark { top: 25mm; opacity: .08; }
+  :is(.lis-clinical-page-watermark,.lis-invoice-page-watermark) img { width: 100%; height: 100%; object-fit: contain; }
+  .lis-print-document { isolation: isolate; position: relative; }
+  .lis-report-paper { background: transparent; }
+  .lis-invoice-paper :is(th,td) { background: transparent; }
+  @page lab-report {
+    size: A4; margin: 10mm 11mm 12mm;
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial,sans-serif; font-size: 8pt; }
+  }
+}

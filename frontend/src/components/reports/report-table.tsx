@@ -56,12 +56,13 @@ export function ReportTable<T>({
 
   return (
     <div className={cn("overflow-auto", scrollAreaClassName ?? "max-h-[min(62vh,760px)]")}>
-      <table className="w-full border-collapse border border-slate-200 text-sm">
+      <table className="lis-report-table w-full border-collapse border border-slate-200 text-sm">
         <thead>
           <tr className="sticky top-0 z-10 bg-primary text-primary-foreground">
             {columns.map((column) => (
               <th
                 key={column.key}
+                data-column={column.key}
                 className={cn(
                   "whitespace-nowrap border-b border-primary bg-primary px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide",
                   alignClass(column.align),
@@ -108,6 +109,7 @@ export function ReportTable<T>({
                   {columns.map((column) => (
                     <td
                       key={column.key}
+                      data-column={column.key}
                       className={cn(
                         "border-r border-slate-100 px-2 py-1.5 align-top text-slate-700 last:border-r-0",
                         alignClass(column.align),

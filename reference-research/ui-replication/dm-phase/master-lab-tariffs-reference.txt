@@ -1,0 +1,95 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Lab Test Tarrifs" [level=3]
+- paragraph
+- table:
+  - rowgroup:
+    - row "Department ALL":
+      - cell "Department"
+      - cell "ALL":
+        - combobox:
+          - option "ALL" [selected]
+          - option "MICROBIOLOGY"
+          - option "Hematology"
+          - option "BIOCHEMISTRY"
+          - option "PATHOLOGY"
+          - option "BIO CHEMISTRY"
+      - cell
+      - cell
+      - cell
+- table:
+  - rowgroup:
+    - row "All S.No Dept Name Lab Test OP Price IP Price IP Ins Price ER Price":
+      - columnheader "All":
+        - checkbox
+        - text: All
+      - columnheader "S.No"
+      - columnheader "Dept Name"
+      - columnheader "Lab Test"
+      - columnheader "OP Price"
+      - columnheader "IP Price"
+      - columnheader "IP Ins Price"
+      - columnheader "ER Price"
+  - rowgroup
+- button "Save"
+- button "Home"
+- button "Clear"
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

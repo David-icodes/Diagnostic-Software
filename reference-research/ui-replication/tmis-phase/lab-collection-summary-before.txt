@@ -1,0 +1,84 @@
+- button "Open Next.js Dev Tools":
+  - text: Compiling
+  - generic: .
+  - generic: .
+  - generic: .
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Lab Collection Summary" [level=1]
+  - paragraph: Date-wise lab income collection summary.
+  - link "Home":
+    - /url: /dashboard
+  - generic: An expense module is not available in the LIS yet; expenses are reported as 0 until expense records are introduced.
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - button "Show":
+    - text: Show
+  - button "Clear":
+    - text: Clear
+  - link "Home":
+    - /url: /dashboard
+  - generic: Total Lab Amount
+  - generic: 1,400.00
+  - generic: Total Expenses
+  - generic: "0.00"
+  - generic: Profit
+  - generic: 1,400.00
+  - generic: Profit %
+  - generic: 100%
+  - table:
+    - rowgroup:
+      - row "Date Lab Amount Expenses":
+        - columnheader "Date"
+        - columnheader "Lab Amount"
+        - columnheader "Expenses"
+    - rowgroup:
+      - row "05 Oct 2026 1,350.00 0.00":
+        - cell "05 Oct 2026"
+        - cell "1,350.00"
+        - cell "0.00"
+      - row "06 Oct 2026 50.00 0.00":
+        - cell "06 Oct 2026"
+        - cell "50.00"
+        - cell "0.00"
+  - button "First" [disabled]:
+    - text: First
+  - button "Prev" [disabled]:
+    - text: Prev
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Last" [disabled]:
+    - text: Last
+  - generic: Page 1 of 1 · 2 days
+  - generic: "Find:"
+  - textbox "Find:":
+    - /placeholder: Type to find
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Refresh":
+    - text: Refresh
+  - button "Export":
+    - text: Export
+  - button "Print":
+    - text: Print

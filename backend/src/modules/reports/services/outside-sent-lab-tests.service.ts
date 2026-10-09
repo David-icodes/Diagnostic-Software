@@ -1,104 +1,48 @@
-import type { FilterQuery } from "mongoose";
-import { LabBill } from "../../../models/lab-bill.model";
-import { LabSample, type ILabSample } from "../../../models/lab-sample.model";
-import { LabTest } from "../../../models/lab-test.model";
-import { OutsideLab } from "../../../models/outside-lab.model";
-import { Patient } from "../../../models/patient.model";
-import type {
-  OutsideSentLabTestResult,
-  OutsideSentLabTestRow,
-} from "../types/outside-sent-lab-tests";
-import type { OutsideSentLabTestQuery } from "../validations/outside-sent-lab-tests";
-import { dayRange, emptyPagination, round2, slicePage } from "../utils/report-core";
-
-/**
- * Outside Sent LabTest Details — records where a sample was sent to a configured
- * outside-lab centre (`LabSample.outsideLabId` + `sentOutAt`). This is real LIS
- * data only; in-house samples that were never sent out are never included.
- *
- * "Total Amount" uses the charge snapshot stored on the originating bill item
- * for that test (the LIS does not yet record the outside centre's charge).
- */
-export async function listOutsideSentLabTests(
-  input: OutsideSentLabTestQuery,
-): Promise<OutsideSentLabTestResult> {
-  const { page, limit, export: isExport } = input;
-  const range = dayRange(input.fromDate, input.toDate);
-
-  const sampleFilter: FilterQuery<ILabSample> = {};
-  if (range) sampleFilter.sentOutAt = range;
-  if (input.outsideLabIds?.length) {
-    sampleFilter.outsideLabId = { $in: input.outsideLabIds };
-  } else {
-    sampleFilter.outsideLabId = { $exists: true };
-  }
-
-  const samples = await LabSample.find(sampleFilter)
-    .sort({ sentOutAt: 1 })
-    .select("billId patientId testId outsideLabId sentOutAt")
-    .exec();
-
-  if (samples.length === 0) {
-    return {
-      data: [],
-      pagination: emptyPagination(page, limit) as OutsideSentLabTestResult["pagination"],
-      summary: { totalRecords: 0, totalAmount: 0 },
-    };
-  }
-
-  const [bills, tests, outsideLabs, patients] = await Promise.all([
-    LabBill.find({ _id: { $in: [...new Set(samples.map((s) => s.billId))] } }).exec(),
-    LabTest.find({ _id: { $in: [...new Set(samples.map((s) => s.testId))] } })
-      .select("testName")
-      .exec(),
-    OutsideLab.find({
-      _id: {
-        $in: [...new Set(samples.map((s) => s.outsideLabId).filter((v): v is NonNullable<typeof v> => Boolean(v)))],
-      },
-    })
-      .select("name code")
-      .exec(),
-    Patient.find({ _id: { $in: [...new Set(samples.map((s) => s.patientId))] } })
-      .select("patientId fullName")
-      .exec(),
-  ]);
-
-  const billMap = new Map(bills.map((b) => [String(b._id), b]));
-  const testNameMap = new Map(tests.map((t) => [String(t._id), t.testName]));
-  const centreMap = new Map(outsideLabs.map((l) => [String(l._id), l.name]));
-  const patientMap = new Map(
-    patients.map((p) => [String(p._id), { patientId: p.patientId, fullName: p.fullName }]),
-  );
-
-  const rows: OutsideSentLabTestRow[] = [];
-  let totalAmount = 0;
-
-  for (const sample of samples) {
-    const bill = billMap.get(String(sample.billId));
-    const itemTotal = bill?.items.find((item) => String(item.testId) === String(sample.testId))?.total;
-    const amount = round2(itemTotal ?? 0);
-    totalAmount += amount;
-
-    const patient = patientMap.get(String(sample.patientId));
-    rows.push({
-      id: sample.id,
-      sentDate: (sample.sentOutAt ?? new Date()).toISOString(),
-      labCenterName: centreMap.get(String(sample.outsideLabId)) ?? "—",
-      patientId: patient?.patientId ?? "—",
-      patientName: patient?.fullName ?? "—",
-      testName: testNameMap.get(String(sample.testId)) ?? "—",
-      totalAmount: amount,
-    });
-  }
-
-  const { data, pagination } = slicePage(rows, rows.length, page, limit, isExport === "1");
-
-  return {
-    data,
-    pagination,
-    summary: {
-      totalRecords: rows.length,
-      totalAmount: round2(totalAmount),
-    },
-  };
-}
+import type { FilterQuery } from "mongoose";
+import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
+import { LabSample, type ILabSample } from "../../../models/lab-sample.model";
+import { OutsideLab } from "../../../models/outside-lab.model";
+import { Patient } from "../../../models/patient.model";
+import type { OutsideSentLabTestResult, OutsideSentLabTestRow } from "../types/outside-sent-lab-tests";
+import type { OutsideSentLabTestQuery } from "../validations/outside-sent-lab-tests";
+import { dayRange, round2, slicePage } from "../utils/report-core";
+
+/** Bill-item assignments are authoritative; legacy sample assignments remain readable.
+ * No collection status is changed, and no outside-centre expense is invented.
+ * Total Amount is the originating bill item's charge snapshot.
+ */
+export async function listOutsideSentLabTests(input: OutsideSentLabTestQuery): Promise<OutsideSentLabTestResult> {
+  const { page, limit, export: isExport } = input;
+  const range = dayRange(input.fromDate, input.toDate);
+  const centreFilter = input.outsideLabIds?.length ? { $in: input.outsideLabIds } : { $ne: null };
+  const sampleFilter: FilterQuery<ILabSample> = { outsideLabId: centreFilter, sentOutAt: range ?? { $ne: null } };
+  const samples = await LabSample.find(sampleFilter).select("billId testId outsideLabId sentOutAt").lean().exec();
+  const itemMatch = { outsideLabId: centreFilter, sentOutAt: range ?? { $ne: null } };
+  const billFilter: FilterQuery<ILabBill> = { $or: [ { items: { $elemMatch: itemMatch } }, { _id: { $in: samples.map((sample) => sample.billId) } } ] };
+  const bills = await LabBill.find(billFilter).exec();
+  const [centres, patients] = await Promise.all([
+    OutsideLab.find().select("name").lean().exec(),
+    Patient.find({ _id: { $in: bills.map((bill) => bill.patientId) } }).select("patientId fullName").lean().exec(),
+  ]);
+  const centreMap = new Map(centres.map((centre) => [String(centre._id), centre.name]));
+  const patientMap = new Map(patients.map((patient) => [String(patient._id), patient]));
+  const legacy = new Map(samples.map((sample) => [`${sample.billId}:${sample.testId}`, sample]));
+  const rows: OutsideSentLabTestRow[] = [];
+  for (const bill of bills) for (const item of bill.items) {
+    const sample = legacy.get(`${bill._id}:${item.testId}`);
+    const centreId = item.outsideLabId === undefined ? sample?.outsideLabId : item.outsideLabId;
+    const assignedAt = item.outsideLabId === undefined ? sample?.sentOutAt : item.sentOutAt;
+    if (!centreId || !assignedAt || !Number.isFinite(assignedAt.getTime())) continue;
+    if (input.outsideLabIds?.length && !input.outsideLabIds.includes(String(centreId))) continue;
+    if (range && ((range.$gte && assignedAt < range.$gte) || (range.$lt && assignedAt >= range.$lt))) continue;
+    const patient = patientMap.get(String(bill.patientId));
+    rows.push({ id: `${bill._id}:${item.testId}`, sentDate: assignedAt.toISOString(),
+      labCenterName: centreMap.get(String(centreId)) ?? item.outsideLabName ?? "—",
+      patientId: patient?.patientId ?? "—", patientName: patient?.fullName ?? "—",
+      testName: item.testName, totalAmount: round2(item.total),
+    });
+  }
+  rows.sort((left, right) => left.sentDate.localeCompare(right.sentDate) || left.id.localeCompare(right.id));
+  const { data, pagination } = slicePage(rows, rows.length, page, limit, isExport === "1");
+  return { data, pagination, summary: { totalRecords: rows.length, totalAmount: round2(rows.reduce((sum, row) => sum + row.totalAmount, 0)) } };
+}

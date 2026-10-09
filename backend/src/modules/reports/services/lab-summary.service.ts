@@ -1,4 +1,5 @@
 import type { FilterQuery } from "mongoose";
+import { billFinancialSummary } from "../utils/bill-financial-summary";
 import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
 import { LabSample } from "../../../models/lab-sample.model";
 import { LabTestResult } from "../../../models/lab-test-result.model";
@@ -80,7 +81,7 @@ export async function listLabSummary(input: LabSummaryQuery): Promise<LabSummary
     return {
       data: [],
       pagination: emptyPagination(page, limit) as LabSummaryResult["pagination"],
-      summary: { totalTests: 0, totalDelayed: 0, totalAmount: 0 },
+      summary: { totalTests: 0, totalDelayed: 0, totalAmount: 0, ...billFinancialSummary([], new Set()) },
       meta: {
         delayedTatHours: DELAYED_TAT_HOURS,
         labStatusBasis: LAB_STATUS_BASIS,
@@ -196,6 +197,7 @@ export async function listLabSummary(input: LabSummaryQuery): Promise<LabSummary
       totalTests: rows.length,
       totalDelayed,
       totalAmount: round2(totalAmount),
+      ...billFinancialSummary(bills, new Set(rows.map((row) => row.billNumber))),
     },
     meta: {
       delayedTatHours: DELAYED_TAT_HOURS,

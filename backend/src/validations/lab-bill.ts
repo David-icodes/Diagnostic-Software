@@ -10,9 +10,15 @@ import {
 const itemSchema = z
   .object({
     testId: z.string().refine(isValidObjectId, "Invalid test ID"),
+    out: z.boolean().optional(),
+    outsideLabId: z.string().refine(isValidObjectId, "Invalid outside lab ID").nullable().optional(),
     quantity: z.number().int("Quantity must be a whole number").min(1, "Quantity must be at least 1").max(100, "Quantity is too large"),
   })
-  .strict();
+  .strict()
+  .superRefine((item, context) => {
+    if (item.out === true && !item.outsideLabId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["outsideLabId"], message: "Select an outside lab for this test" });
+    if (item.out === false && item.outsideLabId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["outsideLabId"], message: "In-house tests cannot have an outside lab" });
+  });
 
 const billingInputSchema = z
   .object({

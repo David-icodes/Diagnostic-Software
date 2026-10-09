@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight, Inbox, Plus, Search, Trash2 } from "lucide-react";
+import { ChevronsRight, Inbox, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/common/empty-state";
@@ -10,8 +10,11 @@ import { ErrorState } from "@/components/common/error-state";
 import { fetchDepartments, fetchLabTests } from "@/services/billing";
 import { formatMoney, cn } from "@/lib/utils";
 import type { LabTest } from "@/types/billing";
+import { selectedTransfer } from "@/lib/lab-workflows";
 
-export interface SelectedTestItem {
+export interface OutsideChoice { out?: boolean; outsideLabId?: string | null; outsideLabName?: string; }
+
+export interface SelectedTestItem extends OutsideChoice {
   testId: string;
   testCode: string;
   testName: string;
@@ -22,9 +25,12 @@ export interface SelectedTestItem {
 
 interface TestSelectorProps {
   items: SelectedTestItem[];
-  onAdd: (test: LabTest, departmentName: string) => void;
+  onAdd: (test: LabTest, departmentName: string, outside?: OutsideChoice) => void;
   onRemove: (testId: string) => void;
   onQuantityChange: (testId: string, quantity: number) => void;
+  disabled?: boolean;
+  selectedTitle?: string;
+  showSerial?: boolean;
 }
 
 export function TestSelector({
@@ -32,11 +38,16 @@ export function TestSelector({
   onAdd,
   onRemove,
   onQuantityChange,
+  disabled = false,
+  selectedTitle = "Selected Lab Tests",
+  showSerial = true,
 }: TestSelectorProps) {
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
   const [departmentSearch, setDepartmentSearch] = useState("");
   const [testSearchInput, setTestSearchInput] = useState("");
   const [testSearch, setTestSearch] = useState("");
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [focusedTestId, setFocusedTestId] = useState<string | null>(null);
 
   const departmentsQuery = useQuery({
     queryKey: ["departments", "all"],
@@ -74,9 +85,12 @@ export function TestSelector({
     (department) => department.id === selectedDepartmentId,
   );
 
-  const addAllVisible = () => {
-    const departmentName = activeDepartment?.name ?? "Unknown";
-    tests.forEach((test) => onAdd(test, departmentName));
+  const transferTest = selectedTransfer(tests, focusedTestId, selectedIds);
+  const transferSelected = () => {
+    if (!transferTest || !activeDepartment || disabled) return;
+    onAdd(transferTest, activeDepartment.name);
+    setSelectedItemId(transferTest.id);
+    setFocusedTestId(null);
   };
 
   const panelClass =
@@ -84,7 +98,7 @@ export function TestSelector({
   const panelTitleClass = "text-[13px] font-semibold text-slate-700";
 
   return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:gap-3">
+    <div data-serial={showSerial} className="lis-test-selector flex flex-col gap-3 lg:flex-row lg:gap-3">
       <div className={cn(panelClass, "lg:w-[24%]")}>
         <div className="space-y-2 border-b border-border/80 px-2 py-1.5">
           <h3 className={panelTitleClass}>
@@ -128,6 +142,7 @@ export function TestSelector({
                         setSelectedDepartmentId(department.id);
                         setTestSearchInput("");
                         setTestSearch("");
+                        setFocusedTestId(null);
                       }}
                       className={cn(
                         "flex h-[28px] w-full items-center justify-between gap-2 px-2 text-left text-xs transition-colors",
@@ -135,6 +150,7 @@ export function TestSelector({
                           ? "bg-muted font-medium text-slate-800"
                           : "text-slate-700 hover:bg-slate-50",
                       )}
+                      aria-pressed={active}
                     >
                       <span className="truncate">{department.name}</span>
                       <span
@@ -196,33 +212,14 @@ export function TestSelector({
           ) : (
             <ul className="divide-y divide-border/70">
               {tests.map((test) => {
-                const added = selectedIds.has(test.id);
+                const active = focusedTestId === test.id;
                 return (
                   <li key={test.id}>
-                    <div className="flex min-h-[28px] items-center justify-between gap-2 px-2 py-0.5">
-                      <div className="min-w-0">
-                        <p className="truncate text-xs font-medium text-slate-800">
-                          {test.testName}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground">
-                          <span className="font-mono">{test.testCode}</span>
-                          {" · "}
-                          ₹{formatMoney(test.price)}
-                        </p>
-                      </div>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant={added ? "secondary" : "outline"}
-                        onClick={() =>
-                          onAdd(test, activeDepartment?.name ?? "Unknown")
-                        }
-                        disabled={added}
-                        className="h-7 shrink-0 text-xs"
-                      >
-                        {added ? "Added" : <Plus />}
-                      </Button>
-                    </div>
+                    <button type="button" disabled={disabled || selectedIds.has(test.id)} aria-pressed={active && !selectedIds.has(test.id)}
+                      onClick={() => setFocusedTestId(test.id)}
+                      className="lis-test-option min-h-[30px] w-full px-2 py-1 text-left text-sm hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                      {test.testName}
+                    </button>
                   </li>
                 );
               })}
@@ -236,19 +233,19 @@ export function TestSelector({
           type="button"
           variant="outline"
           size="icon"
-          onClick={addAllVisible}
-          disabled={tests.length === 0}
-          title="Add all listed tests"
-          aria-label="Transfer all tests"
+          onClick={transferSelected}
+          disabled={disabled || !transferTest}
+          title="Transfer selected test"
+          aria-label="Transfer selected test"
           className="size-8 shrink-0 border-border bg-card"
         >
-          <ChevronRight className="size-4" />
+          <ChevronsRight className="size-4" />
         </Button>
       </div>
 
       <div className={cn(panelClass, "min-w-0 flex-1")}>
         <div className="flex items-center justify-between border-b border-border/80 px-2 py-1.5">
-          <h3 className={panelTitleClass}>Selected Lab Tests</h3>
+          <h3 className={panelTitleClass}>{selectedTitle}</h3>
           <span className="text-[11px] text-muted-foreground">
             {items.length} item{items.length === 1 ? "" : "s"}
           </span>
@@ -261,7 +258,7 @@ export function TestSelector({
                   <span className="sr-only">Delete</span>
                   <Trash2 className="size-3" />
                 </th>
-                <th className="w-12 px-2 py-1">S No</th>
+                {showSerial && <th className="w-12 px-2 py-1">S No</th>}
                 <th className="px-2 py-1">Dept Name</th>
                 <th className="px-2 py-1">Lab Test Name</th>
                 <th className="px-2 py-1 text-right">Amount</th>
@@ -272,7 +269,7 @@ export function TestSelector({
             <tbody>
               {items.length === 0 ? (
                 <tr data-empty>
-                  <td colSpan={7} className="h-full px-2 py-4 text-center">
+                  <td colSpan={showSerial ? 7 : 6} className="h-full px-2 py-4 text-center">
                     <Inbox className="mx-auto size-6 text-slate-300" />
                     <p className="mt-1 text-xs text-muted-foreground">
                       No tests selected yet
@@ -283,6 +280,8 @@ export function TestSelector({
                 items.map((item, index) => (
                   <tr
                     key={item.testId}
+                    aria-selected={selectedItemId === item.testId}
+                    onClick={() => setSelectedItemId(item.testId)}
                     className="border-t border-border/70"
                   >
                     <td className="px-2 py-1">
@@ -290,6 +289,7 @@ export function TestSelector({
                         type="button"
                         variant="ghost"
                         size="icon-sm"
+                        disabled={disabled}
                         onClick={() => onRemove(item.testId)}
                         aria-label={`Delete ${item.testName}`}
                         className="text-destructive hover:bg-destructive/10"
@@ -297,12 +297,12 @@ export function TestSelector({
                         <Trash2 />
                       </Button>
                     </td>
-                    <td className="px-2 py-1 text-slate-600">{index + 1}</td>
+                    {showSerial && <td className="px-2 py-1 text-slate-600">{index + 1}</td>}
                     <td className="px-2 py-1 text-[11px] text-slate-600">
                       {item.departmentName}
                     </td>
                     <td className="px-2 py-1">
-                      <p className="truncate text-xs font-medium text-slate-800">
+                      <p className="break-words text-xs font-medium text-slate-800">
                         {item.testName}
                       </p>
                       <p className="font-mono text-[11px] text-muted-foreground">
@@ -318,6 +318,7 @@ export function TestSelector({
                         inputMode="numeric"
                         min={1}
                         max={100}
+                        disabled={disabled}
                         value={item.quantity}
                         onChange={(event) => {
                           const parsed = Number(event.target.value);

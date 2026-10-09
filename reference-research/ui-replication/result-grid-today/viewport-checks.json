@@ -1,0 +1,314 @@
+[
+  {
+    "clientWidth": 1280,
+    "containers": [
+      {
+        "class": "lis-result-bill-list overflow-x-auto",
+        "scrollWidth": 469,
+        "width": 469
+      },
+      {
+        "class": "lis-result-test-list overflow-x-auto",
+        "scrollWidth": 670,
+        "width": 670
+      },
+      {
+        "class": "lis-parameter-result-grid overflow-x-auto",
+        "scrollWidth": 1150,
+        "width": 1150
+      }
+    ],
+    "expanded": false,
+    "headings": [
+      "Print",
+      "Dept Name",
+      "Test Name",
+      "Sample",
+      "Out",
+      "Lab Center",
+      "Upload"
+    ],
+    "rows": [
+      {
+        "cells": 7,
+        "outY": 225.3625030517578,
+        "sampleY": 225.3625030517578,
+        "submitted": "true"
+      },
+      {
+        "cells": 7,
+        "outY": 267.3625183105469,
+        "sampleY": 267.3625183105469,
+        "submitted": "false"
+      },
+      {
+        "cells": 7,
+        "outY": 306.5625,
+        "sampleY": 306.5625,
+        "submitted": "false"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "clientWidth": 1280,
+    "containers": [
+      {
+        "class": "lis-result-bill-list overflow-x-auto",
+        "scrollWidth": 404,
+        "width": 404
+      },
+      {
+        "class": "lis-result-test-list overflow-x-auto",
+        "scrollWidth": 576,
+        "width": 576
+      },
+      {
+        "class": "lis-parameter-result-grid overflow-x-auto",
+        "scrollWidth": 990,
+        "width": 990
+      }
+    ],
+    "expanded": true,
+    "headings": [
+      "Print",
+      "Dept Name",
+      "Test Name",
+      "Sample",
+      "Out",
+      "Lab Center",
+      "Upload"
+    ],
+    "rows": [
+      {
+        "cells": 7,
+        "outY": 250.7624969482422,
+        "sampleY": 250.7624969482422,
+        "submitted": "true"
+      },
+      {
+        "cells": 7,
+        "outY": 301.76251220703125,
+        "sampleY": 301.76251220703125,
+        "submitted": "false"
+      },
+      {
+        "cells": 7,
+        "outY": 343.76251220703125,
+        "sampleY": 343.76251220703125,
+        "submitted": "false"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "clientWidth": 1440,
+    "containers": [
+      {
+        "class": "lis-result-bill-list overflow-x-auto",
+        "scrollWidth": 535,
+        "width": 535
+      },
+      {
+        "class": "lis-result-test-list overflow-x-auto",
+        "scrollWidth": 764,
+        "width": 764
+      },
+      {
+        "class": "lis-parameter-result-grid overflow-x-auto",
+        "scrollWidth": 1310,
+        "width": 1310
+      }
+    ],
+    "expanded": false,
+    "headings": [
+      "Print",
+      "Dept Name",
+      "Test Name",
+      "Sample",
+      "Out",
+      "Lab Center",
+      "Upload"
+    ],
+    "rows": [
+      {
+        "cells": 7,
+        "outY": 225.3625030517578,
+        "sampleY": 225.3625030517578,
+        "submitted": "true"
+      },
+      {
+        "cells": 7,
+        "outY": 267.3625183105469,
+        "sampleY": 267.3625183105469,
+        "submitted": "false"
+      },
+      {
+        "cells": 7,
+        "outY": 306.5625,
+        "sampleY": 306.5625,
+        "submitted": "false"
+      }
+    ],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "clientWidth": 1440,
+    "containers": [
+      {
+        "class": "lis-result-bill-list overflow-x-auto",
+        "scrollWidth": 469,
+        "width": 469
+      },
+      {
+        "class": "lis-result-test-list overflow-x-auto",
+        "scrollWidth": 670,
+        "width": 670
+      },
+      {
+        "class": "lis-parameter-result-grid overflow-x-auto",
+        "scrollWidth": 1150,
+        "width": 1150
+      }
+    ],
+    "expanded": true,
+    "headings": [
+      "Print",
+      "Dept Name",
+      "Test Name",
+      "Sample",
+      "Out",
+      "Lab Center",
+      "Upload"
+    ],
+    "rows": [
+      {
+        "cells": 7,
+        "outY": 225.3625030517578,
+        "sampleY": 225.3625030517578,
+        "submitted": "true"
+      },
+      {
+        "cells": 7,
+        "outY": 267.3625183105469,
+        "sampleY": 267.3625183105469,
+        "submitted": "false"
+      },
+      {
+        "cells": 7,
+        "outY": 306.5625,
+        "sampleY": 306.5625,
+        "submitted": "false"
+      }
+    ],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "clientWidth": 1920,
+    "containers": [
+      {
+        "class": "lis-result-bill-list overflow-x-auto",
+        "scrollWidth": 733,
+        "width": 733
+      },
+      {
+        "class": "lis-result-test-list overflow-x-auto",
+        "scrollWidth": 1046,
+        "width": 1046
+      },
+      {
+        "class": "lis-parameter-result-grid overflow-x-auto",
+        "scrollWidth": 1790,
+        "width": 1790
+      }
+    ],
+    "expanded": false,
+    "headings": [
+      "Print",
+      "Dept Name",
+      "Test Name",
+      "Sample",
+      "Out",
+      "Lab Center",
+      "Upload"
+    ],
+    "rows": [
+      {
+        "cells": 7,
+        "outY": 225.3625030517578,
+        "sampleY": 225.3625030517578,
+        "submitted": "true"
+      },
+      {
+        "cells": 7,
+        "outY": 267.3625183105469,
+        "sampleY": 267.3625183105469,
+        "submitted": "false"
+      },
+      {
+        "cells": 7,
+        "outY": 306.5625,
+        "sampleY": 306.5625,
+        "submitted": "false"
+      }
+    ],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "clientWidth": 1920,
+    "containers": [
+      {
+        "class": "lis-result-bill-list overflow-x-auto",
+        "scrollWidth": 667,
+        "width": 667
+      },
+      {
+        "class": "lis-result-test-list overflow-x-auto",
+        "scrollWidth": 952,
+        "width": 952
+      },
+      {
+        "class": "lis-parameter-result-grid overflow-x-auto",
+        "scrollWidth": 1630,
+        "width": 1630
+      }
+    ],
+    "expanded": true,
+    "headings": [
+      "Print",
+      "Dept Name",
+      "Test Name",
+      "Sample",
+      "Out",
+      "Lab Center",
+      "Upload"
+    ],
+    "rows": [
+      {
+        "cells": 7,
+        "outY": 225.3625030517578,
+        "sampleY": 225.3625030517578,
+        "submitted": "true"
+      },
+      {
+        "cells": 7,
+        "outY": 267.3625183105469,
+        "sampleY": 267.3625183105469,
+        "submitted": "false"
+      },
+      {
+        "cells": 7,
+        "outY": 306.5625,
+        "sampleY": 306.5625,
+        "submitted": "false"
+      }
+    ],
+    "scrollWidth": 1920,
+    "width": 1920
+  }
+]

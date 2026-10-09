@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { invalidateMasterData } from "@/lib/master-data-cache";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Percent } from "lucide-react";
 import { DataTable } from "@/components/database/data-table";
@@ -107,7 +108,7 @@ export function LabTariffsContent() {
     onSuccess: (result) => {
       setSelected({});
       setDrafts({});
-      void queryClient.invalidateQueries({ queryKey: ["lab-tariffs"] });
+      void invalidateMasterData(queryClient, "lab-tariffs");
       showNotice("success", `Tariffs updated for ${result.updated} test(s)`);
     },
     onError: (error) => {
@@ -164,7 +165,7 @@ export function LabTariffsContent() {
       showNotice("warn", "Select at least one test to update tariffs");
       return;
     }
-    void saveMutation.mutateAsync();
+    saveMutation.mutate();
   };
 
   const handleClear = () => {
@@ -267,10 +268,10 @@ export function LabTariffsContent() {
   );
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-tariffs space-y-3">
       <PageHeader
         icon={Percent}
-        title="Lab Tariffs"
+        title="Lab Test Tariffs"
         subtitle="Set OP, IP, Ins IP and ER prices for lab tests"
       />
 
@@ -356,21 +357,22 @@ export function LabTariffsContent() {
                 }}
                 columns={columns}
               />
-              <LabActions
-                onSubmit={handleSubmit}
-                onClear={handleClear}
-                submitting={saveMutation.isPending}
-                submitLabel="Submit"
-                homeHref="/laboratory"
-              />
+
             </>
           ) : (
-            <div className="rounded-lg border border-dashed border-border px-3 py-5 text-center text-sm text-muted-foreground">
-              Select a department to load its test price set
-            </div>
+            <DataTable data={[]} rowKey={(row) => row.testId} columns={columns} emptyMessage="Select a department to load its test price set" />
           )}
         </div>
       </FormSection>
+      <LabActions
+        disabled={!departmentId}
+        homeBeforeClear
+        onSubmit={handleSubmit}
+        onClear={handleClear}
+        submitting={saveMutation.isPending}
+        submitLabel="Save"
+        homeHref="/dashboard"
+      />
     </div>
   );
 }

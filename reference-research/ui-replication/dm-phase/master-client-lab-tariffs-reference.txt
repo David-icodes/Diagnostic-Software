@@ -1,0 +1,87 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Client Wise Lab Tariffs" [level=3]
+- group "Select Client Name":
+  - generic: Select Client Name
+  - textbox "Client Search.."
+  - listbox:
+    - option "KRISHNAVENI HOSPITAL"
+- group "Select Department":
+  - generic: Select Department
+  - textbox "Department.."
+  - listbox
+- textbox "Search.."
+- text: Selected
+- table:
+  - rowgroup:
+    - row "S No Department Lab Test Price":
+      - columnheader:
+        - checkbox
+      - columnheader "S No"
+      - columnheader "Department"
+      - columnheader "Lab Test"
+      - columnheader "Price"
+- button "SUBMIT"
+- button "CLEAR"
+- button "HOME"
+- checkbox "Copy The Above Tariff Set"
+- generic: Copy The Above Tariff Set
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

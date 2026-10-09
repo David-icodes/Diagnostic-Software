@@ -20,7 +20,7 @@ export function FormSection({
 }: FormSectionProps) {
   return (
     <section
-      className={cn("rounded-xl bg-card p-4 ring-1 ring-foreground/10", className)}
+      className={cn("lis-form-section rounded-xl bg-card p-4 ring-1 ring-foreground/10", className)}
     >
       <header className="mb-3 flex flex-wrap items-start justify-between gap-2 border-b border-border pb-2.5">
         <div>

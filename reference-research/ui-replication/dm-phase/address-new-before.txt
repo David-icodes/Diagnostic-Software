@@ -1,0 +1,70 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "New Address" [level=1]
+  - paragraph: Add and manage country, state, district and city locations
+  - link "Home":
+    - /url: /dashboard
+  - heading "Add New Location" [level=2]
+  - paragraph: Select or enter the location details and save
+  - text: Country
+  - generic: "*"
+  - combobox "Country *":
+    - option "Select--" [selected]
+    - option "+ Add new Country"
+  - text: State
+  - generic: "*"
+  - combobox "State *" [disabled]:
+    - option "Select--" [selected]
+    - option "+ Add new State"
+  - paragraph: Select a Country first
+  - text: District
+  - generic: "*"
+  - combobox "District *" [disabled]:
+    - option "Select--" [selected]
+    - option "+ Add new District"
+  - paragraph: Select a State first
+  - text: City
+  - generic: "*"
+  - combobox "City *" [disabled]:
+    - option "Select--" [selected]
+    - option "+ Add new City"
+  - paragraph: Select a District first
+  - button "Submit"
+  - button "Reset"
+  - link "Home":
+    - /url: /dashboard
+  - heading "Address List" [level=2]
+  - paragraph: All configured locations
+  - table:
+    - rowgroup:
+      - row "S.No Country State District City Action":
+        - columnheader "S.No"
+        - columnheader "Country"
+        - columnheader "State"
+        - columnheader "District"
+        - columnheader "City"
+        - columnheader "Action"
+    - rowgroup:
+      - row "No locations found":
+        - cell "No locations found":
+          - paragraph: No locations found

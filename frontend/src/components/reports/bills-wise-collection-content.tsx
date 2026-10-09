@@ -1,8 +1,10 @@
 "use client";
 
+import { ReportPreview } from "@/components/reports/report-preview";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FileBarChart2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { ReportDateRange } from "@/components/reports/report-date-range";
 import { ReportSearchInput } from "@/components/reports/report-search-input";
@@ -321,10 +323,10 @@ export function BillsWiseCollectionContent() {
 
   return (
     <>
-      <div className="mx-auto max-w-7xl space-y-3 p-4 print:hidden sm:p-6">
+      <div data-tmis-page="bills-wise-collection" className="lis-tmis lis-report-page space-y-3 print:hidden">
         <BillPageHeader
           icon={FileBarChart2}
-          title="Bills Wise Collection"
+          title="Bills Wise Collection Report"
           subtitle="Collection details of each bill with payment mode breakdown."
         />
 
@@ -333,8 +335,61 @@ export function BillsWiseCollectionContent() {
           onClear={handleClear}
           searching={loading}
         >
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-12">
-            <div className="space-y-2 lg:col-span-4">
+          <div className="lis-billwise-layout grid grid-cols-1 gap-3 lg:grid-cols-12">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:col-span-8">
+              <ReportSelectionPanel
+                title="Bill Type"
+                options={billTypeOptions}
+                selected={filters.billTypes}
+                onToggle={(value) =>
+                  setFilter(
+                    "billTypes",
+                    filters.billTypes.includes(value)
+                      ? filters.billTypes.filter((id) => id !== value)
+                      : [...filters.billTypes, value],
+                  )
+                }
+                onSelectAll={(values) => setFilter("billTypes", values)}
+                onClear={() => setFilter("billTypes", [])}
+                searchPlaceholder="Search bill types…"
+                maxHeightClassName="max-h-48"
+              />
+              <ReportSelectionPanel
+                title="Collected By"
+                options={collectors}
+                selected={filters.collectedBy}
+                onToggle={(value) =>
+                  setFilter(
+                    "collectedBy",
+                    filters.collectedBy.includes(value)
+                      ? filters.collectedBy.filter((id) => id !== value)
+                      : [...filters.collectedBy, value],
+                  )
+                }
+                onSelectAll={(values) => setFilter("collectedBy", values)}
+                onClear={() => setFilter("collectedBy", [])}
+                searchPlaceholder="Search collectors…"
+                maxHeightClassName="max-h-48"
+              />
+              <ReportSelectionPanel
+                title="Pay Mode"
+                options={PAY_MODE_OPTIONS}
+                selected={filters.payModes}
+                onToggle={(value) =>
+                  setFilter(
+                    "payModes",
+                    filters.payModes.includes(value)
+                      ? filters.payModes.filter((id) => id !== value)
+                      : [...filters.payModes, value],
+                  )
+                }
+                onSelectAll={(values) => setFilter("payModes", values)}
+                onClear={() => setFilter("payModes", [])}
+                searchPlaceholder="Search pay modes…"
+                maxHeightClassName="max-h-48"
+              />
+            </div>
+<div className="space-y-2 lg:col-span-4">
               <ReportDateRange
                 fromId="bwc-from-date"
                 toId="bwc-to-date"
@@ -396,65 +451,12 @@ export function BillsWiseCollectionContent() {
                 With Cancelled Bills
               </label>
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:col-span-8">
-              <ReportSelectionPanel
-                title="Bill Type"
-                options={billTypeOptions}
-                selected={filters.billTypes}
-                onToggle={(value) =>
-                  setFilter(
-                    "billTypes",
-                    filters.billTypes.includes(value)
-                      ? filters.billTypes.filter((id) => id !== value)
-                      : [...filters.billTypes, value],
-                  )
-                }
-                onSelectAll={(values) => setFilter("billTypes", values)}
-                onClear={() => setFilter("billTypes", [])}
-                searchPlaceholder="Search bill types…"
-                maxHeightClassName="max-h-48"
-              />
-              <ReportSelectionPanel
-                title="Collected By"
-                options={collectors}
-                selected={filters.collectedBy}
-                onToggle={(value) =>
-                  setFilter(
-                    "collectedBy",
-                    filters.collectedBy.includes(value)
-                      ? filters.collectedBy.filter((id) => id !== value)
-                      : [...filters.collectedBy, value],
-                  )
-                }
-                onSelectAll={(values) => setFilter("collectedBy", values)}
-                onClear={() => setFilter("collectedBy", [])}
-                searchPlaceholder="Search collectors…"
-                maxHeightClassName="max-h-48"
-              />
-              <ReportSelectionPanel
-                title="Pay Mode"
-                options={PAY_MODE_OPTIONS}
-                selected={filters.payModes}
-                onToggle={(value) =>
-                  setFilter(
-                    "payModes",
-                    filters.payModes.includes(value)
-                      ? filters.payModes.filter((id) => id !== value)
-                      : [...filters.payModes, value],
-                  )
-                }
-                onSelectAll={(values) => setFilter("payModes", values)}
-                onClear={() => setFilter("payModes", [])}
-                searchPlaceholder="Search pay modes…"
-                maxHeightClassName="max-h-48"
-              />
-            </div>
           </div>
         </ReportFilterBar>
 
         <ReportSummary items={summaryItems} />
 
-        <Card>
+        <ReportPreview reportTitle="Bill Wise Collection" criteria={criteriaText} total={result?.pagination.total ?? 0} className="lis-tmis-document">
           {error ? (
             <CardContent className="px-2.5 py-5 text-center text-sm text-red-600">
               {error}
@@ -512,7 +514,7 @@ export function BillsWiseCollectionContent() {
               )}
             </>
           )}
-        </Card>
+        </ReportPreview>
       </div>
 
       <ReportPrintSheet

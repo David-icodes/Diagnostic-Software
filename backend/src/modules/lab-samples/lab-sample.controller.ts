@@ -3,6 +3,7 @@ import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
 import { requireUserId } from "../../utils/require-user-id";
 import {
+  updateLabSampleOutside,
   listLabSamples as listLabSamplesService,
   updateLabSampleStatus as updateLabSampleStatusService,
 } from "./lab-sample.service";
@@ -52,3 +53,7 @@ export const updateSampleStatus = asyncHandler(
     });
   },
 );
+export const updateSampleOutside = asyncHandler(async (req: Request, res: Response) => {
+  const sample = await updateLabSampleOutside(requireUserId(req), req.params.id, req.body);
+  return sendSuccess(res, { sample });
+});

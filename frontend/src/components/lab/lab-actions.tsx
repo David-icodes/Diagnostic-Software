@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Home, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface LabActionsProps {
@@ -10,6 +9,8 @@ interface LabActionsProps {
   submitting?: boolean;
   submitLabel?: string;
   homeHref?: string;
+  homeBeforeClear?: boolean;
+  disabled?: boolean;
 }
 
 export function LabActions({
@@ -18,19 +19,25 @@ export function LabActions({
   submitting = false,
   submitLabel = "Submit",
   homeHref = "/dashboard",
+  homeBeforeClear = false,
+  disabled = false,
 }: LabActionsProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
+    <div className="lis-master-actions flex flex-wrap items-center justify-center gap-2 border-t border-border pt-3">
       {onSubmit && (
         <Button
           type="button"
           variant="default"
           size="sm"
           onClick={onSubmit}
-          disabled={submitting}
+          disabled={submitting || disabled}
         >
-          <Save />
           {submitting ? "Saving..." : submitLabel}
+        </Button>
+      )}
+      {homeBeforeClear && (
+        <Button type="button" variant="outline" size="sm" asChild>
+          <Link href={homeHref}>Home</Link>
         </Button>
       )}
       {onClear && (
@@ -44,12 +51,11 @@ export function LabActions({
           Clear
         </Button>
       )}
-      <Button type="button" variant="outline" size="sm" asChild>
+      {!homeBeforeClear && <Button type="button" variant="outline" size="sm" asChild>
         <Link href={homeHref}>
-          <Home />
           Home
         </Link>
-      </Button>
+      </Button>}
     </div>
   );
 }

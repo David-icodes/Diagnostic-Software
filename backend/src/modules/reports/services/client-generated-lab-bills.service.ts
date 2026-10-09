@@ -81,6 +81,7 @@ export async function listClientGeneratedLabBills(
 
     rows.push({
       id: bill.id,
+      paymentMode: bill.paymentMode ?? "",
       billNumber: bill.billNumber,
       billDate: (bill.createdAt ?? new Date()).toISOString(),
       clientName: bill.clientName ?? "—",

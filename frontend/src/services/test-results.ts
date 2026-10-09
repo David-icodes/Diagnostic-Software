@@ -11,6 +11,7 @@ import type {
   SubmitResultsData,
   SubmitResultsRequest,
   UpdateSampleStatusRequest,
+  ResultWorkflow,
 } from "@/types/test-result";
 
 export function fetchLabSamples(
@@ -79,4 +80,14 @@ export function fetchLabTechnicians(): Promise<LabTechnician[]> {
   return api
     .get<{ technicians: LabTechnician[] }>("/lab-technicians")
     .then((response) => response.technicians);
+}
+export function updateSampleOutside(id: string, body: { out: boolean; outsideLabId: string | null }): Promise<LabSampleRow> {
+  return api.patch<{ sample: LabSampleRow }>(`/lab-samples/${encodeURIComponent(id)}/outside`, body).then((response) => response.sample);
+}
+
+export function fetchResultWorkflow(billId: string): Promise<ResultWorkflow> {
+  return api.get(`/lab-test-results/workflow?billId=${encodeURIComponent(billId)}`);
+}
+export function checkResultReportEligibility(billId: string, testIds: string[]): Promise<ResultWorkflow> {
+  return api.get(`/lab-test-results/report-eligibility?billId=${encodeURIComponent(billId)}&testIds=${encodeURIComponent(testIds.join(","))}`);
 }

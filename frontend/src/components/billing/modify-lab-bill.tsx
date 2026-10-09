@@ -5,15 +5,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   CheckCircle2,
-  ChevronRight,
   FilePen,
-  Inbox,
   Loader2,
   Maximize2,
   Minimize2,
-  Plus,
   Search,
-  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,10 +19,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { EmptyState } from "@/components/common/empty-state";
-import { ErrorState } from "@/components/common/error-state";
 import { BillActionBar } from "@/components/billing/bill-action-bar";
-import { fetchDepartments, fetchLabBills, fetchLabTests, modifyLabBill } from "@/services/billing";
+import { TestSelector, type OutsideChoice, type SelectedTestItem } from "@/components/billing/test-selector";
+import { LabBillPlaceholder } from "@/components/billing/lab-bill-placeholder";
+import { fetchLabBills, modifyLabBill } from "@/services/billing";
 import { cn, formatDate, formatMoney } from "@/lib/utils";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { ApiError } from "@/lib/api";
@@ -65,14 +61,7 @@ function resolveBillPrice(
   return test.price;
 }
 
-interface EditableItem {
-  testId: string;
-  testCode: string;
-  testName: string;
-  departmentName: string;
-  unitPrice: number;
-  quantity: number;
-}
+type EditableItem = SelectedTestItem;
 
 export function ModifyLabBill() {
   const queryClient = useQueryClient();
@@ -87,11 +76,6 @@ export function ModifyLabBill() {
   const [comments, setComments] = useState("");
   const [displayOnBill, setDisplayOnBill] = useState(false);
 
-  const [departmentsSearch, setDepartmentsSearch] = useState("");
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
-  const [testSearchInput, setTestSearchInput] = useState("");
-  const [testSearch, setTestSearch] = useState("");
-
   const [pendingBill, setPendingBill] = useState<LabBill | null>(null);
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -103,38 +87,7 @@ export function ModifyLabBill() {
     placeholderData: (previous) => previous,
   });
 
-  const departmentsQuery = useQuery({
-    queryKey: ["departments", "modify"],
-    queryFn: () => fetchDepartments({ status: "active" }),
-  });
-
-  const testsQuery = useQuery({
-    queryKey: ["lab-tests", "modify", selectedDepartmentId, testSearch],
-    queryFn: () =>
-      fetchLabTests({
-        departmentId: selectedDepartmentId ?? undefined,
-        search: testSearch || undefined,
-        status: "active",
-        page: 1,
-        limit: 100,
-      }),
-    enabled: Boolean(selectedDepartmentId),
-  });
-
-  const tests = testsQuery.data?.items ?? [];
   const billRows = billsQuery.data?.data ?? [];
-  const departmentsQueryData = departmentsQuery.data;
-  const activeDepartment = (departmentsQueryData ?? []).find(
-    (department) => department.id === selectedDepartmentId,
-  );
-
-  const visibleDepartments = useMemo(() => {
-    const keyword = departmentsSearch.trim().toLowerCase();
-    if (!keyword) return departmentsQueryData ?? [];
-    return (departmentsQueryData ?? []).filter((department) =>
-      department.name.toLowerCase().includes(keyword),
-    );
-  }, [departmentsQueryData, departmentsSearch]);
 
   const editable = Boolean(
     bill &&
@@ -170,7 +123,7 @@ export function ModifyLabBill() {
       const left = items[index];
       const right = bill.items[index];
       if (!right) return true;
-      if (left.testId !== right.testId || left.quantity !== right.quantity) {
+      if (left.testId !== right.testId || left.quantity !== right.quantity || (left.outsideLabId ?? null) !== (right.outsideLabId ?? null) || Boolean(left.out) !== Boolean(right.outsideLabId)) {
         return true;
       }
     }
@@ -181,7 +134,6 @@ export function ModifyLabBill() {
     return false;
   }, [bill, items, discountPercent, paymentMode, comments, displayOnBill]);
 
-  const selectedIds = new Set(items.map((item) => item.testId));
 
   const applyBillSelection = (candidate: LabBill) => {
     setBill(candidate);
@@ -193,6 +145,9 @@ export function ModifyLabBill() {
         departmentName: item.departmentName,
         unitPrice: item.unitPrice,
         quantity: item.quantity,
+        out: Boolean(item.outsideLabId),
+        outsideLabId: item.outsideLabId,
+        outsideLabName: item.outsideLabName,
       })),
     );
     setDiscountPercent(String(candidate.discountPercent));
@@ -212,9 +167,8 @@ export function ModifyLabBill() {
     applyBillSelection(candidate);
   };
 
-  const handleAddTest = (test: LabTest) => {
+  const handleAddTest = (test: LabTest, departmentName: string, outside: OutsideChoice = {}) => {
     if (!bill || !editable) return;
-    const departmentName = activeDepartment?.name ?? "Unknown";
     const unitPrice = resolveBillPrice(test, bill.patientType);
     setItems((current) => {
       if (current.some((item) => item.testId === test.id)) return current;
@@ -227,14 +181,10 @@ export function ModifyLabBill() {
           departmentName,
           unitPrice,
           quantity: 1,
+          ...outside,
         },
       ];
     });
-  };
-
-  const addAllVisible = () => {
-    if (!selectedDepartmentId || lockEdits) return;
-    tests.forEach((test) => handleAddTest(test));
   };
 
   const handleRemoveItem = (testId: string) => {
@@ -262,9 +212,6 @@ export function ModifyLabBill() {
     setDisplayOnBill(false);
     setFormError(null);
     setSuccessMessage(null);
-    setSelectedDepartmentId(null);
-    setTestSearchInput("");
-    setTestSearch("");
   };
 
   const handleClear = () => {
@@ -298,11 +245,14 @@ export function ModifyLabBill() {
       if (items.length === 0) {
         throw new ApiError("Add at least one test to the bill.");
       }
+      if (items.some((item) => (item.out ?? Boolean(item.outsideLabId)) && !item.outsideLabId)) {
+        throw new ApiError("Select an outside lab for every test marked Out.");
+      }
       if (paidExceedsNet) {
         throw new ApiError("Net amount cannot be less than the paid amount.");
       }
       return modifyLabBill(bill.id, {
-        items: items.map((item) => ({ testId: item.testId, quantity: item.quantity })),
+        items: items.map((item) => ({ testId: item.testId, quantity: item.quantity, out: Boolean(item.out ?? item.outsideLabId), outsideLabId: item.outsideLabId ?? null })),
         discountPercent: Number(discountPercent),
         paymentMode,
         comments: comments.trim() || undefined,
@@ -334,12 +284,10 @@ export function ModifyLabBill() {
     ? toDoctor(bill.referringDoctorId)?.name ?? bill.doctorName
     : null;
 
-  const panelClass =
-    "flex h-[min(240px,44vh)] flex-col overflow-hidden rounded-[4px] border border-border/80 bg-card";
-  const panelTitleClass = "text-[13px] font-semibold text-slate-700";
+
 
   return (
-    <div className="space-y-3">
+    <div className="lis-modify space-y-3">
       <header className="rounded-md border border-border/80 bg-white shadow-sm">
         <div className="flex min-h-[58px] flex-wrap items-center justify-between gap-2 px-4 py-3">
           <div className="flex items-center gap-2">
@@ -357,7 +305,6 @@ export function ModifyLabBill() {
             <Input
               id="modifyBillSearch"
               type="search"
-              placeholder="Bill number, patient, mobile…"
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
               onKeyDown={(event) => {
@@ -428,7 +375,7 @@ export function ModifyLabBill() {
             </Badge>
           </div>
           <div className="max-h-[min(180px,38vh)] overflow-auto border-y border-border">
-            <table className="min-w-full text-xs">
+            <table className="lis-modify-bill-table min-w-full text-xs">
               <thead className="sticky top-0 z-[1]">
                 <tr className="bg-slate-100 text-left font-semibold uppercase tracking-wide text-slate-500">
                   <th className="h-[30px] px-2 py-1">Select</th>
@@ -464,6 +411,7 @@ export function ModifyLabBill() {
                     return (
                       <tr
                         key={candidate.id}
+                        aria-selected={selected}
                         onClick={() => requestSelectBill(candidate)}
                         className={cn(
                           "cursor-pointer border-l-4 border-t border-border transition-colors",
@@ -520,6 +468,7 @@ export function ModifyLabBill() {
         </CardContent>
       </Card>
 
+      {!bill && <LabBillPlaceholder mode="modify" />}
       {bill && (
         <section
           className={cn(
@@ -574,277 +523,11 @@ export function ModifyLabBill() {
           )}
 
           <div className="space-y-3 p-2.5">
-            <div className="flex flex-col gap-3 lg:flex-row lg:gap-3">
-              <div className={cn(panelClass, "lg:w-[24%]")}>
-                <div className="space-y-2 border-b border-border/80 px-2 py-1.5">
-                  <h3 className={panelTitleClass}>Departments</h3>
-                  <div className="relative">
-                    <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Search departments..."
-                      value={departmentsSearch}
-                      onChange={(event) => setDepartmentsSearch(event.target.value)}
-                      className="h-8 pl-7 text-xs"
-                      aria-label="Search departments"
-                    />
-                  </div>
-                </div>
-                <div className="min-h-0 flex-1 overflow-y-auto">
-                  {departmentsQuery.isLoading ? (
-                    <div className="flex flex-col gap-1.5 p-2" aria-busy>
-                      {Array.from({ length: 8 }).map((_, index) => (
-                        <div key={index} className="h-[30px] animate-pulse rounded bg-muted" />
-                      ))}
-                    </div>
-                  ) : departmentsQuery.error ? (
-                    <ErrorState
-                      message={departmentsQuery.error.message}
-                      onRetry={() => void departmentsQuery.refetch()}
-                    />
-                  ) : visibleDepartments.length === 0 ? (
-                    <EmptyState message="No departments found" />
-                  ) : (
-                    <ul>
-                      {visibleDepartments.map((department) => {
-                        const active = department.id === selectedDepartmentId;
-                        return (
-                          <li key={department.id}>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedDepartmentId(department.id);
-                                setTestSearchInput("");
-                                setTestSearch("");
-                              }}
-                              className={cn(
-                                "flex h-[28px] w-full items-center justify-between gap-2 px-2 text-left text-xs transition-colors",
-                                active
-                                  ? "bg-muted font-medium text-slate-800"
-                                  : "text-slate-700 hover:bg-slate-50",
-                              )}
-                            >
-                              <span className="truncate">{department.name}</span>
-                              <span
-                                className={cn(
-                                  "text-[11px]",
-                                  active
-                                    ? "text-slate-500"
-                                    : "text-muted-foreground",
-                                )}
-                              >
-                                {department.testCount}
-                              </span>
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              </div>
+            <TestSelector key={bill.id} items={items} onAdd={handleAddTest}
+              onRemove={handleRemoveItem} onQuantityChange={handleQuantityChange}
+              disabled={lockEdits} selectedTitle="Existed Lab Tests" showSerial={false} />
 
-              <div className={cn(panelClass, "lg:w-[24%]")}>
-                <div className="space-y-2 border-b border-border/80 px-2 py-1.5">
-                  <h3 className={panelTitleClass}>Lab Tests</h3>
-                  <div className="relative">
-                    <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Search tests..."
-                      value={testSearchInput}
-                      onChange={(event) => {
-                        setTestSearchInput(event.target.value);
-                        setTestSearch(event.target.value.trim());
-                      }}
-                      className="h-8 pl-7 text-xs"
-                      disabled={!selectedDepartmentId}
-                      aria-label="Search tests"
-                    />
-                  </div>
-                </div>
-                <div className="min-h-0 flex-1 overflow-y-auto">
-                  {!selectedDepartmentId ? (
-                    <EmptyState message="Select a department to view tests" />
-                  ) : testsQuery.isLoading ? (
-                    <div className="flex flex-col gap-1.5 p-2" aria-busy>
-                      {Array.from({ length: 6 }).map((_, index) => (
-                        <div key={index} className="h-[28px] animate-pulse rounded bg-muted" />
-                      ))}
-                    </div>
-                  ) : testsQuery.error ? (
-                    <ErrorState
-                      message={testsQuery.error.message}
-                      onRetry={() => void testsQuery.refetch()}
-                    />
-                  ) : tests.length === 0 ? (
-                    <EmptyState message="No tests found" />
-                  ) : (
-                    <ul className="divide-y divide-border/70">
-                      {tests.map((test) => {
-                        const added = selectedIds.has(test.id);
-                        const unitPrice = bill
-                          ? resolveBillPrice(test, bill.patientType)
-                          : test.price;
-                        return (
-                          <li key={test.id}>
-                            <div className="flex min-h-[28px] items-center justify-between gap-2 px-2 py-0.5">
-                              <div className="min-w-0">
-                                <p className="truncate text-xs font-medium text-slate-800">
-                                  {test.testName}
-                                </p>
-                                <p className="text-[11px] text-muted-foreground">
-                                  <span className="font-mono">{test.testCode}</span>
-                                  {" · "}
-                                  ₹{formatMoney(unitPrice)}
-                                </p>
-                              </div>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant={added ? "secondary" : "outline"}
-                                onClick={() => handleAddTest(test)}
-                                disabled={added || lockEdits}
-                                className="h-7 shrink-0 text-xs"
-                                aria-label={
-                                  added
-                                    ? `${test.testName} added`
-                                    : `Add ${test.testName}`
-                                }
-                              >
-                                {added ? "Added" : <Plus />}
-                              </Button>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center py-1 lg:w-[5%] lg:justify-center lg:py-0 lg:pt-[58px]">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={addAllVisible}
-                  disabled={!selectedDepartmentId || tests.length === 0 || lockEdits}
-                  title={
-                    !selectedDepartmentId
-                      ? "Select a department first"
-                      : tests.length === 0
-                        ? "No tests to add"
-                        : "Add all listed tests"
-                  }
-                  aria-label="Transfer all tests"
-                  className="size-8 shrink-0 border-border bg-card"
-                >
-                  <ChevronRight className="size-4" />
-                </Button>
-              </div>
-
-              <div className={cn(panelClass, "min-w-0 flex-1")}>
-                <div className="flex items-center justify-between border-b border-border/80 px-2 py-1.5">
-                  <h3 className={panelTitleClass}>Existed Lab Tests</h3>
-                  <span className="text-[11px] text-muted-foreground">
-                    {items.length} item{items.length === 1 ? "" : "s"}
-                  </span>
-                </div>
-                <div className="min-h-0 flex-1 overflow-auto">
-                  <table className="min-w-full text-xs">
-                    <thead className="sticky top-0">
-                      <tr className="bg-slate-100 text-left font-semibold uppercase tracking-wide text-slate-500">
-                        <th className="w-10 px-2 py-1">
-                          <span className="sr-only">Delete</span>
-                          <Trash2 className="size-3" />
-                        </th>
-                        <th className="px-2 py-1">Dept Name</th>
-                        <th className="px-2 py-1">Lab Test Name</th>
-                        <th className="px-2 py-1 text-right">Amount</th>
-                        <th className="w-20 px-2 py-1 text-center">Qty</th>
-                        <th className="px-2 py-1 text-right">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {items.length === 0 ? (
-                        <tr data-empty>
-                          <td colSpan={6} className="h-full px-2 py-4 text-center">
-                            <Inbox className="mx-auto size-6 text-slate-300" />
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              No tests added yet
-                            </p>
-                          </td>
-                        </tr>
-                      ) : (
-                        items.map((item) => (
-                          <tr key={item.testId} className="border-t border-border/70">
-                            <td className="px-2 py-1">
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                onClick={() => handleRemoveItem(item.testId)}
-                                disabled={lockEdits}
-                                aria-label={`Delete ${item.testName}`}
-                                className="text-destructive hover:bg-destructive/10"
-                              >
-                                <Trash2 />
-                              </Button>
-                            </td>
-                            <td className="px-2 py-1 text-[11px] text-slate-600">
-                              {item.departmentName}
-                            </td>
-                            <td className="px-2 py-1">
-                              <p className="truncate text-xs font-medium text-slate-800">
-                                {item.testName}
-                              </p>
-                              <p className="font-mono text-[11px] text-muted-foreground">
-                                {item.testCode}
-                              </p>
-                            </td>
-                            <td className="px-2 py-1 text-right text-slate-700">
-                              {formatMoney(item.unitPrice)}
-                            </td>
-                            <td className="px-2 py-1">
-                              <Input
-                                type="number"
-                                inputMode="numeric"
-                                min={1}
-                                max={100}
-                                value={item.quantity}
-                                onChange={(event) => {
-                                  const parsed = Number(event.target.value);
-                                  if (Number.isFinite(parsed)) {
-                                    handleQuantityChange(item.testId, parsed);
-                                  }
-                                }}
-                                disabled={lockEdits}
-                                className="mx-auto h-7 w-14 px-1 text-center text-xs"
-                                aria-label={`Quantity for ${item.testName}`}
-                              />
-                            </td>
-                            <td className="px-2 py-1 text-right font-semibold text-slate-800">
-                              {formatMoney(item.unitPrice * item.quantity)}
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="flex items-center justify-between border-t border-border/80 bg-slate-50 px-2 py-1.5">
-                  <span className="text-[11px] font-medium text-muted-foreground">
-                    Subtotal
-                  </span>
-                  <span className="text-xs font-semibold text-slate-800">
-                    ₹{formatMoney(totals.totalAmount)}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-3">
+            <div className="lis-modify-payment grid grid-cols-1 items-start gap-3 lg:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor="modifyPaymentMode" className="text-xs">
                   Payment Mode
@@ -885,7 +568,6 @@ export function ModifyLabBill() {
                 <Textarea
                   id="modifyComments"
                   rows={2}
-                  placeholder="Optional note. Shown on the bill when the checkbox is enabled."
                   value={comments}
                   onChange={(event) => setComments(event.target.value)}
                   maxLength={500}

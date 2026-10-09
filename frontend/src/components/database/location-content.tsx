@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MapPin, Pencil, Power } from "lucide-react";
-import { ConfirmDialog } from "@/components/database/confirm-dialog";
+import { MapPin, Pencil } from "lucide-react";
 import { DataTable } from "@/components/database/data-table";
 import { FormActions } from "@/components/database/form-actions";
 import { FormField } from "@/components/database/form-field";
@@ -16,7 +15,6 @@ import { Select } from "@/components/ui/select";
 import {
   createLocation,
   fetchLocations,
-  setLocationActive,
   updateLocation,
 } from "@/services/database";
 import {
@@ -55,7 +53,7 @@ export function LocationContent() {
   );
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingLevel, setEditingLevel] = useState<LocationLevel | null>(null);
-  const [confirmTarget, setConfirmTarget] = useState<Location | null>(null);
+
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const locationsQuery = useQuery({
@@ -131,14 +129,7 @@ export function LocationContent() {
     },
   });
 
-  const toggleMutation = useMutation({
-    mutationFn: ({ id, active }: { id: string; active: boolean }) =>
-      setLocationActive(id, active),
-    onSuccess: () => {
-      invalidate();
-      setConfirmTarget(null);
-    },
-  });
+
 
   const handleSelect = (level: LocationLevel, selectId: string) => {
     if (editingId && (level !== editingLevel || selectId !== "__new__")) {
@@ -170,7 +161,7 @@ export function LocationContent() {
   };
 
   const handleSave = () => {
-    void saveMutation.mutateAsync();
+    saveMutation.mutate();
   };
 
   const handleClear = () => {
@@ -276,15 +267,7 @@ export function LocationContent() {
             >
               <Pencil className="size-4" />
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label={leaf.active ? `Deactivate ${leaf.name}` : `Activate ${leaf.name}`}
-              onClick={() => setConfirmTarget(leaf)}
-            >
-              <Power className="size-4" />
-            </Button>
+            
           </div>
         );
       },
@@ -346,10 +329,10 @@ export function LocationContent() {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-location space-y-3">
       <PageHeader
         icon={MapPin}
-        title="New Address"
+        title="Create Location Master"
         subtitle="Add and manage country, state, district and city locations"
       />
 
@@ -381,8 +364,9 @@ export function LocationContent() {
             <FormActions
               onSubmit={handleSave}
               onReset={handleClear}
+              resetLabel="Reset"
               submitting={saveMutation.isPending}
-              submitLabel={editingId ? "Update" : "Save"}
+              submitLabel={editingId ? "Update" : "Submit"}
             />
           </div>
         </FormSection>
@@ -398,29 +382,7 @@ export function LocationContent() {
         </FormSection>
       </div>
 
-      <ConfirmDialog
-        open={confirmTarget !== null}
-        onOpenChange={(open) => {
-          if (!open) setConfirmTarget(null);
-        }}
-        title={confirmTarget?.active ? "Deactivate location?" : "Activate location?"}
-        description={
-          confirmTarget
-            ? `Do you want to ${confirmTarget.active ? "deactivate" : "activate"} "${confirmTarget.name}"?`
-            : undefined
-        }
-        confirmLabel={confirmTarget?.active ? "Deactivate" : "Activate"}
-        loading={toggleMutation.isPending}
-        onConfirm={() => {
-          if (confirmTarget) {
-            void toggleMutation.mutate({
-              id: confirmTarget.id,
-              active: !confirmTarget.active,
-            });
-            setConfirmTarget(null);
-          }
-        }}
-      />
+
     </div>
   );
 }

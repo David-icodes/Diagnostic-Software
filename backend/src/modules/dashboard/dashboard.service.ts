@@ -8,12 +8,12 @@
  * "Recent Patients" lists the latest active registrations.
  *
  * Date handling reuses the report helpers so every screen treats `from`/`to`
- * (`YYYY-MM-DD`) as an inclusive UTC day range.
+ * (`YYYY-MM-DD`) as an inclusive local calendar day range.
  */
 
+import { billCompletion } from "./bill-completion";
 import type { FilterQuery, Types } from "mongoose";
 import { LabBill, type ILabBill } from "../../models/lab-bill.model";
-import { LabTestParameter } from "../../models/lab-test-parameter.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
 import { Patient, type IPatient } from "../../models/patient.model";
 import { dayRange } from "../reports/utils/report-core";
@@ -35,6 +35,7 @@ export interface TodayBill {
   patientName: string;
   age: string;
   gender: string;
+  completed: boolean;
 }
 
 export interface DueBill {
@@ -116,59 +117,15 @@ async function billsInRange(
   return filter;
 }
 
-/**
- * Counts a bill's test item as completed when every active parameter of that
- * test has a saved result on the bill.
- *
- * Completion is deliberately result-based only: samples are created lazily when
- * the sample screen is opened, so requiring a collected sample would make a
- * fully entered result count as pending. A test with no active parameter cannot
- * be completed or pending and is skipped in both figures.
- */
-async function completedTestCount(
-  bills: BillWithPatient[],
-): Promise<{ completed: number; countable: number }> {
-  if (bills.length === 0) return { completed: 0, countable: 0 };
-
-  const billIds = bills.map((bill) => bill._id as unknown);
-  const billTestKeys = bills.flatMap((bill) =>
-    bill.items.map((item) => ({ billId: bill._id, testId: item.testId })),
+/** Shared derived bill state; no persisted completion status is introduced. */
+async function completionByBill(bills: BillWithPatient[]): Promise<Map<string, boolean>> {
+  if (!bills.length) return new Map();
+  const billIds = bills.map((bill) => bill._id);
+  const results = await LabTestResult.find({ billId: { $in: billIds } }).select("billId patientId testId parameterId result").lean().exec();
+  return billCompletion(
+    bills.map((bill) => ({ id: String(bill._id), patientId: String(bill.patientId?._id ?? ""), testIds: bill.items.map((item) => String(item.testId)) })),
+    results.map((result) => ({ ...result, billId: String(result.billId), patientId: String(result.patientId), testId: String(result.testId), parameterId: String(result.parameterId) })),
   );
-  const itemTestIds = bills.flatMap((bill) => bill.items.map((item) => item.testId));
-
-  const [expected, saved] = await Promise.all([
-    LabTestParameter.aggregate<{ _id: string; count: number }>([
-      { $match: { testId: { $in: itemTestIds }, active: true } },
-      { $group: { _id: "$testId", count: { $sum: 1 } } },
-    ]),
-    LabTestResult.find({ billId: { $in: billIds } })
-      .select("billId testId parameterId")
-      .lean()
-      .exec(),
-  ]);
-
-  const expectedByTest = new Map(expected.map((row) => [String(row._id), row.count]));
-
-  const savedByBillTest = new Map<string, Set<string>>();
-  for (const row of saved) {
-    const key = `${String(row.billId)}|${String(row.testId)}`;
-    const set = savedByBillTest.get(key) ?? new Set<string>();
-    set.add(String(row.parameterId));
-    savedByBillTest.set(key, set);
-  }
-
-  let completed = 0;
-  let countable = 0;
-  for (const { billId, testId } of billTestKeys) {
-    const expectedCount = expectedByTest.get(String(testId)) ?? 0;
-    // A test with no parameters configured cannot be completed or pending.
-    if (expectedCount === 0) continue;
-    countable += 1;
-    const savedCount = savedByBillTest.get(`${String(billId)}|${String(testId)}`)?.size ?? 0;
-    if (savedCount >= expectedCount) completed += 1;
-  }
-
-  return { completed, countable };
 }
 
 export async function getSummary({
@@ -185,15 +142,13 @@ export async function getSummary({
     .lean()
     .exec()) as unknown as BillWithPatient[];
 
-  // A bill-test pair is one unit of work on this dashboard: results are stored
-  // per bill + test + parameter, so item quantities are not counted here. Both
-  // figures therefore come from the same unit and can never drift apart.
-  const { completed, countable } = await completedTestCount(bills);
+  const states = await completionByBill(bills);
+  const completed = [...states.values()].filter(Boolean).length;
 
   return {
     labBills: bills.length,
     completedTests: completed,
-    pendingTests: Math.max(0, countable - completed),
+    pendingTests: Math.max(0, bills.length - completed),
     date: formatDashboardDate(),
   };
 }
@@ -216,6 +171,8 @@ export async function getTodayBills({
     .lean()
     .exec()) as unknown as BillWithPatient[];
 
+  const states = await completionByBill(bills);
+
   return bills.map((bill) => {
     const patient = bill.patientId as unknown as IPatient | null;
     return {
@@ -225,6 +182,7 @@ export async function getTodayBills({
       patientName: patient?.fullName ?? "—",
       age: patient ? ageLabel(patient) : "—",
       gender: genderLabel(patient?.gender),
+      completed: states.get(String(bill._id)) ?? false,
     };
   });
 }

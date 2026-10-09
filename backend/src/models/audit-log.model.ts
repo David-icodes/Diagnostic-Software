@@ -10,6 +10,8 @@ export interface IAuditLog {
   entityType: string;
   entity: Schema.Types.ObjectId;
   timestamp: Date;
+  /** Optional workflow metadata, without clinical results or credentials. */
+  details?: Record<string, unknown>;
 }
 
 const auditLogSchema = new Schema<IAuditLog>(
@@ -19,6 +21,7 @@ const auditLogSchema = new Schema<IAuditLog>(
     entityType: { type: String, required: true },
     entity: { type: Schema.Types.ObjectId, refPath: "entityType", required: true },
     timestamp: { type: Date, default: Date.now, required: true },
+    details: { type: Schema.Types.Mixed },
   },
   { versionKey: false },
 );

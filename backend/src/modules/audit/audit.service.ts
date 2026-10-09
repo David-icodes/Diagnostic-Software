@@ -6,6 +6,7 @@ export interface AuditEntry {
   action: string;
   entityType: string;
   entity: Types.ObjectId | string;
+  details?: Record<string, unknown>;
 }
 
 /**

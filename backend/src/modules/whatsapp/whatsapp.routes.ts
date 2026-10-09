@@ -3,6 +3,8 @@ import { authenticate } from "../../middleware/authenticate";
 import { requirePermission } from "../../middleware/require-permission";
 import { validate } from "../../middleware/validate";
 import { sendTestTemplateSchema } from "../../validations/whatsapp";
+import { lisReviewIdSchema, reviewLisMessageSchema } from "../../validations/whatsapp-lis";
+import { documentLis, reviewLis, sendLis, deliveryLis } from "./lis-workflow.controller";
 import {
   receiveWebhook,
   sendTestTemplate,
@@ -32,5 +34,11 @@ router.post(
   validate(sendTestTemplateSchema),
   sendTestTemplate,
 );
+
+router.post("/lis/review", authenticate, requirePermission("whatsapp.send"), validate(reviewLisMessageSchema), reviewLis);
+router.post("/lis/document-data", authenticate, requirePermission("whatsapp.send"), validate(lisReviewIdSchema), documentLis);
+router.post("/lis/send", authenticate, requirePermission("whatsapp.send"), validate(lisReviewIdSchema), sendLis);
+
+router.post("/lis/delivery", authenticate, requirePermission("whatsapp.send"), deliveryLis);
 
 export default router;

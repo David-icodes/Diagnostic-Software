@@ -1,0 +1,569 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Client Generated Lab Bills" [level=3]
+- table:
+  - rowgroup:
+    - row "Select All KRISHNAVENI HOSPITAL From Date 07-Oct-26 02:01 AM Open the calendar popup. Open the time view popup. To Date 08-Oct-26 02:01 AM Open the calendar popup. Open the time view popup.":
+      - cell "Select All KRISHNAVENI HOSPITAL":
+        - table:
+          - rowgroup:
+            - row "Select All KRISHNAVENI HOSPITAL":
+              - cell "Select All KRISHNAVENI HOSPITAL":
+                - textbox "Client Search.."
+                - table:
+                  - rowgroup:
+                    - row "Select All":
+                      - columnheader:
+                        - checkbox
+                      - columnheader "Select All"
+                  - rowgroup:
+                    - row "KRISHNAVENI HOSPITAL":
+                      - cell:
+                        - checkbox
+                      - cell "KRISHNAVENI HOSPITAL"
+      - cell "From Date"
+      - cell "07-Oct-26 02:01 AM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "07-Oct-26 02:01 AM Open the calendar popup. Open the time view popup.":
+              - cell "07-Oct-26 02:01 AM":
+                - textbox: 07-Oct-26 02:01 AM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+      - cell
+      - cell "To Date"
+      - cell "08-Oct-26 02:01 AM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "08-Oct-26 02:01 AM Open the calendar popup. Open the time view popup.":
+              - cell "08-Oct-26 02:01 AM":
+                - textbox: 08-Oct-26 02:01 AM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+      - cell
+    - row "Ref Doctor --Select-- Order By Descending":
+      - cell "Ref Doctor"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+          - option "OSD -- Referal"
+          - option "Dr.K.KRISHNAVENI -- Referal"
+          - option "Dr.G.VENKATESWAR RAO -- Referal"
+          - option "Dr.CH SNSVSN MURTHY -- Referal"
+          - option "Dr.SUNITHA GUDIPETI -- Referal"
+          - option "Dr.MADHAVI -- Referal"
+          - option "Dr.RAGHAVENDRA RAO -- Referal"
+          - option "Dr.S.HARITHA -- Referal"
+          - option "Dr.SRINIVAS -- Referal"
+          - option "Dr.PAVAN KUMAR -- Referal"
+          - option "Dr.POOJA AKULA -- Referal"
+          - option "Dr.DHANUNJAY -- Referal"
+          - option "Dr.VENKATA DURGA -- Referal"
+          - option "Dr.SUSMITHA -- Referal"
+          - option "Dr.BHAVYA -- Referal"
+          - option "Dr.SWATHI -- Referal"
+          - option "Dr.VIJAY KUMAR -- Referal"
+          - option "Dr.K.KALYAN -- Referal"
+          - option "Dr.KRISHNA RAO -- Referal"
+          - option "Dr.SWETHA REDDY L -- Referal"
+          - option "Dr.K.SUBBA RAO -- Referal"
+          - option "Dr.VAMSHI KRISHNA -- Referal"
+          - option "Dr NAGARAJU -- Referal"
+          - option "Dr.NAGESH -- Referal"
+          - option "Dr.AJITH KUMAR AZAD -- Referal"
+          - option "Dr.KAMINENI ASHWINI -- Referal"
+          - option "Dr.SHIVA KUMAR REDDY -- Referal"
+          - option "Dr.PADMANABA VARMA -- Referal"
+          - option "Dr.SUBHAPRADA -- Referal"
+          - option "Dr.ARIF AHMED FAROOQUI -- Referal"
+          - option "Dr.SUBBA RAO -- Referal"
+          - option "Dr.T.NARASIMHA RAO -- Referal"
+          - option "Dr.C.V.MADHURI -- Referal"
+          - option "Dr.RADHIKA -- Referal"
+          - option "Dr.SWATHI REDDY -- Referal"
+          - option "Dr.B.NAVEEN -- Referal"
+          - option "Dr.PRAVALIKA -- Referal"
+          - option "Dr.K RAMA SWAMY -- Referal"
+          - option "Dr.MAHESWAR REDDY -- Referal"
+          - option "Dr.LAKSHMI SOWJANYA -- Referal"
+          - option "Dr.PRASADA REDDY -- Referal"
+          - option "Dr.TARAKESWARI -- Referal"
+          - option "Dr.RAJESH -- Referal"
+          - option "Dr.SAGUNA -- Referal"
+          - option "Dr.ASHWINI -- Referal"
+          - option "Dr.SRUHYA -- Referal"
+          - option "Dr.SANJAY -- Referal"
+          - option "Dr.K S RAJU -- Referal"
+          - option "Dr.SRINIVAS B -- Referal"
+          - option "Dr.SAILESH -- Referal"
+          - option "Dr,HARI PRAKASH -- Referal"
+          - option "Dr.RAJA RAJESWARI -- Referal"
+          - option "Dr.KRISHNAM RAJU -- Referal"
+          - option "Dr.SRAVYA -- Referal"
+          - option "Dr.USMAN -- Referal"
+          - option "Dr.SURESH -- Referal"
+          - option "Dr.CHANDRASHEKHAR -- Referal"
+          - option "Dr.N N SIRISHA -- Referal"
+          - option "Dr.DIVYA -- Referal"
+          - option "Dr.MADHURI -- Referal"
+          - option "DR.JEEWAN RAM VISHNOI -- Referal"
+          - option "Dr.BALAJI -- Referal"
+          - option "Dr.VIKAS MATHURI MD -- Referal"
+          - option "Dr.RAVI SEKHAR REDDY -- Referal"
+          - option "Dr.ASWANI KUMAR -- Referal"
+          - option "Dr.PHANIDHAR DHANEKULA -- Referal"
+          - option "Dr.VENKATA RAMANA -- Referal"
+          - option "Dr.MURTHY -- Referal"
+          - option "Dr.SRAVANI -- Referal"
+          - option "Dr.AJAY KUMAR -- Referal"
+          - option "Dr.HARITHA -- Referal"
+          - option "Dr.MOHAN CHAND -- Referal"
+          - option "Dr.PRIYANKA -- Referal"
+          - option "Dr.RAVI KUMAR -- Referal"
+          - option "Dr.MAHENDAR -- Referal"
+          - option "Dr.SAMBASHIVA RAO -- Referal"
+          - option "Dr.SANDEEP -- Referal"
+          - option "Dr.VIKRAM -- Referal"
+          - option "Dr.RAVIVARMA -- Referal"
+          - option "Dr.FINI A.PHILIP -- Referal"
+          - option "Dr.LIKITHA -- Referal"
+          - option "Dr.K PAVAN KUMAR -- Referal"
+          - option "Dr.KAMALA PRIYA -- Referal"
+          - option "Dr.VIPLAV GOWTHAM REDDY -- Referal"
+          - option "Dr.ADDANIKI VEERANNA -- Referal"
+          - option "Dr.SHRAVAN KUMAR -- Referal"
+          - option "Dr.DEVINENI SAI SAHUL -- Referal"
+          - option "Dr.RAMACHANDRAM -- Referal"
+          - option "Dr.SARADA -- Referal"
+          - option "Dr.KRISHNAVENI -- Referal"
+          - option "Dr.SUSHMA VANI -- Referal"
+      - cell
+      - cell "Order By"
+      - cell "Descending":
+        - combobox:
+          - option "Descending" [selected]
+          - option "Ascending"
+      - cell
+    - row "Show Clear Home":
+      - cell
+      - cell "Show Clear Home":
+        - button "Show"
+        - button "Clear"
+        - button "Home"
+      - cell
+- table:
+  - rowgroup:
+    - row:
+      - cell
+    - row "First Page Previous Page 1 of 1 Next Page Last Page Go back to the parent report Find | Next Refresh":
+      - cell "First Page Previous Page 1 of 1 Next Page Last Page Go back to the parent report Find | Next Refresh":
+        - table:
+          - rowgroup:
+            - row "First Page Previous Page 1 of 1 Next Page Last Page":
+              - cell "First Page":
+                - table "First Page":
+                  - rowgroup:
+                    - row "First Page":
+                      - cell "First Page":
+                        - button "First Page" [disabled]
+              - cell
+              - cell "Previous Page":
+                - table "Previous Page":
+                  - rowgroup:
+                    - row "Previous Page":
+                      - cell "Previous Page":
+                        - button "Previous Page" [disabled]
+              - cell
+              - cell "1":
+                - textbox "Current Page": "1"
+              - cell
+              - cell "of"
+              - cell
+              - cell "1"
+              - cell
+              - cell "Next Page":
+                - table "Next Page":
+                  - rowgroup:
+                    - row "Next Page":
+                      - cell "Next Page":
+                        - button "Next Page" [disabled]
+              - cell
+              - cell "Last Page":
+                - table "Last Page":
+                  - rowgroup:
+                    - row "Last Page":
+                      - cell "Last Page":
+                        - button "Last Page" [disabled]
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row "Go back to the parent report":
+              - cell "Go back to the parent report":
+                - table "Go back to the parent report":
+                  - rowgroup:
+                    - row "Go back to the parent report":
+                      - cell "Go back to the parent report":
+                        - button "Go back to the parent report" [disabled]
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row "Find | Next":
+              - cell:
+                - textbox "Find Text in Report"
+              - cell
+              - cell "Find":
+                - link "Find":
+                  - /url: "#"
+              - cell
+              - cell "|"
+              - cell
+              - cell "Next":
+                - link "Next":
+                  - /url: "#"
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row:
+              - cell:
+                - table "Export":
+                  - rowgroup:
+                    - row:
+                      - cell:
+                        - link:
+                          - /url: javascript:void(0)
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row "Refresh":
+              - cell "Refresh":
+                - table "Refresh":
+                  - rowgroup:
+                    - row "Refresh":
+                      - cell "Refresh":
+                        - button "Refresh"
+    - 'row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL Total: S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0 1 Powered by Wilco Solutions"':
+      - 'cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL Total: S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0 1 Powered by Wilco Solutions"':
+        - table:
+          - rowgroup:
+            - 'row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL Total: S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0 1 Powered by Wilco Solutions"':
+              - 'cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL Total: S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0 1 Powered by Wilco Solutions"':
+                - table:
+                  - rowgroup:
+                    - row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL Total:":
+                      - cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL Total:":
+                        - table:
+                          - rowgroup:
+                            - row:
+                              - cell
+                              - cell
+                              - cell
+                              - cell
+                              - cell
+                              - cell
+                            - row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL":
+                              - cell
+                              - cell
+                              - cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL":
+                                - table:
+                                  - rowgroup:
+                                    - row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL":
+                                      - cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 0 Client Generated Lab Bills Criteria :ALL":
+                                        - table:
+                                          - rowgroup:
+                                            - row "Anjali Diagnostics":
+                                              - cell
+                                              - cell:
+                                              - cell
+                                              - cell "Anjali Diagnostics":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Anjali Diagnostics":
+                                                      - cell "Anjali Diagnostics":
+                                                        - generic: Anjali Diagnostics
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - row "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                                      - cell "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                                        - generic: Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell:
+                                              - cell
+                                            - row "0 Client Generated Lab Bills Criteria :ALL":
+                                              - cell
+                                              - cell "0 Client Generated Lab Bills Criteria :ALL":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "0 Client Generated Lab Bills Criteria :ALL":
+                                                      - cell "0 Client Generated Lab Bills Criteria :ALL":
+                                                        - table:
+                                                          - rowgroup:
+                                                            - row "0":
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell "0":
+                                                                - table:
+                                                                  - rowgroup:
+                                                                    - row "0":
+                                                                      - cell "0":
+                                                                        - generic: "0"
+                                                              - cell
+                                                            - row "Client Generated Lab Bills Criteria :ALL":
+                                                              - cell
+                                                              - cell "Client Generated Lab Bills":
+                                                                - table:
+                                                                  - rowgroup:
+                                                                    - row "Client Generated Lab Bills":
+                                                                      - cell "Client Generated Lab Bills":
+                                                                        - generic: Client Generated Lab Bills
+                                                              - cell
+                                                              - cell "Criteria :ALL":
+                                                                - table:
+                                                                  - rowgroup:
+                                                                    - row "Criteria :ALL":
+                                                                      - cell "Criteria :ALL":
+                                                                        - generic: Criteria :ALL
+                                                              - cell
+                                                              - cell
+                                                            - row:
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                            - row:
+                                                              - cell
+                                                              - cell
+                                              - cell
+                              - cell
+                            - row "Total:":
+                              - cell
+                              - cell
+                              - cell "Total:":
+                                - table:
+                                  - rowgroup:
+                                    - row "Total:":
+                                      - cell "Total:":
+                                        - generic: "Total:"
+                              - cell
+                            - row:
+                              - cell
+                              - cell
+                    - row "S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0":
+                      - cell "S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0":
+                        - table:
+                          - rowgroup:
+                            - row "S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0":
+                              - cell "S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0":
+                                - table:
+                                  - rowgroup:
+                                    - row:
+                                      - cell
+                                      - cell
+                                      - cell
+                                      - cell
+                                    - row "S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0":
+                                      - cell
+                                      - cell
+                                      - cell "S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance Total 0 0 0 0 0":
+                                        - table:
+                                          - rowgroup:
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - row "S No Date Client Name Bill No Patient ID Patient Name Ref Doctor Lab Tests Total Dscnt Net Paid Balance":
+                                              - cell
+                                              - cell "S No":
+                                                - generic: S No
+                                              - cell "Date":
+                                                - generic: Date
+                                              - cell "Client Name":
+                                                - generic: Client Name
+                                              - cell "Bill No":
+                                                - generic: Bill No
+                                              - cell "Patient ID":
+                                                - generic: Patient ID
+                                              - cell "Patient Name":
+                                                - generic: Patient Name
+                                              - cell "Ref Doctor":
+                                                - generic: Ref Doctor
+                                              - cell "Lab Tests":
+                                                - generic: Lab Tests
+                                              - cell "Total":
+                                                - generic: Total
+                                              - cell "Dscnt":
+                                                - generic: Dscnt
+                                              - cell "Net":
+                                                - generic: Net
+                                              - cell "Paid":
+                                                - generic: Paid
+                                              - cell "Balance":
+                                                - generic: Balance
+                                            - row "Total 0 0 0 0 0":
+                                              - cell
+                                              - cell
+                                              - cell "Total":
+                                                - generic: Total
+                                              - cell "0":
+                                                - generic: "0"
+                                              - cell "0":
+                                                - generic: "0"
+                                              - cell "0":
+                                                - generic: "0"
+                                              - cell "0":
+                                                - generic: "0"
+                                              - cell "0":
+                                                - generic: "0"
+                                      - cell
+                                    - row:
+                                      - cell
+                                      - cell
+                    - row "1 Powered by Wilco Solutions":
+                      - cell "1 Powered by Wilco Solutions":
+                        - table:
+                          - rowgroup:
+                            - row:
+                              - cell
+                              - cell
+                              - cell
+                              - cell
+                            - row "1 Powered by Wilco Solutions":
+                              - cell
+                              - cell
+                              - cell "1 Powered by Wilco Solutions":
+                                - table:
+                                  - rowgroup:
+                                    - row "1 Powered by Wilco Solutions":
+                                      - cell "1 Powered by Wilco Solutions":
+                                        - table:
+                                          - rowgroup:
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - row "1 Powered by Wilco Solutions":
+                                              - cell "1":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "1":
+                                                      - cell "1":
+                                                        - generic: "1"
+                                              - cell
+                                              - cell "Powered by Wilco Solutions":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Powered by Wilco Solutions":
+                                                      - cell "Powered by Wilco Solutions":
+                                                        - generic: Powered by Wilco Solutions
+                                              - cell
+                                            - row:
+                                              - cell
+                              - cell
+                            - row:
+                              - cell
+                              - cell
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   BadgeCheck,
@@ -22,7 +22,8 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { BillActionBar } from "@/components/billing/bill-action-bar";
-import { collectLabDue, fetchDueBills, type BillListResult, type DueBillsParams } from "@/services/billing";
+import { LabBillPlaceholder } from "@/components/billing/lab-bill-placeholder";
+import { collectLabDue, fetchLabBill, fetchDueBills, type BillListResult, type DueBillsParams } from "@/services/billing";
 import { cn, formatDate, formatMoney } from "@/lib/utils";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { PAYMENT_MODES, type PaymentMode } from "@/types/billing";
@@ -65,20 +66,33 @@ const MODE_OPTIONS: { value: DuesMode; label: string }[] = [
   { value: "bill", label: "Bill No" },
 ];
 
-export function CollectLabDues() {
+export function CollectLabDues({ billId = "" }: { billId?: string }) {
+  const context = useQuery({
+    queryKey: [...queryKeys.labBills, "due-context", billId],
+    queryFn: () => fetchLabBill(billId),
+    enabled: Boolean(billId),
+  });
+  if (billId && context.isPending) return <p role="status">Loading the selected bill…</p>;
+  if (billId && context.isError) return <p role="alert">{context.error.message}</p>;
+  return <DuesForm key={billId} initialBill={billId ? context.data : undefined} />;
+}
+
+function DuesForm({ initialBill }: { initialBill?: LabBill }) {
   const queryClient = useQueryClient();
-  const [mode, setMode] = useState<DuesMode>("days");
+  const [mode, setMode] = useState<DuesMode>(initialBill ? "bill" : "days");
   const [fromDate, setFromDate] = useState(todayInput);
   const [toDate, setToDate] = useState(todayInput);
   const [patientId, setPatientId] = useState("");
   const [patientName, setPatientName] = useState("");
-  const [billNumber, setBillNumber] = useState("");
+  const [billNumber, setBillNumber] = useState(initialBill?.billNumber ?? "");
 
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [results, setResults] = useState<BillListResult | null>(null);
-  const [searchParams, setSearchParams] = useState<DueBillsParams>({});
+  const [results, setResults] = useState<BillListResult | null>(initialBill ? {
+    data: [initialBill], pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
+  } : null);
+  const [searchParams, setSearchParams] = useState<DueBillsParams>(initialBill ? { billNumber: initialBill.billNumber } : {});
 
-  const [selectedBill, setSelectedBill] = useState<LabBill | null>(null);
+  const [selectedBill, setSelectedBill] = useState<LabBill | null>(initialBill ?? null);
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("cash");
   const [comments, setComments] = useState("");
   const [discountInput, setDiscountInput] = useState("");
@@ -266,7 +280,7 @@ export function CollectLabDues() {
   const selectedPatient = toPatient(selectedBill?.patientId);
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dues space-y-3">
       <header className="rounded-md border border-border/80 bg-white shadow-sm">
         <div className="flex items-start justify-between gap-2 px-4 py-2.5 md:px-5">
           <div className="flex items-start gap-2">
@@ -332,7 +346,6 @@ export function CollectLabDues() {
               <Input
                 id="duesPatientId"
                 type="text"
-                placeholder="GP202600001"
                 value={patientId}
                 onChange={(event) => setPatientId(event.target.value)}
                 className="h-8 font-mono uppercase"
@@ -344,7 +357,6 @@ export function CollectLabDues() {
               <Input
                 id="duesPatientName"
                 type="text"
-                placeholder="Search by name"
                 value={patientName}
                 onChange={(event) => setPatientName(event.target.value)}
                 className="h-8"
@@ -359,7 +371,6 @@ export function CollectLabDues() {
               <Input
                 id="duesBillNumber"
                 type="text"
-                placeholder="OSP202600010"
                 value={billNumber}
                 onChange={(event) => setBillNumber(event.target.value)}
                 onKeyDown={(event) => {
@@ -464,6 +475,7 @@ export function CollectLabDues() {
                     return (
                       <tr
                         key={bill.id}
+                        aria-selected={selected}
                         className={cn(
                           "cursor-pointer border-l-4 border-t border-border transition-colors",
                           selected
@@ -542,6 +554,7 @@ export function CollectLabDues() {
         </CardContent>
       </Card>
 
+      {!selectedBill && <LabBillPlaceholder mode="dues" />}
       {selectedBill && (
         <section className="rounded-md border border-border/80 bg-white shadow-sm">
           <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
@@ -569,117 +582,6 @@ export function CollectLabDues() {
               </span>
             </div>
           </header>
-
-          <div className="grid grid-cols-1 items-start gap-3 p-3 lg:grid-cols-3">
-            <div className="space-y-1">
-              <Label htmlFor="duePaymentMode">Payment Mode</Label>
-              <Select
-                id="duePaymentMode"
-                value={paymentMode}
-                onChange={(event) =>
-                  setPaymentMode(event.target.value as PaymentMode)
-                }
-                disabled={currentBalance <= 0 || collectMutation.isPending}
-              >
-                {PAYMENT_MODES.map((modeOption) => (
-                  <option key={modeOption} value={modeOption}>
-                    {paymentModeLabel(modeOption)}
-                  </option>
-                ))}
-              </Select>
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="dueComments">Comments</Label>
-              <Textarea
-                id="dueComments"
-                rows={4}
-                placeholder="Optional note for this payment"
-                value={comments}
-                onChange={(event) => setComments(event.target.value)}
-                maxLength={500}
-                disabled={currentBalance <= 0 || collectMutation.isPending}
-              />
-              <p className="text-xs text-muted-foreground">
-                Optional remark recorded against this collection.
-              </p>
-            </div>
-
-            <div className="space-y-1.5 rounded-md border border-border/80 p-2.5">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                Amount Summary
-              </h3>
-              <div className="flex items-center justify-between gap-2">
-                <Label>Total Amount</Label>
-                <span className="text-sm font-medium text-slate-800">
-                  ₹{formatMoney(selectedBill.totalAmount)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <Label htmlFor="dueDiscount">Enter Discount (Rs.)</Label>
-                <Input
-                  id="dueDiscount"
-                  type="number"
-                  inputMode="decimal"
-                  min={0}
-                  step="0.01"
-                  placeholder="0.00"
-                  value={discountInput}
-                  onChange={(event) => setDiscountInput(event.target.value)}
-                  className="h-8 w-28 text-right"
-                  disabled={currentBalance <= 0 || collectMutation.isPending}
-                  aria-invalid={Boolean(discountTooHigh)}
-                />
-              </div>
-              {discountTooHigh && (
-                <p className="text-right text-xs text-destructive">
-                  Cannot exceed balance of ₹{formatMoney(currentBalance)}
-                </p>
-              )}
-              <div className="flex items-center justify-between gap-2">
-                <Label>Net Amount</Label>
-                <span className="text-sm font-semibold text-slate-800">
-                  ₹{formatMoney(netAmount)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <Label htmlFor="duePayingAmount">Paying Amount</Label>
-                <Input
-                  id="duePayingAmount"
-                  type="number"
-                  inputMode="decimal"
-                  min={0}
-                  step="0.01"
-                  placeholder="0.00"
-                  value={payingInput}
-                  onChange={(event) => setPayingInput(event.target.value)}
-                  className="h-8 w-28 text-right"
-                  disabled={currentBalance <= 0 || collectMutation.isPending}
-                  aria-invalid={
-                    selectedBill !== null &&
-                    payingInput !== "" &&
-                    !payingValid &&
-                    !discountTooHigh
-                  }
-                />
-              </div>
-              <div className="flex items-center justify-between gap-2 border-t border-border pt-1.5">
-                <Label className="text-slate-700">Balance Amount</Label>
-                <span
-                  className={cn(
-                    "text-base font-semibold",
-                    balanceAmount > 0 ? "text-amber-600" : "text-emerald-600",
-                  )}
-                >
-                  ₹{formatMoney(balanceAmount)}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Due ₹{formatMoney(currentBalance)} · Payable after discount ₹
-                {formatMoney(payable)}
-              </p>
-            </div>
-          </div>
 
           <div className="border-t border-border">
             <button
@@ -743,6 +645,115 @@ export function CollectLabDues() {
               </div>
             )}
           </div>
+
+          <div className="lis-dues-payment grid grid-cols-1 items-start gap-3 p-3 lg:grid-cols-3">
+            <div className="space-y-1">
+              <Label htmlFor="duePaymentMode">Payment Mode</Label>
+              <Select
+                id="duePaymentMode"
+                value={paymentMode}
+                onChange={(event) =>
+                  setPaymentMode(event.target.value as PaymentMode)
+                }
+                disabled={currentBalance <= 0 || collectMutation.isPending}
+              >
+                {PAYMENT_MODES.map((modeOption) => (
+                  <option key={modeOption} value={modeOption}>
+                    {paymentModeLabel(modeOption)}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="dueComments">Comments</Label>
+              <Textarea
+                id="dueComments"
+                rows={4}
+                value={comments}
+                onChange={(event) => setComments(event.target.value)}
+                maxLength={500}
+                disabled={currentBalance <= 0 || collectMutation.isPending}
+              />
+              <p className="text-xs text-muted-foreground">
+                Optional remark recorded against this collection.
+              </p>
+            </div>
+
+            <div className="space-y-1.5 rounded-md border border-border/80 p-2.5">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+                Amount Summary
+              </h3>
+              <div className="flex items-center justify-between gap-2">
+                <Label>Total Amount</Label>
+                <span className="text-sm font-medium text-slate-800">
+                  ₹{formatMoney(selectedBill.totalAmount)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="dueDiscount">Enter Discount (Rs.)</Label>
+                <Input
+                  id="dueDiscount"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step="0.01"
+                  value={discountInput}
+                  onChange={(event) => setDiscountInput(event.target.value)}
+                  className="h-8 w-28 text-right"
+                  disabled={currentBalance <= 0 || collectMutation.isPending}
+                  aria-invalid={Boolean(discountTooHigh)}
+                />
+              </div>
+              {discountTooHigh && (
+                <p className="text-right text-xs text-destructive">
+                  Cannot exceed balance of ₹{formatMoney(currentBalance)}
+                </p>
+              )}
+              <div className="flex items-center justify-between gap-2">
+                <Label>Net Amount</Label>
+                <span className="text-sm font-semibold text-slate-800">
+                  ₹{formatMoney(netAmount)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="duePayingAmount">Paying Amount</Label>
+                <Input
+                  id="duePayingAmount"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step="0.01"
+                  value={payingInput}
+                  onChange={(event) => setPayingInput(event.target.value)}
+                  className="h-8 w-28 text-right"
+                  disabled={currentBalance <= 0 || collectMutation.isPending}
+                  aria-invalid={
+                    selectedBill !== null &&
+                    payingInput !== "" &&
+                    !payingValid &&
+                    !discountTooHigh
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between gap-2 border-t border-border pt-1.5">
+                <Label className="text-slate-700">Balance Amount</Label>
+                <span
+                  className={cn(
+                    "text-base font-semibold",
+                    balanceAmount > 0 ? "text-amber-600" : "text-emerald-600",
+                  )}
+                >
+                  ₹{formatMoney(balanceAmount)}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Due ₹{formatMoney(currentBalance)} · Payable after discount ₹
+                {formatMoney(payable)}
+              </p>
+            </div>
+          </div>
+
         </section>
       )}
 

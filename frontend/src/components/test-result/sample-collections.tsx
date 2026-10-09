@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   useMutation,
   useQuery,
@@ -28,6 +29,7 @@ import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { fetchLabSamples, updateSampleStatus } from "@/services/test-results";
 import { cn, formatDate } from "@/lib/utils";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
+import { matchesSampleContext, resultContextHref, type SampleContext } from "@/lib/lab-workflows";
 import {
   SAMPLE_STATUSES,
   type LabSampleRow,
@@ -65,7 +67,7 @@ const STATUS_STYLES: Record<SampleStatus, { chip: string; row: string; label: st
   // glance: successful processing is deep green, rejection is deep red, an
   // untouched row is a neutral dark grey. White text keeps the chip readable,
   // and the status word is always shown as well as the colour.
-  SELECT: { chip: "bg-slate-600 text-white", row: "bg-white", label: "Select" },
+  SELECT: { chip: "bg-slate-600 text-white", row: "bg-white", label: "Not Updated" },
   COLLECTED: { chip: "bg-green-700 text-white", row: "bg-green-100/70", label: "Collected" },
   RECEIVED: { chip: "bg-green-800 text-white", row: "bg-green-100/70", label: "Received" },
   PROCESSED: { chip: "bg-green-900 text-white", row: "bg-green-200/60", label: "Processed" },
@@ -73,15 +75,16 @@ const STATUS_STYLES: Record<SampleStatus, { chip: string; row: string; label: st
   REJECTED: { chip: "bg-red-800 text-white", row: "bg-red-100/70", label: "Rejected" },
 };
 
-export function SampleCollections() {
+export function SampleCollections({ context }: { context?: SampleContext }) {
   const queryClient = useQueryClient();
-  const [mode, setMode] = useState<SampleListMode>("today");
-  const [billNumber, setBillNumber] = useState("");
+  const [activeContext, setActiveContext] = useState(context);
+  const [mode, setMode] = useState<SampleListMode>(context ? "criteria" : "today");
+  const [billNumber, setBillNumber] = useState(context?.billNumber ?? "");
   const [patientId, setPatientId] = useState("");
   const [patientName, setPatientName] = useState("");
   const [fromDate, setFromDate] = useState(todayInput);
   const [toDate, setToDate] = useState(todayInput);
-  const [params, setParams] = useState<SampleListParams>({ mode: "today" });
+  const [params, setParams] = useState<SampleListParams>(context ? { mode: "criteria", billNumber: context.billNumber, limit: 100 } : { mode: "today" });
   const [savingId, setSavingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -124,12 +127,12 @@ export function SampleCollections() {
     saveMutation.mutate({ id, draft }, { onSettled: () => setSavingId(null) });
   };
 
-  const rows = samplesQuery.data?.data ?? [];
+  const rows = (samplesQuery.data?.data ?? []).filter((row) => matchesSampleContext(row, activeContext));
   const billTotal = samplesQuery.data?.pagination.total ?? 0;
   const totalPages = samplesQuery.data?.pagination.totalPages ?? 1;
   const currentPage = samplesQuery.data?.pagination.page ?? params.page ?? 1;
   const loadedSampleCount =
-    samplesQuery.data?.pagination.sampleCount ?? rows.length;
+    activeContext ? rows.length : samplesQuery.data?.pagination.sampleCount ?? rows.length;
 
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) return;
@@ -139,6 +142,7 @@ export function SampleCollections() {
   };
 
   const runSearch = () => {
+    setActiveContext(undefined);
     const nextParams: SampleListParams = { mode, page: 1, limit: 100 };
     if (mode === "criteria") {
       if (fromDate) nextParams.fromDate = fromDate;
@@ -156,6 +160,7 @@ export function SampleCollections() {
   };
 
   const handleModeChange = (next: SampleListMode) => {
+    setActiveContext(undefined);
     setMode(next);
     setParams({ mode: next, page: 1, limit: 100 });
     if (next === "criteria") {
@@ -171,6 +176,8 @@ export function SampleCollections() {
   };
 
   const handleClear = () => {
+    setActiveContext(undefined);
+    setMode("today");
     setBillNumber("");
     setPatientId("");
     setPatientName("");
@@ -182,7 +189,7 @@ export function SampleCollections() {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="lis-samples space-y-3">
       <BillPageHeader
         icon={FlaskConical}
         title="Lab Sample Collection Status"
@@ -195,19 +202,15 @@ export function SampleCollections() {
         }
       />
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-        {EDITABLE_STATUSES.map((status) => (
-          <span key={status} className="flex items-center gap-1.5">
-            <span className={`size-2.5 rounded-full ${STATUS_STYLES[status].chip}`} />
-            {STATUS_STYLES[status].label}
-          </span>
-        ))}
-        <span className="flex items-center gap-1.5">
-          <span className="size-2.5 rounded-full bg-slate-600" />
-          Not updated
-        </span>
-      </div>
 
+
+      {context && <div className="flex items-center justify-between border border-blue-200 bg-blue-50 px-3 py-2 text-sm">
+        <span>{activeContext ? "Selected sample for bill" : "Opened from bill"} {context.billNumber}</span>
+        <div className="flex gap-2">
+          <Link href={resultContextHref(context)} className="lis-sample-return inline-flex items-center gap-1 rounded border border-primary bg-primary px-3 py-1.5 font-semibold text-white"><RotateCcw className="size-4" />Return</Link>
+          {activeContext && <Button variant="outline" size="sm" onClick={handleClear}>View all samples</Button>}
+        </div>
+      </div>}
       {successMessage && (
         <div
           role="status"
@@ -229,7 +232,19 @@ export function SampleCollections() {
       )}
 
       <Card className="border-border shadow-sm">
-        <CardContent className="space-y-3 p-3">
+        <CardContent className="lis-sample-filters space-y-3 p-3">
+      <div className="lis-sample-legend flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+        {EDITABLE_STATUSES.map((status) => (
+          <span key={status} className="flex items-center gap-1.5">
+            <span className={`size-2.5 rounded-full ${STATUS_STYLES[status].chip}`} />
+            {STATUS_STYLES[status].label}
+          </span>
+        ))}
+        <span className="flex items-center gap-1.5">
+          <span className="size-2.5 rounded-full bg-slate-600" />
+          Not Updated
+        </span>
+      </div>
           <fieldset>
             <legend className="sr-only">Sample collection filter</legend>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -263,7 +278,6 @@ export function SampleCollections() {
                 <Input
                   id="sampleBillNo"
                   type="text"
-                  placeholder="OSP202600010"
                   value={billNumber}
                   onChange={(event) => setBillNumber(event.target.value)}
                   className="h-8 font-mono uppercase"
@@ -274,7 +288,6 @@ export function SampleCollections() {
                 <Input
                   id="samplePatientId"
                   type="text"
-                  placeholder="GP202600001"
                   value={patientId}
                   onChange={(event) => setPatientId(event.target.value)}
                   className="h-8 font-mono uppercase"
@@ -285,7 +298,6 @@ export function SampleCollections() {
                 <Input
                   id="samplePatientName"
                   type="text"
-                  placeholder="Search by name"
                   value={patientName}
                   onChange={(event) => setPatientName(event.target.value)}
                   className="h-8"
@@ -468,7 +480,7 @@ function SampleRow({
       <td className="px-3 py-1.5 text-slate-700">{row.departmentName ?? "—"}</td>
       <td className="px-3 py-1.5 align-top">
         {row.testLinked === false || !row.testName ? (
-          <span className="inline-flex items-center gap-1 rounded border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-800">
+          <span className="inline-flex items-center gap-1 rounded border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[13px] font-medium text-amber-800">
             <Unlink className="size-3 shrink-0" />
             Test not linked
           </span>
@@ -499,10 +511,10 @@ function SampleRow({
         </Badge>
       </td>
       <td className="px-3 py-1.5">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span
             className={cn(
-              "shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+              "shrink-0 rounded px-1.5 py-0.5 text-[13px] font-medium",
               STATUS_STYLES[row.sampleStatus].chip,
             )}
           >
@@ -515,7 +527,7 @@ function SampleRow({
             disabled={isSaving}
             className="h-8 w-36"
           >
-          <option value="SELECT">Select</option>
+          <option value="SELECT">Not Updated</option>
           {EDITABLE_STATUSES.map((status) => (
             <option key={status} value={status}>
               {STATUS_STYLES[status].label}
@@ -538,7 +550,6 @@ function SampleRow({
         <Input
           type="text"
           aria-label={`Comments for ${row.sampleId}`}
-          placeholder="Remarks"
           maxLength={500}
           value={draft.comments}
           onChange={(event) => editDraft({ comments: event.target.value })}

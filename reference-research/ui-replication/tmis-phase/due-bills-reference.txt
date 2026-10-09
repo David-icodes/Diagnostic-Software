@@ -1,0 +1,486 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Dues Report" [level=3]
+- table:
+  - rowgroup:
+    - row "Bill Type Consulation Investigations Services Pharmacy IP Final Collected By SelectAll AnjaliAdmin vc_krishnaveni From Date 08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup. To Date 08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+      - cell "Bill Type Consulation Investigations Services Pharmacy IP Final":
+        - text: Bill Type
+        - checkbox "Consulation" [checked]
+        - generic: Consulation
+        - checkbox "Investigations" [checked]
+        - generic: Investigations
+        - checkbox "Services" [checked]
+        - generic: Services
+        - checkbox "Pharmacy" [checked]
+        - generic: Pharmacy
+        - checkbox "IP Final" [checked]
+        - generic: IP Final
+      - cell "Collected By SelectAll AnjaliAdmin vc_krishnaveni":
+        - text: Collected By
+        - checkbox "SelectAll" [checked]
+        - generic: SelectAll
+        - checkbox "AnjaliAdmin" [checked]
+        - generic: AnjaliAdmin
+        - checkbox "vc_krishnaveni" [checked]
+        - generic: vc_krishnaveni
+      - cell "From Date"
+      - cell "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+              - cell "08-Oct-26 12:00 AM":
+                - textbox: 08-Oct-26 12:00 AM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+      - cell
+      - cell "To Date"
+      - cell "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+              - cell "08-Oct-26 11:59 PM":
+                - textbox: 08-Oct-26 11:59 PM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+    - row "Patient Id":
+      - cell "Patient Id"
+      - cell:
+        - textbox
+      - cell
+      - cell
+      - cell
+    - row "Show Clear Home":
+      - cell "Show Clear Home":
+        - button "Show"
+        - button "Clear"
+        - button "Home"
+- table:
+  - rowgroup:
+    - row:
+      - cell
+    - row "First Page Previous Page 1 of 1 Next Page Last Page Go back to the parent report Find | Next Refresh":
+      - cell "First Page Previous Page 1 of 1 Next Page Last Page Go back to the parent report Find | Next Refresh":
+        - table:
+          - rowgroup:
+            - row "First Page Previous Page 1 of 1 Next Page Last Page":
+              - cell "First Page":
+                - table "First Page":
+                  - rowgroup:
+                    - row "First Page":
+                      - cell "First Page":
+                        - button "First Page" [disabled]
+              - cell
+              - cell "Previous Page":
+                - table "Previous Page":
+                  - rowgroup:
+                    - row "Previous Page":
+                      - cell "Previous Page":
+                        - button "Previous Page" [disabled]
+              - cell
+              - cell "1":
+                - textbox "Current Page": "1"
+              - cell
+              - cell "of"
+              - cell
+              - cell "1"
+              - cell
+              - cell "Next Page":
+                - table "Next Page":
+                  - rowgroup:
+                    - row "Next Page":
+                      - cell "Next Page":
+                        - button "Next Page" [disabled]
+              - cell
+              - cell "Last Page":
+                - table "Last Page":
+                  - rowgroup:
+                    - row "Last Page":
+                      - cell "Last Page":
+                        - button "Last Page" [disabled]
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row "Go back to the parent report":
+              - cell "Go back to the parent report":
+                - table "Go back to the parent report":
+                  - rowgroup:
+                    - row "Go back to the parent report":
+                      - cell "Go back to the parent report":
+                        - button "Go back to the parent report" [disabled]
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row "Find | Next":
+              - cell:
+                - textbox "Find Text in Report"
+              - cell
+              - cell "Find":
+                - link "Find":
+                  - /url: "#"
+              - cell
+              - cell "|"
+              - cell
+              - cell "Next":
+                - link "Next":
+                  - /url: "#"
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row:
+              - cell:
+                - table "Export":
+                  - rowgroup:
+                    - row:
+                      - cell:
+                        - link:
+                          - /url: javascript:void(0)
+        - table:
+          - rowgroup:
+            - row:
+              - cell
+        - table:
+          - rowgroup:
+            - row "Refresh":
+              - cell "Refresh":
+                - table "Refresh":
+                  - rowgroup:
+                    - row "Refresh":
+                      - cell "Refresh":
+                        - button "Refresh"
+    - 'row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0 S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0 Records Are Not Available.. 1 Powered by Wilco Solutions"':
+      - 'cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0 S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0 Records Are Not Available.. 1 Powered by Wilco Solutions"':
+        - table:
+          - rowgroup:
+            - 'row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0 S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0 Records Are Not Available.. 1 Powered by Wilco Solutions"':
+              - 'cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0 S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0 Records Are Not Available.. 1 Powered by Wilco Solutions"':
+                - table:
+                  - rowgroup:
+                    - 'row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0"':
+                      - 'cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892 Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0"':
+                        - table:
+                          - rowgroup:
+                            - row:
+                              - cell
+                              - cell
+                              - cell
+                              - cell
+                              - cell
+                            - row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                              - cell
+                              - cell
+                              - cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                - table:
+                                  - rowgroup:
+                                    - row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                      - cell "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                        - table:
+                                          - rowgroup:
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell:
+                                              - cell
+                                            - row "Anjali Diagnostics Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                              - cell
+                                              - cell
+                                              - cell
+                                              - cell "Anjali Diagnostics":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Anjali Diagnostics":
+                                                      - cell "Anjali Diagnostics":
+                                                        - generic: Anjali Diagnostics
+                                              - cell
+                                              - cell "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                                      - cell "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892":
+                                                        - generic: Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892
+                                            - row:
+                                              - cell
+                                              - cell
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell
+                              - cell
+                            - 'row "Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0"':
+                              - cell
+                              - cell
+                              - 'cell "Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0"':
+                                - table:
+                                  - rowgroup:
+                                    - 'row "Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0"':
+                                      - 'cell "Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0"':
+                                        - table:
+                                          - rowgroup:
+                                            - 'row "Due Bills Report Date :08-10-26 12:00 AM - 08-10-26 11:59 PM Total: 0"':
+                                              - cell "Due Bills Report":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Due Bills Report":
+                                                      - cell "Due Bills Report":
+                                                        - generic: Due Bills Report
+                                              - cell
+                                              - cell "Date :08-10-26 12:00 AM - 08-10-26 11:59 PM":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Date :08-10-26 12:00 AM - 08-10-26 11:59 PM":
+                                                      - cell "Date :08-10-26 12:00 AM - 08-10-26 11:59 PM":
+                                                        - generic: Date :08-10-26 12:00 AM - 08-10-26 11:59 PM
+                                              - cell
+                                              - cell "Total:":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Total:":
+                                                      - cell "Total:":
+                                                        - generic: "Total:"
+                                              - cell
+                                              - cell "0":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "0":
+                                                      - cell "0":
+                                                        - generic: "0"
+                                              - cell
+                                            - row:
+                                              - cell
+                              - cell
+                            - row:
+                              - cell
+                              - cell
+                    - row "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0 Records Are Not Available..":
+                      - cell "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0 Records Are Not Available..":
+                        - table:
+                          - rowgroup:
+                            - row "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0 Records Are Not Available..":
+                              - cell "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0 Records Are Not Available..":
+                                - table:
+                                  - rowgroup:
+                                    - row:
+                                      - cell
+                                      - cell
+                                      - cell
+                                      - cell
+                                      - cell
+                                    - row "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0":
+                                      - cell
+                                      - cell
+                                      - cell "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0":
+                                        - table:
+                                          - rowgroup:
+                                            - row "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0":
+                                              - cell "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row:
+                                                      - cell
+                                                    - row "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0":
+                                                      - cell "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy Total 0 0 0 0 0":
+                                                        - table:
+                                                          - rowgroup:
+                                                            - row:
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                              - cell
+                                                            - row "S.No Bill No Bill Date Bill For Pati Id Pat Name Total Dscnt Net Paid Balance Pay Mode CollectedBy":
+                                                              - cell
+                                                              - cell "S.No":
+                                                                - generic: S.No
+                                                              - cell "Bill No":
+                                                                - generic: Bill No
+                                                              - cell "Bill Date":
+                                                                - table:
+                                                                  - rowgroup:
+                                                                    - row "Bill Date":
+                                                                      - cell "Bill Date"
+                                                                      - cell:
+                                                              - cell "Bill For":
+                                                                - generic: Bill For
+                                                              - cell "Pati Id":
+                                                                - generic: Pati Id
+                                                              - cell "Pat Name":
+                                                                - generic: Pat Name
+                                                              - cell "Total":
+                                                                - generic: Total
+                                                              - cell "Dscnt":
+                                                                - generic: Dscnt
+                                                              - cell "Net":
+                                                                - generic: Net
+                                                              - cell "Paid":
+                                                                - generic: Paid
+                                                              - cell "Balance":
+                                                                - generic: Balance
+                                                              - cell "Pay Mode":
+                                                                - generic: Pay Mode
+                                                              - cell "CollectedBy":
+                                                                - generic: CollectedBy
+                                                            - row "Total 0 0 0 0 0":
+                                                              - cell
+                                                              - cell "Total":
+                                                                - generic: Total
+                                                              - cell "0":
+                                                                - generic: "0"
+                                                              - cell "0":
+                                                                - generic: "0"
+                                                              - cell "0":
+                                                                - generic: "0"
+                                                              - cell "0":
+                                                                - generic: "0"
+                                                              - cell "0":
+                                                                - generic: "0"
+                                                              - cell
+                                                              - cell
+                                    - row:
+                                      - cell
+                                      - cell
+                                    - row "Records Are Not Available..":
+                                      - cell
+                                      - cell
+                                      - cell "Records Are Not Available..":
+                                        - table:
+                                          - rowgroup:
+                                            - row "Records Are Not Available..":
+                                              - cell "Records Are Not Available..":
+                                                - generic: Records Are Not Available..
+                                      - cell
+                    - row "1 Powered by Wilco Solutions":
+                      - cell "1 Powered by Wilco Solutions":
+                        - table:
+                          - rowgroup:
+                            - row:
+                              - cell
+                              - cell
+                              - cell
+                              - cell
+                            - row "1 Powered by Wilco Solutions":
+                              - cell
+                              - cell
+                              - cell "1 Powered by Wilco Solutions":
+                                - table:
+                                  - rowgroup:
+                                    - row "1 Powered by Wilco Solutions":
+                                      - cell "1 Powered by Wilco Solutions":
+                                        - table:
+                                          - rowgroup:
+                                            - row:
+                                              - cell
+                                              - cell
+                                              - cell
+                                            - row "1 Powered by Wilco Solutions":
+                                              - cell "1":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "1":
+                                                      - cell "1":
+                                                        - generic: "1"
+                                              - cell
+                                              - cell "Powered by Wilco Solutions":
+                                                - table:
+                                                  - rowgroup:
+                                                    - row "Powered by Wilco Solutions":
+                                                      - cell "Powered by Wilco Solutions":
+                                                        - generic: Powered by Wilco Solutions
+                                            - row:
+                                              - cell
+                              - cell
+                            - row:
+                              - cell
+                              - cell
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

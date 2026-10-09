@@ -1,0 +1,70 @@
+- button "Open Next.js Dev Tools":
+  - text: Compiling
+  - generic: .
+  - generic: .
+  - generic: .
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Due Bills" [level=1]
+  - paragraph: List of generated bills with outstanding balance.
+  - link "Home":
+    - /url: /dashboard
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - generic: Patient ID
+  - textbox "Patient ID":
+    - /placeholder: e.g. GP202600001
+  - heading "Collected By" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search collectors…"
+  - checkbox "Administrator"
+  - generic: Administrator
+  - checkbox "Operator One"
+  - generic: Operator One
+  - checkbox "Operator User"
+  - generic: Operator User
+  - button "Loading…" [disabled]:
+    - text: Loading…
+  - button "Clear" [disabled]:
+    - text: Clear
+  - link "Home":
+    - /url: /dashboard
+  - table:
+    - rowgroup:
+      - row "Bill No Bill Date Bill For Patient Total Discount Net Paid Balance Pay Mode Collected By":
+        - columnheader "Bill No"
+        - columnheader "Bill Date"
+        - columnheader "Bill For"
+        - columnheader "Patient"
+        - columnheader "Total"
+        - columnheader "Discount"
+        - columnheader "Net"
+        - columnheader "Paid"
+        - columnheader "Balance"
+        - columnheader "Pay Mode"
+        - columnheader "Collected By"
+    - rowgroup:
+      - row "Loading report data…":
+        - cell "Loading report data…"

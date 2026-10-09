@@ -25,7 +25,7 @@ export function ReportDateRange({
   toId,
 }: ReportDateRangeProps) {
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="lis-report-date-range grid grid-cols-2 gap-2">
       <div className="space-y-1">
         <Label htmlFor={fromId} className="text-xs font-medium">
           {fromLabel}

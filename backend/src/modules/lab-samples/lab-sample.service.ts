@@ -7,6 +7,8 @@ import { LabTest } from "../../models/lab-test.model";
 import { Patient, type IPatient } from "../../models/patient.model";
 import { Department } from "../../models/department.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
+import { OutsideLab } from "../../models/outside-lab.model";
+import type { UpdateSampleOutsideInput } from "../../validations/sample-outside";
 import { recordAudit } from "../audit/audit.service";
 
 export interface SampleRow {
@@ -33,10 +35,27 @@ export interface SampleRow {
   testNameFromBillItem: boolean;
   sampleType?: string;
   containerType?: string;
+  outsideLabId?: string | null;
+  outsideLabName?: string;
+  sentOutAt?: Date | null;
   sampleStatus: SampleStatus;
   testStatus: "OPEN" | "CLOSED";
   lastStatusChangeAt?: Date;
   comments?: string;
+}
+
+
+/** Canonical bill-item choice overrides legacy sample data, including explicit clears. */
+export function sampleOutsideView(
+  item: { outsideLabId?: Types.ObjectId | null; outsideLabName?: string; sentOutAt?: Date | null } | undefined,
+  sample: Pick<ILabSample, "outsideLabId" | "sentOutAt">,
+  names: Map<string, string>,
+): Pick<SampleRow, "outsideLabId" | "outsideLabName" | "sentOutAt"> {
+  const legacy = item?.outsideLabId === undefined;
+  const id = legacy ? sample.outsideLabId : item?.outsideLabId;
+  return { outsideLabId: id ? String(id) : null,
+    outsideLabName: id ? names.get(String(id)) ?? item?.outsideLabName : undefined,
+    sentOutAt: id ? (legacy ? sample.sentOutAt : item?.sentOutAt) : null };
 }
 
 export interface PaginatedSamples {
@@ -356,6 +375,9 @@ const billCreatedAt = new Map<string, number>(
     return String(a.sampleId).localeCompare(String(b.sampleId));
   });
 
+  const outsideCentres = await OutsideLab.find().select("name").lean().exec();
+  const outsideNames = new Map(outsideCentres.map((centre) => [String(centre._id), centre.name]));
+
   const rows: SampleRow[] = orderedSamples.map((sample) => {
     const bill = billMap.get(String(sample.billId));
     const patient = patientMap.get(String(sample.patientId));
@@ -393,6 +415,7 @@ const billCreatedAt = new Map<string, number>(
       testNameFromBillItem: Boolean(item?.testName?.trim()),
       sampleType: sample.sampleType,
       containerType: sample.containerType,
+      ...sampleOutsideView(item, sample, outsideNames),
       sampleStatus: sample.sampleStatus,
       testStatus: closedKeysSet.has(`${String(sample.billId)}:${String(sample.testId)}`)
         ? "CLOSED"
@@ -424,11 +447,12 @@ function resolvedTimestamp(time?: string): Date {
 async function getSampleBillContext(
   sample: ILabSample & { _id: Types.ObjectId },
 ): Promise<SampleRow> {
-  const [bill, patient, test, department] = await Promise.all([
+  const [bill, patient, test, department, centres] = await Promise.all([
     LabBill.findById(sample.billId).select("billNumber createdAt items").exec(),
     Patient.findById(sample.patientId).select("patientId fullName").exec(),
     LabTest.findById(sample.testId).select("testCode testName departmentId").exec(),
     sample.departmentId ? Department.findById(sample.departmentId).select("name").exec() : null,
+    OutsideLab.find().select("name").lean().exec(),
   ]);
   const lastChange =
     sample.history.length > 0 ? sample.history[sample.history.length - 1] : undefined;
@@ -458,6 +482,7 @@ async function getSampleBillContext(
     testNameFromBillItem: Boolean(item?.testName?.trim()),
     sampleType: sample.sampleType,
     containerType: sample.containerType,
+    ...sampleOutsideView(item, sample, new Map(centres.map((centre) => [String(centre._id), centre.name]))),
     sampleStatus: sample.sampleStatus,
     testStatus: closed ? "CLOSED" : "OPEN",
     lastStatusChangeAt: lastChange?.changedAt,
@@ -529,5 +554,34 @@ export async function updateLabSampleStatus(
     entity: sample._id,
   });
 
+  return getSampleBillContext(sample);
+}
+/** Updates only the existing bill-item outside snapshot; collection/results/money are untouched. */
+export async function updateLabSampleOutside(userId: string, sampleId: string, input: UpdateSampleOutsideInput): Promise<SampleRow> {
+  if (!Types.ObjectId.isValid(sampleId)) throw new ApiError(400, "Invalid sample ID");
+  const sample = await LabSample.findById(sampleId).exec();
+  if (!sample) throw new ApiError(404, "Sample not found");
+  const bill = await LabBill.findById(sample.billId).exec();
+  if (!bill || String(bill.patientId) !== String(sample.patientId)) throw new ApiError(422, "Sample is not linked to its bill and patient");
+  const item = bill.items.find((entry) => String(entry.testId) === String(sample.testId));
+  if (!item) throw new ApiError(422, "Sample test is not ordered on this bill");
+  if (bill.status === "cancelled") throw new ApiError(422, "A cancelled bill cannot be updated");
+  const old = sampleOutsideView(item, sample, new Map());
+  const id = input.out ? input.outsideLabId : null;
+  if (input.out && !id) throw new ApiError(422, "Select an outside lab");
+  const centre = id ? await OutsideLab.findById(id).exec() : null;
+  if (id && (!centre || (!centre.active && old.outsideLabId !== id))) throw new ApiError(422, "Select an active outside lab");
+  const retained = Boolean(id && old.outsideLabId === id);
+  const assignedAt = id ? (retained ? old.sentOutAt : new Date()) : null;
+  const update = {
+    $set: { "items.$.outsideLabId": id ? new Types.ObjectId(id) : null,
+      "items.$.sentOutAt": assignedAt ?? null, updatedBy: new Types.ObjectId(userId),
+      ...(centre ? { "items.$.outsideLabName": centre.name } : {}) },
+    ...(!centre ? { $unset: { "items.$.outsideLabName": 1 } } : {}),
+  };
+  const result = await LabBill.updateOne({ _id: bill._id, patientId: sample.patientId,
+    status: { $ne: "cancelled" }, "items.testId": sample.testId }, update).exec();
+  if (result.matchedCount !== 1) throw new ApiError(409, "The bill changed; reload before updating OUT");
+  await recordAudit({ user: userId, action: "sample.outside_updated", entityType: "LabSample", entity: sample._id });
   return getSampleBillContext(sample);
 }

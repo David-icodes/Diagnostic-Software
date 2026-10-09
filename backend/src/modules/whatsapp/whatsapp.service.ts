@@ -1,3 +1,4 @@
+import { maskedRecipient } from "./lis-delivery.service";
 import crypto from "node:crypto";
 import { env } from "../../config/env";
 import { WhatsAppMessage } from "../../models/whatsapp-message.model";
@@ -175,7 +176,9 @@ const pendingByKey = new Map<string, Promise<void>>();
 
 function serialize(key: string, task: () => Promise<void>): Promise<void> {
   const previous = pendingByKey.get(key) ?? Promise.resolve();
-  const next = previous.then(task).catch(() => undefined);
+  const next = previous.then(task).catch((error) => {
+    console.error(LOG_PREFIX, { metaMessageId: key, persistenceFailed: true, errorType: error instanceof Error ? error.name : "Unknown" });
+  });
   pendingByKey.set(key, next);
   void next.finally(() => {
     if (pendingByKey.get(key) === next) pendingByKey.delete(key);
@@ -189,7 +192,7 @@ function serialize(key: string, task: () => Promise<void>): Promise<void> {
  * `failed` is treated as terminal and never overwritten by a success status.
  */
 function blockedStatusesFor(next: string): string[] {
-  if (next === "failed") return ["read", "failed"];
+  if (next === "failed") return ["delivered", "read", "failed"];
   const rank = STATUS_RANK[next];
   if (rank === undefined) return ["failed"];
   return [
@@ -202,7 +205,7 @@ async function handleStatus(metadata: Json, status: Json | null): Promise<void> 
   if (!status) return;
   const metaMessageId = asString(status.id);
   const state = asString(status.status);
-  if (!metaMessageId || !state) return;
+  if (!metaMessageId || !state || !["sent", "delivered", "read", "failed"].includes(state)) return;
 
   const recipient = asString(status.recipient_id);
   const timestamp = toDate(status.timestamp);
@@ -219,15 +222,7 @@ async function handleStatus(metadata: Json, status: Json | null): Promise<void> 
 
   const conversation = asRecord(status.conversation) ?? undefined;
   const pricing = asRecord(status.pricing) ?? undefined;
-  const phoneNumber = asString(metadata.display_phone_number);
-
-  if (state === "failed") {
-    console.warn(
-      `${LOG_PREFIX} Status: failed: ${errorTitle ?? "unknown error"} (${errorCode ?? "n/a"})`,
-    );
-  } else {
-    console.log(`${LOG_PREFIX} Status: ${state}`);
-  }
+  void metadata;
 
   // Events for one message are serialised in arrival order, then applied with a
   // filter that refuses to move the status backwards — so a duplicate or late
@@ -243,12 +238,12 @@ async function handleStatus(metadata: Json, status: Json | null): Promise<void> 
       if (errorMessage) setFields.errorMessage = errorMessage;
     }
     if (recipient) setFields.waId = recipient;
-    if (phoneNumber ?? recipient) setFields.phoneNumber = phoneNumber ?? recipient;
+    if (recipient) setFields.phoneNumber = recipient;
     if (conversation) setFields.conversation = conversation;
     if (pricing) setFields.pricing = pricing;
 
     try {
-      await WhatsAppMessage.findOneAndUpdate(
+      const stored = await WhatsAppMessage.findOneAndUpdate(
         { metaMessageId, status: { $nin: blockedStatusesFor(state) } },
         {
           $set: setFields,
@@ -256,10 +251,12 @@ async function handleStatus(metadata: Json, status: Json | null): Promise<void> 
         },
         { upsert: true, new: true, setDefaultsOnInsert: true },
       );
+      console.log(LOG_PREFIX, { metaMessageId, templateName: stored?.templateName ?? "unknown", workflow: stored?.workflow ?? "unknown", recipient: maskedRecipient(recipient), eventStatus: state, storedStatus: stored?.status ?? "unchanged", errorCode });
     } catch (error) {
       // The unique index rejected the insert: a row already exists at an equal
       // or more advanced status, which is exactly what we wanted to preserve.
       if (!isDuplicateKeyError(error)) throw error;
+      console.log(LOG_PREFIX, { metaMessageId, eventStatus: state, applied: false, reason: "existing terminal or more advanced status" });
     }
   });
 }

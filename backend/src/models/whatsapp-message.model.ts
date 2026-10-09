@@ -47,6 +47,7 @@ export interface IWhatsAppMessage {
   messageType?: string;
   templateName?: string;
   templateLanguage?: string;
+  workflow?: "parameter-results" | "lab-reprint";
   /** Inbound text body. */
   textBody?: string;
   status: WhatsAppMessageStatus;
@@ -59,6 +60,7 @@ export interface IWhatsAppMessage {
   pricing?: Record<string, unknown>;
   /** Optional links to the LIS entities this message concerns. */
   patientId?: Types.ObjectId;
+  billId?: Types.ObjectId;
   reportId?: Types.ObjectId;
   sentAt?: Date;
   deliveredAt?: Date;
@@ -85,6 +87,7 @@ const whatsappMessageSchema = new Schema<IWhatsAppMessage>(
     messageType: { type: String, trim: true, maxlength: 40 },
     templateName: { type: String, trim: true, maxlength: 120 },
     templateLanguage: { type: String, trim: true, maxlength: 20 },
+    workflow: { type: String, enum: ["parameter-results", "lab-reprint"] },
     textBody: { type: String, trim: true, maxlength: 4096 },
     status: {
       type: String,
@@ -97,6 +100,7 @@ const whatsappMessageSchema = new Schema<IWhatsAppMessage>(
     conversation: { type: Schema.Types.Mixed },
     pricing: { type: Schema.Types.Mixed },
     patientId: { type: Schema.Types.ObjectId, ref: "Patient" },
+    billId: { type: Schema.Types.ObjectId, ref: "LabBill" },
     reportId: { type: Schema.Types.ObjectId },
     sentAt: { type: Date },
     deliveredAt: { type: Date },

@@ -1,0 +1,71 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Doctor Lab Test Commission Mapping" [level=1]
+  - paragraph: Assign referral commission by doctor and department
+  - link "Home":
+    - /url: /dashboard
+  - generic: Select Doctor *
+  - textbox "Search doctors":
+    - /placeholder: Search Doctor...
+  - listbox "Select Doctor *":
+    - option "--Select--" [selected]
+    - option "Dr. Anil Mehta"
+    - option "Dr. Kavita Nair"
+    - option "Dr. Priya Sharma"
+    - option "Dr. Ramesh Gupta"
+    - option "Dr.ANJALI"
+    - option "Meenal K Venkatesh"
+  - generic: Select Department *
+  - textbox "Search departments":
+    - /placeholder: Search Department...
+  - listbox "Select Department *":
+    - option "--Select--" [selected]
+    - option "Biochemistry"
+    - option "Clinical Pathology"
+    - option "Hematology"
+    - option "Hormones"
+    - option "Immunology / Serology"
+    - option "Microbiology"
+    - option "Molecular Biology"
+    - option "Packages / Profiles"
+    - option "Pathology"
+    - option "Pharmacy Support"
+  - textbox "Search lab tests":
+    - /placeholder: Search Lab Tests...
+  - table:
+    - rowgroup:
+      - row "Select S.No Test Name Test Price (OP) Commission % Commission Amount":
+        - columnheader "Select"
+        - columnheader "S.No"
+        - columnheader "Test Name"
+        - columnheader "Test Price (OP)"
+        - columnheader "Commission %"
+        - columnheader "Commission Amount"
+    - rowgroup:
+      - row "Select a doctor and department to load its commission set":
+        - cell "Select a doctor and department to load its commission set":
+          - paragraph: Select a doctor and department to load its commission set
+  - button "Submit" [disabled]
+  - button "Clear"
+  - link "Home":
+    - /url: /dashboard

@@ -1,0 +1,182 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Lab Summary Report" [level=3]
+- table:
+  - rowgroup:
+    - row "Select Departments SelectAll MICROBIOLOGY Hematology BIOCHEMISTRY PATHOLOGY BIO CHEMISTRY Select Tests SelectAll From Date 08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup. To Date 08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+      - cell "Select Departments SelectAll MICROBIOLOGY Hematology BIOCHEMISTRY PATHOLOGY BIO CHEMISTRY":
+        - text: Select Departments
+        - checkbox "SelectAll"
+        - generic: SelectAll
+        - table:
+          - rowgroup:
+            - row "MICROBIOLOGY":
+              - cell:
+                - checkbox
+              - cell "MICROBIOLOGY"
+            - row "Hematology":
+              - cell:
+                - checkbox
+              - cell "Hematology"
+            - row "BIOCHEMISTRY":
+              - cell:
+                - checkbox
+              - cell "BIOCHEMISTRY"
+            - row "PATHOLOGY":
+              - cell:
+                - checkbox
+              - cell "PATHOLOGY"
+            - row "BIO CHEMISTRY":
+              - cell:
+                - checkbox
+              - cell "BIO CHEMISTRY"
+      - cell "Select Tests SelectAll":
+        - text: Select Tests
+        - checkbox "SelectAll"
+        - generic: SelectAll
+        - table
+      - cell "From Date"
+      - cell "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+              - cell "08-Oct-26 12:00 AM":
+                - textbox: 08-Oct-26 12:00 AM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+      - cell
+      - cell "To Date"
+      - cell "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+              - cell "08-Oct-26 11:59 PM":
+                - textbox: 08-Oct-26 11:59 PM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+      - cell
+    - row "Patient Type GP OP IP ER Bill No":
+      - cell "Patient Type"
+      - cell "GP OP IP ER":
+        - table:
+          - rowgroup:
+            - row "GP OP IP ER":
+              - cell "GP":
+                - checkbox "GP" [checked]
+                - generic: GP
+              - cell "OP":
+                - checkbox "OP" [checked]
+                - generic: OP
+              - cell "IP":
+                - checkbox "IP" [checked]
+                - generic: IP
+              - cell "ER":
+                - checkbox "ER" [checked]
+                - generic: ER
+      - cell
+      - cell "Bill No"
+      - cell:
+        - textbox
+      - cell
+    - row "Lab Status All Approval Status All":
+      - cell "Lab Status"
+      - cell "All":
+        - combobox:
+          - option "All" [selected]
+          - option "Open"
+          - option "Closed"
+      - cell
+      - cell "Approval Status"
+      - cell "All":
+        - combobox:
+          - option "All" [selected]
+          - option "Open"
+          - option "Approved"
+          - option "Rejected"
+      - cell
+    - row "Only Delayed TAT Tests":
+      - cell
+      - cell
+      - cell
+      - cell "Only Delayed TAT Tests":
+        - checkbox "Only Delayed TAT Tests"
+        - generic: Only Delayed TAT Tests
+      - cell
+    - row "Show Clear Home":
+      - cell "Show Clear Home":
+        - button "Show"
+        - button "Clear"
+        - button "Home"
+- table:
+  - rowgroup:
+    - row:
+      - cell
+    - row:
+      - cell
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

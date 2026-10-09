@@ -47,6 +47,9 @@ export interface LabSampleRow {
   testNameFromBillItem?: boolean;
   sampleType?: string;
   containerType?: string;
+  outsideLabId?: string | null;
+  outsideLabName?: string;
+  sentOutAt?: string | null;
   sampleStatus: SampleStatus;
   testStatus: SampleTestStatus;
   lastStatusChangeAt?: string;
@@ -277,6 +280,14 @@ export interface SubmitResultsRequest {
 export interface SubmitResultsData {
   results: LabTestResult[];
   testId: string;
+}
+
+export interface ResultWorkflow {
+  billId: string;
+  patientId: string;
+  outstandingDue: number;
+  hasOutstandingDue: boolean;
+  tests: Array<{ testId: string; submitted: boolean }>;
 }
 
 export interface LabTechnician {

@@ -1,0 +1,721 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Create New Lab Test Parameter" [level=1]
+  - paragraph: Configure parameters and reference ranges for lab tests
+  - button "Expand form width":
+  - button "Refresh":
+  - button "Collapse form":
+  - button "Close and return to laboratory":
+  - link "Home":
+    - /url: /dashboard
+  - group "Parameter mode":
+    - generic: Parameter mode
+    - radio "Parameters" [checked]
+    - text: Parameters
+    - radio "Parameters For Templates"
+    - text: Parameters For Templates
+  - generic: Department Name
+  - combobox "Department Name":
+    - option "--Select--" [selected]
+    - option "Biochemistry"
+    - option "Clinical Pathology"
+    - option "Hematology"
+    - option "Hormones"
+    - option "Immunology / Serology"
+    - option "Microbiology"
+    - option "Molecular Biology"
+    - option "Packages / Profiles"
+    - option "Pathology"
+    - option "Pharmacy Support"
+  - generic: Test Name *
+  - combobox "Test Name *":
+    - option "--Select--" [selected]
+    - option "25 HYDROXY VITAMIN D"
+    - option "ALBUMIN"
+    - option "ALT (SGPT)"
+    - option "AMYLASE"
+    - option "ANTI CARDIOLIPIN IgG"
+    - option "ANTI CARDIOLIPIN IgM"
+    - option "ANTI CCP"
+    - option "ANTI MULLERIN HORMONE(AMH)"
+    - option "ANTI TPO"
+    - option "ANTIBODY TO HEPATITIS C VIRUS(CLIA)"
+    - option "APLA PROFILE"
+    - option "APOLIPOPROTEIN B (APO-B)"
+    - option "ASO"
+    - option "AST (SGOT)"
+    - option "Absolute Eosinophil Count (AEC)"
+    - option "Activated Partial Thromboplastin Time (APTT/PTTK)"
+    - option "Albumin/Creatinine Ratio"
+    - option "Alkaline Phosphatase"
+    - option "Anti Nuclear Antibody"
+    - option "BETA 2 GLYCOPROTEIN ANTY BODY IgG"
+    - option "BETA 2 GLYCOPROTEIN ANTY BODY IgM"
+    - option "BETA HCG"
+    - option "BILIRUBIN"
+    - option "BILIRUBIN,PAEDIATRIC"
+    - option "BLEEDING TIME CLOTTING TIME"
+    - option "BLOOD GROUP"
+    - option "BLOOD GROUPING & RH TYPING"
+    - option "BLOOD UREA"
+    - option "BLOOD UREA SERUM CREATININE"
+    - option "BT/CT"
+    - option "Basic Health Package (CBC + Glucose + Lipid)"
+    - option "Blood Sugar Fasting"
+    - option "C-Reactive Protein (CRP)"
+    - option "CA 125"
+    - option "CARCINO EMBRYONIC ANTIGEN (CEA)"
+    - option "CHIKUNGUNYA IgM"
+    - option "COMPLETE BLOOD PICTURE"
+    - option "COMPLETE STOOL EXAMINATION"
+    - option "COMPLETE URINE EXAMINATION"
+    - option "CORTISOL"
+    - option "CREATININE PHOSPHOKINASE (CPK)"
+    - option "CRP (C - REACTIVE PROTEIN)"
+    - option "CRP RF ASO"
+    - option "Complete Blood Count (CBC)"
+    - option "Complete Thyroid Profile"
+    - option "Creatine Kinase MB (CK-MB)"
+    - option "D-DIMER"
+    - option "Dengue NS1 Antigen"
+    - option "Dengue NSI"
+    - option "Dengue Profile"
+    - option "ESR"
+    - option "ESTRADIOL(E2)"
+    - option "Erythrocyte sedimentation rate(Esr)"
+    - option "FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR"
+    - option "FBS (FASTING BLOOD SUGAR)"
+    - option "FIBRINOGEN"
+    - option "FLUID CELL COUNT"
+    - option "FOLIC ACID"
+    - option "FREE T3"
+    - option "FREE T3 T4"
+    - option "FREE-T4 (THYROXINE)"
+    - option "FSH"
+    - option "FSH LH PRL (FLP)"
+    - option "GLUCOSE CHALLANGE TEST (GCT)"
+    - option "GLUCOSE-FLUIDS"
+    - option "Glomerular Filtration Rate (eGFR)"
+    - option "HAEMOGLOBIN"
+    - option "HAEMOGRAM"
+    - option "HBA1C"
+    - option "HBSAG"
+    - option "HCG"
+    - option "HCG PREGNANCY RAPID"
+    - option "HEMOGLOBIN"
+    - option "HEPATITIS B"
+    - option "HEPATITIS C"
+    - option "HEPATITIS C VIRUS RAPID"
+    - option "HIV"
+    - option "HLA-B27"
+    - option "HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance)"
+    - option "HOMOCYSTEIN"
+    - option "HS TROP I"
+    - option "HSV 1 & 2 IgG"
+    - option "HSV 1 & 2 IgM"
+    - option "HSV IgG,IgM"
+    - option "Hemoglobin (Hb)"
+    - option "Hemoglobinopathy (Hb Electrophoresis)"
+    - option "INSULIN POST PRANDIAL"
+    - option "INSULIN-FASTING"
+    - option "IRON"
+    - option "IRON DEFICIENCY PROFILE"
+    - option "Immunoglobulin (IgG)"
+    - option "Immunoglobulin A (IgA)"
+    - option "Immunoglobution (IgM)"
+    - option "Ionised Calcium"
+    - option "KIDNEY FUNCTION TEST (KFT)"
+    - option "LDH"
+    - option "LFT (LIVER FUNCTION TEST)"
+    - option "LIPASE"
+    - option "LIPOPROTEIN A (LP-A)"
+    - option "LUPAS ANTICOAGULANT"
+  - generic: Parameter/Subtitle
+  - combobox "Parameter/Subtitle"
+  - generic: Parameter Name *
+  - textbox "Parameter Name *":
+    - /placeholder: e.g. Glucose
+  - generic: Parameter Type *
+  - combobox "Parameter Type *":
+    - option "Text" [selected]
+    - option "TextArea"
+    - option "Number"
+    - option "Boolean"
+    - option "Selection"
+    - option "Range"
+  - generic: OrderNo
+  - spinbutton "OrderNo": "0"
+  - generic: Default Value
+  - textbox "Default Value":
+    - /placeholder: Optional
+  - generic: Units
+  - textbox "Units":
+    - /placeholder: e.g. mg/dL
+  - generic: Active Status
+  - combobox "Active Status":
+    - option "Active" [selected]
+    - option "Inactive"
+  - generic: Method Name
+  - textbox "Method Name":
+    - /placeholder: e.g. GOD-POD
+  - group "Reference range mode":
+    - generic: Reference range mode
+    - radio "General Range" [checked]
+    - text: General Range
+    - radio "Gender Wise Range"
+    - text: Gender Wise Range
+  - generic: Reference Type
+  - combobox "Reference Type":
+    - option "Generic" [selected]
+    - option "Age"
+    - option "Sex"
+    - option "Age & Sex"
+  - checkbox "Only Reference Range"
+  - text: Only Reference Range
+  - generic: General
+  - spinbutton "General from"
+  - spinbutton "General to"
+  - textbox "General range text":
+    - /placeholder: Range text
+  - button "Compose reference range text": ">>"
+  - textbox "Reference range display":
+    - /placeholder: Reference range display text
+  - button "Submit"
+  - button "Update" [disabled]
+  - button "Home"
+  - button "Clear"
+  - combobox "Filter by department":
+    - option "Department Name" [selected]
+    - option "Biochemistry"
+    - option "Clinical Pathology"
+    - option "Hematology"
+    - option "Hormones"
+    - option "Immunology / Serology"
+    - option "Microbiology"
+    - option "Molecular Biology"
+    - option "Packages / Profiles"
+    - option "Pathology"
+    - option "Pharmacy Support"
+  - combobox "Filter by test":
+    - option "Test Name" [selected]
+    - option "25 HYDROXY VITAMIN D"
+    - option "ALBUMIN"
+    - option "ALT (SGPT)"
+    - option "AMYLASE"
+    - option "ANTI CARDIOLIPIN IgG"
+    - option "ANTI CARDIOLIPIN IgM"
+    - option "ANTI CCP"
+    - option "ANTI MULLERIN HORMONE(AMH)"
+    - option "ANTI TPO"
+    - option "ANTIBODY TO HEPATITIS C VIRUS(CLIA)"
+    - option "APLA PROFILE"
+    - option "APOLIPOPROTEIN B (APO-B)"
+    - option "ASO"
+    - option "AST (SGOT)"
+    - option "Absolute Eosinophil Count (AEC)"
+    - option "Activated Partial Thromboplastin Time (APTT/PTTK)"
+    - option "Albumin/Creatinine Ratio"
+    - option "Alkaline Phosphatase"
+    - option "Anti Nuclear Antibody"
+    - option "BETA 2 GLYCOPROTEIN ANTY BODY IgG"
+    - option "BETA 2 GLYCOPROTEIN ANTY BODY IgM"
+    - option "BETA HCG"
+    - option "BILIRUBIN"
+    - option "BILIRUBIN,PAEDIATRIC"
+    - option "BLEEDING TIME CLOTTING TIME"
+    - option "BLOOD GROUP"
+    - option "BLOOD GROUPING & RH TYPING"
+    - option "BLOOD UREA"
+    - option "BLOOD UREA SERUM CREATININE"
+    - option "BT/CT"
+    - option "Basic Health Package (CBC + Glucose + Lipid)"
+    - option "Blood Sugar Fasting"
+    - option "C-Reactive Protein (CRP)"
+    - option "CA 125"
+    - option "CARCINO EMBRYONIC ANTIGEN (CEA)"
+    - option "CHIKUNGUNYA IgM"
+    - option "COMPLETE BLOOD PICTURE"
+    - option "COMPLETE STOOL EXAMINATION"
+    - option "COMPLETE URINE EXAMINATION"
+    - option "CORTISOL"
+    - option "CREATININE PHOSPHOKINASE (CPK)"
+    - option "CRP (C - REACTIVE PROTEIN)"
+    - option "CRP RF ASO"
+    - option "Complete Blood Count (CBC)"
+    - option "Complete Thyroid Profile"
+    - option "Creatine Kinase MB (CK-MB)"
+    - option "D-DIMER"
+    - option "Dengue NS1 Antigen"
+    - option "Dengue NSI"
+    - option "Dengue Profile"
+    - option "ESR"
+    - option "ESTRADIOL(E2)"
+    - option "Erythrocyte sedimentation rate(Esr)"
+    - option "FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR"
+    - option "FBS (FASTING BLOOD SUGAR)"
+    - option "FIBRINOGEN"
+    - option "FLUID CELL COUNT"
+    - option "FOLIC ACID"
+    - option "FREE T3"
+    - option "FREE T3 T4"
+    - option "FREE-T4 (THYROXINE)"
+    - option "FSH"
+    - option "FSH LH PRL (FLP)"
+    - option "GLUCOSE CHALLANGE TEST (GCT)"
+    - option "GLUCOSE-FLUIDS"
+    - option "Glomerular Filtration Rate (eGFR)"
+    - option "HAEMOGLOBIN"
+    - option "HAEMOGRAM"
+    - option "HBA1C"
+    - option "HBSAG"
+    - option "HCG"
+    - option "HCG PREGNANCY RAPID"
+    - option "HEMOGLOBIN"
+    - option "HEPATITIS B"
+    - option "HEPATITIS C"
+    - option "HEPATITIS C VIRUS RAPID"
+    - option "HIV"
+    - option "HLA-B27"
+    - option "HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance)"
+    - option "HOMOCYSTEIN"
+    - option "HS TROP I"
+    - option "HSV 1 & 2 IgG"
+    - option "HSV 1 & 2 IgM"
+    - option "HSV IgG,IgM"
+    - option "Hemoglobin (Hb)"
+    - option "Hemoglobinopathy (Hb Electrophoresis)"
+    - option "INSULIN POST PRANDIAL"
+    - option "INSULIN-FASTING"
+    - option "IRON"
+    - option "IRON DEFICIENCY PROFILE"
+    - option "Immunoglobulin (IgG)"
+    - option "Immunoglobulin A (IgA)"
+    - option "Immunoglobution (IgM)"
+    - option "Ionised Calcium"
+    - option "KIDNEY FUNCTION TEST (KFT)"
+    - option "LDH"
+    - option "LFT (LIVER FUNCTION TEST)"
+    - option "LIPASE"
+    - option "LIPOPROTEIN A (LP-A)"
+    - option "LUPAS ANTICOAGULANT"
+  - searchbox "Search parameters..."
+  - table:
+    - rowgroup:
+      - row "S.No Lab Dept Lab Test Parameter Name Units Reference Range Order No View Edit Del":
+        - columnheader "S.No"
+        - columnheader "Lab Dept"
+        - columnheader "Lab Test"
+        - columnheader "Parameter Name"
+        - columnheader "Units"
+        - columnheader "Reference Range"
+        - columnheader "Order No"
+        - columnheader "View"
+        - columnheader "Edit"
+        - columnheader "Del"
+    - rowgroup:
+      - row "1 Biochemistry 25 HYDROXY VITAMIN D 25 (OH) VITAMIN-D TEST — < 20 Deficient 20-30 Insufficient >30 Sufficient 1 View 25 (OH) VITAMIN-D TEST Edit 25 (OH) VITAMIN-D TEST Delete 25 (OH) VITAMIN-D TEST":
+        - cell "1"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "25 HYDROXY VITAMIN D":
+          - generic: 25 HYDROXY VITAMIN D
+        - cell "25 (OH) VITAMIN-D TEST":
+          - generic: 25 (OH) VITAMIN-D TEST
+        - cell "—":
+          - generic: —
+        - cell "< 20 Deficient 20-30 Insufficient >30 Sufficient":
+          - generic: < 20 Deficient 20-30 Insufficient >30 Sufficient
+        - cell "1"
+        - cell "View 25 (OH) VITAMIN-D TEST":
+          - button "View 25 (OH) VITAMIN-D TEST":
+        - cell "Edit 25 (OH) VITAMIN-D TEST":
+          - button "Edit 25 (OH) VITAMIN-D TEST":
+        - cell "Delete 25 (OH) VITAMIN-D TEST":
+          - button "Delete 25 (OH) VITAMIN-D TEST":
+      - 'row "2 Biochemistry VITAMIN PROFILE 25 HYDROXY VITAMIN D — < 20 Deficient 20-30 Insufficient >30 SufficientNeeds Lab Review(Sex: 1) 1 View 25 HYDROXY VITAMIN D Edit 25 HYDROXY VITAMIN D Delete 25 HYDROXY VITAMIN D"':
+        - cell "2"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "VITAMIN PROFILE":
+          - generic: VITAMIN PROFILE
+        - cell "25 HYDROXY VITAMIN D":
+          - generic: 25 HYDROXY VITAMIN D
+        - cell "—":
+          - generic: —
+        - 'cell "< 20 Deficient 20-30 Insufficient >30 SufficientNeeds Lab Review(Sex: 1)"':
+          - text: < 20 Deficient 20-30 Insufficient >30 SufficientNeeds Lab Review
+          - generic: "(Sex: 1)"
+        - cell "1"
+        - cell "View 25 HYDROXY VITAMIN D":
+          - button "View 25 HYDROXY VITAMIN D":
+        - cell "Edit 25 HYDROXY VITAMIN D":
+          - button "Edit 25 HYDROXY VITAMIN D":
+        - cell "Delete 25 HYDROXY VITAMIN D":
+          - button "Delete 25 HYDROXY VITAMIN D":
+      - row "3 Biochemistry ALT (SGPT) ALT (SGPT) U/L 7–56 U/L 1 View ALT (SGPT) Edit ALT (SGPT) Delete ALT (SGPT)":
+        - cell "3"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "ALT (SGPT)":
+          - generic: ALT (SGPT)
+        - cell "ALT (SGPT)":
+          - generic: ALT (SGPT)
+        - cell "U/L":
+          - generic: U/L
+        - cell "7–56 U/L":
+          - generic: 7–56 U/L
+        - cell "1"
+        - cell "View ALT (SGPT)":
+          - button "View ALT (SGPT)":
+        - cell "Edit ALT (SGPT)":
+          - button "Edit ALT (SGPT)":
+        - cell "Delete ALT (SGPT)":
+          - button "Delete ALT (SGPT)":
+      - row "4 Biochemistry ANTI CCP ANTI CCP ANTIBODIES U/mL <35.0 U/mL 1 View ANTI CCP ANTIBODIES Edit ANTI CCP ANTIBODIES Delete ANTI CCP ANTIBODIES":
+        - cell "4"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "ANTI CCP":
+          - generic: ANTI CCP
+        - cell "ANTI CCP ANTIBODIES":
+          - generic: ANTI CCP ANTIBODIES
+        - cell "U/mL":
+          - generic: U/mL
+        - cell "<35.0 U/mL":
+          - generic: <35.0 U/mL
+        - cell "1"
+        - cell "View ANTI CCP ANTIBODIES":
+          - button "View ANTI CCP ANTIBODIES":
+        - cell "Edit ANTI CCP ANTIBODIES":
+          - button "Edit ANTI CCP ANTIBODIES":
+        - cell "Delete ANTI CCP ANTIBODIES":
+          - button "Delete ANTI CCP ANTIBODIES":
+      - row "5 Biochemistry ANTI MULLERIN HORMONE(AMH) ANTI MULLERIAN HORMONE(AMH) — 1.32-10.34 1 View ANTI MULLERIAN HORMONE(AMH) Edit ANTI MULLERIAN HORMONE(AMH) Delete ANTI MULLERIAN HORMONE(AMH)":
+        - cell "5"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "ANTI MULLERIN HORMONE(AMH)":
+          - generic: ANTI MULLERIN HORMONE(AMH)
+        - cell "ANTI MULLERIAN HORMONE(AMH)":
+          - generic: ANTI MULLERIAN HORMONE(AMH)
+        - cell "—":
+          - generic: —
+        - cell "1.32-10.34":
+          - generic: 1.32-10.34
+        - cell "1"
+        - cell "View ANTI MULLERIAN HORMONE(AMH)":
+          - button "View ANTI MULLERIAN HORMONE(AMH)":
+        - cell "Edit ANTI MULLERIAN HORMONE(AMH)":
+          - button "Edit ANTI MULLERIAN HORMONE(AMH)":
+        - cell "Delete ANTI MULLERIAN HORMONE(AMH)":
+          - button "Delete ANTI MULLERIAN HORMONE(AMH)":
+      - row "6 Biochemistry APLA PROFILE APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM — —Needs Lab Review 1 View APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM Edit APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM Delete APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM":
+        - cell "6"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "APLA PROFILE":
+          - generic: APLA PROFILE
+        - cell "APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM":
+          - generic: APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM
+        - cell "—":
+          - generic: —
+        - cell "—Needs Lab Review":
+          - generic: —Needs Lab Review
+        - cell "1"
+        - cell "View APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM":
+          - button "View APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM":
+        - cell "Edit APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM":
+          - button "Edit APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM":
+        - cell "Delete APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM":
+          - button "Delete APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM":
+      - row "7 Biochemistry ASO ASO (Titres (Anti Streptolysin O) IU/mL <200 IU/mL IU/mL 1 View ASO (Titres (Anti Streptolysin O) Edit ASO (Titres (Anti Streptolysin O) Delete ASO (Titres (Anti Streptolysin O)":
+        - cell "7"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "ASO":
+          - generic: ASO
+        - cell "ASO (Titres (Anti Streptolysin O)":
+          - generic: ASO (Titres (Anti Streptolysin O)
+        - cell "IU/mL":
+          - generic: IU/mL
+        - cell "<200 IU/mL IU/mL":
+          - generic: <200 IU/mL IU/mL
+        - cell "1"
+        - cell "View ASO (Titres (Anti Streptolysin O)":
+          - button "View ASO (Titres (Anti Streptolysin O)":
+        - cell "Edit ASO (Titres (Anti Streptolysin O)":
+          - button "Edit ASO (Titres (Anti Streptolysin O)":
+        - cell "Delete ASO (Titres (Anti Streptolysin O)":
+          - button "Delete ASO (Titres (Anti Streptolysin O)":
+      - row "8 Biochemistry AST (SGOT) AST (SGOT) U/L 10–40 U/L 1 View AST (SGOT) Edit AST (SGOT) Delete AST (SGOT)":
+        - cell "8"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "AST (SGOT)":
+          - generic: AST (SGOT)
+        - cell "AST (SGOT)":
+          - generic: AST (SGOT)
+        - cell "U/L":
+          - generic: U/L
+        - cell "10–40 U/L":
+          - generic: 10–40 U/L
+        - cell "1"
+        - cell "View AST (SGOT)":
+          - button "View AST (SGOT)":
+        - cell "Edit AST (SGOT)":
+          - button "Edit AST (SGOT)":
+        - cell "Delete AST (SGOT)":
+          - button "Delete AST (SGOT)":
+      - row "9 Hematology Absolute Eosinophil Count (AEC) Absolute Eosinophil Count Cells/Cumm 40-440Cells/Cumm Cells/Cumm 1 View Absolute Eosinophil Count Edit Absolute Eosinophil Count Delete Absolute Eosinophil Count":
+        - cell "9"
+        - cell "Hematology":
+          - generic: Hematology
+        - cell "Absolute Eosinophil Count (AEC)":
+          - generic: Absolute Eosinophil Count (AEC)
+        - cell "Absolute Eosinophil Count":
+          - generic: Absolute Eosinophil Count
+        - cell "Cells/Cumm":
+          - generic: Cells/Cumm
+        - cell "40-440Cells/Cumm Cells/Cumm":
+          - generic: 40-440Cells/Cumm Cells/Cumm
+        - cell "1"
+        - cell "View Absolute Eosinophil Count":
+          - button "View Absolute Eosinophil Count":
+        - cell "Edit Absolute Eosinophil Count":
+          - button "Edit Absolute Eosinophil Count":
+        - cell "Delete Absolute Eosinophil Count":
+          - button "Delete Absolute Eosinophil Count":
+      - row "10 Biochemistry Activated Partial Thromboplastin Time (APTT/PTTK) Activated Partial Thromboplastin Time (APTT/PTTK) — —Needs Lab Review 1 View Activated Partial Thromboplastin Time (APTT/PTTK) Edit Activated Partial Thromboplastin Time (APTT/PTTK) Delete Activated Partial Thromboplastin Time (APTT/PTTK)":
+        - cell "10"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "Activated Partial Thromboplastin Time (APTT/PTTK)":
+          - generic: Activated Partial Thromboplastin Time (APTT/PTTK)
+        - cell "Activated Partial Thromboplastin Time (APTT/PTTK)":
+          - generic: Activated Partial Thromboplastin Time (APTT/PTTK)
+        - cell "—":
+          - generic: —
+        - cell "—Needs Lab Review":
+          - generic: —Needs Lab Review
+        - cell "1"
+        - cell "View Activated Partial Thromboplastin Time (APTT/PTTK)":
+          - button "View Activated Partial Thromboplastin Time (APTT/PTTK)":
+        - cell "Edit Activated Partial Thromboplastin Time (APTT/PTTK)":
+          - button "Edit Activated Partial Thromboplastin Time (APTT/PTTK)":
+        - cell "Delete Activated Partial Thromboplastin Time (APTT/PTTK)":
+          - button "Delete Activated Partial Thromboplastin Time (APTT/PTTK)":
+      - row "11 Biochemistry ALBUMIN Albumin — —Needs Lab Review 1 View Albumin Edit Albumin Delete Albumin":
+        - cell "11"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "ALBUMIN":
+          - generic: ALBUMIN
+        - cell "Albumin":
+          - generic: Albumin
+        - cell "—":
+          - generic: —
+        - cell "—Needs Lab Review":
+          - generic: —Needs Lab Review
+        - cell "1"
+        - cell "View Albumin":
+          - button "View Albumin":
+        - cell "Edit Albumin":
+          - button "Edit Albumin":
+        - cell "Delete Albumin":
+          - button "Delete Albumin":
+      - row "12 Biochemistry Albumin/Creatinine Ratio Albumin/Creatinine Ratio — —Needs Lab Review 1 View Albumin/Creatinine Ratio Edit Albumin/Creatinine Ratio Delete Albumin/Creatinine Ratio":
+        - cell "12"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "Albumin/Creatinine Ratio":
+          - generic: Albumin/Creatinine Ratio
+        - cell "Albumin/Creatinine Ratio":
+          - generic: Albumin/Creatinine Ratio
+        - cell "—":
+          - generic: —
+        - cell "—Needs Lab Review":
+          - generic: —Needs Lab Review
+        - cell "1"
+        - cell "View Albumin/Creatinine Ratio":
+          - button "View Albumin/Creatinine Ratio":
+        - cell "Edit Albumin/Creatinine Ratio":
+          - button "Edit Albumin/Creatinine Ratio":
+        - cell "Delete Albumin/Creatinine Ratio":
+          - button "Delete Albumin/Creatinine Ratio":
+      - row "13 Biochemistry Alkaline Phosphatase Alkaline Phosphatase IU/L 40-120 IU/L 1 View Alkaline Phosphatase Edit Alkaline Phosphatase Delete Alkaline Phosphatase":
+        - cell "13"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "Alkaline Phosphatase":
+          - generic: Alkaline Phosphatase
+        - cell "Alkaline Phosphatase":
+          - generic: Alkaline Phosphatase
+        - cell "IU/L":
+          - generic: IU/L
+        - cell "40-120 IU/L":
+          - generic: 40-120 IU/L
+        - cell "1"
+        - cell "View Alkaline Phosphatase":
+          - button "View Alkaline Phosphatase":
+        - cell "Edit Alkaline Phosphatase":
+          - button "Edit Alkaline Phosphatase":
+        - cell "Delete Alkaline Phosphatase":
+          - button "Delete Alkaline Phosphatase":
+      - 'row "14 Biochemistry Anti Nuclear Antibody Antti Nuclear Antibody(ANA) s/co <0.9: Negative 0.91-1.10 Equivocal >1.1: Positive s/coNeeds Lab Review 1 View Antti Nuclear Antibody(ANA) Edit Antti Nuclear Antibody(ANA) Delete Antti Nuclear Antibody(ANA)"':
+        - cell "14"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "Anti Nuclear Antibody":
+          - generic: Anti Nuclear Antibody
+        - cell "Antti Nuclear Antibody(ANA)":
+          - generic: Antti Nuclear Antibody(ANA)
+        - cell "s/co":
+          - generic: s/co
+        - 'cell "<0.9: Negative 0.91-1.10 Equivocal >1.1: Positive s/coNeeds Lab Review"':
+          - generic: "<0.9: Negative 0.91-1.10 Equivocal >1.1: Positive s/coNeeds Lab Review"
+        - cell "1"
+        - cell "View Antti Nuclear Antibody(ANA)":
+          - button "View Antti Nuclear Antibody(ANA)":
+        - cell "Edit Antti Nuclear Antibody(ANA)":
+          - button "Edit Antti Nuclear Antibody(ANA)":
+        - cell "Delete Antti Nuclear Antibody(ANA)":
+          - button "Delete Antti Nuclear Antibody(ANA)":
+      - row "15 Biochemistry APOLIPOPROTEIN B (APO-B) Apolipoprotein b g/L 0.66 – 1.44 g/L 1 View Apolipoprotein b Edit Apolipoprotein b Delete Apolipoprotein b":
+        - cell "15"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "APOLIPOPROTEIN B (APO-B)":
+          - generic: APOLIPOPROTEIN B (APO-B)
+        - cell "Apolipoprotein b":
+          - generic: Apolipoprotein b
+        - cell "g/L":
+          - generic: g/L
+        - cell "0.66 – 1.44 g/L":
+          - generic: 0.66 – 1.44 g/L
+        - cell "1"
+        - cell "View Apolipoprotein b":
+          - button "View Apolipoprotein b":
+        - cell "Edit Apolipoprotein b":
+          - button "Edit Apolipoprotein b":
+        - cell "Delete Apolipoprotein b":
+          - button "Delete Apolipoprotein b":
+      - row "16 Biochemistry BETA 2 GLYCOPROTEIN ANTY BODY IgG BETA 2 GLYCOPROTEIN ANTY BODY IgG SGU < 20 Negative > 20 Positive SGUNeeds Lab Review 1 View BETA 2 GLYCOPROTEIN ANTY BODY IgG Edit BETA 2 GLYCOPROTEIN ANTY BODY IgG Delete BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+        - cell "16"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+          - generic: BETA 2 GLYCOPROTEIN ANTY BODY IgG
+        - cell "BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+          - generic: BETA 2 GLYCOPROTEIN ANTY BODY IgG
+        - cell "SGU":
+          - generic: SGU
+        - cell "< 20 Negative > 20 Positive SGUNeeds Lab Review":
+          - generic: < 20 Negative > 20 Positive SGUNeeds Lab Review
+        - cell "1"
+        - cell "View BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+          - button "View BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+        - cell "Edit BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+          - button "Edit BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+        - cell "Delete BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+          - button "Delete BETA 2 GLYCOPROTEIN ANTY BODY IgG":
+      - row "17 Biochemistry BETA 2 GLYCOPROTEIN ANTY BODY IgM BETA 2 GLYCOPROTEIN ANTY BODY IgM SGU < 20 Negative > 20 Positive SGUNeeds Lab Review 1 View BETA 2 GLYCOPROTEIN ANTY BODY IgM Edit BETA 2 GLYCOPROTEIN ANTY BODY IgM Delete BETA 2 GLYCOPROTEIN ANTY BODY IgM":
+        - cell "17"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "BETA 2 GLYCOPROTEIN ANTY BODY IgM":
+          - generic: BETA 2 GLYCOPROTEIN ANTY BODY IgM
+        - cell "BETA 2 GLYCOPROTEIN ANTY BODY IgM":
+          - generic: BETA 2 GLYCOPROTEIN ANTY BODY IgM
+        - cell "SGU":
+          - generic: SGU
+        - cell "< 20 Negative > 20 Positive SGUNeeds Lab Review":
+          - generic: < 20 Negative > 20 Positive SGUNeeds Lab Review
+        - cell "1"
+        - cell "View BETA 2 GLYCOPROTEIN ANTY BODY IgM":
+          - button "View BETA 2 GLYCOPROTEIN ANTY BODY IgM":
+        - cell "Edit BETA 2 GLYCOPROTEIN ANTY BODY IgM":
+          - button "Edit BETA 2 GLYCOPROTEIN ANTY BODY IgM":
+        - cell "Delete BETA 2 GLYCOPROTEIN ANTY BODY IgM":
+          - button "Delete BETA 2 GLYCOPROTEIN ANTY BODY IgM":
+      - row "18 Biochemistry HCG BETA HCG — Non pregnant woman <0.5-3.0 1-10 weeks:50-221796 11-15weeks:15205-227034 16-24weeks:5002-75445 25-40weeks:1501-69208Needs Lab Review 1 View BETA HCG Edit BETA HCG Delete BETA HCG":
+        - cell "18"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "HCG":
+          - generic: HCG
+        - cell "BETA HCG":
+          - generic: BETA HCG
+        - cell "—":
+          - generic: —
+        - cell "Non pregnant woman <0.5-3.0 1-10 weeks:50-221796 11-15weeks:15205-227034 16-24weeks:5002-75445 25-40weeks:1501-69208Needs Lab Review":
+          - generic: Non pregnant woman <0.5-3.0 1-10 weeks:50-221796 11-15weeks:15205-227034 16-24weeks:5002-75445 25-40weeks:1501-69208Needs Lab Review
+        - cell "1"
+        - cell "View BETA HCG":
+          - button "View BETA HCG":
+        - cell "Edit BETA HCG":
+          - button "Edit BETA HCG":
+        - cell "Delete BETA HCG":
+          - button "Delete BETA HCG":
+      - row "19 Biochemistry BT/CT BLEEDING TIME minutes 1-6minutes minutes 1 View BLEEDING TIME Edit BLEEDING TIME Delete BLEEDING TIME":
+        - cell "19"
+        - cell "Biochemistry":
+          - generic: Biochemistry
+        - cell "BT/CT":
+          - generic: BT/CT
+        - cell "BLEEDING TIME":
+          - generic: BLEEDING TIME
+        - cell "minutes":
+          - generic: minutes
+        - cell "1-6minutes minutes":
+          - generic: 1-6minutes minutes
+        - cell "1"
+        - cell "View BLEEDING TIME":
+          - button "View BLEEDING TIME":
+        - cell "Edit BLEEDING TIME":
+          - button "Edit BLEEDING TIME":
+        - cell "Delete BLEEDING TIME":
+          - button "Delete BLEEDING TIME":
+      - row "20 Hematology BLEEDING TIME CLOTTING TIME BLEEDING TIME Minutes 1 - 3 Minutes Minutes 1 View BLEEDING TIME Edit BLEEDING TIME Delete BLEEDING TIME":
+        - cell "20"
+        - cell "Hematology":
+          - generic: Hematology
+        - cell "BLEEDING TIME CLOTTING TIME":
+          - generic: BLEEDING TIME CLOTTING TIME
+        - cell "BLEEDING TIME":
+          - generic: BLEEDING TIME
+        - cell "Minutes":
+          - generic: Minutes
+        - cell "1 - 3 Minutes Minutes":
+          - generic: 1 - 3 Minutes Minutes
+        - cell "1"
+        - cell "View BLEEDING TIME":
+          - button "View BLEEDING TIME":
+        - cell "Edit BLEEDING TIME":
+          - button "Edit BLEEDING TIME":
+        - cell "Delete BLEEDING TIME":
+          - button "Delete BLEEDING TIME":
+  - paragraph: Showing 1–20 of 513 records · Page 1 of 26
+  - button "Previous" [disabled]:
+    - text: Previous
+  - button "Next":
+    - text: Next

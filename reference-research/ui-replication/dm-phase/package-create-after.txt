@@ -1,0 +1,223 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Create Package" [level=1]
+  - paragraph: Combine lab tests into a billable package
+  - link "Home":
+    - /url: /dashboard
+  - text: Package Name
+  - generic: "*"
+  - textbox "Package Name *":
+    - /placeholder: e.g. FEVER PROFILE
+  - text: Package Type
+  - generic: "*"
+  - combobox "Package Type *":
+    - option "Lab" [selected]
+  - text: Package Amount
+  - generic: "*"
+  - spinbutton "Package Amount *"
+  - generic: Package Amount Ins
+  - spinbutton "Package Amount Ins"
+  - text: Department
+  - generic: "*"
+  - textbox "Search package departments":
+    - /placeholder: Search...
+  - listbox "Department *":
+    - option "Select--" [selected]
+    - option "Biochemistry"
+    - option "Hematology"
+    - option "Microbiology"
+    - option "Pathology"
+    - option "Immunology / Serology"
+    - option "Hormones"
+    - option "Molecular Biology"
+    - option "Clinical Pathology"
+    - option "Packages / Profiles"
+    - option "Pharmacy Support"
+  - generic: Test
+  - textbox "Search package tests":
+    - /placeholder: Search...
+  - listbox "Test" [disabled]:
+    - option "Select a department first" [selected]
+  - button "Add Test" [disabled]:
+    - text: Add Test
+  - heading "Selected Lab Tests" [level=2]
+  - table:
+    - rowgroup:
+      - row "Del S.No Dept Name Lab Test Name":
+        - columnheader "Del"
+        - columnheader "S.No"
+        - columnheader "Dept Name"
+        - columnheader "Lab Test Name"
+    - rowgroup:
+      - row "No tests selected yet":
+        - cell "No tests selected yet":
+          - paragraph: No tests selected yet
+  - button "Save"
+  - button "Clear"
+  - link "Home":
+    - /url: /dashboard
+  - heading "Package List" [level=2]
+  - searchbox "Search packages..."
+  - table:
+    - rowgroup:
+      - row "S.No Package Name Package Type Amount Ins Amount Edit":
+        - columnheader "S.No"
+        - columnheader "Package Name"
+        - columnheader "Package Type"
+        - columnheader "Amount"
+        - columnheader "Ins Amount"
+        - columnheader "Edit"
+    - rowgroup:
+      - row "1 MASTER PACKAGE-2 Lab 2,000.00 2,000.00 Edit MASTER PACKAGE-2":
+        - cell "1"
+        - cell "MASTER PACKAGE-2"
+        - cell "Lab"
+        - cell "2,000.00"
+        - cell "2,000.00"
+        - cell "Edit MASTER PACKAGE-2":
+          - button "Edit MASTER PACKAGE-2":
+      - row "2 FEVER PROFILE Lab 1,380.00 1,380.00 Edit FEVER PROFILE":
+        - cell "2"
+        - cell "FEVER PROFILE"
+        - cell "Lab"
+        - cell "1,380.00"
+        - cell "1,380.00"
+        - cell "Edit FEVER PROFILE":
+          - button "Edit FEVER PROFILE":
+      - row "3 FEVER PROFILE2 Lab 1,600.00 1,600.00 Edit FEVER PROFILE2":
+        - cell "3"
+        - cell "FEVER PROFILE2"
+        - cell "Lab"
+        - cell "1,600.00"
+        - cell "1,600.00"
+        - cell "Edit FEVER PROFILE2":
+          - button "Edit FEVER PROFILE2":
+      - row "4 DIABETIC PROFILE-1 Lab 1,200.00 1,200.00 Edit DIABETIC PROFILE-1":
+        - cell "4"
+        - cell "DIABETIC PROFILE-1"
+        - cell "Lab"
+        - cell "1,200.00"
+        - cell "1,200.00"
+        - cell "Edit DIABETIC PROFILE-1":
+          - button "Edit DIABETIC PROFILE-1":
+      - row "5 MASTER PROFILE3 Lab 2,500.00 7,500.00 Edit MASTER PROFILE3":
+        - cell "5"
+        - cell "MASTER PROFILE3"
+        - cell "Lab"
+        - cell "2,500.00"
+        - cell "7,500.00"
+        - cell "Edit MASTER PROFILE3":
+          - button "Edit MASTER PROFILE3":
+      - row "6 RENAL PROFILE2 (RP2) Lab 800.00 800.00 Edit RENAL PROFILE2 (RP2)":
+        - cell "6"
+        - cell "RENAL PROFILE2 (RP2)"
+        - cell "Lab"
+        - cell "800.00"
+        - cell "800.00"
+        - cell "Edit RENAL PROFILE2 (RP2)":
+          - button "Edit RENAL PROFILE2 (RP2)":
+      - row "7 VITAMIN PROFILE Lab 1,500.00 1,500.00 Edit VITAMIN PROFILE":
+        - cell "7"
+        - cell "VITAMIN PROFILE"
+        - cell "Lab"
+        - cell "1,500.00"
+        - cell "1,500.00"
+        - cell "Edit VITAMIN PROFILE":
+          - button "Edit VITAMIN PROFILE":
+      - row "8 RENAL PROFILE-II Lab 950.00 950.00 Edit RENAL PROFILE-II":
+        - cell "8"
+        - cell "RENAL PROFILE-II"
+        - cell "Lab"
+        - cell "950.00"
+        - cell "950.00"
+        - cell "Edit RENAL PROFILE-II":
+          - button "Edit RENAL PROFILE-II":
+      - row "9 MINOR SURGICAL PROFILE Lab 1,000.00 1,000.00 Edit MINOR SURGICAL PROFILE":
+        - cell "9"
+        - cell "MINOR SURGICAL PROFILE"
+        - cell "Lab"
+        - cell "1,000.00"
+        - cell "1,000.00"
+        - cell "Edit MINOR SURGICAL PROFILE":
+          - button "Edit MINOR SURGICAL PROFILE":
+      - row "10 ANTENATAL PROFILE Lab 1,800.00 1,800.00 Edit ANTENATAL PROFILE":
+        - cell "10"
+        - cell "ANTENATAL PROFILE"
+        - cell "Lab"
+        - cell "1,800.00"
+        - cell "1,800.00"
+        - cell "Edit ANTENATAL PROFILE":
+          - button "Edit ANTENATAL PROFILE":
+      - row "11 DIABETIC PROFILE2 Lab 1,450.00 1,450.00 Edit DIABETIC PROFILE2":
+        - cell "11"
+        - cell "DIABETIC PROFILE2"
+        - cell "Lab"
+        - cell "1,450.00"
+        - cell "1,450.00"
+        - cell "Edit DIABETIC PROFILE2":
+          - button "Edit DIABETIC PROFILE2":
+      - row "12 VITAMIN PROFILE Lab 1,500.00 1,500.00 Edit VITAMIN PROFILE":
+        - cell "12"
+        - cell "VITAMIN PROFILE"
+        - cell "Lab"
+        - cell "1,500.00"
+        - cell "1,500.00"
+        - cell "Edit VITAMIN PROFILE":
+          - button "Edit VITAMIN PROFILE":
+      - row "13 MASTER PROFILE-4 Lab 3,000.00 7,000.00 Edit MASTER PROFILE-4":
+        - cell "13"
+        - cell "MASTER PROFILE-4"
+        - cell "Lab"
+        - cell "3,000.00"
+        - cell "7,000.00"
+        - cell "Edit MASTER PROFILE-4":
+          - button "Edit MASTER PROFILE-4":
+      - row "14 ANTIFUNGAL PROFILE Lab 1,950.00 1,950.00 Edit ANTIFUNGAL PROFILE":
+        - cell "14"
+        - cell "ANTIFUNGAL PROFILE"
+        - cell "Lab"
+        - cell "1,950.00"
+        - cell "1,950.00"
+        - cell "Edit ANTIFUNGAL PROFILE":
+          - button "Edit ANTIFUNGAL PROFILE":
+      - row "15 TEST PACKAGE API Lab 1,100.00 1,000.00 Edit TEST PACKAGE API":
+        - cell "15"
+        - cell "TEST PACKAGE API"
+        - cell "Lab"
+        - cell "1,100.00"
+        - cell "1,000.00"
+        - cell "Edit TEST PACKAGE API":
+          - button "Edit TEST PACKAGE API":
+      - row "16 QA PACKAGE Lab 1,600.00 950.00 Edit QA PACKAGE":
+        - cell "16"
+        - cell "QA PACKAGE"
+        - cell "Lab"
+        - cell "1,600.00"
+        - cell "950.00"
+        - cell "Edit QA PACKAGE":
+          - button "Edit QA PACKAGE":
+  - paragraph: Showing 1–16 of 16 records · Page 1 of 1
+  - button "Previous" [disabled]:
+    - text: Previous
+  - button "Next" [disabled]:
+    - text: Next

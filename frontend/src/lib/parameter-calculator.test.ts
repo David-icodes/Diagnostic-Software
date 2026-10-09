@@ -51,6 +51,15 @@ describe("PCV = RBC × MCV / 10", () => {
   it("does not calculate when a dependency is missing", () => {
     assert.match(String(value(list, "pcv", { rbc: "5" })), /Enter MCV first\./);
   });
+  it("refuses overflow introduced by rounding a finite formula result", () => {
+    assert.equal(value(list, "pcv", { rbc: 1e308, mcv: 1 }), "Cannot calculate with the entered values.");
+  });
+  it("refuses non-finite inputs and formula overflow", () => {
+    for (const input of [NaN, Infinity, -Infinity, "NaN", "Infinity"]) {
+      assert.match(String(value(list, "pcv", { rbc: input, mcv: 90 })), /Enter Red Cell Count first\./);
+    }
+    assert.equal(value(list, "pcv", { rbc: 1e308, mcv: 90 }), "Cannot calculate with the entered values.");
+  });
 });
 
 describe("MCV = PCV × 10 / RBC", () => {
@@ -82,8 +91,11 @@ describe("RDW-CV = SD of RBC volume × 100 / MCV", () => {
   it("calculates 13 x 100 / 90 ≈ 14.44", () => {
     assert.equal(value(list, "rdw", { sd: "13", mcv: "90" }), 14.44);
   });
-  it("is not offered when no SD parameter exists", () => {
-    assert.equal(calcFor([p("rdw", "Red Cell Distribution Width(RDW-CV)"), p("mcv", "MCV")], "rdw"), undefined);
+  it("explains when the test has no SD parameter", () => {
+    assert.match(
+      String(value([p("rdw", "Red Cell Distribution Width(RDW-CV)"), p("mcv", "MCV")], "rdw", { mcv: "90" })),
+      /missing or has ambiguous SD of RBC volume parameter/,
+    );
   });
 });
 
@@ -115,13 +127,28 @@ describe("calculator visibility", () => {
   it("does not offer a calculator for a plain parameter", () => {
     assert.equal(resolveCalculations([p("hb", "Hemoglobin"), p("plt", "Platelet Count")]).length, 0);
   });
-  it("does not offer a calculator when a dependency name is ambiguous", () => {
+  it("explains when a dependency name is ambiguous", () => {
     const list = [p("pcv1", "PCV"), p("pcv2", "PCV"), p("mcv", "MCV"), p("rbc", "RBC Count")];
-    // Two parameters both named PCV: the MCV target cannot be resolved uniquely.
-    assert.equal(calcFor(list, "mcv"), undefined);
+    // Two parameters both named PCV: keep the calculator visible but refuse to guess.
+    assert.match(
+      String(value(list, "mcv", { rbc: "5" })),
+      /missing or has ambiguous Hematocrit \(PCV\) parameter/,
+    );
   });
   it("resolves dependencies regardless of parameter order", () => {
     const list = [p("mcv", "MCV"), p("pcv", "PCV"), p("rbc", "RBC Count")];
     assert.equal(value(list, "mcv", { pcv: "45", rbc: "5" }), 90);
+  });
+  it("reads values only from resolved parameter IDs", () => {
+    const list = [p("target-id", "MCV"), p("pcv-id", "PCV"), p("rbc-id", "RBC")];
+    assert.equal(value(list, "target-id", { "pcv-id": "45", "rbc-id": "5", PCV: "900", RBC: "1" }), 90);
+    assert.match(String(value(list, "target-id", { PCV: "45", RBC: "5" })), /Enter/);
+  });
+  it("refuses every formula with a zero denominator", () => {
+    const list = [p("mcv", "MCV"), p("mch", "MCH"), p("mchc", "MCHC"), p("rdw", "RDW-CV"), p("rbc", "RBC"), p("pcv", "PCV"), p("hb", "Hb"), p("sd", "SD of RBC volume")];
+    for (const [target, denominator] of [["mcv", "rbc"], ["mch", "rbc"], ["mchc", "pcv"], ["rdw", "mcv"]]) {
+      const inputs = { mcv: 90, rbc: 5, pcv: 45, hb: 15, sd: 13, [denominator]: 0 };
+      assert.match(String(value(list, target, inputs)), /denominator is zero/);
+    }
   });
 });

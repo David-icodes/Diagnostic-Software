@@ -1,0 +1,86 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Modify Lab Bill" [level=1]
+  - searchbox "Search bills"
+  - button "Search" [disabled]:
+    - text: Search
+  - button "Fullscreen":
+  - table:
+    - rowgroup:
+      - row "Select Bill No Bill Date Pat Id Ref Id Pat Name Gender Age Mobile No Pat Type":
+        - columnheader "Select"
+        - columnheader "Bill No"
+        - columnheader "Bill Date"
+        - columnheader "Pat Id"
+        - columnheader "Ref Id"
+        - columnheader "Pat Name"
+        - columnheader "Gender"
+        - columnheader "Age"
+        - columnheader "Mobile No"
+        - columnheader "Pat Type"
+    - rowgroup:
+      - row "Loading bills…":
+        - cell "Loading bills…"
+  - region "Select a bill to load details":
+    - generic: Departments
+    - textbox "Departments search — select a bill first" [disabled]:
+      - /placeholder: Search...
+    - generic: Lab Tests
+    - textbox "Lab Tests search — select a bill first" [disabled]:
+      - /placeholder: Search...
+    - generic: »
+    - generic: Existed Lab Tests
+    - table:
+      - rowgroup:
+        - row "Delete Dept Name Lab Test Name Amount Qty Total":
+          - columnheader "Delete"
+          - columnheader "Dept Name"
+          - columnheader "Lab Test Name"
+          - columnheader "Amount"
+          - columnheader "Qty"
+          - columnheader "Total"
+      - rowgroup
+    - paragraph: Select a bill to load its details.
+    - text: Payment Mode
+    - combobox "Payment Mode — select a bill first" [disabled]:
+      - option "Cash" [selected]
+    - text: Comments
+    - textbox "Comments — select a bill first" [disabled]
+    - text: Total Amount
+    - textbox "Total Amount — select a bill first" [disabled]:
+      - /placeholder: —
+    - text: Enter Discount
+    - textbox "Enter Discount — select a bill first" [disabled]:
+      - /placeholder: —
+    - text: Net Amount
+    - textbox "Net Amount — select a bill first" [disabled]:
+      - /placeholder: —
+    - text: Paid Amount
+    - textbox "Paid Amount — select a bill first" [disabled]:
+      - /placeholder: —
+    - text: Balance Amount
+    - textbox "Balance Amount — select a bill first" [disabled]:
+      - /placeholder: —
+  - button "Submit" [disabled]
+  - button "Clear"
+  - button "Home"

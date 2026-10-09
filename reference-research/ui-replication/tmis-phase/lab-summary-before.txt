@@ -1,0 +1,782 @@
+- button "Open Next.js Dev Tools":
+  - text: Compiling
+  - generic: .
+  - generic: .
+  - generic: .
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Lab Summary Report" [level=1]
+  - paragraph: Per-test lab status, sample workflow, result entry and delayed TAT.
+  - heading "Department" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search department…"
+  - checkbox "Biochemistry"
+  - generic: Biochemistry
+  - checkbox "Clinical Pathology"
+  - generic: Clinical Pathology
+  - checkbox "Hematology"
+  - generic: Hematology
+  - checkbox "Hormones"
+  - generic: Hormones
+  - checkbox "Immunology / Serology"
+  - generic: Immunology / Serology
+  - checkbox "Microbiology"
+  - generic: Microbiology
+  - checkbox "Molecular Biology"
+  - generic: Molecular Biology
+  - checkbox "Packages / Profiles"
+  - generic: Packages / Profiles
+  - checkbox "Pathology"
+  - generic: Pathology
+  - checkbox "Pharmacy Support"
+  - generic: Pharmacy Support
+  - heading "Test" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search Test"
+  - checkbox "25 HYDROXY VITAMIN D"
+  - generic: 25 HYDROXY VITAMIN D
+  - checkbox "Absolute Eosinophil Count (AEC)"
+  - generic: Absolute Eosinophil Count (AEC)
+  - checkbox "Activated Partial Thromboplastin Time (APTT/PTTK)"
+  - generic: Activated Partial Thromboplastin Time (APTT/PTTK)
+  - checkbox "ALBUMIN"
+  - generic: ALBUMIN
+  - checkbox "Albumin/Creatinine Ratio"
+  - generic: Albumin/Creatinine Ratio
+  - checkbox "Alkaline Phosphatase"
+  - generic: Alkaline Phosphatase
+  - checkbox "ALT (SGPT)"
+  - generic: ALT (SGPT)
+  - checkbox "AMYLASE"
+  - generic: AMYLASE
+  - checkbox "ANTI CARDIOLIPIN IgG"
+  - generic: ANTI CARDIOLIPIN IgG
+  - checkbox "ANTI CARDIOLIPIN IgM"
+  - generic: ANTI CARDIOLIPIN IgM
+  - checkbox "ANTI CCP"
+  - generic: ANTI CCP
+  - checkbox "ANTI MULLERIN HORMONE(AMH)"
+  - generic: ANTI MULLERIN HORMONE(AMH)
+  - checkbox "Anti Nuclear Antibody"
+  - generic: Anti Nuclear Antibody
+  - checkbox "ANTI TPO"
+  - generic: ANTI TPO
+  - checkbox "ANTIBODY TO HEPATITIS C VIRUS(CLIA)"
+  - generic: ANTIBODY TO HEPATITIS C VIRUS(CLIA)
+  - checkbox "APLA PROFILE"
+  - generic: APLA PROFILE
+  - checkbox "APOLIPOPROTEIN B (APO-B)"
+  - generic: APOLIPOPROTEIN B (APO-B)
+  - checkbox "ASO"
+  - generic: ASO
+  - checkbox "AST (SGOT)"
+  - generic: AST (SGOT)
+  - checkbox "Basic Health Package (CBC + Glucose + Lipid)"
+  - generic: Basic Health Package (CBC + Glucose + Lipid)
+  - checkbox "BETA 2 GLYCOPROTEIN ANTY BODY IgG"
+  - generic: BETA 2 GLYCOPROTEIN ANTY BODY IgG
+  - checkbox "BETA 2 GLYCOPROTEIN ANTY BODY IgM"
+  - generic: BETA 2 GLYCOPROTEIN ANTY BODY IgM
+  - checkbox "BETA HCG"
+  - generic: BETA HCG
+  - checkbox "BILIRUBIN"
+  - generic: BILIRUBIN
+  - checkbox "BILIRUBIN,PAEDIATRIC"
+  - generic: BILIRUBIN,PAEDIATRIC
+  - checkbox "BLEEDING TIME CLOTTING TIME"
+  - generic: BLEEDING TIME CLOTTING TIME
+  - checkbox "BLOOD GROUP"
+  - generic: BLOOD GROUP
+  - checkbox "BLOOD GROUPING & RH TYPING"
+  - generic: BLOOD GROUPING & RH TYPING
+  - checkbox "Blood Sugar Fasting"
+  - generic: Blood Sugar Fasting
+  - checkbox "BLOOD UREA"
+  - generic: BLOOD UREA
+  - checkbox "BLOOD UREA SERUM CREATININE"
+  - generic: BLOOD UREA SERUM CREATININE
+  - checkbox "BT/CT"
+  - generic: BT/CT
+  - checkbox "C-Reactive Protein (CRP)"
+  - generic: C-Reactive Protein (CRP)
+  - checkbox "CA 125"
+  - generic: CA 125
+  - checkbox "CARCINO EMBRYONIC ANTIGEN (CEA)"
+  - generic: CARCINO EMBRYONIC ANTIGEN (CEA)
+  - checkbox "CHIKUNGUNYA IgM"
+  - generic: CHIKUNGUNYA IgM
+  - checkbox "Complete Blood Count (CBC)"
+  - generic: Complete Blood Count (CBC)
+  - checkbox "COMPLETE BLOOD PICTURE"
+  - generic: COMPLETE BLOOD PICTURE
+  - checkbox "COMPLETE STOOL EXAMINATION"
+  - generic: COMPLETE STOOL EXAMINATION
+  - checkbox "Complete Thyroid Profile"
+  - generic: Complete Thyroid Profile
+  - checkbox "COMPLETE URINE EXAMINATION"
+  - generic: COMPLETE URINE EXAMINATION
+  - checkbox "CORTISOL"
+  - generic: CORTISOL
+  - checkbox "Creatine Kinase MB (CK-MB)"
+  - generic: Creatine Kinase MB (CK-MB)
+  - checkbox "CREATININE PHOSPHOKINASE (CPK)"
+  - generic: CREATININE PHOSPHOKINASE (CPK)
+  - checkbox "CRP (C - REACTIVE PROTEIN)"
+  - generic: CRP (C - REACTIVE PROTEIN)
+  - checkbox "CRP RF ASO"
+  - generic: CRP RF ASO
+  - checkbox "D-DIMER"
+  - generic: D-DIMER
+  - checkbox "Dengue NS1 Antigen"
+  - generic: Dengue NS1 Antigen
+  - checkbox "Dengue NSI"
+  - generic: Dengue NSI
+  - checkbox "Dengue Profile"
+  - generic: Dengue Profile
+  - checkbox "Erythrocyte sedimentation rate(Esr)"
+  - generic: Erythrocyte sedimentation rate(Esr)
+  - checkbox "ESR"
+  - generic: ESR
+  - checkbox "ESTRADIOL(E2)"
+  - generic: ESTRADIOL(E2)
+  - checkbox "FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR"
+  - generic: FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR
+  - checkbox "FBS (FASTING BLOOD SUGAR)"
+  - generic: FBS (FASTING BLOOD SUGAR)
+  - checkbox "FIBRINOGEN"
+  - generic: FIBRINOGEN
+  - checkbox "FLUID CELL COUNT"
+  - generic: FLUID CELL COUNT
+  - checkbox "FOLIC ACID"
+  - generic: FOLIC ACID
+  - checkbox "FREE T3"
+  - generic: FREE T3
+  - checkbox "FREE T3 T4"
+  - generic: FREE T3 T4
+  - checkbox "FREE-T4 (THYROXINE)"
+  - generic: FREE-T4 (THYROXINE)
+  - checkbox "FSH"
+  - generic: FSH
+  - checkbox "FSH LH PRL (FLP)"
+  - generic: FSH LH PRL (FLP)
+  - checkbox "Glomerular Filtration Rate (eGFR)"
+  - generic: Glomerular Filtration Rate (eGFR)
+  - checkbox "GLUCOSE CHALLANGE TEST (GCT)"
+  - generic: GLUCOSE CHALLANGE TEST (GCT)
+  - checkbox "GLUCOSE-FLUIDS"
+  - generic: GLUCOSE-FLUIDS
+  - checkbox "HAEMOGLOBIN"
+  - generic: HAEMOGLOBIN
+  - checkbox "HAEMOGRAM"
+  - generic: HAEMOGRAM
+  - checkbox "HBA1C"
+  - generic: HBA1C
+  - checkbox "HBSAG"
+  - generic: HBSAG
+  - checkbox "HCG"
+  - generic: HCG
+  - checkbox "HCG PREGNANCY RAPID"
+  - generic: HCG PREGNANCY RAPID
+  - checkbox "HEMOGLOBIN"
+  - generic: HEMOGLOBIN
+  - checkbox "Hemoglobin (Hb)"
+  - generic: Hemoglobin (Hb)
+  - checkbox "Hemoglobinopathy (Hb Electrophoresis)"
+  - generic: Hemoglobinopathy (Hb Electrophoresis)
+  - checkbox "HEPATITIS B"
+  - generic: HEPATITIS B
+  - checkbox "HEPATITIS C"
+  - generic: HEPATITIS C
+  - checkbox "HEPATITIS C VIRUS RAPID"
+  - generic: HEPATITIS C VIRUS RAPID
+  - checkbox "HIV"
+  - generic: HIV
+  - checkbox "HLA-B27"
+  - generic: HLA-B27
+  - checkbox "HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance)"
+  - generic: HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance)
+  - checkbox "HOMOCYSTEIN"
+  - generic: HOMOCYSTEIN
+  - checkbox "HS TROP I"
+  - generic: HS TROP I
+  - checkbox "HSV 1 & 2 IgG"
+  - generic: HSV 1 & 2 IgG
+  - checkbox "HSV 1 & 2 IgM"
+  - generic: HSV 1 & 2 IgM
+  - checkbox "HSV IgG,IgM"
+  - generic: HSV IgG,IgM
+  - checkbox "Immunoglobulin (IgG)"
+  - generic: Immunoglobulin (IgG)
+  - checkbox "Immunoglobulin A (IgA)"
+  - generic: Immunoglobulin A (IgA)
+  - checkbox "Immunoglobution (IgM)"
+  - generic: Immunoglobution (IgM)
+  - checkbox "INSULIN POST PRANDIAL"
+  - generic: INSULIN POST PRANDIAL
+  - checkbox "INSULIN-FASTING"
+  - generic: INSULIN-FASTING
+  - checkbox "Ionised Calcium"
+  - generic: Ionised Calcium
+  - checkbox "IRON"
+  - generic: IRON
+  - checkbox "IRON DEFICIENCY PROFILE"
+  - generic: IRON DEFICIENCY PROFILE
+  - checkbox "KIDNEY FUNCTION TEST (KFT)"
+  - generic: KIDNEY FUNCTION TEST (KFT)
+  - checkbox "LDH"
+  - generic: LDH
+  - checkbox "LFT (LIVER FUNCTION TEST)"
+  - generic: LFT (LIVER FUNCTION TEST)
+  - checkbox "LIPASE"
+  - generic: LIPASE
+  - checkbox "LIPOPROTEIN A (LP-A)"
+  - generic: LIPOPROTEIN A (LP-A)
+  - checkbox "LUPAS ANTICOAGULANT"
+  - generic: LUPAS ANTICOAGULANT
+  - heading "Patient Type" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search patient type…"
+  - checkbox "GP"
+  - generic: GP
+  - checkbox "OP"
+  - generic: OP
+  - checkbox "IP"
+  - generic: IP
+  - checkbox "ER"
+  - generic: ER
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - generic: Bill Number
+  - textbox "Bill Number":
+    - /placeholder: e.g. OSP202600001
+  - generic: Lab Status
+  - combobox "Lab Status":
+    - option "All" [selected]
+    - option "Open"
+    - option "Closed"
+  - generic: Approval Status
+  - combobox "Approval Status":
+    - option "All" [selected]
+    - option "Pending"
+    - option "Approved"
+  - checkbox "Show Delayed TAT only"
+  - text: Show Delayed TAT only
+  - button "Show":
+    - text: Show
+  - button "Clear":
+    - text: Clear
+  - link "Home":
+    - /url: /dashboard
+  - paragraph: "Lab Status: Derived from result-entry state (CLOSED = results entered, OPEN = not entered).. Approval Status: Approval workflow not implemented yet; APPROVED = results entered (CLOSED), PENDING = not entered (OPEN). No approval actor or approval timestamp is stored, so those columns render as an em dash.."
+  - paragraph: A test marked "Delayed" has no result entry within 24 hours of the bill date.
+  - heading "Lab Summary" [level=2]
+  - paragraph: "Apply Date : — To —"
+  - paragraph: "Total tests: 32"
+  - paragraph: "Total Tests : 32 · Delayed TAT : 0 · Total Amount : 3,310.00"
+  - table:
+    - rowgroup:
+      - row "S No Bill No Report Date GPId Patient Name Patient Type Department Test Name UPId Sample Status Collected On Lab Status Approval Status Approved By Approved On Entered By Entered On Delayed TAT Amount":
+        - columnheader "S No"
+        - columnheader "Bill No"
+        - columnheader "Report Date"
+        - columnheader "GPId"
+        - columnheader "Patient Name"
+        - columnheader "Patient Type"
+        - columnheader "Department"
+        - columnheader "Test Name"
+        - columnheader "UPId"
+        - columnheader "Sample Status"
+        - columnheader "Collected On"
+        - columnheader "Lab Status"
+        - columnheader "Approval Status"
+        - columnheader "Approved By"
+        - columnheader "Approved On"
+        - columnheader "Entered By"
+        - columnheader "Entered On"
+        - columnheader "Delayed TAT"
+        - columnheader "Amount"
+    - rowgroup:
+      - row "1 ZZUI1790870411813 01 Oct 2026 — — OSP ZZ UI ZZUI1790870411813 SMP2026000093 SELECT — OPEN PENDING — — — — No 0.00":
+        - cell "1"
+        - cell "ZZUI1790870411813"
+        - cell "01 Oct 2026"
+        - cell "—"
+        - cell "—"
+        - cell "OSP"
+        - cell "ZZ UI"
+        - cell "ZZUI1790870411813"
+        - cell "SMP2026000093"
+        - cell "SELECT"
+        - cell "—"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "0.00"
+      - row "2 OSP202600081 05 Oct 2026 GP202600044 Harshitha testing Emergency Biochemistry ALBUMIN SMP2026000097 COLLECTED 06 Oct 2026, 02:05 am OPEN PENDING — — — — No 0.00":
+        - cell "2"
+        - cell "OSP202600081"
+        - cell "05 Oct 2026"
+        - cell "GP202600044"
+        - cell "Harshitha testing"
+        - cell "Emergency"
+        - cell "Biochemistry"
+        - cell "ALBUMIN"
+        - cell "SMP2026000097"
+        - cell "COLLECTED"
+        - cell "06 Oct 2026, 02:05 am"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "0.00"
+      - row "3 OSP202600081 05 Oct 2026 GP202600044 Harshitha testing Emergency Biochemistry ALT (SGPT) SMP2026000100 COLLECTED 06 Oct 2026, 02:06 am OPEN PENDING — — — — No 150.00":
+        - cell "3"
+        - cell "OSP202600081"
+        - cell "05 Oct 2026"
+        - cell "GP202600044"
+        - cell "Harshitha testing"
+        - cell "Emergency"
+        - cell "Biochemistry"
+        - cell "ALT (SGPT)"
+        - cell "SMP2026000100"
+        - cell "COLLECTED"
+        - cell "06 Oct 2026, 02:06 am"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "150.00"
+      - row "4 OSP202600082 05 Oct 2026 GP202600045 AADHYA OSP Hematology COMPLETE BLOOD PICTURE SMP2026000098 COLLECTED 06 Oct 2026, 02:04 am CLOSED APPROVED — — Administrator 05 Oct 2026, 08:48 pm No 450.00":
+        - cell "4"
+        - cell "OSP202600082"
+        - cell "05 Oct 2026"
+        - cell "GP202600045"
+        - cell "AADHYA"
+        - cell "OSP"
+        - cell "Hematology"
+        - cell "COMPLETE BLOOD PICTURE"
+        - cell "SMP2026000098"
+        - cell "COLLECTED"
+        - cell "06 Oct 2026, 02:04 am"
+        - cell "CLOSED":
+          - generic: CLOSED
+        - cell "APPROVED":
+          - generic: APPROVED
+        - cell "—"
+        - cell "—"
+        - cell "Administrator"
+        - cell "05 Oct 2026, 08:48 pm"
+        - cell "No"
+        - cell "450.00"
+      - row "5 OSP202600082 05 Oct 2026 GP202600045 AADHYA OSP Hematology ESR SMP2026000099 COLLECTED 05 Oct 2026, 01:33 pm OPEN PENDING — — — — No 80.00":
+        - cell "5"
+        - cell "OSP202600082"
+        - cell "05 Oct 2026"
+        - cell "GP202600045"
+        - cell "AADHYA"
+        - cell "OSP"
+        - cell "Hematology"
+        - cell "ESR"
+        - cell "SMP2026000099"
+        - cell "COLLECTED"
+        - cell "05 Oct 2026, 01:33 pm"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "80.00"
+      - row "6 OSP202600082 05 Oct 2026 GP202600045 AADHYA OSP Biochemistry ANTI CCP SMP2026000101 COLLECTED 06 Oct 2026, 02:05 am OPEN PENDING — — — — No 0.00":
+        - cell "6"
+        - cell "OSP202600082"
+        - cell "05 Oct 2026"
+        - cell "GP202600045"
+        - cell "AADHYA"
+        - cell "OSP"
+        - cell "Biochemistry"
+        - cell "ANTI CCP"
+        - cell "SMP2026000101"
+        - cell "COLLECTED"
+        - cell "06 Oct 2026, 02:05 am"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "0.00"
+      - row "7 OSP202600083 05 Oct 2026 GP202600046 praveena testing IP Hematology Hemoglobin (Hb) SMP2026000103 SELECT — OPEN PENDING — — — — No 100.00":
+        - cell "7"
+        - cell "OSP202600083"
+        - cell "05 Oct 2026"
+        - cell "GP202600046"
+        - cell "praveena testing"
+        - cell "IP"
+        - cell "Hematology"
+        - cell "Hemoglobin (Hb)"
+        - cell "SMP2026000103"
+        - cell "SELECT"
+        - cell "—"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "100.00"
+      - row "8 OSP202600083 05 Oct 2026 GP202600046 praveena testing IP Hematology MALARIA SMP2026000102 SELECT — CLOSED APPROVED — — Administrator 05 Oct 2026, 09:21 pm No 150.00":
+        - cell "8"
+        - cell "OSP202600083"
+        - cell "05 Oct 2026"
+        - cell "GP202600046"
+        - cell "praveena testing"
+        - cell "IP"
+        - cell "Hematology"
+        - cell "MALARIA"
+        - cell "SMP2026000102"
+        - cell "SELECT"
+        - cell "—"
+        - cell "CLOSED":
+          - generic: CLOSED
+        - cell "APPROVED":
+          - generic: APPROVED
+        - cell "—"
+        - cell "—"
+        - cell "Administrator"
+        - cell "05 Oct 2026, 09:21 pm"
+        - cell "No"
+        - cell "150.00"
+      - row "9 OSP202600085 05 Oct 2026 GP202600048 david tester OSP Biochemistry ALT (SGPT) SMP2026000109 SELECT — CLOSED APPROVED — — Administrator 05 Oct 2026, 09:22 pm No 150.00":
+        - cell "9"
+        - cell "OSP202600085"
+        - cell "05 Oct 2026"
+        - cell "GP202600048"
+        - cell "david tester"
+        - cell "OSP"
+        - cell "Biochemistry"
+        - cell "ALT (SGPT)"
+        - cell "SMP2026000109"
+        - cell "SELECT"
+        - cell "—"
+        - cell "CLOSED":
+          - generic: CLOSED
+        - cell "APPROVED":
+          - generic: APPROVED
+        - cell "—"
+        - cell "—"
+        - cell "Administrator"
+        - cell "05 Oct 2026, 09:22 pm"
+        - cell "No"
+        - cell "150.00"
+      - row "10 OSP202600085 05 Oct 2026 GP202600048 david tester OSP Biochemistry Blood Sugar Fasting SMP2026000107 SELECT — CLOSED APPROVED — — Administrator 05 Oct 2026, 09:22 pm No 100.00":
+        - cell "10"
+        - cell "OSP202600085"
+        - cell "05 Oct 2026"
+        - cell "GP202600048"
+        - cell "david tester"
+        - cell "OSP"
+        - cell "Biochemistry"
+        - cell "Blood Sugar Fasting"
+        - cell "SMP2026000107"
+        - cell "SELECT"
+        - cell "—"
+        - cell "CLOSED":
+          - generic: CLOSED
+        - cell "APPROVED":
+          - generic: APPROVED
+        - cell "—"
+        - cell "—"
+        - cell "Administrator"
+        - cell "05 Oct 2026, 09:22 pm"
+        - cell "No"
+        - cell "100.00"
+      - row "11 OSP202600085 05 Oct 2026 GP202600048 david tester OSP Biochemistry CRP (C - REACTIVE PROTEIN) SMP2026000108 SELECT — CLOSED APPROVED — — Administrator 05 Oct 2026, 09:22 pm No 350.00":
+        - cell "11"
+        - cell "OSP202600085"
+        - cell "05 Oct 2026"
+        - cell "GP202600048"
+        - cell "david tester"
+        - cell "OSP"
+        - cell "Biochemistry"
+        - cell "CRP (C - REACTIVE PROTEIN)"
+        - cell "SMP2026000108"
+        - cell "SELECT"
+        - cell "—"
+        - cell "CLOSED":
+          - generic: CLOSED
+        - cell "APPROVED":
+          - generic: APPROVED
+        - cell "—"
+        - cell "—"
+        - cell "Administrator"
+        - cell "05 Oct 2026, 09:22 pm"
+        - cell "No"
+        - cell "350.00"
+      - row "12 OSP202600086 05 Oct 2026 GP202600049 shiva OSP Hematology MALARIA SMP2026000110 SELECT — CLOSED APPROVED — — Administrator 05 Oct 2026, 09:26 pm No 150.00":
+        - cell "12"
+        - cell "OSP202600086"
+        - cell "05 Oct 2026"
+        - cell "GP202600049"
+        - cell "shiva"
+        - cell "OSP"
+        - cell "Hematology"
+        - cell "MALARIA"
+        - cell "SMP2026000110"
+        - cell "SELECT"
+        - cell "—"
+        - cell "CLOSED":
+          - generic: CLOSED
+        - cell "APPROVED":
+          - generic: APPROVED
+        - cell "—"
+        - cell "—"
+        - cell "Administrator"
+        - cell "05 Oct 2026, 09:26 pm"
+        - cell "No"
+        - cell "150.00"
+      - row "13 OSP202600087 06 Oct 2026 GP202600050 ANJANEYULU OSP Biochemistry 25 HYDROXY VITAMIN D SMP2026000111 SELECT — CLOSED APPROVED — — Administrator 06 Oct 2026, 06:49 am No 0.00":
+        - cell "13"
+        - cell "OSP202600087"
+        - cell "06 Oct 2026"
+        - cell "GP202600050"
+        - cell "ANJANEYULU"
+        - cell "OSP"
+        - cell "Biochemistry"
+        - cell "25 HYDROXY VITAMIN D"
+        - cell "SMP2026000111"
+        - cell "SELECT"
+        - cell "—"
+        - cell "CLOSED":
+          - generic: CLOSED
+        - cell "APPROVED":
+          - generic: APPROVED
+        - cell "—"
+        - cell "—"
+        - cell "Administrator"
+        - cell "06 Oct 2026, 06:49 am"
+        - cell "No"
+        - cell "0.00"
+      - row "14 OSP202600088 06 Oct 2026 GP202600045 AADHYA OSP Biochemistry Blood Sugar Fasting SMP2026000112 COLLECTED 06 Oct 2026, 12:21 pm CLOSED APPROVED — — Administrator 06 Oct 2026, 06:59 am No 100.00":
+        - cell "14"
+        - cell "OSP202600088"
+        - cell "06 Oct 2026"
+        - cell "GP202600045"
+        - cell "AADHYA"
+        - cell "OSP"
+        - cell "Biochemistry"
+        - cell "Blood Sugar Fasting"
+        - cell "SMP2026000112"
+        - cell "COLLECTED"
+        - cell "06 Oct 2026, 12:21 pm"
+        - cell "CLOSED":
+          - generic: CLOSED
+        - cell "APPROVED":
+          - generic: APPROVED
+        - cell "—"
+        - cell "—"
+        - cell "Administrator"
+        - cell "06 Oct 2026, 06:59 am"
+        - cell "No"
+        - cell "100.00"
+      - row "15 OSP202600089 06 Oct 2026 GP202600051 AADHYA OSP Hematology COMPLETE BLOOD PICTURE SMP2026000113 SELECT — OPEN PENDING — — — — No 450.00":
+        - cell "15"
+        - cell "OSP202600089"
+        - cell "06 Oct 2026"
+        - cell "GP202600051"
+        - cell "AADHYA"
+        - cell "OSP"
+        - cell "Hematology"
+        - cell "COMPLETE BLOOD PICTURE"
+        - cell "SMP2026000113"
+        - cell "SELECT"
+        - cell "—"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "450.00"
+      - row "16 OSP202600090 07 Oct 2026 GP202600052 Rahul Sing OSP Hematology BLOOD GROUP SMP2026000115 SELECT — OPEN PENDING — — — — No 0.00":
+        - cell "16"
+        - cell "OSP202600090"
+        - cell "07 Oct 2026"
+        - cell "GP202600052"
+        - cell "Rahul Sing"
+        - cell "OSP"
+        - cell "Hematology"
+        - cell "BLOOD GROUP"
+        - cell "SMP2026000115"
+        - cell "SELECT"
+        - cell "—"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "0.00"
+      - row "17 OSP202600090 07 Oct 2026 GP202600052 Rahul Sing OSP Hematology COMPLETE BLOOD PICTURE SMP2026000114 SELECT — OPEN PENDING — — — — No 450.00":
+        - cell "17"
+        - cell "OSP202600090"
+        - cell "07 Oct 2026"
+        - cell "GP202600052"
+        - cell "Rahul Sing"
+        - cell "OSP"
+        - cell "Hematology"
+        - cell "COMPLETE BLOOD PICTURE"
+        - cell "SMP2026000114"
+        - cell "SELECT"
+        - cell "—"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "450.00"
+      - row "18 OSP202600090 07 Oct 2026 GP202600052 Rahul Sing OSP Hematology Complete Blood Count (CBC) SMP2026000125 SELECT — OPEN PENDING — — — — No 300.00":
+        - cell "18"
+        - cell "OSP202600090"
+        - cell "07 Oct 2026"
+        - cell "GP202600052"
+        - cell "Rahul Sing"
+        - cell "OSP"
+        - cell "Hematology"
+        - cell "Complete Blood Count (CBC)"
+        - cell "SMP2026000125"
+        - cell "SELECT"
+        - cell "—"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "300.00"
+      - row "19 OSP202600090 07 Oct 2026 GP202600052 Rahul Sing OSP Hematology ESR SMP2026000117 SELECT — OPEN PENDING — — — — No 80.00":
+        - cell "19"
+        - cell "OSP202600090"
+        - cell "07 Oct 2026"
+        - cell "GP202600052"
+        - cell "Rahul Sing"
+        - cell "OSP"
+        - cell "Hematology"
+        - cell "ESR"
+        - cell "SMP2026000117"
+        - cell "SELECT"
+        - cell "—"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "80.00"
+      - row "20 OSP202600090 07 Oct 2026 GP202600052 Rahul Sing OSP Hematology FIBRINOGEN SMP2026000118 SELECT — OPEN PENDING — — — — No 0.00":
+        - cell "20"
+        - cell "OSP202600090"
+        - cell "07 Oct 2026"
+        - cell "GP202600052"
+        - cell "Rahul Sing"
+        - cell "OSP"
+        - cell "Hematology"
+        - cell "FIBRINOGEN"
+        - cell "SMP2026000118"
+        - cell "SELECT"
+        - cell "—"
+        - cell "OPEN":
+          - generic: OPEN
+        - cell "PENDING":
+          - generic: PENDING
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell "No"
+        - cell "0.00"
+  - button "First" [disabled]:
+    - text: First
+  - button "Prev" [disabled]:
+    - text: Prev
+  - button "Next":
+    - text: Next
+  - button "Last":
+    - text: Last
+  - generic: Page 1 of 2 · 32 tests
+  - generic: "Find:"
+  - textbox "Find:":
+    - /placeholder: Type to find
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Refresh":
+    - text: Refresh
+  - button "Export":
+    - text: Export
+  - button "Print":
+    - text: Print

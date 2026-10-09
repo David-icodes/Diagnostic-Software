@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { localToday } from "@/lib/report-filter-state";
 import { useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -74,10 +75,11 @@ function formatAge(row: OspRegistrationReportRow): string {
 
 export function OspRegistrationContent() {
   const queryClient = useQueryClient();
-  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [filters, setFilters] = useState<Filters>(() => ({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() }));
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [result, setResult] = useState<OspRegistrationResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const requestSequence = useRef(0);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] =
@@ -102,23 +104,22 @@ export function OspRegistrationContent() {
 
   const load = useCallback(
     (targetPage: number, criteria: Filters) => {
+      const sequence = ++requestSequence.current;
       return fetchOspRegistration(buildParams(targetPage, criteria))
         .then((response) => {
+          if (sequence !== requestSequence.current) return;
           setResult(response);
           setError(null);
         })
         .catch(() => {
+          if (sequence !== requestSequence.current) return;
           setResult(null);
           setError("Unable to load the report. Please try again.");
         })
-        .finally(() => setLoading(false));
+        .finally(() => { if (sequence === requestSequence.current) setLoading(false); });
     },
     [buildParams],
   );
-
-  useEffect(() => {
-    load(1, EMPTY_FILTERS);
-  }, [load]);
 
   const handleSearch = useCallback(() => {
     setApplied(filters);
@@ -128,12 +129,10 @@ export function OspRegistrationContent() {
   }, [filters, load]);
 
   const handleClear = useCallback(() => {
-    setFilters(EMPTY_FILTERS);
-    setApplied(EMPTY_FILTERS);
-    setNotice(null);
-    setLoading(true);
-    void load(1, EMPTY_FILTERS);
-  }, [load]);
+    requestSequence.current += 1;
+    setFilters({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() });
+    setApplied(EMPTY_FILTERS); setNotice(null); setResult(null); setError(null); setLoading(false);
+  }, []);
 
   const handlePageChange = useCallback(
     (targetPage: number) => {
@@ -317,9 +316,9 @@ export function OspRegistrationContent() {
   }, [applied]);
 
   return (
-    <div className="mx-auto flex max-w-[1800px] flex-col gap-2 p-2 sm:p-3">
+    <div data-tmis-page="osp-registration" className="lis-tmis mx-auto flex max-w-[1800px] flex-col gap-2 p-2 sm:p-3">
       <ReportTitleBar
-        title="OSP Patient Registration Report"
+        title="General Patient Registration Report"
         subtitle="Registrations created within the selected date range."
       />
 
@@ -329,8 +328,8 @@ export function OspRegistrationContent() {
         onClear={handleClear}
         searching={loading}
       >
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <ReportDateRange
+        <div className="lis-registration-fields grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+<ReportDateRange
             fromId="osp-from-date"
             toId="osp-to-date"
             fromValue={filters.fromDate}
@@ -338,28 +337,28 @@ export function OspRegistrationContent() {
             onFromChange={(value) => setFilter("fromDate", value)}
             onToChange={(value) => setFilter("toDate", value)}
           />
-          <ReportSearchInput
-            id="osp-name"
-            label="Patient Name"
-            value={filters.name}
-            onChange={(value) => setFilter("name", value)}
-            placeholder="Enter patient name"
-          />
-          <ReportSelect
+<ReportSelect
             id="osp-gender"
             label="Gender"
             value={filters.gender}
             onChange={(value) => setFilter("gender", value)}
             options={GENDER_FILTER_OPTIONS}
           />
-          <ReportSearchInput
+<ReportSearchInput
             id="osp-mobile"
             label="Mobile No"
             value={filters.mobile}
             onChange={(value) => setFilter("mobile", value)}
             placeholder="Enter mobile number"
           />
-          <ReportSelect
+<ReportSearchInput
+            id="osp-name"
+            label="Patient Name"
+            value={filters.name}
+            onChange={(value) => setFilter("name", value)}
+            placeholder="Enter patient name"
+          />
+<ReportSelect
             id="osp-bill-type"
             label="Bill Type"
             value={filters.billType}
@@ -378,7 +377,7 @@ export function OspRegistrationContent() {
         </p>
       )}
 
-      <ReportPreview
+      {(result || loading || error) && <ReportPreview
         reportTitle="GP Patients Report"
         criteria={criteriaText}
         total={result?.pagination.total ?? 0}
@@ -415,7 +414,7 @@ export function OspRegistrationContent() {
             )}
           </>
         )}
-      </ReportPreview>
+      </ReportPreview>}
 
       <Dialog
         open={Boolean(pendingDelete)}

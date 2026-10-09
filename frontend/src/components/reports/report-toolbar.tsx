@@ -47,7 +47,7 @@ export function ReportToolbar({
 }: ReportToolbarProps) {
   const navButtonClass = "text-[11px] gap-1";
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-2.5 py-2">
+    <div className="lis-report-toolbar flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-2.5 py-2">
       <div className="flex flex-wrap items-center gap-2">
         <Button
           type="button"

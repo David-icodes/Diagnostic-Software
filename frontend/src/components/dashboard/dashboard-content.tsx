@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { FileText, ReceiptIndianRupee, UserRoundPlus } from "lucide-react";
+import { FlaskConical, ReceiptIndianRupee, SquareCheck, SquareMinus, UserRoundPlus } from "lucide-react";
 import { ActionCard } from "@/components/dashboard/action-card";
 import { DashboardFooter } from "@/components/dashboard/dashboard-footer";
 import { DueBillsPanel } from "@/components/dashboard/due-bills-panel";
@@ -39,10 +39,10 @@ export function DashboardContent() {
   const isError = summary.isError;
 
   return (
-    <div className="flex min-h-full flex-col gap-3">
+    <div className="lis-dashboard flex min-h-full flex-col gap-3">
       <section
         aria-label="Daily summary"
-        className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[minmax(150px,0.48fr)_minmax(150px,0.48fr)_minmax(260px,1fr)_minmax(260px,1fr)_minmax(260px,1fr)]"
+        className="lis-dashboard-summary grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[minmax(150px,0.48fr)_minmax(150px,0.48fr)_minmax(260px,1fr)_minmax(260px,1fr)_minmax(260px,1fr)]"
       >
         <ActionCard
           title="New OSP Bill"
@@ -71,23 +71,23 @@ export function DashboardContent() {
             <StatisticCard
               title="No of Lab Bills"
               value={summary.data?.labBills ?? 0}
-              hint={summary.data?.date ? `Date: ${summary.data.date}` : undefined}
-              icon={FileText}
-              iconClassName="bg-emerald-500/10 text-emerald-600"
+              hint={summary.data?.date || undefined}
+              icon={FlaskConical}
+              iconClassName="text-[#7aa244]"
             />
             <StatisticCard
               title="Completed Tests"
               value={summary.data?.completedTests ?? 0}
-              hint={summary.data?.date ? `Date: ${summary.data.date}` : undefined}
-              icon={FileText}
-              iconClassName="bg-emerald-500/10 text-emerald-600"
+              hint={`Completed bills · ${summary.data?.date ?? ""}`}
+              icon={SquareCheck}
+              iconClassName="text-[#337ab7]"
             />
             <StatisticCard
               title="Pending Tests"
               value={summary.data?.pendingTests ?? 0}
-              hint={summary.data?.date ? `Date: ${summary.data.date}` : undefined}
-              icon={FileText}
-              iconClassName="bg-amber-500/10 text-amber-600"
+              hint={`Pending bills · ${summary.data?.date ?? ""}`}
+              icon={SquareMinus}
+              iconClassName="text-[#c9302c]"
             />
           </>
         )}
@@ -95,7 +95,7 @@ export function DashboardContent() {
 
       <section
         aria-label="Daily bills"
-        className="grid grid-cols-1 gap-2 xl:grid-cols-2"
+        className="lis-dashboard-bills grid grid-cols-1 gap-2 xl:grid-cols-2"
       >
         <TodayBillsPanel />
         <DueBillsPanel />

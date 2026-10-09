@@ -233,7 +233,6 @@ export function PatientForm({
                   <Input
                     id="mobile"
                     inputMode="numeric"
-                    placeholder="10-digit mobile"
                     className={baseControlClass}
                     aria-invalid={Boolean(errors.mobile)}
                     {...register("mobile")}

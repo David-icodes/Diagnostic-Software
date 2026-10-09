@@ -2,11 +2,10 @@
  * Organisation branding for the printed report header.
  *
  * The project has no organisation/settings collection yet, so the report preview
- * header reads its values from public environment variables instead of baking
- * any single centre's details into the code. Every field is optional and defaults
- * to an empty string: with nothing configured the report header shows only the
- * report title, the applied criteria and the record count, and never invents a
- * name, address or phone number.
+ * header accepts deployment overrides from public environment variables.
+ * The fallback name and
+ * address are transcribed exactly from the Wilco Generated Lab Bills report.
+ * This configuration is confined to reports; application branding is separate.
  *
  * Configure in `frontend/.env.local` (or the deployment environment):
  *
@@ -31,11 +30,11 @@ function read(value: string | undefined): string {
 }
 
 export const organisationBranding: OrganisationBranding = {
-  name: read(process.env.NEXT_PUBLIC_ORG_NAME),
-  address: read(process.env.NEXT_PUBLIC_ORG_ADDRESS),
+  name: read(process.env.NEXT_PUBLIC_ORG_NAME) || "Anjali Diagnostics",
+  address: read(process.env.NEXT_PUBLIC_ORG_ADDRESS) || "Plot No 347, HMT Hills, OPP Community Hall, Beside Park, OPP JNTU Kukatpally, HYD, Ph:9440626892",
   phone: read(process.env.NEXT_PUBLIC_ORG_PHONE),
   email: read(process.env.NEXT_PUBLIC_ORG_EMAIL),
-  logo: read(process.env.NEXT_PUBLIC_ORG_LOGO),
+  logo: read(process.env.NEXT_PUBLIC_ORG_LOGO) || "/Main logo.png",
 };
 
 /** True when at least one branding detail is configured. */

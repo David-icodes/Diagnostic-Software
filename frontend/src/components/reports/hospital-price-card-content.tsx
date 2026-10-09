@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ReportPreview } from "@/components/reports/report-preview";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileBarChart2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { ReportSelect } from "@/components/reports/report-select";
 import { ReportFilterBar } from "@/components/reports/report-filter-bar";
@@ -22,6 +24,9 @@ import type {
   HospitalPriceCardResponse,
   HospitalPriceCardRow,
 } from "@/types/reports";
+import { updateLabTariffs } from "@/services/lab-masters";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/utils";
 
 const PRESET_LIMIT = 20;
@@ -65,10 +70,15 @@ export function HospitalPriceCardContent() {
   const [labNames, setLabNames] = useState<{ value: string; label: string }[]>([]);
   const [departments, setDepartments] = useState<{ value: string; label: string }[]>([]);
   const [result, setResult] = useState<HospitalPriceCardResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [printRows, setPrintRows] = useState<HospitalPriceCardRow[]>([]);
   const [printing, setPrinting] = useState(false);
+  const requestSequence = useRef(0);
+  const [editing, setEditing] = useState<HospitalPriceCardRow | null>(null);
+  const [prices, setPrices] = useState({ price: "", priceIp: "", priceInsIp: "", priceEr: "" });
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   useEffect(() => {
     const departmentsPromise = fetchDepartments().then((rows) =>
@@ -92,29 +102,22 @@ export function HospitalPriceCardContent() {
         setServiceTypes([]);
         setLabNames([]);
       });
-    fetchHospitalPriceCard(buildParams(1, EMPTY_FILTERS))
-      .then((response) => {
-        setResult(response);
-        setError(null);
-      })
-      .catch(() => {
-        setResult(null);
-        setError("Unable to load the report. Please try again.");
-      })
-      .finally(() => setLoading(false));
   }, []);
 
   const runFetch = useCallback((targetPage: number, criteria: Filters) => {
+    const sequence = ++requestSequence.current;
     fetchHospitalPriceCard(buildParams(targetPage, criteria))
       .then((response) => {
+        if (sequence !== requestSequence.current) return;
         setResult(response);
         setError(null);
       })
       .catch(() => {
+        if (sequence !== requestSequence.current) return;
         setResult(null);
         setError("Unable to load the report. Please try again.");
       })
-      .finally(() => setLoading(false));
+      .finally(() => { if (sequence === requestSequence.current) setLoading(false); });
   }, []);
 
   const handleSearch = useCallback(() => {
@@ -124,11 +127,16 @@ export function HospitalPriceCardContent() {
   }, [filters, runFetch]);
 
   const handleClear = useCallback(() => {
-    setFilters((prev) => ({ ...EMPTY_FILTERS, serviceType: prev.serviceType }));
-    setApplied((prev) => ({ ...EMPTY_FILTERS, serviceType: prev.serviceType }));
-    setLoading(true);
-    runFetch(1, { ...EMPTY_FILTERS, serviceType: filters.serviceType });
-  }, [filters.serviceType, runFetch]);
+    requestSequence.current += 1;
+    setFilters(EMPTY_FILTERS);
+    setApplied(EMPTY_FILTERS);
+    setResult(null);
+    setPrintRows([]);
+    setError(null);
+    setLoading(false);
+    setEditing(null);
+    setEditError(null);
+  }, []);
 
   const handlePageChange = useCallback(
     (targetPage: number) => {
@@ -154,8 +162,31 @@ export function HospitalPriceCardContent() {
     return [{ label: "Total Tests", value: result.summary.totalTests }];
   }, [result]);
 
+  const beginEdit = useCallback((row: HospitalPriceCardRow) => {
+    setEditing(row);
+    setEditError(null);
+    setPrices({ price: String(row.opAmount ?? ""), priceIp: String(row.ipAmount ?? ""), priceInsIp: String(row.insIpAmount ?? ""), priceEr: String(row.erAmount ?? "") });
+  }, []);
+  const saveEdit = async () => {
+    if (!editing || saving) return;
+    const parsed = Object.fromEntries(Object.entries(prices).map(([key, value]) => [key, value.trim() === "" ? undefined : Number(value)]));
+    if (parsed.price === undefined || Object.values(parsed).some((value) => value !== undefined && (!Number.isFinite(value) || value < 0 || value > 99999999))) {
+      setEditError("Enter valid tariff amounts. OP amount is required.");
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateLabTariffs([{ testId: editing.id, price: parsed.price, priceIp: parsed.priceIp, priceInsIp: parsed.priceInsIp, priceEr: parsed.priceEr }]);
+      setEditing(null);
+      setLoading(true);
+      runFetch(result?.pagination.page ?? 1, applied);
+    } catch (error) { setEditError(error instanceof Error ? error.message : "Unable to update tariffs"); }
+    finally { setSaving(false); }
+  };
+
   const columns: ReportColumn<HospitalPriceCardRow>[] = useMemo(
     () => [
+      { key: "actions", header: "Edit", render: (row) => <Button type="button" size="sm" variant="outline" aria-label={`Edit ${row.testName}`} onClick={() => beginEdit(row)}>Edit</Button> },
       {
         key: "departmentName",
         header: "Dept Name",
@@ -199,7 +230,7 @@ export function HospitalPriceCardContent() {
         render: (row) => amountCell(row.insErAmount),
       },
     ],
-    [],
+    [beginEdit],
   );
 
   const printColumns: PrintColumn<HospitalPriceCardRow>[] = useMemo(
@@ -256,7 +287,7 @@ export function HospitalPriceCardContent() {
 
   return (
     <>
-      <div className="mx-auto max-w-7xl space-y-3 p-4 print:hidden sm:p-6">
+      <div data-tmis-page="hospital-price-card" className="lis-tmis lis-report-page space-y-3 print:hidden">
         <BillPageHeader
           icon={FileBarChart2}
           title="Hospital Price Card"
@@ -269,12 +300,21 @@ export function HospitalPriceCardContent() {
           </div>
         )}
 
+        {editing && <section className="lis-price-edit border border-slate-300 bg-white p-3">
+          <h2 className="text-sm font-semibold">Edit {editing.testName}</h2>
+          <div className="grid grid-cols-4 gap-3 py-2">
+            {([['price','OP Amt'],['priceIp','IP Amt'],['priceInsIp','Ins IP Amt'],['priceEr','ER Amt']] as const).map(([key,label]) => <label key={key} className="text-xs">{label}<Input aria-label={`Edit ${label}`} type="number" min="0" step="0.01" value={prices[key]} disabled={saving} onChange={(event) => setPrices((current) => ({ ...current, [key]: event.target.value }))} /></label>)}
+          </div>
+          {editError && <p role="alert" className="text-sm text-red-700">{editError}</p>}
+          <Button type="button" size="sm" disabled={saving} onClick={() => void saveEdit()}>Update</Button>
+          <Button type="button" size="sm" variant="outline" disabled={saving} onClick={() => setEditing(null)}>Cancel</Button>
+        </section>}
         <ReportFilterBar
           onSearch={handleSearch}
           onClear={handleClear}
           searching={loading}
         >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="lis-price-filter-columns grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <ReportSelect
               id="pcard-service-type"
               label="Service Type"
@@ -312,7 +352,7 @@ export function HospitalPriceCardContent() {
 
         <ReportSummary items={summaryItems} />
 
-        <Card>
+        {(result || loading || error) && <ReportPreview reportTitle="Hospital Price Card" criteria={criteriaText} total={result?.pagination.total ?? 0} className="lis-tmis-document">
           {error ? (
             <CardContent className="px-2.5 py-5 text-center text-sm text-red-600">
               {error}
@@ -349,7 +389,7 @@ export function HospitalPriceCardContent() {
               )}
             </>
           )}
-        </Card>
+        </ReportPreview>}
       </div>
 
       <ReportPrintSheet

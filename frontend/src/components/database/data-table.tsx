@@ -53,7 +53,7 @@ export function DataTable<T>({
   className,
 }: DataTableProps<T>) {
   return (
-    <div className={cn("overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10", className)}>
+    <div className={cn("lis-data-grid overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10", className)}>
       <Table>
         <TableHeader>
           <TableRow className="bg-slate-100 hover:bg-slate-100">

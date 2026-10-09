@@ -1,0 +1,1516 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Doctor Registration" [level=3]
+- table:
+  - rowgroup:
+    - row "EmployeeRegistration Employee Id :":
+      - cell
+      - cell "EmployeeRegistration":
+        - radio "EmployeeRegistration"
+        - generic: EmployeeRegistration
+      - cell
+      - cell "Employee Id :"
+      - cell
+      - cell
+    - row "* First Name Middle Name":
+      - cell "* First Name"
+      - cell:
+        - textbox
+      - cell
+      - cell "Middle Name"
+      - cell:
+        - textbox
+      - cell
+    - row "Last Name Short Name":
+      - cell "Last Name"
+      - cell:
+        - textbox
+      - cell
+      - cell "Short Name"
+      - cell:
+        - textbox
+      - cell
+    - row "* Gender --Select-- Qualification":
+      - cell "* Gender"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+          - option "Male"
+          - option "Female"
+      - cell
+      - cell "Qualification"
+      - cell:
+        - textbox
+      - cell
+    - row "Phone Mobile":
+      - cell "Phone"
+      - cell:
+        - textbox
+      - cell
+      - cell "Mobile"
+      - cell:
+        - textbox
+      - cell
+    - row "E-Mail City --Select--":
+      - cell "E-Mail"
+      - cell:
+        - textbox
+      - cell
+      - cell "City"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+      - cell
+    - row "* Specialization --Select-- Designation --Select--":
+      - cell "* Specialization"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+      - cell
+      - cell "Designation"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+      - cell
+    - row "* Doctor Type --Select-- * Department --Select--":
+      - cell "* Doctor Type"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+          - option "Consultant"
+          - option "Referral"
+      - cell
+      - cell "* Department"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+          - option "GENERAL"
+      - cell
+    - row "Address Online App Display Y":
+      - cell "Address"
+      - cell:
+        - textbox
+      - cell
+      - cell "Online App Display"
+      - cell "Y":
+        - combobox:
+          - option "Y" [selected]
+          - option "N"
+      - cell
+    - row "* OP Consultation Fee * Hospital Fee * IP Consultation Fee * ER Cosultation Fee * MAX No OF Free Visits * MAX No OF Free Days Visits":
+      - cell "* OP Consultation Fee * Hospital Fee * IP Consultation Fee * ER Cosultation Fee * MAX No OF Free Visits * MAX No OF Free Days Visits":
+        - table:
+          - rowgroup:
+            - row "* OP Consultation Fee * Hospital Fee":
+              - cell "* OP Consultation Fee"
+              - cell:
+                - textbox
+              - cell
+              - cell "* Hospital Fee"
+              - cell:
+                - textbox
+              - cell
+            - row "* IP Consultation Fee * ER Cosultation Fee":
+              - cell "* IP Consultation Fee"
+              - cell:
+                - textbox
+              - cell
+              - cell "* ER Cosultation Fee"
+              - cell:
+                - textbox
+              - cell
+            - row "* MAX No OF Free Visits * MAX No OF Free Days Visits":
+              - cell "* MAX No OF Free Visits"
+              - cell:
+                - textbox
+              - cell
+              - cell "* MAX No OF Free Days Visits"
+              - cell:
+                - textbox
+              - cell
+            - row:
+              - cell
+              - cell
+              - cell
+              - cell
+              - cell
+              - cell
+    - row:
+      - cell
+    - row "Active Flag Y Room No":
+      - cell "Active Flag"
+      - cell "Y":
+        - combobox [disabled]:
+          - option "Y" [selected]
+          - option "N"
+      - cell
+      - cell "Room No"
+      - cell:
+        - textbox
+      - cell
+    - row "SUBMIT HOME CLEAR":
+      - cell "SUBMIT HOME CLEAR":
+        - button "SUBMIT"
+        - button "HOME"
+        - button "CLEAR"
+- textbox
+- button ""
+- table:
+  - rowgroup:
+    - row "Sno First Name Designation Specialization Doctor Type Address Mobile":
+      - columnheader "Sno"
+      - columnheader "First Name":
+        - link "First Name":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl02$ctl00$ctl05','')
+      - columnheader "Designation":
+        - link "Designation":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl02$ctl00$ctl09','')
+      - columnheader "Specialization":
+        - link "Specialization":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl02$ctl00$ctl10','')
+      - columnheader "Doctor Type":
+        - link "Doctor Type":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl02$ctl00$ctl11','')
+      - columnheader "Address":
+        - link "Address":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl02$ctl00$ctl12','')
+      - columnheader "Mobile":
+        - link "Mobile":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl02$ctl00$ctl13','')
+      - columnheader
+      - columnheader
+- table:
+  - rowgroup:
+    - row "1 OSD Referral Edit Delete":
+      - cell "1"
+      - cell "OSD"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl04$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl04$btndelete','')
+    - row "2 Dr.K.KRISHNAVENI Referral Edit Delete":
+      - cell "2"
+      - cell "Dr.K.KRISHNAVENI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl06$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl06$btndelete','')
+    - row "3 Dr.G.VENKATESWAR RAO Referral 9885611390 Edit Delete":
+      - cell "3"
+      - cell "Dr.G.VENKATESWAR RAO"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell "9885611390"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl08$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl08$btndelete','')
+    - row "4 Dr.CH SNSVSN MURTHY Referral Edit Delete":
+      - cell "4"
+      - cell "Dr.CH SNSVSN MURTHY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl10$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl10$btndelete','')
+    - row "5 Dr.SUNITHA GUDIPETI Referral Edit Delete":
+      - cell "5"
+      - cell "Dr.SUNITHA GUDIPETI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl12$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl12$btndelete','')
+    - row "6 Dr.MADHAVI Referral Edit Delete":
+      - cell "6"
+      - cell "Dr.MADHAVI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl14$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl14$btndelete','')
+    - row "7 Dr.RAGHAVENDRA RAO Referral Edit Delete":
+      - cell "7"
+      - cell "Dr.RAGHAVENDRA RAO"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl16$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl16$btndelete','')
+    - row "8 Dr.S.HARITHA Referral Edit Delete":
+      - cell "8"
+      - cell "Dr.S.HARITHA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl18$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl18$btndelete','')
+    - row "9 Dr.SRINIVAS Referral Edit Delete":
+      - cell "9"
+      - cell "Dr.SRINIVAS"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl20$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl20$btndelete','')
+    - row "10 Dr.PAVAN KUMAR Referral Edit Delete":
+      - cell "10"
+      - cell "Dr.PAVAN KUMAR"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl22$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl22$btndelete','')
+    - row "11 Dr.POOJA AKULA Referral Edit Delete":
+      - cell "11"
+      - cell "Dr.POOJA AKULA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl24$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl24$btndelete','')
+    - row "12 Dr.DHANUNJAY Referral Edit Delete":
+      - cell "12"
+      - cell "Dr.DHANUNJAY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl26$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl26$btndelete','')
+    - row "13 Dr.VENKATA DURGA Referral Edit Delete":
+      - cell "13"
+      - cell "Dr.VENKATA DURGA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl28$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl28$btndelete','')
+    - row "14 Dr.SUSMITHA Referral Edit Delete":
+      - cell "14"
+      - cell "Dr.SUSMITHA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl30$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl30$btndelete','')
+    - row "15 Dr.BHAVYA Referral Edit Delete":
+      - cell "15"
+      - cell "Dr.BHAVYA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl32$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl32$btndelete','')
+    - row "16 Dr.SWATHI Referral Edit Delete":
+      - cell "16"
+      - cell "Dr.SWATHI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl34$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl34$btndelete','')
+    - row "17 Dr.VIJAY KUMAR Referral Edit Delete":
+      - cell "17"
+      - cell "Dr.VIJAY KUMAR"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl36$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl36$btndelete','')
+    - row "18 Dr.K.KALYAN Referral Edit Delete":
+      - cell "18"
+      - cell "Dr.K.KALYAN"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl38$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl38$btndelete','')
+    - row "19 Dr.KRISHNA RAO Referral Edit Delete":
+      - cell "19"
+      - cell "Dr.KRISHNA RAO"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl40$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl40$btndelete','')
+    - row "20 Dr.SWETHA REDDY L Referral Edit Delete":
+      - cell "20"
+      - cell "Dr.SWETHA REDDY L"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl42$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl42$btndelete','')
+    - row "21 Dr.K.SUBBA RAO Referral Edit Delete":
+      - cell "21"
+      - cell "Dr.K.SUBBA RAO"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl44$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl44$btndelete','')
+    - row "22 Dr.VAMSHI KRISHNA Referral Edit Delete":
+      - cell "22"
+      - cell "Dr.VAMSHI KRISHNA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl46$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl46$btndelete','')
+    - row "23 Dr NAGARAJU Referral 9 Edit Delete":
+      - cell "23"
+      - cell "Dr NAGARAJU"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell "9"
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl48$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl48$btndelete','')
+    - row "24 Dr.NAGESH Referral Edit Delete":
+      - cell "24"
+      - cell "Dr.NAGESH"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl50$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl50$btndelete','')
+    - row "25 Dr.AJITH KUMAR AZAD Referral Edit Delete":
+      - cell "25"
+      - cell "Dr.AJITH KUMAR AZAD"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl52$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl52$btndelete','')
+    - row "26 Dr.KAMINENI ASHWINI Referral Edit Delete":
+      - cell "26"
+      - cell "Dr.KAMINENI ASHWINI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl54$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl54$btndelete','')
+    - row "27 Dr.SHIVA KUMAR REDDY Referral Edit Delete":
+      - cell "27"
+      - cell "Dr.SHIVA KUMAR REDDY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl56$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl56$btndelete','')
+    - row "28 Dr.PADMANABA VARMA Referral Edit Delete":
+      - cell "28"
+      - cell "Dr.PADMANABA VARMA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl58$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl58$btndelete','')
+    - row "29 Dr.SUBHAPRADA Referral Edit Delete":
+      - cell "29"
+      - cell "Dr.SUBHAPRADA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl60$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl60$btndelete','')
+    - row "30 Dr.ARIF AHMED FAROOQUI Referral Edit Delete":
+      - cell "30"
+      - cell "Dr.ARIF AHMED FAROOQUI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl62$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl62$btndelete','')
+    - row "31 Dr.SUBBA RAO Referral Edit Delete":
+      - cell "31"
+      - cell "Dr.SUBBA RAO"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl64$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl64$btndelete','')
+    - row "32 Dr.T.NARASIMHA RAO Referral Edit Delete":
+      - cell "32"
+      - cell "Dr.T.NARASIMHA RAO"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl66$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl66$btndelete','')
+    - row "33 Dr.C.V.MADHURI Referral Edit Delete":
+      - cell "33"
+      - cell "Dr.C.V.MADHURI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl68$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl68$btndelete','')
+    - row "34 Dr.RADHIKA Referral Edit Delete":
+      - cell "34"
+      - cell "Dr.RADHIKA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl70$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl70$btndelete','')
+    - row "35 Dr.SWATHI REDDY Referral Edit Delete":
+      - cell "35"
+      - cell "Dr.SWATHI REDDY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl72$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl72$btndelete','')
+    - row "36 Dr.B.NAVEEN Referral Edit Delete":
+      - cell "36"
+      - cell "Dr.B.NAVEEN"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl74$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl74$btndelete','')
+    - row "37 Dr.PRAVALIKA Referral Edit Delete":
+      - cell "37"
+      - cell "Dr.PRAVALIKA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl76$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl76$btndelete','')
+    - row "38 Dr.K RAMA SWAMY Referral Edit Delete":
+      - cell "38"
+      - cell "Dr.K RAMA SWAMY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl78$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl78$btndelete','')
+    - row "39 Dr.MAHESWAR REDDY Referral Edit Delete":
+      - cell "39"
+      - cell "Dr.MAHESWAR REDDY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl80$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl80$btndelete','')
+    - row "40 Dr.LAKSHMI SOWJANYA Referral Edit Delete":
+      - cell "40"
+      - cell "Dr.LAKSHMI SOWJANYA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl82$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl82$btndelete','')
+    - row "41 Dr.PRASADA REDDY Referral Edit Delete":
+      - cell "41"
+      - cell "Dr.PRASADA REDDY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl84$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl84$btndelete','')
+    - row "42 Dr.TARAKESWARI Referral Edit Delete":
+      - cell "42"
+      - cell "Dr.TARAKESWARI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl86$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl86$btndelete','')
+    - row "43 Dr.RAJESH Referral Edit Delete":
+      - cell "43"
+      - cell "Dr.RAJESH"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl88$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl88$btndelete','')
+    - row "44 Dr.SAGUNA Referral Edit Delete":
+      - cell "44"
+      - cell "Dr.SAGUNA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl90$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl90$btndelete','')
+    - row "45 Dr.ASHWINI Referral Edit Delete":
+      - cell "45"
+      - cell "Dr.ASHWINI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl92$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl92$btndelete','')
+    - row "46 Dr.SRUHYA Referral Edit Delete":
+      - cell "46"
+      - cell "Dr.SRUHYA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl94$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl94$btndelete','')
+    - row "47 Dr.SANJAY Referral Edit Delete":
+      - cell "47"
+      - cell "Dr.SANJAY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl96$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl96$btndelete','')
+    - row "48 Dr.K S RAJU Referral Edit Delete":
+      - cell "48"
+      - cell "Dr.K S RAJU"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl98$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl98$btndelete','')
+    - row "49 Dr.SRINIVAS B Referral Edit Delete":
+      - cell "49"
+      - cell "Dr.SRINIVAS B"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl100$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl100$btndelete','')
+    - row "50 Dr.SAILESH Referral Edit Delete":
+      - cell "50"
+      - cell "Dr.SAILESH"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl102$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl102$btndelete','')
+    - row "51 Dr,HARI PRAKASH Referral Edit Delete":
+      - cell "51"
+      - cell "Dr,HARI PRAKASH"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl104$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl104$btndelete','')
+    - row "52 Dr.RAJA RAJESWARI Referral Edit Delete":
+      - cell "52"
+      - cell "Dr.RAJA RAJESWARI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl106$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl106$btndelete','')
+    - row "53 Dr.KRISHNAM RAJU Referral Edit Delete":
+      - cell "53"
+      - cell "Dr.KRISHNAM RAJU"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl108$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl108$btndelete','')
+    - row "54 Dr.SRAVYA Referral Edit Delete":
+      - cell "54"
+      - cell "Dr.SRAVYA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl110$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl110$btndelete','')
+    - row "55 Dr.USMAN Referral Edit Delete":
+      - cell "55"
+      - cell "Dr.USMAN"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl112$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl112$btndelete','')
+    - row "56 Dr.SURESH Referral Edit Delete":
+      - cell "56"
+      - cell "Dr.SURESH"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl114$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl114$btndelete','')
+    - row "57 Dr.CHANDRASHEKHAR Referral Edit Delete":
+      - cell "57"
+      - cell "Dr.CHANDRASHEKHAR"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl116$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl116$btndelete','')
+    - row "58 Dr.N N SIRISHA Referral Edit Delete":
+      - cell "58"
+      - cell "Dr.N N SIRISHA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl118$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl118$btndelete','')
+    - row "59 Dr.DIVYA Referral Edit Delete":
+      - cell "59"
+      - cell "Dr.DIVYA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl120$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl120$btndelete','')
+    - row "60 Dr.MADHURI Referral Edit Delete":
+      - cell "60"
+      - cell "Dr.MADHURI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl122$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl122$btndelete','')
+    - row "61 DR.JEEWAN RAM VISHNOI Referral Edit Delete":
+      - cell "61"
+      - cell "DR.JEEWAN RAM VISHNOI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl124$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl124$btndelete','')
+    - row "62 Dr.BALAJI Referral Edit Delete":
+      - cell "62"
+      - cell "Dr.BALAJI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl126$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl126$btndelete','')
+    - row "63 Dr.VIKAS MATHURI MD Referral Edit Delete":
+      - cell "63"
+      - cell "Dr.VIKAS MATHURI MD"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl128$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl128$btndelete','')
+    - row "64 Dr.RAVI SEKHAR REDDY Referral Edit Delete":
+      - cell "64"
+      - cell "Dr.RAVI SEKHAR REDDY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl130$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl130$btndelete','')
+    - row "65 Dr.ASWANI KUMAR Referral Edit Delete":
+      - cell "65"
+      - cell "Dr.ASWANI KUMAR"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl132$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl132$btndelete','')
+    - row "66 Dr.PHANIDHAR DHANEKULA Referral Edit Delete":
+      - cell "66"
+      - cell "Dr.PHANIDHAR DHANEKULA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl134$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl134$btndelete','')
+    - row "67 Dr.VENKATA RAMANA Referral Edit Delete":
+      - cell "67"
+      - cell "Dr.VENKATA RAMANA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl136$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl136$btndelete','')
+    - row "68 Dr.MURTHY Referral Edit Delete":
+      - cell "68"
+      - cell "Dr.MURTHY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl138$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl138$btndelete','')
+    - row "69 Dr.SRAVANI Referral Edit Delete":
+      - cell "69"
+      - cell "Dr.SRAVANI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl140$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl140$btndelete','')
+    - row "70 Dr.AJAY KUMAR Referral Edit Delete":
+      - cell "70"
+      - cell "Dr.AJAY KUMAR"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl142$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl142$btndelete','')
+    - row "71 Dr.HARITHA Referral Edit Delete":
+      - cell "71"
+      - cell "Dr.HARITHA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl144$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl144$btndelete','')
+    - row "72 Dr.MOHAN CHAND Referral Edit Delete":
+      - cell "72"
+      - cell "Dr.MOHAN CHAND"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl146$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl146$btndelete','')
+    - row "73 Dr.PRIYANKA Referral Edit Delete":
+      - cell "73"
+      - cell "Dr.PRIYANKA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl148$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl148$btndelete','')
+    - row "74 Dr.RAVI KUMAR Referral Edit Delete":
+      - cell "74"
+      - cell "Dr.RAVI KUMAR"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl150$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl150$btndelete','')
+    - row "75 Dr.MAHENDAR Referral Edit Delete":
+      - cell "75"
+      - cell "Dr.MAHENDAR"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl152$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl152$btndelete','')
+    - row "76 Dr.SAMBASHIVA RAO Referral Edit Delete":
+      - cell "76"
+      - cell "Dr.SAMBASHIVA RAO"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl154$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl154$btndelete','')
+    - row "77 Dr.SANDEEP Referral Edit Delete":
+      - cell "77"
+      - cell "Dr.SANDEEP"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl156$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl156$btndelete','')
+    - row "78 Dr.VIKRAM Referral Edit Delete":
+      - cell "78"
+      - cell "Dr.VIKRAM"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl158$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl158$btndelete','')
+    - row "79 Dr.RAVIVARMA Referral Edit Delete":
+      - cell "79"
+      - cell "Dr.RAVIVARMA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl160$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl160$btndelete','')
+    - row "80 Dr.FINI A.PHILIP Referral Edit Delete":
+      - cell "80"
+      - cell "Dr.FINI A.PHILIP"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl162$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl162$btndelete','')
+    - row "81 Dr.LIKITHA Referral Edit Delete":
+      - cell "81"
+      - cell "Dr.LIKITHA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl164$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl164$btndelete','')
+    - row "82 Dr.K PAVAN KUMAR Referral Edit Delete":
+      - cell "82"
+      - cell "Dr.K PAVAN KUMAR"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl166$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl166$btndelete','')
+    - row "83 Dr.KAMALA PRIYA Referral Edit Delete":
+      - cell "83"
+      - cell "Dr.KAMALA PRIYA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl168$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl168$btndelete','')
+    - row "84 Dr.VIPLAV GOWTHAM REDDY Referral Edit Delete":
+      - cell "84"
+      - cell "Dr.VIPLAV GOWTHAM REDDY"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl170$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl170$btndelete','')
+    - row "85 Dr.ADDANIKI VEERANNA Referral Edit Delete":
+      - cell "85"
+      - cell "Dr.ADDANIKI VEERANNA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl172$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl172$btndelete','')
+    - row "86 Dr.SHRAVAN KUMAR Referral Edit Delete":
+      - cell "86"
+      - cell "Dr.SHRAVAN KUMAR"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl174$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl174$btndelete','')
+    - row "87 Dr.DEVINENI SAI SAHUL Referral Edit Delete":
+      - cell "87"
+      - cell "Dr.DEVINENI SAI SAHUL"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl176$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl176$btndelete','')
+    - row "88 Dr.RAMACHANDRAM Referral Edit Delete":
+      - cell "88"
+      - cell "Dr.RAMACHANDRAM"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl178$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl178$btndelete','')
+    - row "89 Dr.SARADA Referral Edit Delete":
+      - cell "89"
+      - cell "Dr.SARADA"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl180$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl180$btndelete','')
+    - row "90 Dr.KRISHNAVENI Referral Edit Delete":
+      - cell "90"
+      - cell "Dr.KRISHNAVENI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl182$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl182$btndelete','')
+    - row "91 Dr.SUSHMA VANI Referral Edit Delete":
+      - cell "91"
+      - cell "Dr.SUSHMA VANI"
+      - cell
+      - cell
+      - cell "Referral"
+      - cell
+      - cell
+      - cell "Edit":
+        - link "Edit":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl184$btnSelect','')
+      - cell "Delete":
+        - link "Delete":
+          - /url: javascript:__doPostBack('ctl00$body$Rgdoctordetails$ctl00$ctl184$btndelete','')
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

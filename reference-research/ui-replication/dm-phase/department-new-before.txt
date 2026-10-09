@@ -1,0 +1,199 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "New Department" [level=1]
+  - paragraph: Add and manage departments used across the lab
+  - link "Home":
+    - /url: /dashboard
+  - heading "Add New Department" [level=2]
+  - paragraph: Enter the details and save
+  - text: Department Name
+  - generic: "*"
+  - textbox "Department Name *":
+    - /placeholder: e.g. HEMATOLOGY
+  - text: Short Name
+  - generic: "*"
+  - textbox "Short Name *":
+    - /placeholder: e.g. HEMA
+  - generic: Description
+  - textbox "Description":
+    - /placeholder: Optional notes
+  - generic: Type
+  - combobox "Type":
+    - option "Select--" [selected]
+    - option "Lab & X-Ray"
+    - option "Service"
+    - option "Doctors"
+    - option "Pharmacy"
+    - option "Stores"
+    - option "Inventory"
+    - option "CRM"
+  - generic: Sort Order
+  - spinbutton "Sort Order": "0"
+  - button "Submit"
+  - link "Home":
+    - /url: /dashboard
+  - button "Clear"
+  - heading "Department List" [level=2]
+  - paragraph: Departments are used to group lab tests
+  - combobox "Filter by status":
+    - option "All Status" [selected]
+    - option "Active"
+    - option "Inactive"
+  - searchbox "Search departments..."
+  - table:
+    - rowgroup:
+      - row "S.No Code Department Type Sort Order Status Action":
+        - columnheader "S.No"
+        - columnheader "Code"
+        - columnheader "Department"
+        - columnheader "Type"
+        - columnheader "Sort Order"
+        - columnheader "Status"
+        - columnheader "Action"
+    - rowgroup:
+      - row "1 TDX Test Dept X Inventory 0 Inactive Edit Test Dept X Activate Test Dept X":
+        - cell "1"
+        - cell "TDX"
+        - cell "Test Dept X"
+        - cell "Inventory"
+        - cell "0"
+        - cell "Inactive":
+          - generic: Inactive
+        - cell "Edit Test Dept X Activate Test Dept X":
+          - button "Edit Test Dept X":
+          - button "Activate Test Dept X":
+      - row "2 BIO Biochemistry Lab & X-Ray 1 Active Edit Biochemistry Deactivate Biochemistry":
+        - cell "2"
+        - cell "BIO"
+        - cell "Biochemistry"
+        - cell "Lab & X-Ray"
+        - cell "1"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Biochemistry Deactivate Biochemistry":
+          - button "Edit Biochemistry":
+          - button "Deactivate Biochemistry":
+      - row "3 HEM Hematology Lab & X-Ray 2 Active Edit Hematology Deactivate Hematology":
+        - cell "3"
+        - cell "HEM"
+        - cell "Hematology"
+        - cell "Lab & X-Ray"
+        - cell "2"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Hematology Deactivate Hematology":
+          - button "Edit Hematology":
+          - button "Deactivate Hematology":
+      - row "4 MIC Microbiology Lab & X-Ray 3 Active Edit Microbiology Deactivate Microbiology":
+        - cell "4"
+        - cell "MIC"
+        - cell "Microbiology"
+        - cell "Lab & X-Ray"
+        - cell "3"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Microbiology Deactivate Microbiology":
+          - button "Edit Microbiology":
+          - button "Deactivate Microbiology":
+      - row "5 PAT Pathology Lab & X-Ray 4 Active Edit Pathology Deactivate Pathology":
+        - cell "5"
+        - cell "PAT"
+        - cell "Pathology"
+        - cell "Lab & X-Ray"
+        - cell "4"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Pathology Deactivate Pathology":
+          - button "Edit Pathology":
+          - button "Deactivate Pathology":
+      - row "6 IMM Immunology / Serology Lab & X-Ray 5 Active Edit Immunology / Serology Deactivate Immunology / Serology":
+        - cell "6"
+        - cell "IMM"
+        - cell "Immunology / Serology"
+        - cell "Lab & X-Ray"
+        - cell "5"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Immunology / Serology Deactivate Immunology / Serology":
+          - button "Edit Immunology / Serology":
+          - button "Deactivate Immunology / Serology":
+      - row "7 HOR Hormones Lab & X-Ray 6 Active Edit Hormones Deactivate Hormones":
+        - cell "7"
+        - cell "HOR"
+        - cell "Hormones"
+        - cell "Lab & X-Ray"
+        - cell "6"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Hormones Deactivate Hormones":
+          - button "Edit Hormones":
+          - button "Deactivate Hormones":
+      - row "8 MOL Molecular Biology Lab & X-Ray 7 Active Edit Molecular Biology Deactivate Molecular Biology":
+        - cell "8"
+        - cell "MOL"
+        - cell "Molecular Biology"
+        - cell "Lab & X-Ray"
+        - cell "7"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Molecular Biology Deactivate Molecular Biology":
+          - button "Edit Molecular Biology":
+          - button "Deactivate Molecular Biology":
+      - row "9 CLP Clinical Pathology Lab & X-Ray 8 Active Edit Clinical Pathology Deactivate Clinical Pathology":
+        - cell "9"
+        - cell "CLP"
+        - cell "Clinical Pathology"
+        - cell "Lab & X-Ray"
+        - cell "8"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Clinical Pathology Deactivate Clinical Pathology":
+          - button "Edit Clinical Pathology":
+          - button "Deactivate Clinical Pathology":
+      - row "10 PKG Packages / Profiles Lab & X-Ray 9 Active Edit Packages / Profiles Deactivate Packages / Profiles":
+        - cell "10"
+        - cell "PKG"
+        - cell "Packages / Profiles"
+        - cell "Lab & X-Ray"
+        - cell "9"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Packages / Profiles Deactivate Packages / Profiles":
+          - button "Edit Packages / Profiles":
+          - button "Deactivate Packages / Profiles":
+      - row "11 PTEST Pharmacy Support Service 50 Active Edit Pharmacy Support Deactivate Pharmacy Support":
+        - cell "11"
+        - cell "PTEST"
+        - cell "Pharmacy Support"
+        - cell "Service"
+        - cell "50"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Pharmacy Support Deactivate Pharmacy Support":
+          - button "Edit Pharmacy Support":
+          - button "Deactivate Pharmacy Support":
+  - paragraph: Showing 1–11 of 11 records · Page 1 of 1
+  - button "Previous" [disabled]:
+    - text: Previous
+  - button "Next" [disabled]:
+    - text: Next

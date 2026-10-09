@@ -409,6 +409,23 @@ export function resolveReferenceRange(
 
   // No structured mappings: keep the legacy free-text range exactly as stored.
   if (mappings.length === 0) {
+    // Legacy gender-wise rows are configured mappings too. Use the same row
+    // for display and comparison; never display the combined free-text fallback.
+    if (parameter.referenceType === "GENDER_WISE" && parameter.genderRanges?.length) {
+      const gender = sex === "MALE" ? "M" : sex === "FEMALE" ? "F" : undefined;
+      const candidates = gender ? parameter.genderRanges.filter((row) => row.gender === gender) : [];
+      if (candidates.length !== 1) {
+        return { status: candidates.length > 1 ? "AMBIGUOUS" : "NO_MAPPING_FOR_PATIENT", source: "NONE", valueType: "NARRATIVE", displayValue: "", patient: patientInfo, legacy,
+          reason: candidates.length > 1 ? "More than one gender-wise range matches this patient." : "No gender-wise range matches this patient." };
+      }
+      const row = candidates[0];
+      const displayValue = row.text?.trim() || (row.from !== undefined && row.to !== undefined ? `${row.from} - ${row.to}` : row.from !== undefined ? `>= ${row.from}` : row.to !== undefined ? `<= ${row.to}` : "");
+      const narrative = row.text && (LEGACY_CATEGORICAL.test(row.text) || LEGACY_CONTEXT.test(row.text));
+      const bounds = narrative ? undefined : parseLegacyBounds(parameter, sex);
+      return { status: displayValue ? "MATCHED" : "NOT_CONFIGURED", source: displayValue ? "LEGACY" : "NONE", valueType: bounds ? "NUMERIC" : "NARRATIVE", displayValue,
+        ...(bounds?.from !== undefined ? { valueFrom: bounds.from } : {}), ...(bounds?.to !== undefined ? { valueTo: bounds.to } : {}), patient: patientInfo, legacy,
+        reason: "Showing the configured gender-wise reference for this patient." };
+    }
     const text = parameter.referenceRange?.trim() ?? "";
     if (!text && !parameter.genderRanges?.length) {
       return {

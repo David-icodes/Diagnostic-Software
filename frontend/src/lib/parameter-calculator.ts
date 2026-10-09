@@ -2,10 +2,9 @@
  * Calculated-parameter support for the Parameter Based Test Results screen.
  *
  * The formulas are fixed, explicit and named — there is no string evaluation and
- * no `eval`. Dependencies are resolved by the parameter's identity (its name,
- * normalised), never by table row position, and only when exactly one parameter
- * in the current test matches. Anything ambiguous or missing means no
- * calculator is offered, so a wrong value can never be produced silently.
+ * no `eval`. Controlled exact-name aliases discover parameters in the current
+ * test; all result reads and writes then use their IDs. Missing or ambiguous
+ * dependencies produce a message and never produce a calculated value.
  */
 
 export interface CalcParameter {
@@ -27,7 +26,7 @@ export interface ResolvedCalculation {
   /** Human label of the formula, e.g. "PCV = RBC × MCV / 10". */
   formulaLabel: string;
   /** Parameter ids the formula reads, in order. */
-  dependencyIds: string[];
+  dependencyIds: Array<string | null>;
   /** Human labels of the dependencies, for messages/tooltips. */
   dependencyLabels: string[];
   /** Runs the formula against the current entered values (keyed by parameter id). */
@@ -198,9 +197,9 @@ export function roundCalculatedValue(value: number): number {
 }
 
 /**
- * Finds every calculation that applies to the given test's parameters. A
- * calculation is offered only when its result parameter and all its dependency
- * parameters resolve to exactly one parameter each.
+ * Finds every calculation whose result parameter resolves uniquely. Missing or
+ * ambiguous dependencies remain visible so the UI can explain why the formula
+ * cannot run for this test.
  */
 export function resolveCalculations(
   parameters: CalcParameter[],
@@ -210,20 +209,20 @@ export function resolveCalculations(
     const target = findUnique(parameters, formula.targets);
     if (!target) continue;
 
-    const dependencyIds: string[] = [];
+    const dependencyIds: Array<string | null> = [];
     const dependencyLabels: string[] = [];
-    let complete = true;
     for (const dep of formula.deps) {
       const match = findUnique(parameters, dep.aliases);
-      if (!match) { complete = false; break; }
-      if (match.parameterId === target.parameterId) { complete = false; break; }
-      dependencyIds.push(match.parameterId);
+      if (!match) {
+        // Keep the calculator available so the technician gets a clear reason
+        // when this test's parameter configuration is incomplete/ambiguous.
+        dependencyIds.push(null);
+        dependencyLabels.push(dep.label);
+        continue;
+      }
+      dependencyIds.push(match.parameterId === target.parameterId ? null : match.parameterId);
       dependencyLabels.push(dep.label);
     }
-    if (!complete) continue;
-
-    const keyById: Record<string, string> = {};
-    formula.deps.forEach((dep, index) => { keyById[dependencyIds[index]] = dep.key; });
 
     resolved.push({
       parameterId: target.parameterId,
@@ -232,10 +231,18 @@ export function resolveCalculations(
       dependencyIds,
       dependencyLabels,
       run: (values) => {
+        const missingParameters = formula.deps.filter((_, index) => dependencyIds[index] === null);
+        if (missingParameters.length > 0) {
+          return {
+            ok: false,
+            error: `This test is missing or has ambiguous ${missingParameters.map((dep) => dep.label).join(" and ")} parameter${missingParameters.length === 1 ? "" : "s"}.`,
+          };
+        }
         const inputs: Record<string, number> = {};
         const missing: string[] = [];
         formula.deps.forEach((dep, index) => {
-          const raw = toNumber(values[dependencyIds[index]]);
+          const dependencyId = dependencyIds[index];
+          const raw = toNumber(dependencyId ? values[dependencyId] : undefined);
           if (raw === undefined) missing.push(dep.label);
           else inputs[dep.key] = raw;
         });
@@ -250,7 +257,13 @@ export function resolveCalculations(
         if (!Number.isFinite(value)) {
           return { ok: false, error: "Cannot calculate with the entered values." };
         }
-        return { ok: true, value: roundCalculatedValue(value) };
+        const rounded = roundCalculatedValue(value);
+        // Rounding multiplies by 100, which can overflow even when the formula
+        // itself returned a finite number. Never write that value into a result.
+        if (!Number.isFinite(rounded)) {
+          return { ok: false, error: "Cannot calculate with the entered values." };
+        }
+        return { ok: true, value: rounded };
       },
     });
   }

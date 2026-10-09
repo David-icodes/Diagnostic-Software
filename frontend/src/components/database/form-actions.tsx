@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Home, RotateCcw, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface FormActionsProps {
@@ -10,6 +9,8 @@ interface FormActionsProps {
   submitting?: boolean;
   submitLabel?: string;
   homeHref?: string;
+  homeBeforeReset?: boolean;
+  resetLabel?: string;
 }
 
 export function FormActions({
@@ -18,9 +19,11 @@ export function FormActions({
   submitting = false,
   submitLabel = "Submit",
   homeHref = "/dashboard",
+  homeBeforeReset = false,
+  resetLabel = "Clear",
 }: FormActionsProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="lis-master-actions flex flex-wrap items-center justify-center gap-2">
       <Button
         type="button"
         variant="default"
@@ -28,21 +31,23 @@ export function FormActions({
         onClick={onSubmit}
         disabled={submitting}
       >
-        <Save />
         {submitting ? "Saving..." : submitLabel}
       </Button>
-      {onReset && (
-        <Button type="button" variant="outline" size="sm" onClick={onReset}>
-          <RotateCcw />
-          Reset
+      {homeBeforeReset && (
+        <Button type="button" variant="outline" size="sm" asChild>
+          <Link href={homeHref}>Home</Link>
         </Button>
       )}
-      <Button type="button" variant="outline" size="sm" asChild>
+      {onReset && (
+        <Button type="button" variant="outline" size="sm" onClick={onReset}>
+          {resetLabel}
+        </Button>
+      )}
+      {!homeBeforeReset && <Button type="button" variant="outline" size="sm" asChild>
         <Link href={homeHref}>
-          <Home />
           Home
         </Link>
-      </Button>
+      </Button>}
     </div>
   );
 }

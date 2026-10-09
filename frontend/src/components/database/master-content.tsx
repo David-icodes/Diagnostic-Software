@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { invalidateMasterData } from "@/lib/master-data-cache";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Power, type LucideIcon } from "lucide-react";
-import { ConfirmDialog } from "@/components/database/confirm-dialog";
+import { Pencil, type LucideIcon } from "lucide-react";
 import { DataTable } from "@/components/database/data-table";
 import { FormActions } from "@/components/database/form-actions";
 import { FormField } from "@/components/database/form-field";
@@ -35,6 +35,7 @@ interface MasterContentProps {
   subtitle: string;
   formTitle: string;
   recordLabel: string;
+  queryRoot: string;
   placeholder: string;
   services: MasterServices;
   limit?: number;
@@ -46,6 +47,7 @@ export function MasterContent({
   subtitle,
   formTitle,
   recordLabel,
+  queryRoot,
   placeholder,
   services,
   limit = 20,
@@ -55,23 +57,19 @@ export function MasterContent({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [confirmTarget, setConfirmTarget] = useState<{
-    id: string;
-    name: string;
-    active: boolean;
-  } | null>(null);
+
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const nameErrorRendered = name.trim().length > 0 && name.trim().length < 2;
 
   const listQuery = useQuery({
-    queryKey: [recordLabel, "list", page, search],
+    queryKey: [queryRoot, "list", page, search],
     queryFn: () => services.fetch({ page, limit, search: search || undefined }),
     placeholderData: (previous) => previous,
   });
 
   const invalidate = () => {
-    void queryClient.invalidateQueries({ queryKey: [recordLabel] });
+    void invalidateMasterData(queryClient, queryRoot);
   };
 
   const saveMutation = useMutation({
@@ -94,18 +92,11 @@ export function MasterContent({
     },
   });
 
-  const toggleMutation = useMutation({
-    mutationFn: ({ id, active }: { id: string; active: boolean }) =>
-      services.setActive(id, active),
-    onSuccess: () => {
-      invalidate();
-      setConfirmTarget(null);
-    },
-  });
+
 
   const handleSave = () => {
     if (name.trim().length < 2) return;
-    void saveMutation.mutateAsync();
+    saveMutation.mutate();
   };
 
   const handleClear = () => {
@@ -160,21 +151,7 @@ export function MasterContent({
             >
               <Pencil className="size-4" />
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label={record.active ? `Deactivate ${record.name}` : `Activate ${record.name}`}
-              onClick={() =>
-                setConfirmTarget({
-                  id: record.id,
-                  name: record.name,
-                  active: record.active,
-                })
-              }
-            >
-              <Power className="size-4" />
-            </Button>
+            
           </div>
         ),
       },
@@ -183,7 +160,7 @@ export function MasterContent({
   );
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-master-record space-y-3">
       <PageHeader icon={Icon} title={title} subtitle={subtitle} />
 
       <div className="grid gap-3 lg:grid-cols-[minmax(0,28rem)_1fr]">
@@ -224,7 +201,7 @@ export function MasterContent({
                 placeholder={placeholder}
                 autoFocus
                 onChange={(event) => setName(event.target.value)}
-                disabled={saveMutation.isPending || toggleMutation.isPending}
+                disabled={saveMutation.isPending}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
                     event.preventDefault();
@@ -237,7 +214,7 @@ export function MasterContent({
               onSubmit={handleSave}
               onReset={handleClear}
               submitting={saveMutation.isPending}
-              submitLabel={editingId ? "Update" : "Save"}
+              submitLabel={editingId ? "Update" : "Submit"}
             />
           </div>
         </FormSection>
@@ -268,29 +245,7 @@ export function MasterContent({
         </FormSection>
       </div>
 
-      <ConfirmDialog
-        open={confirmTarget !== null}
-        onOpenChange={(open) => {
-          if (!open) setConfirmTarget(null);
-        }}
-        title={
-          confirmTarget?.active
-            ? "Deactivate record?"
-            : "Activate record?"
-        }
-        description={
-          confirmTarget
-            ? `Do you want to ${confirmTarget.active ? "deactivate" : "activate"} "${confirmTarget.name}"?`
-            : undefined
-        }
-        confirmLabel={confirmTarget?.active ? "Deactivate" : "Activate"}
-        loading={toggleMutation.isPending}
-        onConfirm={() => {
-          if (confirmTarget) {
-            void toggleMutation.mutate({ id: confirmTarget.id, active: !confirmTarget.active });
-          }
-        }}
-      />
+
     </div>
   );
 }

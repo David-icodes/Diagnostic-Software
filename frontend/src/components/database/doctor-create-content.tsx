@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Power, Stethoscope } from "lucide-react";
-import { ConfirmDialog } from "@/components/database/confirm-dialog";
+import { Pencil, Stethoscope } from "lucide-react";
 import { DataTable } from "@/components/database/data-table";
 import { FormActions } from "@/components/database/form-actions";
 import { FormField } from "@/components/database/form-field";
@@ -21,7 +20,6 @@ import {
   fetchDoctorsPaginated,
   fetchSpecialisations,
   getDatabaseOptions,
-  setDoctorActive,
   updateDoctor,
 } from "@/services/database";
 import type { Doctor } from "@/types/database";
@@ -93,7 +91,7 @@ export function DoctorCreateContent() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [confirmTarget, setConfirmTarget] = useState<Doctor | null>(null);
+
   const [feedback, setFeedback] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
     firstName?: string;
@@ -180,14 +178,7 @@ export function DoctorCreateContent() {
     },
   });
 
-  const toggleMutation = useMutation({
-    mutationFn: ({ id, active }: { id: string; active: boolean }) =>
-      setDoctorActive(id, active),
-    onSuccess: () => {
-      invalidate();
-      setConfirmTarget(null);
-    },
-  });
+
 
   const update = (patch: Partial<DoctorFormState>) => {
     setForm((current) => ({ ...current, ...patch }));
@@ -206,7 +197,7 @@ export function DoctorCreateContent() {
     }
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
-    void saveMutation.mutateAsync();
+    saveMutation.mutate();
   };
 
   const handleEdit = (doctor: Doctor) => {
@@ -277,9 +268,9 @@ export function DoctorCreateContent() {
       ),
     },
     {
-      key: "employeeId",
-      header: "Employee ID",
-      render: (row: Doctor) => row.employeeId ?? "—",
+      key: "designation",
+      header: "Designation",
+      render: (row: Doctor) => row.designation ?? "—",
     },
     {
       key: "specialisation",
@@ -287,14 +278,14 @@ export function DoctorCreateContent() {
       render: (row: Doctor) => row.specialization ?? "—",
     },
     {
-      key: "designation",
-      header: "Designation",
-      render: (row: Doctor) => row.designation ?? "—",
-    },
-    {
       key: "mobile",
       header: "Mobile",
       render: (row: Doctor) => row.mobile ?? "—",
+    },
+    {
+      key: "employeeId",
+      header: "Employee ID",
+      render: (row: Doctor) => row.employeeId ?? "—",
     },
     {
       key: "status",
@@ -317,15 +308,7 @@ export function DoctorCreateContent() {
           >
             <Pencil className="size-4" />
           </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label={row.active ? `Deactivate ${row.name}` : `Activate ${row.name}`}
-            onClick={() => setConfirmTarget(row)}
-          >
-            <Power className="size-4" />
-          </Button>
+          
         </div>
       ),
     },
@@ -344,10 +327,10 @@ export function DoctorCreateContent() {
   );
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-doctor space-y-3">
       <PageHeader
         icon={Stethoscope}
-        title="Create Doctor"
+        title="Doctor Registration"
         subtitle="Register a new doctor or edit an existing one"
       />
 
@@ -374,234 +357,201 @@ export function DoctorCreateContent() {
               </p>
             )}
 
-            <div className="border-b border-border pb-3">
-              <h3 className="mb-2.5 font-heading text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Basic Details
-              </h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <FormField id="doc-type" label="Doctor Type">
-                  <Select
-                    id="doc-type"
-                    value={form.doctorType}
-                    onChange={(event) => update({ doctorType: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  >
-                    <option value="">Select--</option>
-                    {doctorTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </Select>
-                </FormField>
-                <FormField id="doc-employee" label="Employee ID">
-                  <Input
-                    id="doc-employee"
-                    value={form.employeeId}
-                    placeholder="e.g. EMP-001"
-                    onChange={(event) => update({ employeeId: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-                <FormField id="doc-first" label="First Name" required error={fieldErrors.firstName}>
-                  <Input
-                    id="doc-first"
-                    value={form.firstName}
-                    placeholder="First name"
-                    onChange={(event) => update({ firstName: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-                <FormField id="doc-middle" label="Middle Name">
-                  <Input
-                    id="doc-middle"
-                    value={form.middleName}
-                    placeholder="Middle name"
-                    onChange={(event) => update({ middleName: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-                <FormField id="doc-last" label="Last Name" required error={fieldErrors.lastName}>
-                  <Input
-                    id="doc-last"
-                    value={form.lastName}
-                    placeholder="Last name"
-                    onChange={(event) => update({ lastName: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-                <FormField id="doc-short" label="Short Name">
-                  <Input
-                    id="doc-short"
-                    value={form.shortName}
-                    placeholder="e.g. Dr. A"
-                    onChange={(event) => update({ shortName: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-                <FormField id="doc-gender" label="Gender">
-                  <Select
-                    id="doc-gender"
-                    value={form.gender}
-                    onChange={(event) => update({ gender: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  >
-                    <option value="">Select--</option>
-                    {genders.map((gender) => (
-                      <option key={gender} value={gender}>
-                        {gender}
-                      </option>
-                    ))}
-                  </Select>
-                </FormField>
-                <FormField id="doc-qualification" label="Qualification">
-                  <Input
-                    id="doc-qualification"
-                    value={form.qualification}
-                    placeholder="e.g. MBBS, DM"
-                    onChange={(event) => update({ qualification: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-              </div>
-            </div>
-
-            <div className="border-b border-border pb-3">
-              <h3 className="mb-2.5 font-heading text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Contact Details
-              </h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <FormField id="doc-mobile" label="Mobile">
-                  <Input
-                    id="doc-mobile"
-                    value={form.mobile}
-                    placeholder="10-digit mobile"
-                    maxLength={10}
-                    onChange={(event) => update({ mobile: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-                <FormField id="doc-phone" label="Phone">
-                  <Input
-                    id="doc-phone"
-                    value={form.phone}
-                    placeholder="Landline"
-                    onChange={(event) => update({ phone: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-                <FormField id="doc-email" label="Email" error={fieldErrors.email}>
-                  <Input
-                    id="doc-email"
-                    type="email"
-                    value={form.email}
-                    placeholder="doctor@example.com"
-                    onChange={(event) => update({ email: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-                <FormField id="doc-city" label="City">
-                  <Input
-                    id="doc-city"
-                    value={form.city}
-                    placeholder="City"
-                    onChange={(event) => update({ city: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-                <FormField
-                  id="doc-address"
-                  label="Address"
-                  className="sm:col-span-2"
+            <div className="lis-doctor-fields grid gap-0 sm:grid-cols-2">
+              <FormField id="doc-employee" label="Employee ID">
+                <Input
+                  id="doc-employee"
+                  value={form.employeeId}
+                  placeholder="e.g. EMP-001"
+                  onChange={(event) => update({ employeeId: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-first" label="First Name" required error={fieldErrors.firstName}>
+                <Input
+                  id="doc-first"
+                  value={form.firstName}
+                  placeholder="First name"
+                  onChange={(event) => update({ firstName: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-middle" label="Middle Name">
+                <Input
+                  id="doc-middle"
+                  value={form.middleName}
+                  placeholder="Middle name"
+                  onChange={(event) => update({ middleName: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-last" label="Last Name" required error={fieldErrors.lastName}>
+                <Input
+                  id="doc-last"
+                  value={form.lastName}
+                  placeholder="Last name"
+                  onChange={(event) => update({ lastName: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-short" label="Short Name">
+                <Input
+                  id="doc-short"
+                  value={form.shortName}
+                  placeholder="e.g. Dr. A"
+                  onChange={(event) => update({ shortName: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-gender" label="Gender">
+                <Select
+                  id="doc-gender"
+                  value={form.gender}
+                  onChange={(event) => update({ gender: event.target.value })}
+                  disabled={saveMutation.isPending}
                 >
-                  <Input
-                    id="doc-address"
-                    value={form.address}
-                    placeholder="Address"
-                    onChange={(event) => update({ address: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-              </div>
-            </div>
-
-            <div className="border-b border-border pb-3">
-              <h3 className="mb-2.5 font-heading text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Practice Details
-              </h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <FormField id="doc-spec" label="Specialisation">
-                  <Select
-                    id="doc-spec"
-                    value={form.specialisationId}
-                    onChange={(event) => update({ specialisationId: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  >
-                    <option value="">Select--</option>
-                    {specialisations.map((record) => (
-                      <option key={record.id} value={record.id}>
-                        {record.name}
-                      </option>
-                    ))}
-                  </Select>
-                </FormField>
-                <FormField id="doc-desig" label="Designation">
-                  <Select
-                    id="doc-desig"
-                    value={form.designationId}
-                    onChange={(event) => update({ designationId: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  >
-                    <option value="">Select--</option>
-                    {designations.map((record) => (
-                      <option key={record.id} value={record.id}>
-                        {record.name}
-                      </option>
-                    ))}
-                  </Select>
-                </FormField>
-                <FormField id="doc-dept" label="Doctor Department">
-                  <Select
-                    id="doc-dept"
-                    value={form.departmentId}
-                    onChange={(event) => update({ departmentId: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  >
-                    <option value="">Select--</option>
-                    {departments.map((record) => (
-                      <option key={record.id} value={record.id}>
-                        {record.name}
-                      </option>
-                    ))}
-                  </Select>
-                </FormField>
-                <FormField id="doc-online" label="Online App. Display">
-                  <Select
-                    id="doc-online"
-                    value={form.onlineAppDisplay}
-                    onChange={(event) => update({ onlineAppDisplay: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  >
-                    {yesNoOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </Select>
-                </FormField>
-                <FormField id="doc-room" label="Room Number">
-                  <Input
-                    id="doc-room"
-                    value={form.roomNumber}
-                    placeholder="e.g. 204"
-                    onChange={(event) => update({ roomNumber: event.target.value })}
-                    disabled={saveMutation.isPending}
-                  />
-                </FormField>
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
+                  <option value="">Select--</option>
+                  {genders.map((gender) => (
+                    <option key={gender} value={gender}>
+                      {gender}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+              <FormField id="doc-qualification" label="Qualification">
+                <Input
+                  id="doc-qualification"
+                  value={form.qualification}
+                  placeholder="e.g. MBBS, DM"
+                  onChange={(event) => update({ qualification: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-phone" label="Phone">
+                <Input
+                  id="doc-phone"
+                  value={form.phone}
+                  placeholder="Landline"
+                  onChange={(event) => update({ phone: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-mobile" label="Mobile">
+                <Input
+                  id="doc-mobile"
+                  value={form.mobile}
+                  placeholder="10-digit mobile"
+                  maxLength={10}
+                  onChange={(event) => update({ mobile: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-email" label="Email" error={fieldErrors.email}>
+                <Input
+                  id="doc-email"
+                  type="email"
+                  value={form.email}
+                  placeholder="doctor@example.com"
+                  onChange={(event) => update({ email: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-city" label="City">
+                <Input
+                  id="doc-city"
+                  value={form.city}
+                  placeholder="City"
+                  onChange={(event) => update({ city: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-spec" label="Specialisation">
+                <Select
+                  id="doc-spec"
+                  value={form.specialisationId}
+                  onChange={(event) => update({ specialisationId: event.target.value })}
+                  disabled={saveMutation.isPending}
+                >
+                  <option value="">Select--</option>
+                  {specialisations.map((record) => (
+                    <option key={record.id} value={record.id}>
+                      {record.name}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+              <FormField id="doc-desig" label="Designation">
+                <Select
+                  id="doc-desig"
+                  value={form.designationId}
+                  onChange={(event) => update({ designationId: event.target.value })}
+                  disabled={saveMutation.isPending}
+                >
+                  <option value="">Select--</option>
+                  {designations.map((record) => (
+                    <option key={record.id} value={record.id}>
+                      {record.name}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+              <FormField id="doc-type" label="Doctor Type">
+                <Select
+                  id="doc-type"
+                  value={form.doctorType}
+                  onChange={(event) => update({ doctorType: event.target.value })}
+                  disabled={saveMutation.isPending}
+                >
+                  <option value="">Select--</option>
+                  {doctorTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+              <FormField id="doc-dept" label="Doctor Department">
+                <Select
+                  id="doc-dept"
+                  value={form.departmentId}
+                  onChange={(event) => update({ departmentId: event.target.value })}
+                  disabled={saveMutation.isPending}
+                >
+                  <option value="">Select--</option>
+                  {departments.map((record) => (
+                    <option key={record.id} value={record.id}>
+                      {record.name}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+              <FormField
+                id="doc-address"
+                label="Address"
+                className="sm:col-span-2"
+              >
+                <Input
+                  id="doc-address"
+                  value={form.address}
+                  placeholder="Address"
+                  onChange={(event) => update({ address: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
+              <FormField id="doc-online" label="Online App. Display">
+                <Select
+                  id="doc-online"
+                  value={form.onlineAppDisplay}
+                  onChange={(event) => update({ onlineAppDisplay: event.target.value })}
+                  disabled={saveMutation.isPending}
+                >
+                  {yesNoOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
               <FormField id="doc-opfee" label="OP Consultation Fee">
                 {numberInput(
                   "doc-opfee",
@@ -610,19 +560,19 @@ export function DoctorCreateContent() {
                   "0.00",
                 )}
               </FormField>
-              <FormField id="doc-ipfee" label="IP Consultation Fee">
-                {numberInput(
-                  "doc-ipfee",
-                  form.ipConsultationFee,
-                  (value) => update({ ipConsultationFee: value }),
-                  "0.00",
-                )}
-              </FormField>
               <FormField id="doc-hfee" label="Hospital Fee">
                 {numberInput(
                   "doc-hfee",
                   form.hospitalFee,
                   (value) => update({ hospitalFee: value }),
+                  "0.00",
+                )}
+              </FormField>
+              <FormField id="doc-ipfee" label="IP Consultation Fee">
+                {numberInput(
+                  "doc-ipfee",
+                  form.ipConsultationFee,
+                  (value) => update({ ipConsultationFee: value }),
                   "0.00",
                 )}
               </FormField>
@@ -650,9 +600,19 @@ export function DoctorCreateContent() {
                   "0",
                 )}
               </FormField>
+              <FormField id="doc-room" label="Room Number">
+                <Input
+                  id="doc-room"
+                  value={form.roomNumber}
+                  placeholder="e.g. 204"
+                  onChange={(event) => update({ roomNumber: event.target.value })}
+                  disabled={saveMutation.isPending}
+                />
+              </FormField>
             </div>
 
             <FormActions
+              homeBeforeReset
               onSubmit={handleSave}
               onReset={() => {
                 setEditingId(null);
@@ -661,7 +621,7 @@ export function DoctorCreateContent() {
                 setFeedback(null);
               }}
               submitting={saveMutation.isPending}
-              submitLabel={editingId ? "Update" : "Save"}
+              submitLabel={editingId ? "Update" : "Submit"}
             />
           </div>
         </FormSection>
@@ -693,29 +653,7 @@ export function DoctorCreateContent() {
         </FormSection>
       </div>
 
-      <ConfirmDialog
-        open={confirmTarget !== null}
-        onOpenChange={(open) => {
-          if (!open) setConfirmTarget(null);
-        }}
-        title={confirmTarget?.active ? "Deactivate doctor?" : "Activate doctor?"}
-        description={
-          confirmTarget
-            ? `Do you want to ${confirmTarget.active ? "deactivate" : "activate"} "${confirmTarget.name}"?`
-            : undefined
-        }
-        confirmLabel={confirmTarget?.active ? "Deactivate" : "Activate"}
-        loading={toggleMutation.isPending}
-        onConfirm={() => {
-          if (confirmTarget) {
-            void toggleMutation.mutate({
-              id: confirmTarget.id,
-              active: !confirmTarget.active,
-            });
-            setConfirmTarget(null);
-          }
-        }}
-      />
+
     </div>
   );
 }

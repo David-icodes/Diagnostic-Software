@@ -32,7 +32,7 @@ export function ReportTitleBar({
   return (
     <div
       className={cn(
-        "flex min-h-11 items-center justify-between gap-3 border-b border-border bg-card px-2.5 py-1.5",
+        "lis-report-title flex min-h-11 items-center justify-between gap-3 border-b border-border bg-card px-2.5 py-1.5",
         className,
       )}
     >
@@ -41,7 +41,7 @@ export function ReportTitleBar({
           {title}
         </h1>
         {subtitle && (
-          <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
+          <p className="sr-only">{subtitle}</p>
         )}
       </div>
       {actions && (

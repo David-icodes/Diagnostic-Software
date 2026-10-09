@@ -17,6 +17,7 @@ export function DoctorDesignationContent() {
       subtitle="Add and manage doctor designations"
       formTitle="Add New Designation"
       recordLabel="Designation"
+      queryRoot="doctor-designations"
       placeholder="e.g. Senior Consultant"
       services={{
         fetch: fetchDesignations,

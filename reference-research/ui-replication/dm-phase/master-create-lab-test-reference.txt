@@ -1,0 +1,3885 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Create New Lab Test" [level=3]
+- paragraph
+- table:
+  - rowgroup:
+    - row "* Department Name --Select-- * Test Name":
+      - cell "* Department Name"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+          - option "MICROBIOLOGY"
+          - option "Hematology"
+          - option "BIOCHEMISTRY"
+          - option "PATHOLOGY"
+          - option "BIO CHEMISTRY"
+      - cell
+      - cell "* Test Name"
+      - cell:
+        - textbox
+      - cell
+    - row "CGHS Code NIMS Code":
+      - cell "CGHS Code"
+      - cell:
+        - textbox
+      - cell
+      - cell "NIMS Code"
+      - cell:
+        - textbox
+      - cell
+    - row "Railway Code NFC Code":
+      - cell "Railway Code"
+      - cell:
+        - textbox
+      - cell
+      - cell "NFC Code"
+      - cell:
+        - textbox
+      - cell
+    - row "Test Code INVG202 Test Short Name":
+      - cell "Test Code"
+      - cell "INVG202":
+        - textbox: INVG202
+      - cell
+      - cell "Test Short Name"
+      - cell:
+        - textbox
+      - cell
+    - row "Description * Price for OP 0":
+      - cell "Description"
+      - cell:
+        - textbox
+      - cell
+      - cell "* Price for OP"
+      - cell "0":
+        - textbox: "0"
+      - cell
+    - row "Active Status Y Price for IP 0":
+      - cell "Active Status"
+      - cell "Y":
+        - combobox:
+          - option "Y" [selected]
+          - option "N"
+      - cell
+      - cell "Price for IP"
+      - cell "0":
+        - textbox: "0"
+      - cell
+    - row "Price for ER 0":
+      - cell "Price for ER"
+      - cell "0":
+        - textbox: "0"
+      - cell
+      - cell
+      - cell
+      - cell
+    - row "Doctor Price 0 Comments":
+      - cell "Doctor Price"
+      - cell "0":
+        - textbox: "0"
+      - cell
+      - cell "Comments"
+      - cell:
+        - textbox
+    - row "Referral %":
+      - cell "Referral %"
+      - cell:
+        - textbox
+      - cell
+      - cell
+      - cell
+      - cell
+    - row:
+      - cell
+    - row "Report Note 1 Report Note 2":
+      - cell "Report Note 1"
+      - cell:
+        - textbox
+      - cell
+      - cell "Report Note 2"
+      - cell:
+        - textbox
+      - cell
+    - row "Sample Name + Tube Container +":
+      - cell "Sample Name"
+      - cell:
+        - combobox
+      - cell "+":
+        - button "+"
+      - cell "Tube Container"
+      - cell:
+        - combobox
+      - cell "+":
+        - button "+"
+    - row:
+      - cell
+      - cell
+      - cell
+      - cell
+    - row "LabTest Result Related To Template Based Parameter Based Templates":
+      - cell "LabTest Result Related To":
+        - radio "LabTest Result Related To" [checked]
+        - generic: LabTest Result Related To
+      - cell "Template Based":
+        - checkbox "Template Based"
+        - generic: Template Based
+      - cell
+      - cell "Parameter Based Templates":
+        - radio "Parameter Based Templates"
+        - generic: Parameter Based Templates
+      - cell
+    - row:
+      - cell
+- button "SUBMIT"
+- button "UPDATE" [disabled]
+- button "HOME"
+- button "CLEAR"
+- textbox
+- table:
+  - rowgroup:
+    - row "S.No Department Name Lab Test Name Test Code OP Price IP Price Status Edit Del":
+      - columnheader "S.No"
+      - columnheader "Department Name"
+      - columnheader "Lab Test Name"
+      - columnheader "Test Code"
+      - columnheader "OP Price"
+      - columnheader "IP Price"
+      - columnheader "Status"
+      - columnheader "Edit"
+      - columnheader "Del"
+- table:
+  - rowgroup:
+    - row "1 BIO CHEMISTRY 2 DECHO & CONSULTATION INVG106 2000 2000 N":
+      - cell "1"
+      - cell "BIO CHEMISTRY"
+      - cell "2 DECHO & CONSULTATION"
+      - cell "INVG106"
+      - cell "2000"
+      - cell "2000"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "2 BIO CHEMISTRY 24 HOURS COPPER,URINE INVG329 2500 2500 Y":
+      - cell "2"
+      - cell "BIO CHEMISTRY"
+      - cell "24 HOURS COPPER,URINE"
+      - cell "INVG329"
+      - cell "2500"
+      - cell "2500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "3 BIO CHEMISTRY 25 HYDROXY VITAMIN D INVG129 1100 2000 Y":
+      - cell "3"
+      - cell "BIO CHEMISTRY"
+      - cell "25 HYDROXY VITAMIN D"
+      - cell "INVG129"
+      - cell "1100"
+      - cell "2000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "4 BIO CHEMISTRY ABG INVG135 1800 1800 N":
+      - cell "4"
+      - cell "BIO CHEMISTRY"
+      - cell "ABG"
+      - cell "INVG135"
+      - cell "1800"
+      - cell "1800"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "5 Hematology Absolute Eosinophil Count (AEC) INVG136 150 250 Y":
+      - cell "5"
+      - cell "Hematology"
+      - cell "Absolute Eosinophil Count (AEC)"
+      - cell "INVG136"
+      - cell "150"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "6 BIO CHEMISTRY Acetaminphen INVG111 2700 2700 Y":
+      - cell "6"
+      - cell "BIO CHEMISTRY"
+      - cell "Acetaminphen"
+      - cell "INVG111"
+      - cell "2700"
+      - cell "2700"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "7 BIO CHEMISTRY Activated Partial Thromboplastin Time (APTT/PTTK) INVG288 450 600 Y":
+      - cell "7"
+      - cell "BIO CHEMISTRY"
+      - cell "Activated Partial Thromboplastin Time (APTT/PTTK)"
+      - cell "INVG288"
+      - cell "450"
+      - cell "600"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "8 BIO CHEMISTRY ADA INVG287 1450 1450 Y":
+      - cell "8"
+      - cell "BIO CHEMISTRY"
+      - cell "ADA"
+      - cell "INVG287"
+      - cell "1450"
+      - cell "1450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "9 BIO CHEMISTRY Adrenocorticotropic Hormone INVG72 1900 1900 Y":
+      - cell "9"
+      - cell "BIO CHEMISTRY"
+      - cell "Adrenocorticotropic Hormone"
+      - cell "INVG72"
+      - cell "1900"
+      - cell "1900"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "10 MICROBIOLOGY AFB STAIN INVG137 300 450 Y":
+      - cell "10"
+      - cell "MICROBIOLOGY"
+      - cell "AFB STAIN"
+      - cell "INVG137"
+      - cell "300"
+      - cell "450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "11 BIO CHEMISTRY ALBUMIN INVG138 100 210 Y":
+      - cell "11"
+      - cell "BIO CHEMISTRY"
+      - cell "ALBUMIN"
+      - cell "INVG138"
+      - cell "100"
+      - cell "210"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "12 BIOCHEMISTRY Albumin/Creatinine Ratio INVG162 400 0 Y":
+      - cell "12"
+      - cell "BIOCHEMISTRY"
+      - cell "Albumin/Creatinine Ratio"
+      - cell "INVG162"
+      - cell "400"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "13 BIOCHEMISTRY Aldosterone/Renin activity Ratio INVG195 2200 0 Y":
+      - cell "13"
+      - cell "BIOCHEMISTRY"
+      - cell "Aldosterone/Renin activity Ratio"
+      - cell "INVG195"
+      - cell "2200"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "14 BIO CHEMISTRY Alkaline Phosphatase INVG94 300 300 Y":
+      - cell "14"
+      - cell "BIO CHEMISTRY"
+      - cell "Alkaline Phosphatase"
+      - cell "INVG94"
+      - cell "300"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "15 BIO CHEMISTRY ALLERGEN PANEL VEG+NON VEG + INHALANT+DRUGS INVG101 4000 7500 Y":
+      - cell "15"
+      - cell "BIO CHEMISTRY"
+      - cell "ALLERGEN PANEL VEG+NON VEG + INHALANT+DRUGS"
+      - cell "INVG101"
+      - cell "4000"
+      - cell "7500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "16 BIO CHEMISTRY ALPHA 1 ANTI TRYPSIN INVG140 2900 2900 Y":
+      - cell "16"
+      - cell "BIO CHEMISTRY"
+      - cell "ALPHA 1 ANTI TRYPSIN"
+      - cell "INVG140"
+      - cell "2900"
+      - cell "2900"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "17 BIO CHEMISTRY ALPHA FETO PROTEIN (AFP) INVG139 1260 1260 Y":
+      - cell "17"
+      - cell "BIO CHEMISTRY"
+      - cell "ALPHA FETO PROTEIN (AFP)"
+      - cell "INVG139"
+      - cell "1260"
+      - cell "1260"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "18 BIO CHEMISTRY AMA(MITOCHONDRIAL ANTIBODY ) INVG349 1900 1900 Y":
+      - cell "18"
+      - cell "BIO CHEMISTRY"
+      - cell "AMA(MITOCHONDRIAL ANTIBODY )"
+      - cell "INVG349"
+      - cell "1900"
+      - cell "1900"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "19 BIO CHEMISTRY AMMONIA INVG141 750 1470 Y":
+      - cell "19"
+      - cell "BIO CHEMISTRY"
+      - cell "AMMONIA"
+      - cell "INVG141"
+      - cell "750"
+      - cell "1470"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "20 BIO CHEMISTRY AMYLASE INVG255 350 500 Y":
+      - cell "20"
+      - cell "BIO CHEMISTRY"
+      - cell "AMYLASE"
+      - cell "INVG255"
+      - cell "350"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "21 BIO CHEMISTRY AMYLASE,FLUIDS INVG292 720 700 Y":
+      - cell "21"
+      - cell "BIO CHEMISTRY"
+      - cell "AMYLASE,FLUIDS"
+      - cell "INVG292"
+      - cell "720"
+      - cell "700"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "22 BIO CHEMISTRY ANA profile INVG103 3000 3500 Y":
+      - cell "22"
+      - cell "BIO CHEMISTRY"
+      - cell "ANA profile"
+      - cell "INVG103"
+      - cell "3000"
+      - cell "3500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "23 BIO CHEMISTRY ANGIOTENSIN CONVERTING ENZYME (ACE) INVG146 1920 1600 Y":
+      - cell "23"
+      - cell "BIO CHEMISTRY"
+      - cell "ANGIOTENSIN CONVERTING ENZYME (ACE)"
+      - cell "INVG146"
+      - cell "1920"
+      - cell "1600"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "24 BIOCHEMISTRY ANTI CARDIOLIPIN IgG INVG186 450 0 Y":
+      - cell "24"
+      - cell "BIOCHEMISTRY"
+      - cell "ANTI CARDIOLIPIN IgG"
+      - cell "INVG186"
+      - cell "450"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "25 BIOCHEMISTRY ANTI CARDIOLIPIN IgM INVG185 450 0 Y":
+      - cell "25"
+      - cell "BIOCHEMISTRY"
+      - cell "ANTI CARDIOLIPIN IgM"
+      - cell "INVG185"
+      - cell "450"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "26 BIO CHEMISTRY ANTI CCP INVG147 950 1575 Y":
+      - cell "26"
+      - cell "BIO CHEMISTRY"
+      - cell "ANTI CCP"
+      - cell "INVG147"
+      - cell "950"
+      - cell "1575"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "27 BIO CHEMISTRY Anti Mullarian Hormone (AMH) INVG235 1400 1400 Y":
+      - cell "27"
+      - cell "BIO CHEMISTRY"
+      - cell "Anti Mullarian Hormone (AMH)"
+      - cell "INVG235"
+      - cell "1400"
+      - cell "1400"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "28 BIO CHEMISTRY Anti Nuclear Antibody INVG90 600 1050 Y":
+      - cell "28"
+      - cell "BIO CHEMISTRY"
+      - cell "Anti Nuclear Antibody"
+      - cell "INVG90"
+      - cell "600"
+      - cell "1050"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "29 Hematology ANTI THROMBIN III INVG149 4440 3700 Y":
+      - cell "29"
+      - cell "Hematology"
+      - cell "ANTI THROMBIN III"
+      - cell "INVG149"
+      - cell "4440"
+      - cell "3700"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "30 BIO CHEMISTRY ANTI THYROGLOBULIN (ATG) INVG150 750 1000 Y":
+      - cell "30"
+      - cell "BIO CHEMISTRY"
+      - cell "ANTI THYROGLOBULIN (ATG)"
+      - cell "INVG150"
+      - cell "750"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "31 BIO CHEMISTRY ANTI TPO INVG314 750 800 Y":
+      - cell "31"
+      - cell "BIO CHEMISTRY"
+      - cell "ANTI TPO"
+      - cell "INVG314"
+      - cell "750"
+      - cell "800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "32 BIO CHEMISTRY ANTIBODY TO HEPATITIS C VIRUS(CLIA) INVG142 500 0 Y":
+      - cell "32"
+      - cell "BIO CHEMISTRY"
+      - cell "ANTIBODY TO HEPATITIS C VIRUS(CLIA)"
+      - cell "INVG142"
+      - cell "500"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "33 PATHOLOGY ANTI-SPERM ANTIBODY INVG291 900 900 Y":
+      - cell "33"
+      - cell "PATHOLOGY"
+      - cell "ANTI-SPERM ANTIBODY"
+      - cell "INVG291"
+      - cell "900"
+      - cell "900"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "34 BIO CHEMISTRY APLA PROFILE INVG285 4800 5000 Y":
+      - cell "34"
+      - cell "BIO CHEMISTRY"
+      - cell "APLA PROFILE"
+      - cell "INVG285"
+      - cell "4800"
+      - cell "5000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "35 BIOCHEMISTRY APOLIPOPROTEIN B (APO-B) INVG159 600 0 Y":
+      - cell "35"
+      - cell "BIOCHEMISTRY"
+      - cell "APOLIPOPROTEIN B (APO-B)"
+      - cell "INVG159"
+      - cell "600"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "36 BIO CHEMISTRY ASM (ANTI-SMOOTH MUSCLE ANTIBODY) INVG348 2790 2790 Y":
+      - cell "36"
+      - cell "BIO CHEMISTRY"
+      - cell "ASM (ANTI-SMOOTH MUSCLE ANTIBODY)"
+      - cell "INVG348"
+      - cell "2790"
+      - cell "2790"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "37 MICROBIOLOGY ASMA-Anti Smooth Muscle Antibody INVG342 1600 1600 Y":
+      - cell "37"
+      - cell "MICROBIOLOGY"
+      - cell "ASMA-Anti Smooth Muscle Antibody"
+      - cell "INVG342"
+      - cell "1600"
+      - cell "1600"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "38 BIO CHEMISTRY ASO INVG284 450 400 Y":
+      - cell "38"
+      - cell "BIO CHEMISTRY"
+      - cell "ASO"
+      - cell "INVG284"
+      - cell "450"
+      - cell "400"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "39 BIOCHEMISTRY BETA 2 GLYCOPROTEIN ANTY BODY IgG INVG188 650 0 Y":
+      - cell "39"
+      - cell "BIOCHEMISTRY"
+      - cell "BETA 2 GLYCOPROTEIN ANTY BODY IgG"
+      - cell "INVG188"
+      - cell "650"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "40 BIOCHEMISTRY BETA 2 GLYCOPROTEIN ANTY BODY IgM INVG187 650 0 Y":
+      - cell "40"
+      - cell "BIOCHEMISTRY"
+      - cell "BETA 2 GLYCOPROTEIN ANTY BODY IgM"
+      - cell "INVG187"
+      - cell "650"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "41 BIOCHEMISTRY BETA 2 Microgloulin INVG197 1000 0 Y":
+      - cell "41"
+      - cell "BIOCHEMISTRY"
+      - cell "BETA 2 Microgloulin"
+      - cell "INVG197"
+      - cell "1000"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "42 BIOCHEMISTRY BETA HCG INVG126 650 850 Y":
+      - cell "42"
+      - cell "BIOCHEMISTRY"
+      - cell "BETA HCG"
+      - cell "INVG126"
+      - cell "650"
+      - cell "850"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "43 BIO CHEMISTRY BICARBONATE INVG345 450 450 Y":
+      - cell "43"
+      - cell "BIO CHEMISTRY"
+      - cell "BICARBONATE"
+      - cell "INVG345"
+      - cell "450"
+      - cell "450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "44 BIO CHEMISTRY BILE ACID-TOTAL INVG151 3000 2500 Y":
+      - cell "44"
+      - cell "BIO CHEMISTRY"
+      - cell "BILE ACID-TOTAL"
+      - cell "INVG151"
+      - cell "3000"
+      - cell "2500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "45 BIO CHEMISTRY BILE SALTS & BILE PIGMENTS INVG152 100 300 Y":
+      - cell "45"
+      - cell "BIO CHEMISTRY"
+      - cell "BILE SALTS & BILE PIGMENTS"
+      - cell "INVG152"
+      - cell "100"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "46 BIO CHEMISTRY BILIRUBIN INVG154 250 250 Y":
+      - cell "46"
+      - cell "BIO CHEMISTRY"
+      - cell "BILIRUBIN"
+      - cell "INVG154"
+      - cell "250"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "47 BIO CHEMISTRY BILIRUBIN,PAEDIATRIC INVG153 250 250 N":
+      - cell "47"
+      - cell "BIO CHEMISTRY"
+      - cell "BILIRUBIN,PAEDIATRIC"
+      - cell "INVG153"
+      - cell "250"
+      - cell "250"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "48 Hematology BLEEDING TIME CLOTTING TIME INVG155 100 250 Y":
+      - cell "48"
+      - cell "Hematology"
+      - cell "BLEEDING TIME CLOTTING TIME"
+      - cell "INVG155"
+      - cell "100"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "49 BIOCHEMISTRY BLOOD CULTURE & SENSITIVITY INVG24 600 3500 Y":
+      - cell "49"
+      - cell "BIOCHEMISTRY"
+      - cell "BLOOD CULTURE & SENSITIVITY"
+      - cell "INVG24"
+      - cell "600"
+      - cell "3500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "50 MICROBIOLOGY Blood Culture Aerobic and Anaerobic INVG105 3500 3500 Y":
+      - cell "50"
+      - cell "MICROBIOLOGY"
+      - cell "Blood Culture Aerobic and Anaerobic"
+      - cell "INVG105"
+      - cell "3500"
+      - cell "3500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "51 BIOCHEMISTRY BLOOD CULTURE AND SENSIVITY AUTOMATED MIC V INVG81 600 3500 Y":
+      - cell "51"
+      - cell "BIOCHEMISTRY"
+      - cell "BLOOD CULTURE AND SENSIVITY AUTOMATED MIC V"
+      - cell "INVG81"
+      - cell "600"
+      - cell "3500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "52 Hematology BLOOD GROUP INVG115 1 250 N":
+      - cell "52"
+      - cell "Hematology"
+      - cell "BLOOD GROUP"
+      - cell "INVG115"
+      - cell "1"
+      - cell "250"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "53 BIOCHEMISTRY BLOOD GROUPING & RH TYPING INVG28 100 210 Y":
+      - cell "53"
+      - cell "BIOCHEMISTRY"
+      - cell "BLOOD GROUPING & RH TYPING"
+      - cell "INVG28"
+      - cell "100"
+      - cell "210"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "54 BIOCHEMISTRY BLOOD UREA INVG15 150 250 Y":
+      - cell "54"
+      - cell "BIOCHEMISTRY"
+      - cell "BLOOD UREA"
+      - cell "INVG15"
+      - cell "150"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "55 BIOCHEMISTRY BLOOD UREA SERUM CREATININE INVG156 300 0 Y":
+      - cell "55"
+      - cell "BIOCHEMISTRY"
+      - cell "BLOOD UREA SERUM CREATININE"
+      - cell "INVG156"
+      - cell "300"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "56 MICROBIOLOGY BRUCELLA IgM INVG317 400 1300 Y":
+      - cell "56"
+      - cell "MICROBIOLOGY"
+      - cell "BRUCELLA IgM"
+      - cell "INVG317"
+      - cell "400"
+      - cell "1300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "57 BIOCHEMISTRY BT/CT INVG26 100 150 Y":
+      - cell "57"
+      - cell "BIOCHEMISTRY"
+      - cell "BT/CT"
+      - cell "INVG26"
+      - cell "100"
+      - cell "150"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "58 MICROBIOLOGY C.DIFFICLE TOXIN INVG164 2800 2800 Y":
+      - cell "58"
+      - cell "MICROBIOLOGY"
+      - cell "C.DIFFICLE TOXIN"
+      - cell "INVG164"
+      - cell "2800"
+      - cell "2800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "59 BIO CHEMISTRY CA 125 INVG161 1100 1200 Y":
+      - cell "59"
+      - cell "BIO CHEMISTRY"
+      - cell "CA 125"
+      - cell "INVG161"
+      - cell "1100"
+      - cell "1200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "60 BIO CHEMISTRY CA 19.9 INVG160 850 1200 Y":
+      - cell "60"
+      - cell "BIO CHEMISTRY"
+      - cell "CA 19.9"
+      - cell "INVG160"
+      - cell "850"
+      - cell "1200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "61 BIO CHEMISTRY C-ANCA INVG144 2520 2100 Y":
+      - cell "61"
+      - cell "BIO CHEMISTRY"
+      - cell "C-ANCA"
+      - cell "INVG144"
+      - cell "2520"
+      - cell "2100"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "62 BIO CHEMISTRY CARCINO EMBRYONIC ANTIGEN (CEA) INVG162 850 1200 Y":
+      - cell "62"
+      - cell "BIO CHEMISTRY"
+      - cell "CARCINO EMBRYONIC ANTIGEN (CEA)"
+      - cell "INVG162"
+      - cell "850"
+      - cell "1200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "63 BIO CHEMISTRY CD4 COUNT - C0031 INVG362 800 1500 Y":
+      - cell "63"
+      - cell "BIO CHEMISTRY"
+      - cell "CD4 COUNT - C0031"
+      - cell "INVG362"
+      - cell "800"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "64 Hematology CELL BLOCK INVG296 2200 2200 Y":
+      - cell "64"
+      - cell "Hematology"
+      - cell "CELL BLOCK"
+      - cell "INVG296"
+      - cell "2200"
+      - cell "2200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "65 BIO CHEMISTRY CERULOPLASMIN INVG163 1200 1000 Y":
+      - cell "65"
+      - cell "BIO CHEMISTRY"
+      - cell "CERULOPLASMIN"
+      - cell "INVG163"
+      - cell "1200"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "66 BIOCHEMISTRY CHIKUNGUNYA IgM INVG35 700 1000 Y":
+      - cell "66"
+      - cell "BIOCHEMISTRY"
+      - cell "CHIKUNGUNYA IgM"
+      - cell "INVG35"
+      - cell "700"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "67 BIO CHEMISTRY Chikungunya profile INVG89 1200 1600 Y":
+      - cell "67"
+      - cell "BIO CHEMISTRY"
+      - cell "Chikungunya profile"
+      - cell "INVG89"
+      - cell "1200"
+      - cell "1600"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "68 BIO CHEMISTRY CHKUNGUNYA IgG INVG322 700 800 Y":
+      - cell "68"
+      - cell "BIO CHEMISTRY"
+      - cell "CHKUNGUNYA IgG"
+      - cell "INVG322"
+      - cell "700"
+      - cell "800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "69 BIO CHEMISTRY CLOSTRIDIUM DIFFIXILE TOXIN A, B-STOOL INVG289 0 2500 Y":
+      - cell "69"
+      - cell "BIO CHEMISTRY"
+      - cell "CLOSTRIDIUM DIFFIXILE TOXIN A, B-STOOL"
+      - cell "INVG289"
+      - cell "0"
+      - cell "2500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "70 BIO CHEMISTRY COAGULATION PROFILE 12 800 5400 Y":
+      - cell "70"
+      - cell "BIO CHEMISTRY"
+      - cell "COAGULATION PROFILE"
+      - cell "12"
+      - cell "800"
+      - cell "5400"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "71 Hematology COMPLETE BLOOD PICTURE INVG108 250 350 Y":
+      - cell "71"
+      - cell "Hematology"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "INVG108"
+      - cell "250"
+      - cell "350"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "72 BIO CHEMISTRY COMPLETE BLOOD PICTURE INVG46 250 300 N":
+      - cell "72"
+      - cell "BIO CHEMISTRY"
+      - cell "COMPLETE BLOOD PICTURE"
+      - cell "INVG46"
+      - cell "250"
+      - cell "300"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "73 PATHOLOGY COMPLETE STOOL EXAMINATION INVG165 300 300 Y":
+      - cell "73"
+      - cell "PATHOLOGY"
+      - cell "COMPLETE STOOL EXAMINATION"
+      - cell "INVG165"
+      - cell "300"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "74 BIO CHEMISTRY COMPLETE STOOL EXAMINATION WITH OVA & CYST INVG290 450 450 Y":
+      - cell "74"
+      - cell "BIO CHEMISTRY"
+      - cell "COMPLETE STOOL EXAMINATION WITH OVA & CYST"
+      - cell "INVG290"
+      - cell "450"
+      - cell "450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "75 PATHOLOGY COMPLETE URINE EXAMINATION INVG120 100 250 Y":
+      - cell "75"
+      - cell "PATHOLOGY"
+      - cell "COMPLETE URINE EXAMINATION"
+      - cell "INVG120"
+      - cell "100"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "76 BIO CHEMISTRY COPPER INVG168 500 500 Y":
+      - cell "76"
+      - cell "BIO CHEMISTRY"
+      - cell "COPPER"
+      - cell "INVG168"
+      - cell "500"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "77 BIO CHEMISTRY CORTISOL INVG169 550 650 Y":
+      - cell "77"
+      - cell "BIO CHEMISTRY"
+      - cell "CORTISOL"
+      - cell "INVG169"
+      - cell "550"
+      - cell "650"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "78 BIO CHEMISTRY covid Antibodies Igg&igm INVG97 1200 2000 Y":
+      - cell "78"
+      - cell "BIO CHEMISTRY"
+      - cell "covid Antibodies Igg&igm"
+      - cell "INVG97"
+      - cell "1200"
+      - cell "2000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "79 BIOCHEMISTRY c-peptide INVG160 750 0 Y":
+      - cell "79"
+      - cell "BIOCHEMISTRY"
+      - cell "c-peptide"
+      - cell "INVG160"
+      - cell "750"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "80 BIO CHEMISTRY Creatine Kinase MB (CK-MB) INVG58 450 450 Y":
+      - cell "80"
+      - cell "BIO CHEMISTRY"
+      - cell "Creatine Kinase MB (CK-MB)"
+      - cell "INVG58"
+      - cell "450"
+      - cell "450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "81 BIO CHEMISTRY CREATININE PHOSPHOKINASE (CPK) INVG170 450 450 Y":
+      - cell "81"
+      - cell "BIO CHEMISTRY"
+      - cell "CREATININE PHOSPHOKINASE (CPK)"
+      - cell "INVG170"
+      - cell "450"
+      - cell "450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "82 BIOCHEMISTRY CRP (C - REACTIVE PROTEIN) INVG116 400 450 Y":
+      - cell "82"
+      - cell "BIOCHEMISTRY"
+      - cell "CRP (C - REACTIVE PROTEIN)"
+      - cell "INVG116"
+      - cell "400"
+      - cell "450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "83 BIOCHEMISTRY CRP RF ASO INVG189 1250 0 Y":
+      - cell "83"
+      - cell "BIOCHEMISTRY"
+      - cell "CRP RF ASO"
+      - cell "INVG189"
+      - cell "1250"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "84 MICROBIOLOGY CULTURE & SENSITIVITY,AEROBIC INVG156 600 1500 Y":
+      - cell "84"
+      - cell "MICROBIOLOGY"
+      - cell "CULTURE & SENSITIVITY,AEROBIC"
+      - cell "INVG156"
+      - cell "600"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "85 MICROBIOLOGY CULTURE & SENSITIVITY,ANAEROBIC INVG157 1500 1500 Y":
+      - cell "85"
+      - cell "MICROBIOLOGY"
+      - cell "CULTURE & SENSITIVITY,ANAEROBIC"
+      - cell "INVG157"
+      - cell "1500"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "86 MICROBIOLOGY CULTURE & SENSITIVITY,FLUIDS INVG172 600 1500 Y":
+      - cell "86"
+      - cell "MICROBIOLOGY"
+      - cell "CULTURE & SENSITIVITY,FLUIDS"
+      - cell "INVG172"
+      - cell "600"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "87 MICROBIOLOGY CULTURE & SENSITIVITY,PUS INVG173 600 1500 Y":
+      - cell "87"
+      - cell "MICROBIOLOGY"
+      - cell "CULTURE & SENSITIVITY,PUS"
+      - cell "INVG173"
+      - cell "600"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "88 MICROBIOLOGY CULTURE & SENSITIVITY,SPUTUM INVG174 600 1500 Y":
+      - cell "88"
+      - cell "MICROBIOLOGY"
+      - cell "CULTURE & SENSITIVITY,SPUTUM"
+      - cell "INVG174"
+      - cell "600"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "89 MICROBIOLOGY CULTURE AND SENITIVITY,SWAB INVG316 600 1500 Y":
+      - cell "89"
+      - cell "MICROBIOLOGY"
+      - cell "CULTURE AND SENITIVITY,SWAB"
+      - cell "INVG316"
+      - cell "600"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "90 MICROBIOLOGY CULTURE AND SENSITIVITY,TISSUE INVG315 600 1500 Y":
+      - cell "90"
+      - cell "MICROBIOLOGY"
+      - cell "CULTURE AND SENSITIVITY,TISSUE"
+      - cell "INVG315"
+      - cell "600"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "91 MICROBIOLOGY CULUTRE FOR AFB INVG337 600 1500 Y":
+      - cell "91"
+      - cell "MICROBIOLOGY"
+      - cell "CULUTRE FOR AFB"
+      - cell "INVG337"
+      - cell "600"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "92 PATHOLOGY CYTOLOGY INVG175 500 1000 Y":
+      - cell "92"
+      - cell "PATHOLOGY"
+      - cell "CYTOLOGY"
+      - cell "INVG175"
+      - cell "500"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "93 MICROBIOLOGY Cytology - Malignant Cells Body Fluids INVG85 1900 1900 Y":
+      - cell "93"
+      - cell "MICROBIOLOGY"
+      - cell "Cytology - Malignant Cells Body Fluids"
+      - cell "INVG85"
+      - cell "1900"
+      - cell "1900"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "94 BIO CHEMISTRY D-DIMER INVG125 600 1350 Y":
+      - cell "94"
+      - cell "BIO CHEMISTRY"
+      - cell "D-DIMER"
+      - cell "INVG125"
+      - cell "600"
+      - cell "1350"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "95 BIOCHEMISTRY Dengue NSI INVG174 700 0 Y":
+      - cell "95"
+      - cell "BIOCHEMISTRY"
+      - cell "Dengue NSI"
+      - cell "INVG174"
+      - cell "700"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "96 BIO CHEMISTRY Dengue Profile INVG106 1200 1200 Y":
+      - cell "96"
+      - cell "BIO CHEMISTRY"
+      - cell "Dengue Profile"
+      - cell "INVG106"
+      - cell "1200"
+      - cell "1200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "97 BIOCHEMISTRY Desmoglein I Antibody INVG169 3000 0 Y":
+      - cell "97"
+      - cell "BIOCHEMISTRY"
+      - cell "Desmoglein I Antibody"
+      - cell "INVG169"
+      - cell "3000"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "98 BIOCHEMISTRY Desmoglein III Antibody INVG170 3000 0 Y":
+      - cell "98"
+      - cell "BIOCHEMISTRY"
+      - cell "Desmoglein III Antibody"
+      - cell "INVG170"
+      - cell "3000"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "99 BIO CHEMISTRY DHEAS INVG325 600 1150 Y":
+      - cell "99"
+      - cell "BIO CHEMISTRY"
+      - cell "DHEAS"
+      - cell "INVG325"
+      - cell "600"
+      - cell "1150"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "100 Hematology DIRECT COOMBS TEST (DCT) INVG166 350 315 Y":
+      - cell "100"
+      - cell "Hematology"
+      - cell "DIRECT COOMBS TEST (DCT)"
+      - cell "INVG166"
+      - cell "350"
+      - cell "315"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "101 BIO CHEMISTRY DOUBLE MARKER INVG75 1600 2100 Y":
+      - cell "101"
+      - cell "BIO CHEMISTRY"
+      - cell "DOUBLE MARKER"
+      - cell "INVG75"
+      - cell "1600"
+      - cell "2100"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "102 BIOCHEMISTRY DOUBLE MARKER TEST INVG2 1600 0 N":
+      - cell "102"
+      - cell "BIOCHEMISTRY"
+      - cell "DOUBLE MARKER TEST"
+      - cell "INVG2"
+      - cell "1600"
+      - cell "0"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "103 BIO CHEMISTRY DS DNA INVG283 1000 0 Y":
+      - cell "103"
+      - cell "BIO CHEMISTRY"
+      - cell "DS DNA"
+      - cell "INVG283"
+      - cell "1000"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "104 BIO CHEMISTRY ECG INVG90 200 200 Y":
+      - cell "104"
+      - cell "BIO CHEMISTRY"
+      - cell "ECG"
+      - cell "INVG90"
+      - cell "200"
+      - cell "200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "105 BIOCHEMISTRY Erythrocyte sedimentation rate(Esr) INVG78 80 200 Y":
+      - cell "105"
+      - cell "BIOCHEMISTRY"
+      - cell "Erythrocyte sedimentation rate(Esr)"
+      - cell "INVG78"
+      - cell "80"
+      - cell "200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "106 BIOCHEMISTRY Erythrocyte sedimentation rate(Esr) INVG14 80 100 Y":
+      - cell "106"
+      - cell "BIOCHEMISTRY"
+      - cell "Erythrocyte sedimentation rate(Esr)"
+      - cell "INVG14"
+      - cell "80"
+      - cell "100"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "107 Hematology ERYTHROPOIETIN INVG177 1500 1500 Y":
+      - cell "107"
+      - cell "Hematology"
+      - cell "ERYTHROPOIETIN"
+      - cell "INVG177"
+      - cell "1500"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "108 BIO CHEMISTRY ESTRADIOL(E2) INVG236 600 500 Y":
+      - cell "108"
+      - cell "BIO CHEMISTRY"
+      - cell "ESTRADIOL(E2)"
+      - cell "INVG236"
+      - cell "600"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "109 MICROBIOLOGY ET SECRETIONS CULTURE AND SENSITIVITY INVG330 1500 1500 Y":
+      - cell "109"
+      - cell "MICROBIOLOGY"
+      - cell "ET SECRETIONS CULTURE AND SENSITIVITY"
+      - cell "INVG330"
+      - cell "1500"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "110 MICROBIOLOGY EXTENDED FLU PANEL INVG324 6500 6500 Y":
+      - cell "110"
+      - cell "MICROBIOLOGY"
+      - cell "EXTENDED FLU PANEL"
+      - cell "INVG324"
+      - cell "6500"
+      - cell "6500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "111 BIOCHEMISTRY FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR INVG27 100 240 Y":
+      - cell "111"
+      - cell "BIOCHEMISTRY"
+      - cell "FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR"
+      - cell "INVG27"
+      - cell "100"
+      - cell "240"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "112 BIO CHEMISTRY FBS (FASTING BLOOD SUGAR) INVG117 50 120 Y":
+      - cell "112"
+      - cell "BIO CHEMISTRY"
+      - cell "FBS (FASTING BLOOD SUGAR)"
+      - cell "INVG117"
+      - cell "50"
+      - cell "120"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "113 Hematology FIBRINOGEN INVG178 600 800 Y":
+      - cell "113"
+      - cell "Hematology"
+      - cell "FIBRINOGEN"
+      - cell "INVG178"
+      - cell "600"
+      - cell "800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "114 Hematology FIBRINOGEN DEGRADATION PRODUCT(FDP) INVG179 960 800 Y":
+      - cell "114"
+      - cell "Hematology"
+      - cell "FIBRINOGEN DEGRADATION PRODUCT(FDP)"
+      - cell "INVG179"
+      - cell "960"
+      - cell "800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "115 MICROBIOLOGY FIRST LINE LPA INVG308 5000 3360 Y":
+      - cell "115"
+      - cell "MICROBIOLOGY"
+      - cell "FIRST LINE LPA"
+      - cell "INVG308"
+      - cell "5000"
+      - cell "3360"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "116 Hematology FLUID CELL COUNT INVG180 280 200 Y":
+      - cell "116"
+      - cell "Hematology"
+      - cell "FLUID CELL COUNT"
+      - cell "INVG180"
+      - cell "280"
+      - cell "200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "117 PATHOLOGY FNAC INVG356 600 5000 Y":
+      - cell "117"
+      - cell "PATHOLOGY"
+      - cell "FNAC"
+      - cell "INVG356"
+      - cell "600"
+      - cell "5000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "118 Hematology FOLIC ACID INVG181 450 490 Y":
+      - cell "118"
+      - cell "Hematology"
+      - cell "FOLIC ACID"
+      - cell "INVG181"
+      - cell "450"
+      - cell "490"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "119 BIOCHEMISTRY FREE T3 INVG80 200 650 Y":
+      - cell "119"
+      - cell "BIOCHEMISTRY"
+      - cell "FREE T3"
+      - cell "INVG80"
+      - cell "200"
+      - cell "650"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "120 BIOCHEMISTRY FREE T3 T4 INVG157 400 0 Y":
+      - cell "120"
+      - cell "BIOCHEMISTRY"
+      - cell "FREE T3 T4"
+      - cell "INVG157"
+      - cell "400"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "121 BIO CHEMISTRY FREE-T4 (THYROXINE) INVG182 200 650 Y":
+      - cell "121"
+      - cell "BIO CHEMISTRY"
+      - cell "FREE-T4 (THYROXINE)"
+      - cell "INVG182"
+      - cell "200"
+      - cell "650"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "122 Hematology FROZEN SECTION INVG298 10000 10000 Y":
+      - cell "122"
+      - cell "Hematology"
+      - cell "FROZEN SECTION"
+      - cell "INVG298"
+      - cell "10000"
+      - cell "10000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "123 BIO CHEMISTRY FSH INVG237 400 500 Y":
+      - cell "123"
+      - cell "BIO CHEMISTRY"
+      - cell "FSH"
+      - cell "INVG237"
+      - cell "400"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "124 BIOCHEMISTRY FSH LH PRL (FLP) INVG141 1200 0 Y":
+      - cell "124"
+      - cell "BIOCHEMISTRY"
+      - cell "FSH LH PRL (FLP)"
+      - cell "INVG141"
+      - cell "1200"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "125 MICROBIOLOGY FUNGAL CULTURE INVG183 600 1500 Y":
+      - cell "125"
+      - cell "MICROBIOLOGY"
+      - cell "FUNGAL CULTURE"
+      - cell "INVG183"
+      - cell "600"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "126 MICROBIOLOGY FUNGAL STAIN INVG295 250 472 Y":
+      - cell "126"
+      - cell "MICROBIOLOGY"
+      - cell "FUNGAL STAIN"
+      - cell "INVG295"
+      - cell "250"
+      - cell "472"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "127 BIOCHEMISTRY GALACTOMANNAN INVG326 6000 6000 Y":
+      - cell "127"
+      - cell "BIOCHEMISTRY"
+      - cell "GALACTOMANNAN"
+      - cell "INVG326"
+      - cell "6000"
+      - cell "6000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "128 BIO CHEMISTRY GASTRIN INVG186 1560 1300 Y":
+      - cell "128"
+      - cell "BIO CHEMISTRY"
+      - cell "GASTRIN"
+      - cell "INVG186"
+      - cell "1560"
+      - cell "1300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "129 MICROBIOLOGY GENEXPERT MTB/RIF PCR - SPUTUM INVG259 2500 2500 Y":
+      - cell "129"
+      - cell "MICROBIOLOGY"
+      - cell "GENEXPERT MTB/RIF PCR - SPUTUM"
+      - cell "INVG259"
+      - cell "2500"
+      - cell "2500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "130 BIO CHEMISTRY GGT INVG184 250 400 Y":
+      - cell "130"
+      - cell "BIO CHEMISTRY"
+      - cell "GGT"
+      - cell "INVG184"
+      - cell "250"
+      - cell "400"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "131 BIO CHEMISTRY Glomerular Filtration Rate (eGFR) INVG319 550 400 Y":
+      - cell "131"
+      - cell "BIO CHEMISTRY"
+      - cell "Glomerular Filtration Rate (eGFR)"
+      - cell "INVG319"
+      - cell "550"
+      - cell "400"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "132 BIOCHEMISTRY GLUCOSE CHALLANGE TEST (GCT) INVG154 250 0 Y":
+      - cell "132"
+      - cell "BIOCHEMISTRY"
+      - cell "GLUCOSE CHALLANGE TEST (GCT)"
+      - cell "INVG154"
+      - cell "250"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "133 BIO CHEMISTRY GLUCOSE-FLUIDS INVG286 300 300 Y":
+      - cell "133"
+      - cell "BIO CHEMISTRY"
+      - cell "GLUCOSE-FLUIDS"
+      - cell "INVG286"
+      - cell "300"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "134 MICROBIOLOGY GRAM STAIN INVG187 250 450 Y":
+      - cell "134"
+      - cell "MICROBIOLOGY"
+      - cell "GRAM STAIN"
+      - cell "INVG187"
+      - cell "250"
+      - cell "450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "135 BIO CHEMISTRY GRBS INVG350 70 100 Y":
+      - cell "135"
+      - cell "BIO CHEMISTRY"
+      - cell "GRBS"
+      - cell "INVG350"
+      - cell "70"
+      - cell "100"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "136 MICROBIOLOGY H1N1 INVG189 5500 5500 Y":
+      - cell "136"
+      - cell "MICROBIOLOGY"
+      - cell "H1N1"
+      - cell "INVG189"
+      - cell "5500"
+      - cell "5500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "137 BIO CHEMISTRY H3N2 swife flu RNA Detection RTPCR INVG91 9000 9000 Y":
+      - cell "137"
+      - cell "BIO CHEMISTRY"
+      - cell "H3N2 swife flu RNA Detection RTPCR"
+      - cell "INVG91"
+      - cell "9000"
+      - cell "9000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "138 Hematology HAEMOGLOBIN INVG190 100 100 Y":
+      - cell "138"
+      - cell "Hematology"
+      - cell "HAEMOGLOBIN"
+      - cell "INVG190"
+      - cell "100"
+      - cell "100"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "139 BIO CHEMISTRY HAEMOGLOBIN ELECTROPHORESIS INVG191 750 1260 Y":
+      - cell "139"
+      - cell "BIO CHEMISTRY"
+      - cell "HAEMOGLOBIN ELECTROPHORESIS"
+      - cell "INVG191"
+      - cell "750"
+      - cell "1260"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "140 Hematology HAEMOGRAM INVG192 300 500 Y":
+      - cell "140"
+      - cell "Hematology"
+      - cell "HAEMOGRAM"
+      - cell "INVG192"
+      - cell "300"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "141 MICROBIOLOGY HAV IgM INVG333 1550 1550 Y":
+      - cell "141"
+      - cell "MICROBIOLOGY"
+      - cell "HAV IgM"
+      - cell "INVG333"
+      - cell "1550"
+      - cell "1550"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "142 MICROBIOLOGY HAV-IgG INVG336 750 1000 Y":
+      - cell "142"
+      - cell "MICROBIOLOGY"
+      - cell "HAV-IgG"
+      - cell "INVG336"
+      - cell "750"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "143 BIO CHEMISTRY HBA1C INVG132 400 500 Y":
+      - cell "143"
+      - cell "BIO CHEMISTRY"
+      - cell "HBA1C"
+      - cell "INVG132"
+      - cell "400"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "144 MICROBIOLOGY HBeAg INVG335 250 1000 Y":
+      - cell "144"
+      - cell "MICROBIOLOGY"
+      - cell "HBeAg"
+      - cell "INVG335"
+      - cell "250"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "145 MICROBIOLOGY HBSAG INVG74 300 0 Y":
+      - cell "145"
+      - cell "MICROBIOLOGY"
+      - cell "HBSAG"
+      - cell "INVG74"
+      - cell "300"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "146 BIO CHEMISTRY HCG INVG147 650 0 Y":
+      - cell "146"
+      - cell "BIO CHEMISTRY"
+      - cell "HCG"
+      - cell "INVG147"
+      - cell "650"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "147 BIOCHEMISTRY HCG PREGNANCY RAPID INVG84 150 0 Y":
+      - cell "147"
+      - cell "BIOCHEMISTRY"
+      - cell "HCG PREGNANCY RAPID"
+      - cell "INVG84"
+      - cell "150"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "148 BIOCHEMISTRY Helicobacter Pylori PCR (WB) INVG201 2500 0 Y":
+      - cell "148"
+      - cell "BIOCHEMISTRY"
+      - cell "Helicobacter Pylori PCR (WB)"
+      - cell "INVG201"
+      - cell "2500"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "149 BIOCHEMISTRY Helicobacter Pylorii IgG INVG200 850 0 Y":
+      - cell "149"
+      - cell "BIOCHEMISTRY"
+      - cell "Helicobacter Pylorii IgG"
+      - cell "INVG200"
+      - cell "850"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "150 BIOCHEMISTRY Helicobacter Pylorii IgM INVG199 850 0 Y":
+      - cell "150"
+      - cell "BIOCHEMISTRY"
+      - cell "Helicobacter Pylorii IgM"
+      - cell "INVG199"
+      - cell "850"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "151 BIOCHEMISTRY HEMOGLOBIN INVG13 100 150 Y":
+      - cell "151"
+      - cell "BIOCHEMISTRY"
+      - cell "HEMOGLOBIN"
+      - cell "INVG13"
+      - cell "100"
+      - cell "150"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "152 MICROBIOLOGY Hemoglobinopathy (Hb Electrophoresis) INVG83 750 1900 Y":
+      - cell "152"
+      - cell "MICROBIOLOGY"
+      - cell "Hemoglobinopathy (Hb Electrophoresis)"
+      - cell "INVG83"
+      - cell "750"
+      - cell "1900"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "153 Hematology HEMOGRAM INVG277 300 300 N":
+      - cell "153"
+      - cell "Hematology"
+      - cell "HEMOGRAM"
+      - cell "INVG277"
+      - cell "300"
+      - cell "300"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "154 BIO CHEMISTRY HEPATISIS A VIRUS IGM INVG57 600 1350 Y":
+      - cell "154"
+      - cell "BIO CHEMISTRY"
+      - cell "HEPATISIS A VIRUS IGM"
+      - cell "INVG57"
+      - cell "600"
+      - cell "1350"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "155 BIO CHEMISTRY HEPATISIS E VIRUS- IGM INVG57 600 1350 Y":
+      - cell "155"
+      - cell "BIO CHEMISTRY"
+      - cell "HEPATISIS E VIRUS- IGM"
+      - cell "INVG57"
+      - cell "600"
+      - cell "1350"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "156 BIO CHEMISTRY HEPATITIS B INVG95 300 1500 Y":
+      - cell "156"
+      - cell "BIO CHEMISTRY"
+      - cell "HEPATITIS B"
+      - cell "INVG95"
+      - cell "300"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "157 BIOCHEMISTRY HEPATITIS B SURFACE ANTIGEN(CLIA) INVG30 350 250 Y":
+      - cell "157"
+      - cell "BIOCHEMISTRY"
+      - cell "HEPATITIS B SURFACE ANTIGEN(CLIA)"
+      - cell "INVG30"
+      - cell "350"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "158 BIO CHEMISTRY HEPATITIS C INVG96 400 1500 Y":
+      - cell "158"
+      - cell "BIO CHEMISTRY"
+      - cell "HEPATITIS C"
+      - cell "INVG96"
+      - cell "400"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "159 BIOCHEMISTRY HEPATITIS C VIRUS RAPID INVG143 400 0 Y":
+      - cell "159"
+      - cell "BIOCHEMISTRY"
+      - cell "HEPATITIS C VIRUS RAPID"
+      - cell "INVG143"
+      - cell "400"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "160 BIO CHEMISTRY Hepatitis D virus Total Antibody INVG61 4000 4000 Y":
+      - cell "160"
+      - cell "BIO CHEMISTRY"
+      - cell "Hepatitis D virus Total Antibody"
+      - cell "INVG61"
+      - cell "4000"
+      - cell "4000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "161 PATHOLOGY HIV INVG112 400 1500 Y":
+      - cell "161"
+      - cell "PATHOLOGY"
+      - cell "HIV"
+      - cell "INVG112"
+      - cell "400"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "162 BIOCHEMISTRY HIV (CLIA) INVG161 500 0 Y":
+      - cell "162"
+      - cell "BIOCHEMISTRY"
+      - cell "HIV (CLIA)"
+      - cell "INVG161"
+      - cell "500"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "163 BIOCHEMISTRY HIV I & II WESTERN BLOT INVG155 1800 0 Y":
+      - cell "163"
+      - cell "BIOCHEMISTRY"
+      - cell "HIV I & II WESTERN BLOT"
+      - cell "INVG155"
+      - cell "1800"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "164 BIOCHEMISTRY HIV1 RNA VIRAL LOAD INVG145 1900 0 Y":
+      - cell "164"
+      - cell "BIOCHEMISTRY"
+      - cell "HIV1 RNA VIRAL LOAD"
+      - cell "INVG145"
+      - cell "1900"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "165 Hematology HLA-B27 INVG201 1200 2800 Y":
+      - cell "165"
+      - cell "Hematology"
+      - cell "HLA-B27"
+      - cell "INVG201"
+      - cell "1200"
+      - cell "2800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "166 BIOCHEMISTRY HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance) INVG172 1050 0 Y":
+      - cell "166"
+      - cell "BIOCHEMISTRY"
+      - cell "HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance)"
+      - cell "INVG172"
+      - cell "1050"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "167 BIO CHEMISTRY HOMOCYSTEIN INVG202 850 1300 Y":
+      - cell "167"
+      - cell "BIO CHEMISTRY"
+      - cell "HOMOCYSTEIN"
+      - cell "INVG202"
+      - cell "850"
+      - cell "1300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "168 BIO CHEMISTRY HS TROP I INVG188 1000 2400 Y":
+      - cell "168"
+      - cell "BIO CHEMISTRY"
+      - cell "HS TROP I"
+      - cell "INVG188"
+      - cell "1000"
+      - cell "2400"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "169 BIOCHEMISTRY HSV 1 & 2 IgG INVG149 700 0 N":
+      - cell "169"
+      - cell "BIOCHEMISTRY"
+      - cell "HSV 1 & 2 IgG"
+      - cell "INVG149"
+      - cell "700"
+      - cell "0"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "170 BIOCHEMISTRY HSV 1 & 2 IgG INVG192 700 0 Y":
+      - cell "170"
+      - cell "BIOCHEMISTRY"
+      - cell "HSV 1 & 2 IgG"
+      - cell "INVG192"
+      - cell "700"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "171 BIOCHEMISTRY HSV 1 & 2 IgM INVG150 700 0 Y":
+      - cell "171"
+      - cell "BIOCHEMISTRY"
+      - cell "HSV 1 & 2 IgM"
+      - cell "INVG150"
+      - cell "700"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "172 BIOCHEMISTRY HSV IgG,IgM INVG191 1400 0 Y":
+      - cell "172"
+      - cell "BIOCHEMISTRY"
+      - cell "HSV IgG,IgM"
+      - cell "INVG191"
+      - cell "1400"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "173 MICROBIOLOGY HSV -QUALITATIVE INVG221 3500 3500 Y":
+      - cell "173"
+      - cell "MICROBIOLOGY"
+      - cell "HSV -QUALITATIVE"
+      - cell "INVG221"
+      - cell "3500"
+      - cell "3500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "174 MICROBIOLOGY HSV-QUANTITATIVE INVG222 4500 4500 Y":
+      - cell "174"
+      - cell "MICROBIOLOGY"
+      - cell "HSV-QUANTITATIVE"
+      - cell "INVG222"
+      - cell "4500"
+      - cell "4500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "175 BIO CHEMISTRY Ig-E LEVELS INVG203 650 550 Y":
+      - cell "175"
+      - cell "BIO CHEMISTRY"
+      - cell "Ig-E LEVELS"
+      - cell "INVG203"
+      - cell "650"
+      - cell "550"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "176 BIO CHEMISTRY IGF 1 INVG301 3000 3000 Y":
+      - cell "176"
+      - cell "BIO CHEMISTRY"
+      - cell "IGF 1"
+      - cell "INVG301"
+      - cell "3000"
+      - cell "3000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "177 MICROBIOLOGY Ig-G Levels INVG341 650 550 Y":
+      - cell "177"
+      - cell "MICROBIOLOGY"
+      - cell "Ig-G Levels"
+      - cell "INVG341"
+      - cell "650"
+      - cell "550"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "178 BIO CHEMISTRY IHC INVG204 7000 7000 Y":
+      - cell "178"
+      - cell "BIO CHEMISTRY"
+      - cell "IHC"
+      - cell "INVG204"
+      - cell "7000"
+      - cell "7000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "179 Hematology IMMATURE PLATELET FRACTION INVG205 500 500 Y":
+      - cell "179"
+      - cell "Hematology"
+      - cell "IMMATURE PLATELET FRACTION"
+      - cell "INVG205"
+      - cell "500"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "180 BIOCHEMISTRY Immunofixation Electrophoresis INVG198 3300 0 Y":
+      - cell "180"
+      - cell "BIOCHEMISTRY"
+      - cell "Immunofixation Electrophoresis"
+      - cell "INVG198"
+      - cell "3300"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "181 BIO CHEMISTRY Immunoglobulin (IgG) INVG60 400 800 Y":
+      - cell "181"
+      - cell "BIO CHEMISTRY"
+      - cell "Immunoglobulin (IgG)"
+      - cell "INVG60"
+      - cell "400"
+      - cell "800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "182 BIOCHEMISTRY Immunoglobulin A (IgA) INVG167 600 0 Y":
+      - cell "182"
+      - cell "BIOCHEMISTRY"
+      - cell "Immunoglobulin A (IgA)"
+      - cell "INVG167"
+      - cell "600"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "183 BIO CHEMISTRY Immunoglobution (IgM) INVG59 400 800 Y":
+      - cell "183"
+      - cell "BIO CHEMISTRY"
+      - cell "Immunoglobution (IgM)"
+      - cell "INVG59"
+      - cell "400"
+      - cell "800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "184 Hematology INDIRECT COOMBS TEST (ICT) INVG167 350 420 Y":
+      - cell "184"
+      - cell "Hematology"
+      - cell "INDIRECT COOMBS TEST (ICT)"
+      - cell "INVG167"
+      - cell "350"
+      - cell "420"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "185 BIOCHEMISTRY INSULIN POST PRANDIAL INVG146 400 0 Y":
+      - cell "185"
+      - cell "BIOCHEMISTRY"
+      - cell "INSULIN POST PRANDIAL"
+      - cell "INVG146"
+      - cell "400"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "186 BIO CHEMISTRY INSULIN-FASTING INVG293 400 500 Y":
+      - cell "186"
+      - cell "BIO CHEMISTRY"
+      - cell "INSULIN-FASTING"
+      - cell "INVG293"
+      - cell "400"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "187 BIO CHEMISTRY Ionised Calcium INVG338 500 290 Y":
+      - cell "187"
+      - cell "BIO CHEMISTRY"
+      - cell "Ionised Calcium"
+      - cell "INVG338"
+      - cell "500"
+      - cell "290"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "188 BIO CHEMISTRY IRON INVG208 400 600 Y":
+      - cell "188"
+      - cell "BIO CHEMISTRY"
+      - cell "IRON"
+      - cell "INVG208"
+      - cell "400"
+      - cell "600"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "189 BIO CHEMISTRY IRON DEFICIENCY PROFILE INVG207 800 1100 Y":
+      - cell "189"
+      - cell "BIO CHEMISTRY"
+      - cell "IRON DEFICIENCY PROFILE"
+      - cell "INVG207"
+      - cell "800"
+      - cell "1100"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "190 BIOCHEMISTRY KIDNEY FUNCTION TEST (KFT) INVG140 500 500 Y":
+      - cell "190"
+      - cell "BIOCHEMISTRY"
+      - cell "KIDNEY FUNCTION TEST (KFT)"
+      - cell "INVG140"
+      - cell "500"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "191 MICROBIOLOGY KOH MOUNT INVG328 500 500 Y":
+      - cell "191"
+      - cell "MICROBIOLOGY"
+      - cell "KOH MOUNT"
+      - cell "INVG328"
+      - cell "500"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "192 BIO CHEMISTRY LACTATE INVG318 1200 1200 Y":
+      - cell "192"
+      - cell "BIO CHEMISTRY"
+      - cell "LACTATE"
+      - cell "INVG318"
+      - cell "1200"
+      - cell "1200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "193 BIO CHEMISTRY LDH INVG119 400 650 Y":
+      - cell "193"
+      - cell "BIO CHEMISTRY"
+      - cell "LDH"
+      - cell "INVG119"
+      - cell "400"
+      - cell "650"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "194 BIO CHEMISTRY LDH INVG145 400 700 Y":
+      - cell "194"
+      - cell "BIO CHEMISTRY"
+      - cell "LDH"
+      - cell "INVG145"
+      - cell "400"
+      - cell "700"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "195 Hematology LE CELLS INVG210 450 450 Y":
+      - cell "195"
+      - cell "Hematology"
+      - cell "LE CELLS"
+      - cell "INVG210"
+      - cell "450"
+      - cell "450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "196 BIO CHEMISTRY LEPTOSPIRA IgM INVG211 650 1100 Y":
+      - cell "196"
+      - cell "BIO CHEMISTRY"
+      - cell "LEPTOSPIRA IgM"
+      - cell "INVG211"
+      - cell "650"
+      - cell "1100"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "197 Hematology LEUKEMIA PANEL INVG321 12000 12000 Y":
+      - cell "197"
+      - cell "Hematology"
+      - cell "LEUKEMIA PANEL"
+      - cell "INVG321"
+      - cell "12000"
+      - cell "12000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "198 BIO CHEMISTRY LFT (LIVER FUNCTION TEST) INVG113 500 650 Y":
+      - cell "198"
+      - cell "BIO CHEMISTRY"
+      - cell "LFT (LIVER FUNCTION TEST)"
+      - cell "INVG113"
+      - cell "500"
+      - cell "650"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "199 BIO CHEMISTRY LIPASE INVG256 450 800 Y":
+      - cell "199"
+      - cell "BIO CHEMISTRY"
+      - cell "LIPASE"
+      - cell "INVG256"
+      - cell "450"
+      - cell "800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "200 BIOCHEMISTRY LIPID PROFILE INVG20 450 500 Y":
+      - cell "200"
+      - cell "BIOCHEMISTRY"
+      - cell "LIPID PROFILE"
+      - cell "INVG20"
+      - cell "450"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "201 BIOCHEMISTRY LIPOPROTEIN A (LP-A) INVG158 600 0 Y":
+      - cell "201"
+      - cell "BIOCHEMISTRY"
+      - cell "LIPOPROTEIN A (LP-A)"
+      - cell "INVG158"
+      - cell "600"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "202 BIO CHEMISTRY LKM (LIVER KIDNESY MICROSOMAL INVG347 2200 2200 Y":
+      - cell "202"
+      - cell "BIO CHEMISTRY"
+      - cell "LKM (LIVER KIDNESY MICROSOMAL"
+      - cell "INVG347"
+      - cell "2200"
+      - cell "2200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "203 BIOCHEMISTRY LUPAS ANTICOAGULANT INVG184 1100 0 Y":
+      - cell "203"
+      - cell "BIOCHEMISTRY"
+      - cell "LUPAS ANTICOAGULANT"
+      - cell "INVG184"
+      - cell "1100"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "204 BIO CHEMISTRY LUTENIZING HORMONE(LH) INVG212 400 500 Y":
+      - cell "204"
+      - cell "BIO CHEMISTRY"
+      - cell "LUTENIZING HORMONE(LH)"
+      - cell "INVG212"
+      - cell "400"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "205 BIO CHEMISTRY MAGNESIUM INVG124 300 600 Y":
+      - cell "205"
+      - cell "BIO CHEMISTRY"
+      - cell "MAGNESIUM"
+      - cell "INVG124"
+      - cell "300"
+      - cell "600"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "206 Hematology MALARIA INVG213 300 500 Y":
+      - cell "206"
+      - cell "Hematology"
+      - cell "MALARIA"
+      - cell "INVG213"
+      - cell "300"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "207 BIOCHEMISTRY MANTOUX INVG131 300 400 Y":
+      - cell "207"
+      - cell "BIOCHEMISTRY"
+      - cell "MANTOUX"
+      - cell "INVG131"
+      - cell "300"
+      - cell "400"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "208 MICROBIOLOGY MENINGITIS PANEL INVG327 8000 8000 Y":
+      - cell "208"
+      - cell "MICROBIOLOGY"
+      - cell "MENINGITIS PANEL"
+      - cell "INVG327"
+      - cell "8000"
+      - cell "8000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "209 BIO CHEMISTRY MICROARRAY INVG214 18000 18000 Y":
+      - cell "209"
+      - cell "BIO CHEMISTRY"
+      - cell "MICROARRAY"
+      - cell "INVG214"
+      - cell "18000"
+      - cell "18000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "210 BIOCHEMISTRY MICROFILARIA ANITIGEN INVG177 750 0 Y":
+      - cell "210"
+      - cell "BIOCHEMISTRY"
+      - cell "MICROFILARIA ANITIGEN"
+      - cell "INVG177"
+      - cell "750"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "211 MICROBIOLOGY Modified Acid Fast Stain-STOOL (FECAL) INVG193 350 0 Y":
+      - cell "211"
+      - cell "MICROBIOLOGY"
+      - cell "Modified Acid Fast Stain-STOOL (FECAL)"
+      - cell "INVG193"
+      - cell "350"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "212 MICROBIOLOGY NIPT TEST INVG79 7200 7200 Y":
+      - cell "212"
+      - cell "MICROBIOLOGY"
+      - cell "NIPT TEST"
+      - cell "INVG79"
+      - cell "7200"
+      - cell "7200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "213 BIO CHEMISTRY NT- pro BNP INVG216 1700 3300 Y":
+      - cell "213"
+      - cell "BIO CHEMISTRY"
+      - cell "NT- pro BNP"
+      - cell "INVG216"
+      - cell "1700"
+      - cell "3300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "214 BIO CHEMISTRY OGTT INVG185 450 500 Y":
+      - cell "214"
+      - cell "BIO CHEMISTRY"
+      - cell "OGTT"
+      - cell "INVG185"
+      - cell "450"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "215 BIO CHEMISTRY OSMOLALITY-SERUM INVG217 700 1200 Y":
+      - cell "215"
+      - cell "BIO CHEMISTRY"
+      - cell "OSMOLALITY-SERUM"
+      - cell "INVG217"
+      - cell "700"
+      - cell "1200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "216 BIO CHEMISTRY OSMOLALITY-URINE INVG218 700 1200 Y":
+      - cell "216"
+      - cell "BIO CHEMISTRY"
+      - cell "OSMOLALITY-URINE"
+      - cell "INVG218"
+      - cell "700"
+      - cell "1200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "217 BIO CHEMISTRY OXYGEN CHARGES INVG102 1500 0 Y":
+      - cell "217"
+      - cell "BIO CHEMISTRY"
+      - cell "OXYGEN CHARGES"
+      - cell "INVG102"
+      - cell "1500"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "218 PATHOLOGY PAP SMEAR INVG219 700 1200 Y":
+      - cell "218"
+      - cell "PATHOLOGY"
+      - cell "PAP SMEAR"
+      - cell "INVG219"
+      - cell "700"
+      - cell "1200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "219 BIO CHEMISTRY PARA THYROID HORMONE-PTH INVG229 1000 1500 Y":
+      - cell "219"
+      - cell "BIO CHEMISTRY"
+      - cell "PARA THYROID HORMONE-PTH"
+      - cell "INVG229"
+      - cell "1000"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "220 MICROBIOLOGY PCP STAIN INVG220 3300 3300 Y":
+      - cell "220"
+      - cell "MICROBIOLOGY"
+      - cell "PCP STAIN"
+      - cell "INVG220"
+      - cell "3300"
+      - cell "3300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "221 MICROBIOLOGY PCR HBV DNA QUALITATIVE INVG334 4000 4000 Y":
+      - cell "221"
+      - cell "MICROBIOLOGY"
+      - cell "PCR HBV DNA QUALITATIVE"
+      - cell "INVG334"
+      - cell "4000"
+      - cell "4000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "222 BIO CHEMISTRY PCR HCV RNA (QUANTITATIVE) INVG363 2500 2500 Y":
+      - cell "222"
+      - cell "BIO CHEMISTRY"
+      - cell "PCR HCV RNA (QUANTITATIVE)"
+      - cell "INVG363"
+      - cell "2500"
+      - cell "2500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "223 Hematology PERIPHERAL SMEAR INVG121 300 250 Y":
+      - cell "223"
+      - cell "Hematology"
+      - cell "PERIPHERAL SMEAR"
+      - cell "INVG121"
+      - cell "300"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "224 Hematology PERIPHERAL SMEAR INVG240 300 250 Y":
+      - cell "224"
+      - cell "Hematology"
+      - cell "PERIPHERAL SMEAR"
+      - cell "INVG240"
+      - cell "300"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "225 BIOCHEMISTRY PHOSPHOLIPID ANTIBODIES IgA INVG183 450 0 Y":
+      - cell "225"
+      - cell "BIOCHEMISTRY"
+      - cell "PHOSPHOLIPID ANTIBODIES IgA"
+      - cell "INVG183"
+      - cell "450"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "226 BIOCHEMISTRY PHOSPHOLIPID ANTIBODIES IgG INVG182 450 0 Y":
+      - cell "226"
+      - cell "BIOCHEMISTRY"
+      - cell "PHOSPHOLIPID ANTIBODIES IgG"
+      - cell "INVG182"
+      - cell "450"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "227 BIOCHEMISTRY PHOSPHOLIPID ANTIBODIES IgM INVG181 450 0 Y":
+      - cell "227"
+      - cell "BIOCHEMISTRY"
+      - cell "PHOSPHOLIPID ANTIBODIES IgM"
+      - cell "INVG181"
+      - cell "450"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "228 BIO CHEMISTRY PHOSPHORUS INVG123 300 300 Y":
+      - cell "228"
+      - cell "BIO CHEMISTRY"
+      - cell "PHOSPHORUS"
+      - cell "INVG123"
+      - cell "300"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "229 BIOCHEMISTRY Plasma Renin Activity INVG196 4200 0 Y":
+      - cell "229"
+      - cell "BIOCHEMISTRY"
+      - cell "Plasma Renin Activity"
+      - cell "INVG196"
+      - cell "4200"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "230 Hematology Platelet count INVG194 150 0 Y":
+      - cell "230"
+      - cell "Hematology"
+      - cell "Platelet count"
+      - cell "INVG194"
+      - cell "150"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "231 BIO CHEMISTRY PLBS INVG118 50 120 Y":
+      - cell "231"
+      - cell "BIO CHEMISTRY"
+      - cell "PLBS"
+      - cell "INVG118"
+      - cell "50"
+      - cell "120"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "232 MICROBIOLOGY PLEURAL FLUID FOR CULTUR INVG81 1500 1500 Y":
+      - cell "232"
+      - cell "MICROBIOLOGY"
+      - cell "PLEURAL FLUID FOR CULTUR"
+      - cell "INVG81"
+      - cell "1500"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "233 BIO CHEMISTRY POTASSIUM INVG244 200 150 Y":
+      - cell "233"
+      - cell "BIO CHEMISTRY"
+      - cell "POTASSIUM"
+      - cell "INVG244"
+      - cell "200"
+      - cell "150"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "234 BIO CHEMISTRY PROCALCITONIN(PCT) INVG223 1100 1450 Y":
+      - cell "234"
+      - cell "BIO CHEMISTRY"
+      - cell "PROCALCITONIN(PCT)"
+      - cell "INVG223"
+      - cell "1100"
+      - cell "1450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "235 BIO CHEMISTRY PROGESTERONE INVG224 420 900 Y":
+      - cell "235"
+      - cell "BIO CHEMISTRY"
+      - cell "PROGESTERONE"
+      - cell "INVG224"
+      - cell "420"
+      - cell "900"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "236 BIO CHEMISTRY PROLACTIN INVG238 450 500 Y":
+      - cell "236"
+      - cell "BIO CHEMISTRY"
+      - cell "PROLACTIN"
+      - cell "INVG238"
+      - cell "450"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "237 BIO CHEMISTRY PROTEIN C INVG242 1200 6000 Y":
+      - cell "237"
+      - cell "BIO CHEMISTRY"
+      - cell "PROTEIN C"
+      - cell "INVG242"
+      - cell "1200"
+      - cell "6000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "238 BIO CHEMISTRY PROTEIN ELECTROPHORESIS INVG228 700 800 Y":
+      - cell "238"
+      - cell "BIO CHEMISTRY"
+      - cell "PROTEIN ELECTROPHORESIS"
+      - cell "INVG228"
+      - cell "700"
+      - cell "800"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "239 BIO CHEMISTRY PROTEIN S INVG243 1700 6000 Y":
+      - cell "239"
+      - cell "BIO CHEMISTRY"
+      - cell "PROTEIN S"
+      - cell "INVG243"
+      - cell "1700"
+      - cell "6000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "240 BIO CHEMISTRY PROTEIN-24 HRS INVG241 400 262 Y":
+      - cell "240"
+      - cell "BIO CHEMISTRY"
+      - cell "PROTEIN-24 HRS"
+      - cell "INVG241"
+      - cell "400"
+      - cell "262"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "241 BIO CHEMISTRY PROTEINS-FLUID INVG227 300 300 Y":
+      - cell "241"
+      - cell "BIO CHEMISTRY"
+      - cell "PROTEINS-FLUID"
+      - cell "INVG227"
+      - cell "300"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "242 BIO CHEMISTRY PSA-FREE INVG226 700 1000 Y":
+      - cell "242"
+      - cell "BIO CHEMISTRY"
+      - cell "PSA-FREE"
+      - cell "INVG226"
+      - cell "700"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "243 BIO CHEMISTRY PSA-TOTAL INVG225 600 700 Y":
+      - cell "243"
+      - cell "BIO CHEMISTRY"
+      - cell "PSA-TOTAL"
+      - cell "INVG225"
+      - cell "600"
+      - cell "700"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "244 Hematology PT/INR INVG38 350 400 Y":
+      - cell "244"
+      - cell "Hematology"
+      - cell "PT/INR"
+      - cell "INVG38"
+      - cell "350"
+      - cell "400"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "245 BIOCHEMISTRY PT/INR & APTT INVG39 700 1000 Y":
+      - cell "245"
+      - cell "BIOCHEMISTRY"
+      - cell "PT/INR & APTT"
+      - cell "INVG39"
+      - cell "700"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "246 BIOCHEMISTRY QUADRAPLE MARKER INVG151 1800 0 Y":
+      - cell "246"
+      - cell "BIOCHEMISTRY"
+      - cell "QUADRAPLE MARKER"
+      - cell "INVG151"
+      - cell "1800"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "247 BIO CHEMISTRY RA FACTOR INVG233 400 500 Y":
+      - cell "247"
+      - cell "BIO CHEMISTRY"
+      - cell "RA FACTOR"
+      - cell "INVG233"
+      - cell "400"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "248 BIOCHEMISTRY RANDOM BLOOD SUGAR(RBS) INVG12 50 110 Y":
+      - cell "248"
+      - cell "BIOCHEMISTRY"
+      - cell "RANDOM BLOOD SUGAR(RBS)"
+      - cell "INVG12"
+      - cell "50"
+      - cell "110"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "249 BIOCHEMISTRY RBS,BT,CT INVG173 150 0 Y":
+      - cell "249"
+      - cell "BIOCHEMISTRY"
+      - cell "RBS,BT,CT"
+      - cell "INVG173"
+      - cell "150"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "250 BIOCHEMISTRY RENAL PROFILE 2 (RP2) INVG190 950 0 Y":
+      - cell "250"
+      - cell "BIOCHEMISTRY"
+      - cell "RENAL PROFILE 2 (RP2)"
+      - cell "INVG190"
+      - cell "950"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "251 BIOCHEMISTRY RENAL PROFILE-II INVG148 950 0 Y":
+      - cell "251"
+      - cell "BIOCHEMISTRY"
+      - cell "RENAL PROFILE-II"
+      - cell "INVG148"
+      - cell "950"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "252 MICROBIOLOGY RESPIRATORY PANEL-BACTERIAL,VIRAL,FUNGAL INVG354 18000 18000 Y":
+      - cell "252"
+      - cell "MICROBIOLOGY"
+      - cell "RESPIRATORY PANEL-BACTERIAL,VIRAL,FUNGAL"
+      - cell "INVG354"
+      - cell "18000"
+      - cell "18000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "253 Hematology RETICULOCYTE COUNT INVG122 200 300 Y":
+      - cell "253"
+      - cell "Hematology"
+      - cell "RETICULOCYTE COUNT"
+      - cell "INVG122"
+      - cell "200"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "254 BIO CHEMISTRY RF-IgM INVG309 700 700 Y":
+      - cell "254"
+      - cell "BIO CHEMISTRY"
+      - cell "RF-IgM"
+      - cell "INVG309"
+      - cell "700"
+      - cell "700"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "255 BIO CHEMISTRY RFT(RENAL FUNCTION TEST) INVG114 800 1100 Y":
+      - cell "255"
+      - cell "BIO CHEMISTRY"
+      - cell "RFT(RENAL FUNCTION TEST)"
+      - cell "INVG114"
+      - cell "800"
+      - cell "1100"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "256 BIO CHEMISTRY RHEUMATOID FACTOR INVG113 400 1500 Y":
+      - cell "256"
+      - cell "BIO CHEMISTRY"
+      - cell "RHEUMATOID FACTOR"
+      - cell "INVG113"
+      - cell "400"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "257 BIOCHEMISTRY RUBELLA VIRUS IgG INVG178 400 0 Y":
+      - cell "257"
+      - cell "BIOCHEMISTRY"
+      - cell "RUBELLA VIRUS IgG"
+      - cell "INVG178"
+      - cell "400"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "258 BIO CHEMISTRY RUBELLA VIRUS IGM INVG56 400 500 Y":
+      - cell "258"
+      - cell "BIO CHEMISTRY"
+      - cell "RUBELLA VIRUS IGM"
+      - cell "INVG56"
+      - cell "400"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "259 BIO CHEMISTRY SAAG (Serum/Ascites Albumin Gradient) INVG245 500 500 Y":
+      - cell "259"
+      - cell "BIO CHEMISTRY"
+      - cell "SAAG (Serum/Ascites Albumin Gradient)"
+      - cell "INVG245"
+      - cell "500"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "260 BIO CHEMISTRY Salmonella IgG INVG164 400 0 Y":
+      - cell "260"
+      - cell "BIO CHEMISTRY"
+      - cell "Salmonella IgG"
+      - cell "INVG164"
+      - cell "400"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "261 BIO CHEMISTRY Salmonella IgM INVG116 400 750 Y":
+      - cell "261"
+      - cell "BIO CHEMISTRY"
+      - cell "Salmonella IgM"
+      - cell "INVG116"
+      - cell "400"
+      - cell "750"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "262 BIOCHEMISTRY SALMONELLA TYPE IgG, IgM INVG165 800 0 Y":
+      - cell "262"
+      - cell "BIOCHEMISTRY"
+      - cell "SALMONELLA TYPE IgG, IgM"
+      - cell "INVG165"
+      - cell "800"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "263 MICROBIOLOGY SALMONELLA TYPHI INVG246 1200 1000 Y":
+      - cell "263"
+      - cell "MICROBIOLOGY"
+      - cell "SALMONELLA TYPHI"
+      - cell "INVG246"
+      - cell "1200"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "264 BIO CHEMISTRY SCRUB TYPHUS IgG INVG93 600 2000 Y":
+      - cell "264"
+      - cell "BIO CHEMISTRY"
+      - cell "SCRUB TYPHUS IgG"
+      - cell "INVG93"
+      - cell "600"
+      - cell "2000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "265 BIO CHEMISTRY SCRUB TYPHUS IGM INVG247 600 2000 Y":
+      - cell "265"
+      - cell "BIO CHEMISTRY"
+      - cell "SCRUB TYPHUS IGM"
+      - cell "INVG247"
+      - cell "600"
+      - cell "2000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "266 BIO CHEMISTRY SCRUB TYPHUS IGM INVG92 600 2000 Y":
+      - cell "266"
+      - cell "BIO CHEMISTRY"
+      - cell "SCRUB TYPHUS IGM"
+      - cell "INVG92"
+      - cell "600"
+      - cell "2000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "267 PATHOLOGY SEMEN ANALYSIS INVG248 400 500 N":
+      - cell "267"
+      - cell "PATHOLOGY"
+      - cell "SEMEN ANALYSIS"
+      - cell "INVG248"
+      - cell "400"
+      - cell "500"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "268 PATHOLOGY SEMEN ANALYSIS INVG176 400 0 Y":
+      - cell "268"
+      - cell "PATHOLOGY"
+      - cell "SEMEN ANALYSIS"
+      - cell "INVG176"
+      - cell "400"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "269 BIOCHEMISTRY SERUM CALCIUM INVG18 250 300 Y":
+      - cell "269"
+      - cell "BIOCHEMISTRY"
+      - cell "SERUM CALCIUM"
+      - cell "INVG18"
+      - cell "250"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "270 BIO CHEMISTRY SERUM CARTISOL INVG82 600 600 Y":
+      - cell "270"
+      - cell "BIO CHEMISTRY"
+      - cell "SERUM CARTISOL"
+      - cell "INVG82"
+      - cell "600"
+      - cell "600"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "271 BIOCHEMISTRY SERUM CREATININE INVG16 150 150 Y":
+      - cell "271"
+      - cell "BIOCHEMISTRY"
+      - cell "SERUM CREATININE"
+      - cell "INVG16"
+      - cell "150"
+      - cell "150"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "272 BIOCHEMISTRY SERUM ELECTROLYTES INVG79 400 500 Y":
+      - cell "272"
+      - cell "BIOCHEMISTRY"
+      - cell "SERUM ELECTROLYTES"
+      - cell "INVG79"
+      - cell "400"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "273 BIO CHEMISTRY SERUM FERRTIN INVG249 450 950 Y":
+      - cell "273"
+      - cell "BIO CHEMISTRY"
+      - cell "SERUM FERRTIN"
+      - cell "INVG249"
+      - cell "450"
+      - cell "950"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "274 BIO CHEMISTRY SERUM PROTEINS INVG250 100 250 Y":
+      - cell "274"
+      - cell "BIO CHEMISTRY"
+      - cell "SERUM PROTEINS"
+      - cell "INVG250"
+      - cell "100"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "275 BIO CHEMISTRY SERUM SODIUM INVG297 200 150 Y":
+      - cell "275"
+      - cell "BIO CHEMISTRY"
+      - cell "SERUM SODIUM"
+      - cell "INVG297"
+      - cell "200"
+      - cell "150"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "276 BIOCHEMISTRY SERUM URIC ACID INVG17 200 300 Y":
+      - cell "276"
+      - cell "BIOCHEMISTRY"
+      - cell "SERUM URIC ACID"
+      - cell "INVG17"
+      - cell "200"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "277 BIOCHEMISTRY SEX HORMONE BINDING GLOBULIN INVG163 850 0 Y":
+      - cell "277"
+      - cell "BIOCHEMISTRY"
+      - cell "SEX HORMONE BINDING GLOBULIN"
+      - cell "INVG163"
+      - cell "850"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "278 BIO CHEMISTRY SGOT INVG251 200 150 Y":
+      - cell "278"
+      - cell "BIO CHEMISTRY"
+      - cell "SGOT"
+      - cell "INVG251"
+      - cell "200"
+      - cell "150"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "279 BIO CHEMISTRY SGPT INVG252 200 150 Y":
+      - cell "279"
+      - cell "BIO CHEMISTRY"
+      - cell "SGPT"
+      - cell "INVG252"
+      - cell "200"
+      - cell "150"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "280 BIOCHEMISTRY SODIUM POTASSIUM INVG180 400 0 Y":
+      - cell "280"
+      - cell "BIOCHEMISTRY"
+      - cell "SODIUM POTASSIUM"
+      - cell "INVG180"
+      - cell "400"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "281 BIO CHEMISTRY SR.ANGIOTENSIN CONERTING ENZYME - ACE INVG359 1000 1000 Y":
+      - cell "281"
+      - cell "BIO CHEMISTRY"
+      - cell "SR.ANGIOTENSIN CONERTING ENZYME - ACE"
+      - cell "INVG359"
+      - cell "1000"
+      - cell "1000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "282 MICROBIOLOGY STOOL CULTURE AND SENSITIVITY INVG323 700 1500 Y":
+      - cell "282"
+      - cell "MICROBIOLOGY"
+      - cell "STOOL CULTURE AND SENSITIVITY"
+      - cell "INVG323"
+      - cell "700"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "283 PATHOLOGY STOOL FOR OCCULT BLOOD INVG258 300 300 Y":
+      - cell "283"
+      - cell "PATHOLOGY"
+      - cell "STOOL FOR OCCULT BLOOD"
+      - cell "INVG258"
+      - cell "300"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "284 MICROBIOLOGY TB CULTURE INVG306 3000 3000 Y":
+      - cell "284"
+      - cell "MICROBIOLOGY"
+      - cell "TB CULTURE"
+      - cell "INVG306"
+      - cell "3000"
+      - cell "3000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "285 MICROBIOLOGY TB PCR BLOOD INVG260 2100 3500 Y":
+      - cell "285"
+      - cell "MICROBIOLOGY"
+      - cell "TB PCR BLOOD"
+      - cell "INVG260"
+      - cell "2100"
+      - cell "3500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "286 MICROBIOLOGY TB QUANTIFERON GOLD INVG352 2200 3500 Y":
+      - cell "286"
+      - cell "MICROBIOLOGY"
+      - cell "TB QUANTIFERON GOLD"
+      - cell "INVG352"
+      - cell "2200"
+      - cell "3500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "287 Hematology TC/DC INVG261 200 850 Y":
+      - cell "287"
+      - cell "Hematology"
+      - cell "TC/DC"
+      - cell "INVG261"
+      - cell "200"
+      - cell "850"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "288 BIO CHEMISTRY TESTOSTERONE TOTAL INVG262 650 500 Y":
+      - cell "288"
+      - cell "BIO CHEMISTRY"
+      - cell "TESTOSTERONE TOTAL"
+      - cell "INVG262"
+      - cell "650"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "289 BIO CHEMISTRY TESTOSTERONE-FREE INVG263 700 650 Y":
+      - cell "289"
+      - cell "BIO CHEMISTRY"
+      - cell "TESTOSTERONE-FREE"
+      - cell "INVG263"
+      - cell "700"
+      - cell "650"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "290 BIO CHEMISTRY Thyroid Function Test (TFT) INVG42 500 650 N":
+      - cell "290"
+      - cell "BIO CHEMISTRY"
+      - cell "Thyroid Function Test (TFT)"
+      - cell "INVG42"
+      - cell "500"
+      - cell "650"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "291 BIOCHEMISTRY THYROID PROFILE INVG21 500 650 Y":
+      - cell "291"
+      - cell "BIOCHEMISTRY"
+      - cell "THYROID PROFILE"
+      - cell "INVG21"
+      - cell "500"
+      - cell "650"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "292 BIOCHEMISTRY THYROID PROFILE-II INVG166 600 0 Y":
+      - cell "292"
+      - cell "BIOCHEMISTRY"
+      - cell "THYROID PROFILE-II"
+      - cell "INVG166"
+      - cell "600"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "293 BIOCHEMISTRY THYROID STIMULATING HARMONE (TSH) INVG130 300 300 N":
+      - cell "293"
+      - cell "BIOCHEMISTRY"
+      - cell "THYROID STIMULATING HARMONE (TSH)"
+      - cell "INVG130"
+      - cell "300"
+      - cell "300"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "294 BIO CHEMISTRY THYROID STIMULATING HARMONE (TSH) INVG46 300 300 N":
+      - cell "294"
+      - cell "BIO CHEMISTRY"
+      - cell "THYROID STIMULATING HARMONE (TSH)"
+      - cell "INVG46"
+      - cell "300"
+      - cell "300"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "295 BIO CHEMISTRY TIBC INVG264 300 300 Y":
+      - cell "295"
+      - cell "BIO CHEMISTRY"
+      - cell "TIBC"
+      - cell "INVG264"
+      - cell "300"
+      - cell "300"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "296 BIO CHEMISTRY Tissue Transglutaminase Antibody - IgA INVG115 600 600 Y":
+      - cell "296"
+      - cell "BIO CHEMISTRY"
+      - cell "Tissue Transglutaminase Antibody - IgA"
+      - cell "INVG115"
+      - cell "600"
+      - cell "600"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "297 BIO CHEMISTRY TORCH AVIDITY, HPLC INVG77 3200 3200 Y":
+      - cell "297"
+      - cell "BIO CHEMISTRY"
+      - cell "TORCH AVIDITY, HPLC"
+      - cell "INVG77"
+      - cell "3200"
+      - cell "3200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "298 BIO CHEMISTRY TORCH PROFILE INVG265 2400 2000 Y":
+      - cell "298"
+      - cell "BIO CHEMISTRY"
+      - cell "TORCH PROFILE"
+      - cell "INVG265"
+      - cell "2400"
+      - cell "2000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "299 BIO CHEMISTRY Total Cholesterol INVG88 200 200 Y":
+      - cell "299"
+      - cell "BIO CHEMISTRY"
+      - cell "Total Cholesterol"
+      - cell "INVG88"
+      - cell "200"
+      - cell "200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "300 BIO CHEMISTRY TOTAL IGE INVG55 650 650 Y":
+      - cell "300"
+      - cell "BIO CHEMISTRY"
+      - cell "TOTAL IGE"
+      - cell "INVG55"
+      - cell "650"
+      - cell "650"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "301 BIO CHEMISTRY TOTAL IRON BINDING CAPACITY INVG279 700 700 Y":
+      - cell "301"
+      - cell "BIO CHEMISTRY"
+      - cell "TOTAL IRON BINDING CAPACITY"
+      - cell "INVG279"
+      - cell "700"
+      - cell "700"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "302 BIO CHEMISTRY Total Thyroxine [T4] INVG44 200 577 Y":
+      - cell "302"
+      - cell "BIO CHEMISTRY"
+      - cell "Total Thyroxine [T4]"
+      - cell "INVG44"
+      - cell "200"
+      - cell "577"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "303 BIO CHEMISTRY Total Triiodo Thyronine [T3] INVG43 200 260 Y":
+      - cell "303"
+      - cell "BIO CHEMISTRY"
+      - cell "Total Triiodo Thyronine [T3]"
+      - cell "INVG43"
+      - cell "200"
+      - cell "260"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "304 BIOCHEMISTRY TRANSFERRIN INVG175 200 0 Y":
+      - cell "304"
+      - cell "BIOCHEMISTRY"
+      - cell "TRANSFERRIN"
+      - cell "INVG175"
+      - cell "200"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "305 BIO CHEMISTRY TRANSFERRIN SATURATION INVG266 250 950 Y":
+      - cell "305"
+      - cell "BIO CHEMISTRY"
+      - cell "TRANSFERRIN SATURATION"
+      - cell "INVG266"
+      - cell "250"
+      - cell "950"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "306 BIO CHEMISTRY Treponema Palladium Hemagglutination (TPHA) INVG100 600 850 Y":
+      - cell "306"
+      - cell "BIO CHEMISTRY"
+      - cell "Treponema Palladium Hemagglutination (TPHA)"
+      - cell "INVG100"
+      - cell "600"
+      - cell "850"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "307 BIOCHEMISTRY TRIGLYCERIDES INVG365 210 210 Y":
+      - cell "307"
+      - cell "BIOCHEMISTRY"
+      - cell "TRIGLYCERIDES"
+      - cell "INVG365"
+      - cell "210"
+      - cell "210"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "308 BIO CHEMISTRY TRIPLE MARKER INVG267 1700 3000 Y":
+      - cell "308"
+      - cell "BIO CHEMISTRY"
+      - cell "TRIPLE MARKER"
+      - cell "INVG267"
+      - cell "1700"
+      - cell "3000"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "309 BIOCHEMISTRY TROPONIN- I INVG37 700 700 Y":
+      - cell "309"
+      - cell "BIOCHEMISTRY"
+      - cell "TROPONIN- I"
+      - cell "INVG37"
+      - cell "700"
+      - cell "700"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "310 BIOCHEMISTRY TSH INVG152 300 0 Y":
+      - cell "310"
+      - cell "BIOCHEMISTRY"
+      - cell "TSH"
+      - cell "INVG152"
+      - cell "300"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "311 BIOCHEMISTRY TSH Receptor Antibody INVG168 1850 0 Y":
+      - cell "311"
+      - cell "BIOCHEMISTRY"
+      - cell "TSH Receptor Antibody"
+      - cell "INVG168"
+      - cell "1850"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "312 BIOCHEMISTRY ULTRASOUND OF TIFFA INVG45 1500 0 Y":
+      - cell "312"
+      - cell "BIOCHEMISTRY"
+      - cell "ULTRASOUND OF TIFFA"
+      - cell "INVG45"
+      - cell "1500"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "313 BIOCHEMISTRY UPT (URINE PRAGNANCY TEST) INVG32 150 0 Y":
+      - cell "313"
+      - cell "BIOCHEMISTRY"
+      - cell "UPT (URINE PRAGNANCY TEST)"
+      - cell "INVG32"
+      - cell "150"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "314 BIO CHEMISTRY UREA INVG268 150 180 N":
+      - cell "314"
+      - cell "BIO CHEMISTRY"
+      - cell "UREA"
+      - cell "INVG268"
+      - cell "150"
+      - cell "180"
+      - cell "N"
+      - cell:
+      - cell:
+      - cell:
+    - row "315 BIO CHEMISTRY URINE ALBUMIN INVG346 100 100 Y":
+      - cell "315"
+      - cell "BIO CHEMISTRY"
+      - cell "URINE ALBUMIN"
+      - cell "INVG346"
+      - cell "100"
+      - cell "100"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "316 MICROBIOLOGY URINE CULTURE INVG304 600 1050 Y":
+      - cell "316"
+      - cell "MICROBIOLOGY"
+      - cell "URINE CULTURE"
+      - cell "INVG304"
+      - cell "600"
+      - cell "1050"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "317 BIO CHEMISTRY URINE ELECTROLYTES INVG294 500 500 Y":
+      - cell "317"
+      - cell "BIO CHEMISTRY"
+      - cell "URINE ELECTROLYTES"
+      - cell "INVG294"
+      - cell "500"
+      - cell "500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "318 MICROBIOLOGY URINE FOR AFB INVG269 250 250 Y":
+      - cell "318"
+      - cell "MICROBIOLOGY"
+      - cell "URINE FOR AFB"
+      - cell "INVG269"
+      - cell "250"
+      - cell "250"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "319 BIOCHEMISTRY URINE FOR CULTURE & SENSITIVITY INVG23 600 1050 Y":
+      - cell "319"
+      - cell "BIOCHEMISTRY"
+      - cell "URINE FOR CULTURE & SENSITIVITY"
+      - cell "INVG23"
+      - cell "600"
+      - cell "1050"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "320 PATHOLOGY URINE FOR KETONE BODIES INVG270 100 185 Y":
+      - cell "320"
+      - cell "PATHOLOGY"
+      - cell "URINE FOR KETONE BODIES"
+      - cell "INVG270"
+      - cell "100"
+      - cell "185"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "321 BIOCHEMISTRY URINE MICROALBUMiN INVG179 250 0 Y":
+      - cell "321"
+      - cell "BIOCHEMISTRY"
+      - cell "URINE MICROALBUMiN"
+      - cell "INVG179"
+      - cell "250"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "322 BIO CHEMISTRY URINE PROTEIN/CREATININE RATIO INVG254 400 480 Y":
+      - cell "322"
+      - cell "BIO CHEMISTRY"
+      - cell "URINE PROTEIN/CREATININE RATIO"
+      - cell "INVG254"
+      - cell "400"
+      - cell "480"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "323 BIO CHEMISTRY URINE SODIUM INVG253 250 400 Y":
+      - cell "323"
+      - cell "BIO CHEMISTRY"
+      - cell "URINE SODIUM"
+      - cell "INVG253"
+      - cell "250"
+      - cell "400"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "324 BIO CHEMISTRY USG ABDOMEN/KUB INVG280 1 0 Y":
+      - cell "324"
+      - cell "BIO CHEMISTRY"
+      - cell "USG ABDOMEN/KUB"
+      - cell "INVG280"
+      - cell "1"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "325 BIO CHEMISTRY VBG INVG320 1500 1500 Y":
+      - cell "325"
+      - cell "BIO CHEMISTRY"
+      - cell "VBG"
+      - cell "INVG320"
+      - cell "1500"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "326 BIOCHEMISTRY Venereal Disease Research Laboratory(VDRL) INVG144 250 0 Y":
+      - cell "326"
+      - cell "BIOCHEMISTRY"
+      - cell "Venereal Disease Research Laboratory(VDRL)"
+      - cell "INVG144"
+      - cell "250"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "327 BIO CHEMISTRY VITAMIN - D INVG278 1100 1500 Y":
+      - cell "327"
+      - cell "BIO CHEMISTRY"
+      - cell "VITAMIN - D"
+      - cell "INVG278"
+      - cell "1100"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "328 BIOCHEMISTRY VITAMIN A INVG171 2600 0 Y":
+      - cell "328"
+      - cell "BIOCHEMISTRY"
+      - cell "VITAMIN A"
+      - cell "INVG171"
+      - cell "2600"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "329 BIO CHEMISTRY VITAMIN B12 INVG128 800 850 Y":
+      - cell "329"
+      - cell "BIO CHEMISTRY"
+      - cell "VITAMIN B12"
+      - cell "INVG128"
+      - cell "800"
+      - cell "850"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "330 BIO CHEMISTRY VITAMIN D3 INVG272 1100 1500 Y":
+      - cell "330"
+      - cell "BIO CHEMISTRY"
+      - cell "VITAMIN D3"
+      - cell "INVG272"
+      - cell "1100"
+      - cell "1500"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "331 BIOCHEMISTRY VITAMIN PROFILE INVG153 1500 0 Y":
+      - cell "331"
+      - cell "BIOCHEMISTRY"
+      - cell "VITAMIN PROFILE"
+      - cell "INVG153"
+      - cell "1500"
+      - cell "0"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "332 BIO CHEMISTRY WEIL FELIX INVG273 1200 1200 Y":
+      - cell "332"
+      - cell "BIO CHEMISTRY"
+      - cell "WEIL FELIX"
+      - cell "INVG273"
+      - cell "1200"
+      - cell "1200"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "333 MICROBIOLOGY WIDAL INVG274 250 450 Y":
+      - cell "333"
+      - cell "MICROBIOLOGY"
+      - cell "WIDAL"
+      - cell "INVG274"
+      - cell "250"
+      - cell "450"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+    - row "334 BIO CHEMISTRY Zinc - Serum INVG117 450 1650 Y":
+      - cell "334"
+      - cell "BIO CHEMISTRY"
+      - cell "Zinc - Serum"
+      - cell "INVG117"
+      - cell "450"
+      - cell "1650"
+      - cell "Y"
+      - cell:
+      - cell:
+      - cell:
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

@@ -65,7 +65,7 @@ export function BillingPaymentSection({
   return (
     <section
       aria-label="Payment Summary"
-      className="rounded-md border border-border/80 bg-white"
+      className="lis-billing-payment rounded-md border border-border/80 bg-white"
     >
       <div className="grid grid-cols-1 md:grid-cols-[7fr_7fr_6fr]">
         <div className="space-y-3 p-4 md:border-r md:border-border/60">
@@ -113,7 +113,6 @@ export function BillingPaymentSection({
               id="comments"
               rows={3}
               maxLength={500}
-              placeholder="Optional note for this bill"
               value={comments}
               onChange={(event) => onCommentsChange(event.target.value)}
               className="h-[60px] resize-none"
@@ -146,7 +145,6 @@ export function BillingPaymentSection({
                   min={0}
                   max={100}
                   step="0.01"
-                  placeholder="0"
                   value={discountPercentInput}
                   onChange={(event) =>
                     onDiscountPercentChange(event.target.value)
@@ -162,7 +160,6 @@ export function BillingPaymentSection({
                   inputMode="decimal"
                   min={0}
                   step="0.01"
-                  placeholder="0"
                   value={discountAmountInput}
                   onChange={(event) =>
                     onDiscountAmountChange(event.target.value)
@@ -200,7 +197,6 @@ export function BillingPaymentSection({
                   inputMode="decimal"
                   min={0}
                   step="0.01"
-                  placeholder="0.00"
                   value={paidAmountInput}
                   onChange={(event) => onPaidAmountInputChange(event.target.value)}
                   aria-invalid={paidExceedsNet}

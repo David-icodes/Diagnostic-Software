@@ -53,11 +53,11 @@ export function ReportSelectionPanel({
   const panelBody = (
     <>
       <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-3 py-1.5">
-        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+        <h3 className="text-[13px] font-normal text-slate-600">
           {title}
         </h3>
         <div className="flex items-center gap-2">
-          <label className="flex cursor-pointer items-center gap-1 text-[11px] font-medium text-slate-600">
+          <label className="flex cursor-pointer items-center gap-1 text-[13px] font-medium text-slate-600">
             <input
               type="checkbox"
               checked={allVisibleSelected}
@@ -74,7 +74,7 @@ export function ReportSelectionPanel({
             <button
               type="button"
               onClick={onClear}
-              className="text-[11px] font-medium text-primary hover:underline"
+              className="text-[13px] font-medium text-primary hover:underline"
             >
               Clear
             </button>
@@ -136,14 +136,14 @@ export function ReportSelectionPanel({
 
   if (bare) {
     return (
-      <div className="overflow-hidden rounded-md border border-border bg-card">
+      <div className="lis-report-selection overflow-hidden rounded-md border border-border bg-card">
         {panelBody}
       </div>
     );
   }
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="lis-report-selection overflow-hidden">
       <CardContent className="p-0">{panelBody}</CardContent>
     </Card>
   );

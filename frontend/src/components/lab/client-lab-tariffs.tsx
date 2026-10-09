@@ -35,8 +35,11 @@ function toNum(value: string | undefined): number | undefined {
 
 export function ClientLabTariffsContent() {
   const queryClient = useQueryClient();
+  const [testSearch, setTestSearch] = useState("");
   const [clientId, setClientId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
+  const [clientSearch, setClientSearch] = useState("");
+  const [departmentSearch, setDepartmentSearch] = useState("");
   const [drafts, setDrafts] = useState<Record<string, ClientTariffDraft>>({});
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [overwrite, setOverwrite] = useState(false);
@@ -138,7 +141,7 @@ export function ClientLabTariffsContent() {
     if (overwrite) {
       setConfirmOpen(true);
     } else {
-      void saveMutation.mutateAsync();
+      saveMutation.mutate();
     }
   };
 
@@ -219,7 +222,7 @@ export function ClientLabTariffsContent() {
   );
 
   return (
-    <div className="space-y-3">
+    <div className="lis-dm lis-client-tariffs space-y-3">
       <PageHeader
         icon={Building2}
         title="Client Wise Lab Tariffs"
@@ -232,8 +235,11 @@ export function ClientLabTariffsContent() {
       >
         <div className="grid gap-3 sm:grid-cols-2 lg:max-w-3xl">
           <FormField id="client-tariff-client" label="Select Client Name" required>
+            <div className="lis-master-listbox">
+            <Input aria-label="Search clients" placeholder="Search Client..." value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} />
             <Select
               id="client-tariff-client"
+              size={10}
               className="h-8"
               value={clientId}
               onChange={(event) => {
@@ -245,16 +251,20 @@ export function ClientLabTariffsContent() {
               }}
             >
               <option value="">--Select--</option>
-              {clients.map((client) => (
+              {clients.filter((client) => client.id === clientId || client.name.toLowerCase().includes(clientSearch.toLowerCase())).map((client) => (
                 <option key={client.id} value={client.id}>
                   {client.name}
                 </option>
               ))}
             </Select>
+            </div>
           </FormField>
           <FormField id="client-tariff-dept" label="Select Department" required>
+            <div className="lis-master-listbox">
+            <Input aria-label="Search departments" placeholder="Search Department..." value={departmentSearch} onChange={(event) => setDepartmentSearch(event.target.value)} />
             <Select
               id="client-tariff-dept"
+              size={10}
               className="h-8"
               value={departmentId}
               onChange={(event) => {
@@ -266,12 +276,13 @@ export function ClientLabTariffsContent() {
               }}
             >
               <option value="">--Select--</option>
-              {departments.map((department) => (
+              {departments.filter((department) => department.id === departmentId || department.name.toLowerCase().includes(departmentSearch.toLowerCase())).map((department) => (
                 <option key={department.id} value={department.id}>
                   {department.name}
                 </option>
               ))}
             </Select>
+            </div>
           </FormField>
         </div>
       </FormSection>
@@ -285,6 +296,7 @@ export function ClientLabTariffsContent() {
         }
       >
         <div className="space-y-3">
+          <div className="lis-dm-table-search"><Input aria-label="Search lab tests" placeholder="Search Lab Tests..." value={testSearch} onChange={(event) => setTestSearch(event.target.value)} /></div>
           {notice && (
             <p
               className={cn(
@@ -317,27 +329,28 @@ export function ClientLabTariffsContent() {
                 </label>
               </div>
               <DataTable
-                data={rows}
+                data={rows.filter((row) => row.testName.toLowerCase().includes(testSearch.toLowerCase()))}
                 rowKey={(row) => row.testId}
                 loading={tariffsQuery.isLoading}
                 emptyMessage="No tests found in this department"
                 columns={columns}
               />
-              <LabActions
-                onSubmit={handleSubmit}
-                onClear={handleClear}
-                submitting={saveMutation.isPending}
-                submitLabel="Submit"
-                homeHref="/laboratory"
-              />
+
             </>
           ) : (
-            <div className="rounded-lg border border-dashed border-border px-3 py-5 text-center text-sm text-muted-foreground">
-              Select a client and department to load its tariff set
-            </div>
+            <DataTable data={[]} rowKey={(row) => row.testId} columns={columns} emptyMessage="Select a client and department to load its tariff set" />
           )}
         </div>
       </FormSection>
+
+      <LabActions
+        disabled={!enabled}
+        onSubmit={handleSubmit}
+        onClear={handleClear}
+        submitting={saveMutation.isPending}
+        submitLabel="Submit"
+        homeHref="/dashboard"
+      />
 
       <ConfirmDialog
         open={confirmOpen}
@@ -350,7 +363,7 @@ export function ClientLabTariffsContent() {
         loading={saveMutation.isPending}
         onConfirm={() => {
           setConfirmOpen(false);
-          void saveMutation.mutateAsync();
+          saveMutation.mutate();
         }}
       />
     </div>

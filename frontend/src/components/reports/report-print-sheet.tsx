@@ -1,6 +1,7 @@
 "use client";
 
-import { APP_CONFIG } from "@/lib/app-config";
+import Image from "next/image";
+import { organisationBranding, organisationContactLines } from "@/config/organisation";
 import { formatDateTime } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -49,17 +50,17 @@ export function ReportPrintSheet<T>({
   return (
     <section
       aria-label="Print preview"
-      className="hidden print:block"
+      className="lis-a4-table-report hidden print:block"
       data-print-title={title}
     >
       <div className="text-sm text-slate-900">
-        <div className="border-b-2 border-slate-900 pb-2 text-center">
-          <h1 className="text-lg font-bold uppercase">{APP_CONFIG.name}</h1>
-          {APP_CONFIG.tagline && <p className="text-xs">{APP_CONFIG.tagline}</p>}
-          {APP_CONFIG.supportEmail && (
-            <p className="text-xs">{APP_CONFIG.supportEmail}</p>
-          )}
-        </div>
+        <header className="lis-report-print-brand border-b-2 border-slate-900 pb-2 text-center">
+          {organisationBranding.logo && <Image src={organisationBranding.logo} alt={`${organisationBranding.name} logo`} width={66} height={66} unoptimized loading="eager" />}
+          <div><h1 className="text-lg font-bold">{organisationBranding.name}</h1>
+          {organisationBranding.address && <p className="text-xs">{organisationBranding.address}</p>}
+          {organisationContactLines().map((line) => <p className="text-xs" key={line}>{line}</p>)}
+          </div>
+        </header>
 
         <div className="mt-3 flex items-end justify-between gap-4">
           <div>

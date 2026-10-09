@@ -1,0 +1,123 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Doctor Specialisation" [level=1]
+  - paragraph: Add and manage doctor specialisations
+  - link "Home":
+    - /url: /dashboard
+  - heading "Add New Specialisation" [level=2]
+  - paragraph: Enter the details and save
+  - text: Specialisation
+  - generic: "*"
+  - textbox "Specialisation *" [active]:
+    - /placeholder: e.g. Cardiologist
+  - button "Submit"
+  - button "Clear"
+  - link "Home":
+    - /url: /dashboard
+  - heading "Specialisation List" [level=2]
+  - searchbox "Search records..."
+  - table:
+    - rowgroup:
+      - row "S.No Specialisation Status Action":
+        - columnheader "S.No"
+        - columnheader "Specialisation"
+        - columnheader "Status"
+        - columnheader "Action"
+    - rowgroup:
+      - row "1 Cardiology Active Edit Cardiology Deactivate Cardiology":
+        - cell "1"
+        - cell "Cardiology"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Cardiology Deactivate Cardiology":
+          - button "Edit Cardiology":
+          - button "Deactivate Cardiology":
+      - row "2 Dermatology Active Edit Dermatology Deactivate Dermatology":
+        - cell "2"
+        - cell "Dermatology"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Dermatology Deactivate Dermatology":
+          - button "Edit Dermatology":
+          - button "Deactivate Dermatology":
+      - row "3 General Medicine Active Edit General Medicine Deactivate General Medicine":
+        - cell "3"
+        - cell "General Medicine"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit General Medicine Deactivate General Medicine":
+          - button "Edit General Medicine":
+          - button "Deactivate General Medicine":
+      - row "4 Nephrology Active Edit Nephrology Deactivate Nephrology":
+        - cell "4"
+        - cell "Nephrology"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Nephrology Deactivate Nephrology":
+          - button "Edit Nephrology":
+          - button "Deactivate Nephrology":
+      - row "5 Neurology Care Active Edit Neurology Care Deactivate Neurology Care":
+        - cell "5"
+        - cell "Neurology Care"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Neurology Care Deactivate Neurology Care":
+          - button "Edit Neurology Care":
+          - button "Deactivate Neurology Care":
+      - row "6 Orthopedics Active Edit Orthopedics Deactivate Orthopedics":
+        - cell "6"
+        - cell "Orthopedics"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Orthopedics Deactivate Orthopedics":
+          - button "Edit Orthopedics":
+          - button "Deactivate Orthopedics":
+      - row "7 Pathology Active Edit Pathology Deactivate Pathology":
+        - cell "7"
+        - cell "Pathology"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Pathology Deactivate Pathology":
+          - button "Edit Pathology":
+          - button "Deactivate Pathology":
+      - row "8 Pediatrics Active Edit Pediatrics Deactivate Pediatrics":
+        - cell "8"
+        - cell "Pediatrics"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Pediatrics Deactivate Pediatrics":
+          - button "Edit Pediatrics":
+          - button "Deactivate Pediatrics":
+      - row "9 Radiology Active Edit Radiology Deactivate Radiology":
+        - cell "9"
+        - cell "Radiology"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Radiology Deactivate Radiology":
+          - button "Edit Radiology":
+          - button "Deactivate Radiology":
+  - paragraph: Showing 1–9 of 9 records · Page 1 of 1
+  - button "Previous" [disabled]:
+    - text: Previous
+  - button "Next" [disabled]:
+    - text: Next

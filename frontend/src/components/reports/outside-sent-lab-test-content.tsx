@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ReportPreview } from "@/components/reports/report-preview";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileBarChart2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { ReportDateRange } from "@/components/reports/report-date-range";
 import { ReportFilterBar } from "@/components/reports/report-filter-bar";
@@ -25,6 +27,8 @@ import type {
 } from "@/types/reports";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 
+import { localToday } from "@/lib/report-filter-state";
+
 const PRESET_LIMIT = 20;
 
 interface Filters {
@@ -36,14 +40,15 @@ interface Filters {
 const EMPTY_FILTERS: Filters = { fromDate: "", toDate: "", outsideLabIds: [] };
 
 export function OutsideSentLabTestContent() {
-  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [filters, setFilters] = useState<Filters>(() => ({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() }));
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [labs, setLabs] = useState<OutsideLabOption[]>([]);
   const [result, setResult] = useState<OutsideSentLabTestResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [printRows, setPrintRows] = useState<OutsideSentLabTestRow[]>([]);
   const [printing, setPrinting] = useState(false);
+  const requestSequence = useRef(0);
 
   useEffect(() => {
     fetchOutsideLabs()
@@ -82,31 +87,21 @@ export function OutsideSentLabTestContent() {
     [buildParams],
   );
 
-  useEffect(() => {
-    fetchOutsideSentLabTests(buildParams(1, EMPTY_FILTERS))
-      .then((response) => {
-        setResult(response);
-        setError(null);
-      })
-      .catch(() => {
-        setResult(null);
-        setError("Unable to load the report. Please try again.");
-      })
-      .finally(() => setLoading(false));
-  }, [buildParams]);
-
   const runFetch = useCallback(
     (targetPage: number, criteria: Filters) => {
+      const sequence = ++requestSequence.current;
       fetchOutsideSentLabTests(buildParams(targetPage, criteria))
         .then((response) => {
+          if (sequence !== requestSequence.current) return;
           setResult(response);
           setError(null);
         })
         .catch(() => {
+          if (sequence !== requestSequence.current) return;
           setResult(null);
           setError("Unable to load the report. Please try again.");
         })
-        .finally(() => setLoading(false));
+        .finally(() => { if (sequence === requestSequence.current) setLoading(false); });
     },
     [buildParams],
   );
@@ -118,11 +113,14 @@ export function OutsideSentLabTestContent() {
   }, [filters, runFetch]);
 
   const handleClear = useCallback(() => {
-    setFilters(EMPTY_FILTERS);
+    requestSequence.current += 1;
+    setFilters({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() });
     setApplied(EMPTY_FILTERS);
-    setLoading(true);
-    runFetch(1, EMPTY_FILTERS);
-  }, [runFetch]);
+    setResult(null);
+    setPrintRows([]);
+    setError(null);
+    setLoading(false);
+  }, []);
 
   const handlePageChange = useCallback(
     (targetPage: number) => {
@@ -163,19 +161,9 @@ export function OutsideSentLabTestContent() {
     ];
   }, [result]);
 
-  const noteLines = useMemo(() => {
-    const lines = [
-      "Only samples marked as sent to an outside lab centre within the selected date range are shown.",
-      '"Total Amount" reflects the amount charged on the originating bill for the sample; no separate outside-centre charge is recorded.',
-    ];
-    if (applied.outsideLabIds.length === 0) {
-      lines.push("No lab centre selected - all outside-sent tests are included.");
-    }
-    return lines;
-  }, [applied.outsideLabIds.length]);
-
   const columns: ReportColumn<OutsideSentLabTestRow>[] = useMemo(
     () => [
+      { key: "serial", header: "S No", render: (row) => ((result?.pagination.page ?? 1) - 1) * PRESET_LIMIT + rows.indexOf(row) + 1 },
       {
         key: "sentDate",
         header: "Sent Date",
@@ -187,24 +175,16 @@ export function OutsideSentLabTestContent() {
       },
       {
         key: "labCenter",
-        header: "Lab Center",
+        header: "Lab Center Name",
         render: (row) => (
           <span className="font-medium text-slate-800">{row.labCenterName}</span>
         ),
       },
-      {
-        key: "patient",
-        header: "Patient",
-        render: (row) => (
-          <div className="flex flex-col">
-            <span className="font-medium text-slate-800">{row.patientName}</span>
-            <span className="text-xs text-muted-foreground">{row.patientId}</span>
-          </div>
-        ),
-      },
+      { key: "patientId", header: "Pat Id", render: (row) => row.patientId },
+      { key: "patient", header: "Pat Name", render: (row) => row.patientName },
       {
         key: "test",
-        header: "Test",
+        header: "Lab Test Name",
         render: (row) => row.testName,
       },
       {
@@ -218,7 +198,7 @@ export function OutsideSentLabTestContent() {
         ),
       },
     ],
-    [],
+    [result?.pagination.page, rows],
   );
 
   const printColumns: PrintColumn<OutsideSentLabTestRow>[] = useMemo(
@@ -228,10 +208,10 @@ export function OutsideSentLabTestContent() {
         header: "Sent Date",
         render: (row) => formatDateTime(row.sentDate),
       },
-      { key: "labCenter", header: "Lab Center", render: (row) => row.labCenterName },
-      { key: "patientId", header: "Patient ID", render: (row) => row.patientId },
-      { key: "patient", header: "Patient Name", render: (row) => row.patientName },
-      { key: "test", header: "Test", render: (row) => row.testName },
+      { key: "labCenter", header: "Lab Center Name", render: (row) => row.labCenterName },
+      { key: "patientId", header: "Pat Id", render: (row) => row.patientId },
+      { key: "patient", header: "Pat Name", render: (row) => row.patientName },
+      { key: "test", header: "Lab Test Name", render: (row) => row.testName },
       {
         key: "amount",
         header: "Total Amount (Rs.)",
@@ -286,27 +266,21 @@ export function OutsideSentLabTestContent() {
 
   return (
     <>
-      <div className="mx-auto max-w-7xl space-y-3 p-4 print:hidden sm:p-6">
+      <div data-tmis-page="outside-sent-lab-test" className="lis-tmis lis-report-page space-y-3 print:hidden">
         <BillPageHeader
           icon={FileBarChart2}
           title="Outside Sent LabTest Details"
-          subtitle="Tests sent to outside lab centres within the selected date range."
         />
 
-        <div className="space-y-0.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs text-slate-600">
-          {noteLines.map((line) => (
-            <p key={line}>{line}</p>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-4">
+        <div className="lis-outside-filter-layout">
           <div className="lg:col-span-3">
             <ReportFilterBar
+              homeBeforeClear
               onSearch={handleSearch}
               onClear={handleClear}
               searching={loading}
             >
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="lis-outside-filter-fields">
                 <ReportDateRange
                   fromId="os-from-date"
                   toId="os-to-date"
@@ -315,10 +289,8 @@ export function OutsideSentLabTestContent() {
                   onFromChange={(value) => setFilter("fromDate", value)}
                   onToChange={(value) => setFilter("toDate", value)}
                 />
-              </div>
-            </ReportFilterBar>
-          </div>
-          <ReportSelectionPanel
+
+              <ReportSelectionPanel
             title="Lab Center"
             options={labOptions}
             selected={filters.outsideLabIds}
@@ -329,12 +301,16 @@ export function OutsideSentLabTestContent() {
             onClear={() => setFilters((prev) => ({ ...prev, outsideLabIds: [] }))}
             searchPlaceholder="Search lab center…"
             maxHeightClassName="max-h-64"
-          />
+              />
+              </div>
+            </ReportFilterBar>
+          </div>
+          
         </div>
 
         <ReportSummary items={summaryItems} />
 
-        <Card>
+        {(result || loading || error) && <ReportPreview reportTitle="Labtest Sent Outside Report" criteria={criteriaText} total={result?.pagination.total ?? 0} className="lis-tmis-document">
           {error ? (
             <CardContent className="px-2.5 py-5 text-center text-sm text-red-600">
               {error}
@@ -371,7 +347,7 @@ export function OutsideSentLabTestContent() {
               )}
             </>
           )}
-        </Card>
+        </ReportPreview>}
       </div>
 
       <ReportPrintSheet
