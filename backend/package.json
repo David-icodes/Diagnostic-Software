@@ -18,7 +18,10 @@
     "lab-parameters:flag-review": "tsx src/scripts/flagLabParameterReview.ts",
     "seed:bills": "tsx src/scripts/seedDemoBills.ts",
     "seed:db": "tsx src/scripts/seedDatabase.ts",
-    "import:reference-config": "tsx src/scripts/importOldLisReferenceConfig.ts"
+    "import:reference-config": "tsx src/scripts/importOldLisReferenceConfig.ts",
+    "render:build": "node scripts/render-runtime.cjs build",
+    "render:start": "node scripts/render-runtime.cjs start",
+    "render:verify": "node scripts/render-runtime.cjs verify"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
