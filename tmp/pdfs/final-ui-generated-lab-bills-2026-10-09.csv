@@ -1,0 +1,5 @@
+﻿SNo,Bill Date,Bill No,Pat Id,Name,Dr Name,Lab Test,Total,Dscnt,Net,Paid,Balance,User,Pay Mode,Patient Type,Payment Status
+1,"09 Oct 2026, 01:13 pm",OSP202600097,GP202600045,AADHYA,Dr. Anil Mehta,"Complete Blood Count (CBC), ANTI CCP, APLA PROFILE, BILIRUBIN, BLOOD UREA, BLOOD UREA SERUM CREATININE","1,250.00",0.00,"1,250.00","1,250.00",0.00,Administrator,Cash,OSP,Paid
+2,"09 Oct 2026, 12:56 pm",OSP202600096,GP202600057,BALU,Dr. Anil Mehta,COMPLETE BLOOD PICTURE,450.00,0.00,450.00,450.00,0.00,Administrator,Cash,OSP,Paid
+3,"09 Oct 2026, 12:33 pm",OSP202600095,GP202600045,AADHYA,,Absolute Eosinophil Count (AEC),0.00,0.00,0.00,0.00,0.00,Administrator,Cash,OSP,Free
+4,"09 Oct 2026, 11:59 am",OSP202600094,GP202600056,PRAVEEN,Dr. Kavita Nair,COMPLETE BLOOD PICTURE,450.00,0.00,450.00,450.00,0.00,Administrator,Cash,OSP,Paid

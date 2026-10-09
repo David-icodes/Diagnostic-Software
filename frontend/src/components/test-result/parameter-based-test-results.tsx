@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   useMutation,
   useQuery,
@@ -21,15 +20,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { BillActionBar } from "@/components/billing/bill-action-bar";
+import { SampleCollectionControl } from "@/components/test-result/sample-collection-control";
 import { SampleOutsideControl } from "@/components/test-result/sample-outside-control";
 import { ResultPrintDialog } from "@/components/test-result/result-print-dialog";
 import { ResultReportUpload } from "@/components/test-result/result-report-upload";
 import { LisSendDialog } from "@/components/whatsapp/lis-send-dialog";
 import { allResultBillPages, initialResultBillParams, resultBillParams } from "@/lib/result-bill-list";
-import { orderedPrintIds, resultContextHref, sampleContextHref, sampleIsCollected, type SampleContext } from "@/lib/lab-workflows";
+import { orderedPrintIds, resultContextHref, sampleIsCollected, type SampleContext } from "@/lib/lab-workflows";
 import { fetchLabBill, fetchLabBills } from "@/services/billing";
 import {
   fetchBillResultEntry,
@@ -100,7 +99,6 @@ function toPatientBill(bill: LabBill) {
 }
 
 export function ParameterBasedTestResults({ context }: { context?: SampleContext }) {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<BillMode>(context?.returnFilters?.mode ?? (context ? "criteria" : "today"));
   const [includeClients, setIncludeClients] = useState(context?.returnFilters?.includeClients ?? true);
@@ -560,10 +558,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
                           </td>
                           <td className="px-3 py-1.5 text-slate-700">
                             {billSamplesQuery.isPending ? <span role="status">Loading…</span> : billSamplesQuery.isError || !sampleRow ? <span title="Sample status is not available">—</span> : collected ? <input type="checkbox" checked disabled aria-label={`Sample collected for ${item.testName}`} title={sampleLabel(sampleRow?.sampleType)} /> :
-                              <label onClick={(event) => event.stopPropagation()} className="lis-sample-in text-primary">
-                                <input type="checkbox" checked={false} aria-label={`Collect sample for ${item.testName}`}
-                                  onChange={() => router.push(sampleContextHref({ billId: selectedBill.id, billNumber: selectedBill.billNumber, testId: item.testId, sampleId: sampleRow.id,
-                                    returnFilters: { mode, fromDate, toDate, billNumber, patientName, includeClients } }))} className="size-3.5 accent-primary" /></label>}
+                              <SampleCollectionControl sample={sampleRow} testName={item.testName} />}
                           </td>
                           {sampleRow && !billSamplesQuery.isError ? <SampleOutsideControl key={`${sampleRow.id}-${sampleRow.outsideLabId === undefined ? item.outsideLabId ?? "" : sampleRow.outsideLabId ?? ""}-${sampleRow.sentOutAt ?? ""}`} sample={sampleRow} item={item} /> : <><td>—</td><td /></>}
                           <td><ResultReportUpload key={`${selectedBill.id}-${item.testId}`} billId={selectedBill.id} testId={item.testId} testName={item.testName} /></td>
@@ -683,10 +678,6 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
 function ResultEntryTable({
   parameters,
   existingResults,
-  patient,
-  bill,
-  testName,
-  testCode,
   testLinked,
   loading,
   submitting,
@@ -933,19 +924,6 @@ function ResultEntryTable({
     }
   };
 
-  // Prefer the age the backend actually resolved against, so what the technician
-  // sees is exactly what the range was chosen with.
-  const ageLabel = (() => {
-    const resolved = parameters
-      .map((parameter) => parameter.reference.patient.age)
-      .find((age): age is { years: number; months: number; days: number } => Boolean(age));
-    if (resolved) return `${resolved.years}`;
-    if (patient?.patientAge !== undefined && patient?.patientAge !== null) {
-      return `${patient.patientAge}`;
-    }
-    return "—";
-  })();
-
   return (
     <>
       {!testLinked && (
@@ -971,43 +949,6 @@ function ResultEntryTable({
       ) : (
       <Card className="border-border shadow-sm">
         <CardContent className="p-0">
-          <div className="lis-result-parameter-heading flex items-center justify-between gap-2 border-b border-border px-3 py-1.5">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Test Parameters
-            </h3>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-[13px] text-muted-foreground">{testCode}</span>
-              <Badge
-                variant="outline"
-                className="border-primary/20 bg-primary/5 py-0 text-[13px] text-primary"
-              >
-                {testName}
-              </Badge>
-            </div>
-          </div>
-
-          <div className="lis-result-patient flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-border bg-slate-50/60 px-3 py-2 text-[14px] text-slate-600">
-            <span className="font-semibold uppercase tracking-wide text-slate-500">
-              Patient
-            </span>
-            <span className="font-mono text-slate-800">{patient?.patientCode ?? patient?.patientId ?? "—"}</span>
-            <span className="lis-result-patient-name font-semibold text-[17px] text-slate-800">
-              {patient?.patientName ?? "—"}
-            </span>
-            <span>
-              Sex{" "}
-              <span className="font-medium text-slate-800">
-                {patient ? formatGender(patient.patientGender) : "—"}
-              </span>
-            </span>
-            <span>
-              Age <span className="font-medium text-slate-800">{ageLabel}</span>
-            </span>
-            <span>Bill <strong>{bill.billNumber}</strong></span>
-            <span>Doctor <strong>{bill.doctorName ?? (typeof bill.referringDoctorId === "object" ? bill.referringDoctorId?.name : undefined) ?? "—"}</strong></span>
-            <span>Date <strong>{formatDate(bill.createdAt)}</strong></span>
-          </div>
-
           {fieldError && (
             <div
               role="alert"

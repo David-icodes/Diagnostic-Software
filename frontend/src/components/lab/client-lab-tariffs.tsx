@@ -1,5 +1,6 @@
 "use client";
 
+import { selectTariffScope, selectedTariffRows } from "@/lib/tariff-selection";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
@@ -74,8 +75,7 @@ export function ClientLabTariffsContent() {
 
   const saveMutation = useMutation({
     mutationFn: () => {
-      const rows = (tariffsQuery.data ?? [])
-        .filter((row) => selected[row.testId])
+      const rows = selectedTariffRows(tariffsQuery.data ?? [], selected)
         .map((row) => ({
           testId: row.testId,
           price: toNum(drafts[row.testId]?.price) ?? row.price,
@@ -117,12 +117,11 @@ export function ClientLabTariffsContent() {
     [selected],
   );
 
-  const allSelected = rows.length > 0 && rows.every((row) => selected[row.testId]);
+  const visibleRows = rows.filter((row) => row.testName.toLowerCase().includes(testSearch.toLowerCase()));
+  const allSelected = visibleRows.length > 0 && visibleRows.every((row) => selected[row.testId]);
 
   const toggleAll = (checked: boolean) => {
-    const next: Record<string, boolean> = {};
-    for (const row of rows) next[row.testId] = checked;
-    setSelected(next);
+    setSelected((current) => selectTariffScope(current, visibleRows.map((row) => row.testId), checked));
   };
 
   const updateDraft = (testId: string, price: string) => {
@@ -210,7 +209,7 @@ export function ClientLabTariffsContent() {
                 drafts[row.testId]?.price ??
                 (row.clientPrice !== undefined ? String(row.clientPrice) : String(row.price))
               }
-              placeholder="0.00"
+
               onChange={(event) => updateDraft(row.testId, event.target.value)}
               disabled={saveMutation.isPending}
             />
@@ -317,7 +316,7 @@ export function ClientLabTariffsContent() {
             <>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <label className="flex items-center gap-2 text-xs font-medium text-slate-600">
-                  <Checkbox checked={allSelected} onChange={(event) => toggleAll(event.target.checked)} />
+                  <Checkbox aria-label="Select All" disabled={saveMutation.isPending || visibleRows.length === 0} checked={allSelected} onChange={(event) => toggleAll(event.target.checked)} />
                   Select All
                 </label>
                 <label className="flex items-center gap-2 text-xs font-medium text-slate-600">
@@ -329,7 +328,7 @@ export function ClientLabTariffsContent() {
                 </label>
               </div>
               <DataTable
-                data={rows.filter((row) => row.testName.toLowerCase().includes(testSearch.toLowerCase()))}
+                data={visibleRows}
                 rowKey={(row) => row.testId}
                 loading={tariffsQuery.isLoading}
                 emptyMessage="No tests found in this department"

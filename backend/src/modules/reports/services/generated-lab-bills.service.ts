@@ -136,6 +136,7 @@ export async function listGeneratedLabBills(
     const ids = patients.map((p) => p._id);
     if (ids.length === 0) {
       return {
+        analytics: { daily: [], paymentModes: [] },
         data: [],
         pagination: { page, limit, total: 0, totalPages: 0 },
         summary: {
@@ -155,7 +156,7 @@ export async function listGeneratedLabBills(
   const safeLimit = Math.min(100, Math.max(1, Math.floor(limit)));
   const skip = (safePage - 1) * safeLimit;
 
-  const [total, summaryRows, bills] = await Promise.all([
+  const [total, summaryRows, bills, analyticsRows] = await Promise.all([
     LabBill.countDocuments(filter),
     LabBill.aggregate<{
       totalBills: number;
@@ -185,6 +186,22 @@ export async function listGeneratedLabBills(
       .populate("patientId", "patientId fullName")
       .populate("createdBy", "name")
       .exec(),
+    LabBill.aggregate<import("../types/generated-lab-bills").RevenueAnalytics>([
+      { $match: { ...filter, status: "generated" } },
+      { $facet: {
+        daily: [
+          { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: Intl.DateTimeFormat().resolvedOptions().timeZone } },
+            netAmount: { $sum: "$netAmount" }, paidAmount: { $sum: "$paidAmount" }, dueAmount: { $sum: "$dueAmount" } } },
+          { $sort: { _id: 1 } },
+          { $project: { _id: 0, date: "$_id", netAmount: { $round: ["$netAmount", 2] }, paidAmount: { $round: ["$paidAmount", 2] }, dueAmount: { $round: ["$dueAmount", 2] } } },
+        ],
+        paymentModes: [
+          { $group: { _id: { $ifNull: ["$paymentMode", "unspecified"] }, paidAmount: { $sum: "$paidAmount" } } },
+          { $sort: { _id: 1 } },
+          { $project: { _id: 0, mode: "$_id", paidAmount: { $round: ["$paidAmount", 2] } } },
+        ],
+      } },
+    ]),
   ]);
 
   const summary = summaryRows[0] ?? {
@@ -228,6 +245,7 @@ export async function listGeneratedLabBills(
   });
 
   return {
+    analytics: analyticsRows[0] ?? { daily: [], paymentModes: [] },
     data,
     pagination: {
       page: safePage,

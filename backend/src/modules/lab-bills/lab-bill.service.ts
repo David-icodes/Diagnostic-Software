@@ -63,6 +63,7 @@ export function computeTotals(
   discountPercent = 0,
   discountAmount?: number,
   paidAmount = 0,
+  preserveExistingPayments = false,
 ): BillTotals {
   const totalAmount = round2(
     items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
@@ -86,10 +87,12 @@ export function computeTotals(
 
   const netAmount = round2(Math.max(0, totalAmount - effectiveDiscountAmount));
   const paid = round2(Math.max(0, paidAmount));
-  if (paid > netAmount) {
+  if (paid > netAmount && !preserveExistingPayments) {
     throw new ApiError(400, "Paid amount cannot exceed the net amount");
   }
-  const dueAmount = round2(netAmount - paid);
+  // Received payments remain unchanged when a bill is revised. Existing due
+  // storage is non-negative; any overpayment is derived from paid minus net.
+  const dueAmount = round2(Math.max(0, netAmount - paid));
 
   return {
     totalAmount,
@@ -304,12 +307,6 @@ export async function modifyLabBill(
   if (bill.status === "cancelled") {
     throw new ApiError(422, "A cancelled bill cannot be modified");
   }
-  if (bill.status === "generated" && bill.paidAmount > 0) {
-    throw new ApiError(
-      422,
-      "This bill already has payments and cannot be modified",
-    );
-  }
 
   if (input.referringDoctorId !== undefined) {
     if (input.referringDoctorId) {
@@ -370,6 +367,7 @@ export async function modifyLabBill(
     input.discountPercent ?? 0,
     input.discountAmount,
     bill.paidAmount ?? 0,
+    true, // Modification preserves receipts even when the revised net is lower.
   );
 
   bill.items = snapshotItems;

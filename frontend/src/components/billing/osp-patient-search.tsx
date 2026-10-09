@@ -82,7 +82,7 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
               }
             }}
             className="h-8 min-w-0 flex-1 md:w-[266px] md:flex-none"
-            aria-label="Search patient by name or mobile"
+            aria-label="Search patient by name, patient ID or mobile"
           />
           <Button
             type="button"

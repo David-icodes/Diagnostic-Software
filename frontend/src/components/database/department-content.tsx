@@ -1,9 +1,11 @@
 "use client";
 
+import { ConfirmDialog } from "@/components/database/confirm-dialog";
+
 import { useMemo, useState } from "react";
 import { invalidateMasterData } from "@/lib/master-data-cache";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Layers, Pencil } from "lucide-react";
+import { Layers, Pencil, Trash2 } from "lucide-react";
 import { DataTable } from "@/components/database/data-table";
 import { FormActions } from "@/components/database/form-actions";
 import { FormField } from "@/components/database/form-field";
@@ -16,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import {
   createDatabaseDepartment,
+  deleteDatabaseDepartment,
   fetchDatabaseDepartments,
   getDatabaseOptions,
   updateDatabaseDepartment,
@@ -48,6 +51,7 @@ export function DepartmentContent() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
 
+  const [deleting, setDeleting] = useState<Department | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const optionsQuery = useQuery({
@@ -92,6 +96,15 @@ export function DepartmentContent() {
   });
 
 
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteDatabaseDepartment(id),
+    onSuccess: () => {
+      invalidate();
+      if (editingId === deleting?.id) { setEditingId(null); setForm(EMPTY_FORM); }
+      setDeleting(null); setPage(1); setFeedback("Department deleted successfully");
+    },
+  });
 
   const departmentTypes = optionsQuery.data?.departmentTypes ?? [];
 
@@ -187,7 +200,10 @@ export function DepartmentContent() {
           >
             <Pencil className="size-4" />
           </Button>
-          
+          <Button type="button" variant="ghost" size="icon-sm" aria-label={`Delete ${row.name}`}
+            disabled={deleteMutation.isPending} onClick={() => { deleteMutation.reset(); setDeleting(row); }}>
+            <Trash2 className="size-4 text-destructive" />
+          </Button>
         </div>
       ),
     },
@@ -195,6 +211,10 @@ export function DepartmentContent() {
 
   return (
     <div className="lis-dm lis-department space-y-3">
+      <ConfirmDialog open={Boolean(deleting)} onOpenChange={(open) => { if (!open && !deleteMutation.isPending) setDeleting(null); }}
+        title="Delete Department" confirmLabel="Delete" loading={deleteMutation.isPending}
+        description={deleteMutation.isError ? deleteMutation.error.message : `Delete ${deleting?.name ?? "this department"}? Referenced departments cannot be deleted.`}
+        onConfirm={() => { if (deleting) deleteMutation.mutate(deleting.id); }} />
       <PageHeader
         icon={Layers}
         title="Create Department"
@@ -228,7 +248,7 @@ export function DepartmentContent() {
                 <Input
                   id="dept-name"
                   value={form.name}
-                  placeholder="e.g. HEMATOLOGY"
+
                   onChange={(event) => update({ name: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -237,7 +257,7 @@ export function DepartmentContent() {
                 <Input
                   id="dept-code"
                   value={form.code}
-                  placeholder="e.g. HEMA"
+
                   maxLength={10}
                   onChange={(event) =>
                     update({ code: event.target.value.toUpperCase() })
@@ -249,7 +269,7 @@ export function DepartmentContent() {
                 <Input
                   id="dept-desc"
                   value={form.description}
-                  placeholder="Optional notes"
+
                   onChange={(event) => update({ description: event.target.value })}
                   disabled={saveMutation.isPending}
                 />

@@ -1,0 +1,16 @@
+{
+  "actualRenderer": [
+    {
+      "templateName": "lab_report_ready",
+      "bytes": 1203042,
+      "billNumber": "OSP202600094"
+    },
+    {
+      "templateName": "lab_invoice_ready",
+      "bytes": 1155335,
+      "billNumber": "OSP202600094"
+    }
+  ],
+  "greetingAttachment": null,
+  "liveMessages": 0
+}

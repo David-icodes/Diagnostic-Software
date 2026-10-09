@@ -59,7 +59,7 @@ export function LoginForm() {
             id="username"
             type="text"
             autoComplete="username"
-            placeholder="Enter your username"
+
             className="h-8 pl-9"
             aria-invalid={Boolean(errors.username)}
             {...register("username")}
@@ -78,7 +78,7 @@ export function LoginForm() {
             id="password"
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
-            placeholder="Enter your password"
+
             className="h-8 pl-9 pr-10"
             aria-invalid={Boolean(errors.password)}
             {...register("password")}

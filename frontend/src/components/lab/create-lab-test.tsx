@@ -5,7 +5,6 @@ import { invalidateMasterData } from "@/lib/master-data-cache";
 import { useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, FlaskConical, Pencil } from "lucide-react";
-import { AddableDatalist } from "@/components/common/addable-datalist";
 import { DataTable } from "@/components/database/data-table";
 import { FormField } from "@/components/database/form-field";
 import { FormSection } from "@/components/database/form-section";
@@ -23,7 +22,6 @@ import { fetchDepartments } from "@/services/billing";
 import {
   createLabMasterTest,
   fetchLabMasterTests,
-  fetchSpecimenOptions,
   updateLabMasterTest,
 } from "@/services/lab-masters";
 import type { LabTestRow } from "@/types/lab-masters";
@@ -117,11 +115,6 @@ export function CreateLabTestContent() {
           .filter((row) => row.active !== false)
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
-  });
-
-  const specimenQuery = useQuery({
-    queryKey: ["lab-tests", "specimen-options"],
-    queryFn: fetchSpecimenOptions,
   });
 
   const listQuery = useQuery({
@@ -372,7 +365,6 @@ export function CreateLabTestContent() {
                 <Input
                   id="test-name"
                   value={form.testName}
-                  placeholder="e.g. BLOOD SUGAR (F)"
                   onChange={(event) => update({ testName: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -381,7 +373,6 @@ export function CreateLabTestContent() {
                 <Input
                   id="test-cghs"
                   value={form.cghsCode}
-                  placeholder="Optional"
                   onChange={(event) => update({ cghsCode: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -390,7 +381,6 @@ export function CreateLabTestContent() {
                 <Input
                   id="test-nims"
                   value={form.nimsCode}
-                  placeholder="Optional"
                   onChange={(event) => update({ nimsCode: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -399,7 +389,6 @@ export function CreateLabTestContent() {
                 <Input
                   id="test-railway"
                   value={form.railwayCode}
-                  placeholder="Optional"
                   onChange={(event) => update({ railwayCode: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -408,7 +397,6 @@ export function CreateLabTestContent() {
                 <Input
                   id="test-nfc"
                   value={form.nfcCode}
-                  placeholder="Optional"
                   onChange={(event) => update({ nfcCode: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -417,7 +405,6 @@ export function CreateLabTestContent() {
                 <Input
                   id="test-code"
                   value={form.testCode}
-                  placeholder="e.g. BS001"
                   maxLength={20}
                   onChange={(event) =>
                     update({ testCode: event.target.value.toUpperCase() })
@@ -429,7 +416,6 @@ export function CreateLabTestContent() {
                 <Input
                   id="test-short"
                   value={form.shortName}
-                  placeholder="e.g. BS(F)"
                   onChange={(event) => update({ shortName: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -438,7 +424,6 @@ export function CreateLabTestContent() {
                 <Input
                   id="test-desc"
                   value={form.description}
-                  placeholder="Optional notes"
                   onChange={(event) => update({ description: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -450,7 +435,6 @@ export function CreateLabTestContent() {
                   min={0}
                   step="0.01"
                   value={form.price}
-                  placeholder="0.00"
                   onChange={(event) => update({ price: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -476,7 +460,6 @@ export function CreateLabTestContent() {
                   min={0}
                   step="0.01"
                   value={form.priceIp}
-                  placeholder="0.00"
                   onChange={(event) => update({ priceIp: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -488,7 +471,6 @@ export function CreateLabTestContent() {
                   min={0}
                   step="0.01"
                   value={form.priceEr}
-                  placeholder="0.00"
                   onChange={(event) => update({ priceEr: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -500,7 +482,6 @@ export function CreateLabTestContent() {
                   min={0}
                   step="0.01"
                   value={form.priceInsIp}
-                  placeholder="0.00"
                   onChange={(event) => update({ priceInsIp: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -512,7 +493,6 @@ export function CreateLabTestContent() {
                   min={0}
                   step="0.01"
                   value={form.doctorPrice}
-                  placeholder="0.00"
                   onChange={(event) => update({ doctorPrice: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -521,7 +501,6 @@ export function CreateLabTestContent() {
                 <Textarea
                   id="test-comments"
                   value={form.comments}
-                  placeholder="Optional comments"
                   onChange={(event) => update({ comments: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -534,7 +513,6 @@ export function CreateLabTestContent() {
                   max={100}
                   step="0.01"
                   value={form.referralPercent}
-                  placeholder="0"
                   onChange={(event) => update({ referralPercent: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -543,7 +521,6 @@ export function CreateLabTestContent() {
                 <Input
                   id="test-type"
                   value={form.testType}
-                  placeholder="e.g. Biochemistry"
                   onChange={(event) => update({ testType: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -552,7 +529,6 @@ export function CreateLabTestContent() {
                 <Textarea
                   id="test-note-1"
                   value={form.reportNote1}
-                  placeholder="Optional report note"
                   onChange={(event) => update({ reportNote1: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -561,28 +537,21 @@ export function CreateLabTestContent() {
                 <Textarea
                   id="test-note-2"
                   value={form.reportNote2}
-                  placeholder="Optional report note"
                   onChange={(event) => update({ reportNote2: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
               </FormField>
               <FormField id="test-sample" label="Sample Name">
-                <AddableDatalist
-                  id="test-sample"
-                  value={form.sampleType}
-                  onChange={(value) => update({ sampleType: value })}
-                  options={specimenQuery.data?.sampleTypes ?? []}
-                  placeholder="e.g. Blood / Serum"
-                />
+                <Select id="test-sample" value={form.sampleType} disabled={saveMutation.isPending} onChange={(event) => update({ sampleType: event.target.value })}>
+                  <option value="">--Select--</option>
+                  {Array.from(new Set(["EDTA", "PLASMA", "SERUM", "Stool", "URINE", ...(form.sampleType ? [form.sampleType] : [])])).map((value) => <option key={value} value={value}>{value}</option>)}
+                </Select>
               </FormField>
               <FormField id="test-container" label="Tube Container">
-                <AddableDatalist
-                  id="test-container"
-                  value={form.containerType}
-                  onChange={(value) => update({ containerType: value })}
-                  options={specimenQuery.data?.containerTypes ?? []}
-                  placeholder="e.g. Plain / EDTA"
-                />
+                <Select id="test-container" value={form.containerType} disabled={saveMutation.isPending} onChange={(event) => update({ containerType: event.target.value })}>
+                  <option value="">--Select--</option>
+                  {Array.from(new Set(["Lavander", "Red", ...(form.containerType ? [form.containerType] : [])])).map((value) => <option key={value} value={value}>{value}</option>)}
+                </Select>
               </FormField>
               <FormField id="test-result-mode" label="Result Type">
                 <Select

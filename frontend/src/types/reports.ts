@@ -1,3 +1,7 @@
+export interface RevenueAnalytics {
+  daily: { date: string; netAmount: number; paidAmount: number; dueAmount: number }[];
+  paymentModes: { mode: string; paidAmount: number }[];
+}
 export type ReportPaymentStatus = "paid" | "partial" | "unpaid";
 export type ReportBillStatus = "generated" | "cancelled";
 
@@ -49,12 +53,14 @@ export interface GeneratedLabBillsSummary {
 }
 
 export interface GeneratedLabBillsResponse {
+  analytics: RevenueAnalytics;
   data: GeneratedLabBillReportRow[];
   pagination: ReportPagination;
   summary: GeneratedLabBillsSummary;
 }
 
 export interface GeneratedLabBillsParams {
+  export?: "1";
   page?: number;
   limit?: number;
   fromDate?: string;
@@ -252,6 +258,9 @@ export type CommissionBasisValue = "referral" | "cons_op_ip";
 export type CommissionAmountBasis = "net" | "paid";
 
 export interface ReferralDoctorCommissionRow {
+  sNo: number;
+  segmentTotal: number;
+  segmentDiscount: number;
   id: string;
   billNumber: string;
   billDate: string;
@@ -419,6 +428,8 @@ export interface OutsideSentLabTestParams {
 }
 
 export interface OutsideLabOption {
+  address?: string;
+  phone?: string;
   id: string;
   code: string;
   name: string;

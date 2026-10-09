@@ -12,7 +12,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { FileBarChart2 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 
 import { CardContent } from "@/components/ui/card";
 
@@ -42,7 +41,8 @@ import {
 
   formatCriteriaDate,
 
-  downloadCsv,
+  downloadReport,
+  type ReportExportFormat,
 
   reportCsvName,
 
@@ -504,227 +504,21 @@ export function ReferralDoctorCommissionContent() {
 
 
 
-  const columns: ReportColumn<ReferralDoctorCommissionRow>[] = useMemo(
-
-    () => [
-
-      {
-
-        key: "billNumber",
-
-        header: "Bill No",
-
-        render: (row) => (
-
-          <span className="font-medium text-slate-800">{row.billNumber}</span>
-
-        ),
-
-      },
-
-      {
-
-        key: "billDate",
-
-        header: "Bill Date",
-
-        render: (row) => formatDate(row.billDate),
-
-      },
-
-      {
-
-        key: "patient",
-
-        header: "Patient",
-
-        render: (row) => (
-
-          <div className="flex flex-col">
-
-            <span className="font-medium text-slate-800">{row.patientName}</span>
-
-            <span className="text-xs text-muted-foreground">{row.patientId}</span>
-
-          </div>
-
-        ),
-
-      },
-
-      {
-
-        key: "patientType",
-
-        header: "Patient Type",
-
-        render: (row) => patientTypeLabel(row.patientType),
-
-      },
-
-      {
-
-        key: "doctor",
-
-        header: "Doctor",
-
-        render: (row) => row.doctorName,
-
-      },
-
-      {
-
-        key: "tests",
-
-        header: "Test",
-
-        render: (row) => <span className="text-xs text-slate-600">{row.tests}</span>,
-
-      },
-
-      {
-
-        key: "segmentNet",
-
-        header: "Bill Net",
-
-        align: "right",
-
-        render: (row) => formatMoney(row.segmentNet),
-
-      },
-
-      {
-
-        key: "segmentPaid",
-
-        header: "Bill Paid",
-
-        align: "right",
-
-        render: (row) => formatMoney(row.segmentPaid),
-
-      },
-
-      {
-
-        key: "rateUsed",
-
-        header: "Rate",
-
-        align: "right",
-
-        render: (row) => (row.rateUsed === null ? "—" : `${row.rateUsed}%`),
-
-      },
-
-      {
-
-        key: "commission",
-
-        header: "Commission",
-
-        align: "right",
-
-        render: (row) =>
-
-          row.configMissing ? (
-
-            <Badge variant="outline" className="border-amber-200 text-amber-600">
-
-              Missing
-
-            </Badge>
-
-          ) : row.commissionAmount === null ? (
-
-            <span className="text-muted-foreground">—</span>
-
-          ) : (
-
-            <span
-
-              className={
-
-                row.commissionAmount === 0
-
-                  ? "text-muted-foreground"
-
-                  : "font-semibold text-slate-800"
-
-              }
-
-            >
-
-              {formatMoney(row.commissionAmount)}
-
-            </span>
-
-          ),
-
-      },
-
-    ],
-
-    [],
-
-  );
-
-
-
-  const printColumns: PrintColumn<ReferralDoctorCommissionRow>[] = useMemo(
-
-    () => [
-
-      { key: "billNumber", header: "Bill No", render: (row) => row.billNumber },
-
-      { key: "billDate", header: "Bill Date", render: (row) => formatDate(row.billDate) },
-
-      { key: "patient", header: "Patient Name", render: (row) => row.patientName },
-
-      { key: "patientId", header: "Patient ID", render: (row) => row.patientId },
-
-      { key: "patientType", header: "Patient Type", render: (row) => patientTypeLabel(row.patientType) },
-
-      { key: "doctor", header: "Doctor", render: (row) => row.doctorName },
-
-      { key: "tests", header: "Test", render: (row) => row.tests },
-
-      { key: "segmentNet", header: "Bill Net (Rs.)", render: (row) => formatMoney(row.segmentNet), align: "right" },
-
-      { key: "segmentPaid", header: "Bill Paid (Rs.)", render: (row) => formatMoney(row.segmentPaid), align: "right" },
-
-      {
-
-        key: "rateUsed",
-
-        header: "Rate (%)",
-
-        render: (row) => (row.rateUsed === null ? "" : String(row.rateUsed)),
-
-        align: "right",
-
-      },
-
-      {
-
-        key: "commission",
-
-        header: "Commission (Rs.)",
-
-        render: (row) => (row.commissionAmount === null ? "" : String(row.commissionAmount)),
-
-        align: "right",
-
-      },
-
-    ],
-
-    [],
-
-  );
-
-
+  const printColumns: PrintColumn<ReferralDoctorCommissionRow>[] = useMemo(() => [
+    { key: "sNo", header: "SNo", render: (row) => String(row.sNo) },
+    { key: "billDate", header: "Bill Date", render: (row) => formatDate(row.billDate) },
+    { key: "billNumber", header: "Bill No", render: (row) => row.billNumber },
+    { key: "patientId", header: "Pat Id", render: (row) => row.patientId },
+    { key: "patientName", header: "Patient Name", render: (row) => row.patientName },
+    { key: "patientType", header: "Type", render: (row) => patientTypeLabel(row.patientType) },
+    { key: "tests", header: "Lab Tests", render: (row) => row.tests },
+    { key: "doctorName", header: "Referral Dr", render: (row) => row.doctorName },
+    { key: "segmentTotal", header: "Total", render: (row) => formatMoney(row.segmentTotal), align: "right" },
+    { key: "segmentDiscount", header: "Discount", render: (row) => formatMoney(row.segmentDiscount), align: "right" },
+    { key: "segmentPaid", header: "Paid", render: (row) => formatMoney(row.segmentPaid), align: "right" },
+    { key: "commissionAmount", header: "Ref Amnt", render: (row) => row.commissionAmount === null ? "Missing config" : formatMoney(row.commissionAmount), align: "right" },
+  ], []);
+  const columns: ReportColumn<ReferralDoctorCommissionRow>[] = printColumns.map((column) => ({ ...column, className: "text-xs" }));
 
   const criteriaText = useMemo(() => {
 
@@ -746,7 +540,7 @@ export function ReferralDoctorCommissionContent() {
 
         `Doctor : ${applied.doctorIds
 
-          .map((id) => doctors.find((d) => d.value === id)?.label ?? id)
+          .map((id) => doctors.find((d) => d.value === id)?.label ?? "Unavailable doctor")
 
           .join(", ")}`,
 
@@ -756,11 +550,11 @@ export function ReferralDoctorCommissionContent() {
 
     if (applied.departmentIds.length) {
 
-      parts.push(`Department : ${applied.departmentIds.join(", ")}`);
+      parts.push(`Department : ${applied.departmentIds.map((id) => departments.find((item) => item.value === id)?.label ?? "Unavailable department").join(", ")}`);
 
     }
 
-    if (applied.testIds.length) parts.push(`Test : ${applied.testIds.join(", ")}`);
+    if (applied.testIds.length) parts.push(`Test : ${applied.testIds.map((id) => tests.find((item) => item.value === id)?.label ?? "Unavailable test").join(", ")}`);
 
     if (applied.patientId) parts.push(`Patient ID : ${applied.patientId}`);
 
@@ -790,19 +584,19 @@ export function ReferralDoctorCommissionContent() {
 
     return parts.join("  |  ");
 
-  }, [applied, doctors]);
+  }, [applied, doctors, departments, tests]);
 
 
 
-  const handleExport = useCallback(() => {
+  const handleExport = useCallback((format: ReportExportFormat = "excel") => {
 
     if (!result) return;
 
-    runExport(applied)
+    return runExport(applied)
 
-      .then((rows) => {
+      .then(async (rows) => {
 
-        downloadCsv(
+        await downloadReport(
 
           reportCsvName("referral-doctor-commission-report"),
 
@@ -810,13 +604,14 @@ export function ReferralDoctorCommissionContent() {
 
           rows.map((row) => printColumns.map((column) => column.render(row))),
 
+          format, criteriaText,
         );
 
       })
 
-      .catch(() => setError("Unable to export the report. Please try again."));
+      .catch((error) => { setError(error instanceof Error ? error.message : "Unable to export report"); throw error; });
 
-  }, [result, applied, runExport, printColumns]);
+  }, [criteriaText, result, applied, runExport, printColumns]);
 
 
 
@@ -1056,31 +851,7 @@ export function ReferralDoctorCommissionContent() {
 
         }
 
-        totals={[
-
-          "Total",
-
-          "",
-
-          "",
-
-          "",
-
-          "",
-
-          "",
-
-          "",
-
-          formatMoney(result?.summary.totalNet ?? 0),
-
-          formatMoney(result?.summary.totalPaid ?? 0),
-
-          "",
-
-          formatMoney(result?.summary.totalCommission ?? 0),
-
-        ]}
+        totals={["Total", "", "", "", "", "", "", "", "", "", formatMoney(result?.summary.totalPaid ?? 0), formatMoney(result?.summary.totalCommission ?? 0)]}
 
       />
 

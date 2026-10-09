@@ -48,7 +48,6 @@ export function MasterContent({
   formTitle,
   recordLabel,
   queryRoot,
-  placeholder,
   services,
   limit = 20,
 }: MasterContentProps) {
@@ -198,7 +197,6 @@ export function MasterContent({
               <Input
                 id="record-name"
                 value={name}
-                placeholder={placeholder}
                 autoFocus
                 onChange={(event) => setName(event.target.value)}
                 disabled={saveMutation.isPending}

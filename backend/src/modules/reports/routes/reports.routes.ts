@@ -1,3 +1,9 @@
+import { asyncHandler } from "../../../utils/async-handler";
+import { sendSuccess } from "../../../utils/http";
+import { tableExportSchema, exportTable } from "../services/table-export.service";
+import { validate } from "../../../middleware/validate";
+import { outsideLabInputSchema } from "../services/outside-labs.service";
+import { createOutsideLab, updateOutsideLab, deleteOutsideLab } from "../controllers/outside-labs.controller";
 import { Router } from "express";
 import { authenticate } from "../../../middleware/authenticate";
 import { requirePermission } from "../../../middleware/require-permission";
@@ -81,4 +87,12 @@ router.get(
   listHospitalPriceCard,
 );
 
+// Master writes use the existing database-management permission, not report read permission.
+router.post("/outside-labs", requirePermission("database.department.write"), validate(outsideLabInputSchema), createOutsideLab);
+router.put("/outside-labs/:id", requirePermission("database.department.write"), validate(outsideLabInputSchema), updateOutsideLab);
+router.delete("/outside-labs/:id", requirePermission("database.department.write"), deleteOutsideLab);
+router.post("/table-export", requirePermission("reports.view"), validate(tableExportSchema), asyncHandler(async (req, res) => {
+  const buffer = await exportTable(req.body);
+  return sendSuccess(res, { content: buffer.toString("base64"), format: req.body.format });
+}));
 export default router;

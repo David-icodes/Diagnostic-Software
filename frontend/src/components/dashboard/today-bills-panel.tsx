@@ -9,11 +9,10 @@ import { fetchTodayBills } from "@/services/dashboard";
 import type { TodayBill } from "@/types/dashboard";
 
 const columns: ColumnDef<TodayBill>[] = [
-  { key: "index", label: "#", className: "w-[44px]", render: (_row, index) => index + 1 },
   {
     key: "billNo",
     label: "Bill No",
-    className: "w-[150px]",
+    className: "w-1/5 truncate",
     render: (bill) => (
       <Link
         href={`/billing/osp/${bill.id}`}
@@ -23,10 +22,10 @@ const columns: ColumnDef<TodayBill>[] = [
       </Link>
     ),
   },
-  { key: "patientId", label: "Pat Id", className: "w-[130px]" },
-  { key: "patientName", label: "Pat Name", className: "w-[180px]" },
-  { key: "age", label: "Age", className: "w-[64px]" },
-  { key: "gender", label: "Gender", className: "w-[86px]" },
+  { key: "patientId", label: "Pat Id", className: "w-1/5 truncate" },
+  { key: "patientName", label: "Pat Name", className: "w-1/5 truncate", render: (bill) => <span title={bill.patientName}>{bill.patientName}</span> },
+  { key: "age", label: "Age", className: "w-1/5 truncate" },
+  { key: "gender", label: "Gender", className: "w-1/5 truncate" },
 ];
 
 export function TodayBillsPanel() {
@@ -46,6 +45,7 @@ export function TodayBillsPanel() {
     >
       <BillsTable
         columns={columns}
+        tableClassName="lis-today-bills-table w-full"
         rows={data ?? []}
         rowKey={(bill) => bill.id}
         completedRow={(bill) => bill.completed}

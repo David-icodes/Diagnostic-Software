@@ -43,7 +43,7 @@ test("OSP and Vendor bill creation remain available with outstanding patient bal
   }
 });
 
-test("otherwise eligible unpaid bill with due can be modified while paid-bill integrity remains enforced", async (t) => {
+test("unpaid, partial and settled bills can be modified without changing payments", async (t) => {
   let saves = 0;
   const bill = { _id: new Types.ObjectId(), patientId, status: "generated", patientType: "osp", paidAmount: 0,
     dueAmount: 100, items: [{ testId }], save: async () => { saves++; } };
@@ -54,6 +54,10 @@ test("otherwise eligible unpaid bill with due can be modified while paid-bill in
   t.mock.method(LabSample, "find", () => q([]));
   t.mock.method(AuditLog, "create", async () => ({}));
   await modifyLabBill(String(userId), String(bill._id), { items: [{ testId: String(testId), quantity: 1 }] });
-  assert.equal(saves, 1); bill.paidAmount = 1;
-  await assert.rejects(modifyLabBill(String(userId), String(bill._id), { items: [{ testId: String(testId), quantity: 1 }] }), /already has payments/);
+  assert.equal(saves, 1); bill.paidAmount = 40;
+  await modifyLabBill(String(userId), String(bill._id), { items: [{ testId: String(testId), quantity: 1 }], discountPercent: 10 });
+  assert.equal(saves, 2); assert.equal(bill.paidAmount, 40); assert.equal(bill.dueAmount, 50);
+  bill.paidAmount = 100; bill.dueAmount = 0;
+  await modifyLabBill(String(userId), String(bill._id), { items: [{ testId: String(testId), quantity: 1 }] });
+  assert.equal(saves, 3); assert.equal(bill.paidAmount, 100); assert.equal(bill.dueAmount, 0);
 });

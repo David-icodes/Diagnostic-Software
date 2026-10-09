@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ interface DialogProps {
    * the viewport, so long forms stay reachable on short screens.
    */
   centered?: boolean;
+  hideCloseButton?: boolean;
   /** Extra classes for the panel's content wrapper (defaults to `p-4`). */
   bodyClassName?: string;
 }
@@ -32,8 +33,10 @@ export function Dialog({
   className,
   size = "md",
   centered = false,
+  hideCloseButton = false,
   bodyClassName,
 }: DialogProps) {
+  const titleId = useId();
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -63,6 +66,7 @@ export function Dialog({
           <div
             role="dialog"
             aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
             className={cn(
               "mx-auto flex w-full max-w-md flex-col overflow-hidden rounded-xl bg-card shadow-2xl ring-1 ring-foreground/10",
               size === "lg" && "max-w-2xl",
@@ -74,7 +78,7 @@ export function Dialog({
               <header className="flex items-start justify-between gap-3 border-b border-border px-4 py-3">
                 <div className="space-y-0.5">
                   {title && (
-                    <h2 className="font-heading text-sm font-semibold text-slate-800">
+                    <h2 id={titleId} className="font-heading text-sm font-semibold text-slate-800">
                       {title}
                     </h2>
                   )}
@@ -82,7 +86,7 @@ export function Dialog({
                     <p className="text-xs text-muted-foreground">{description}</p>
                   )}
                 </div>
-                <Button
+                {!hideCloseButton && <Button
                   type="button"
                   variant="ghost"
                   size="icon-sm"
@@ -90,7 +94,7 @@ export function Dialog({
                   aria-label="Close"
                 >
                   <X />
-                </Button>
+                </Button>}
               </header>
             )}
             <div className={cn("p-4", bodyClassName)}>{children}</div>

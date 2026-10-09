@@ -3,13 +3,14 @@
 import {
   ChevronLeft,
   ChevronRight,
-  FileDown,
   Printer,
   RefreshCw,
   Search,
   SkipBack,
   SkipForward,
 } from "lucide-react";
+import { useState } from "react";
+import type { ReportExportFormat } from "./report-export";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -21,7 +22,7 @@ interface ReportToolbarProps {
   loading: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
-  onExport?: () => void;
+  onExport?: (format: ReportExportFormat) => Promise<void> | void;
   onPrint?: () => void;
   findValue: string;
   onFindChange: (value: string) => void;
@@ -45,6 +46,8 @@ export function ReportToolbar({
   onFindNext,
   unitLabel = "records",
 }: ReportToolbarProps) {
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState("");
   const navButtonClass = "text-[11px] gap-1";
   return (
     <div className="lis-report-toolbar flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-2.5 py-2">
@@ -136,19 +139,14 @@ export function ReportToolbar({
           <RefreshCw className="size-3.5" />
           Refresh
         </Button>
-        {onExport && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={onExport}
-            disabled={loading || total === 0}
-            title="Download as CSV"
-          >
-            <FileDown className="size-3.5" />
-            Export
-          </Button>
-        )}
+        {onExport && <div className="flex items-center gap-1"><select aria-label="Export format" disabled={loading || exporting || total === 0}
+          defaultValue="" className="rounded border px-2 py-1 text-xs" onChange={async (event) => {
+            const format = event.target.value as ReportExportFormat; event.target.value = "";
+            if (!format || exporting) return; setExporting(true); setExportError("");
+            try { await onExport(format); } catch (error) { setExportError(error instanceof Error ? error.message : "Unable to export report"); }
+            finally { setExporting(false); }
+          }}><option value="">{exporting ? "Exporting…" : "Export"}</option><option value="excel">Excel</option><option value="pdf">PDF</option><option value="word">Word</option></select>
+          {exportError && <span role="alert" className="text-xs text-destructive">{exportError}</span>}</div>}
         {onPrint && (
           <Button
             type="button"

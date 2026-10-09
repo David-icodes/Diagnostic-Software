@@ -27,6 +27,7 @@ interface BillsTableProps<T> {
   emptyMessage?: string;
   footer?: React.ReactNode;
   completedRow?: (row: T) => boolean;
+  tableClassName?: string;
 }
 
 export function BillsTable<T>({
@@ -37,10 +38,11 @@ export function BillsTable<T>({
   emptyMessage = "No Records To Display",
   footer,
   completedRow,
+  tableClassName,
 }: BillsTableProps<T>) {
   return (
     <div className={cn("overflow-auto", maxHeightClass)}>
-      <table className="min-w-full table-fixed border-collapse text-sm">
+      <table className={cn("min-w-full table-fixed border-collapse text-sm", tableClassName)}>
         <TableHeader className="sticky top-0 z-10">
           <TableRow className="border-b border-border bg-muted hover:bg-muted">
             {columns.map((column) => (

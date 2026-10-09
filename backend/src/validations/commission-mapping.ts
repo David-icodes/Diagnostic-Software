@@ -24,7 +24,8 @@ export const assignCommissionMappingsSchema = z
     mappings: z
       .array(commissionMappingRowSchema)
       .min(1, "Select at least one test with a commission value")
-      .max(500, "Too many rows in one save"),
+      .max(500, "Too many rows in one save")
+      .refine((rows) => new Set(rows.map((row) => row.testId)).size === rows.length, "Duplicate tests in commission mapping"),
   })
   .strict()
   .superRefine((value, ctx) => {

@@ -1,6 +1,7 @@
 import type { FilterQuery } from "mongoose";
 import { DoctorCommission, type IDoctorCommission } from "../../../models/doctor-commission.model";
 import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
+import { Doctor } from "../../../models/doctor.model";
 import { Patient } from "../../../models/patient.model";
 import type {
   ReferralDoctorCommissionResult,
@@ -160,6 +161,8 @@ export async function listReferralDoctorCommission(
     patientMap.set(String(patient._id), patient);
   }
 
+  const doctors = doctorIds.length ? await Doctor.find({ _id: { $in: doctorIds } }).select("name").exec() : [];
+  const doctorNames = new Map(doctors.map((doctor) => [String(doctor._id), doctor.name]));
   const rows: ReferralDoctorCommissionRow[] = [];
   for (const bill of bills) {
     const matchedItems = bill.items.filter(
@@ -211,12 +214,15 @@ export async function listReferralDoctorCommission(
     const patient = patientMap.get(String(bill.patientId));
     rows.push({
       id: bill.id,
+      sNo: rows.length + 1,
+      segmentTotal: round2(segmentTotal),
+      segmentDiscount: round2(segmentTotal - segmentNet),
       billNumber: bill.billNumber,
       billDate: (bill.createdAt ?? new Date()).toISOString(),
       patientId: patient?.patientId ?? "—",
       patientName: patient?.fullName ?? "—",
       patientType: bill.patientType,
-      doctorName: bill.doctorName ?? "—",
+      doctorName: bill.doctorName || doctorNames.get(String(bill.referringDoctorId)) || "—",
       tests: matchedItems.map((item) => item.testName).join(", "),
       segmentNet,
       segmentPaid,

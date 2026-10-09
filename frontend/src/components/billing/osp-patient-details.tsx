@@ -147,6 +147,7 @@ export function OspPatientDetails({
   mobileError,
   emailError,
   dobError,
+  updateAction,
 }: OspPatientDetailsProps) {
   const dobRef = useRef<HTMLInputElement>(null);
   /**
@@ -252,6 +253,7 @@ export function OspPatientDetails({
             >
               <Calendar className="size-3.5" />
             </button>
+            {updateAction}
           </Cell>
         }
       />
@@ -386,4 +388,5 @@ interface OspPatientDetailsProps {
   mobileError?: string;
   emailError?: string;
   dobError?: string;
+  updateAction?: React.ReactNode;
 }

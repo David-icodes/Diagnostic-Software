@@ -1,5 +1,6 @@
 "use client";
 
+import { selectTariffScope, selectedTariffRows } from "@/lib/tariff-selection";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Handshake } from "lucide-react";
@@ -70,8 +71,7 @@ export function DoctorCommissionMappingContent() {
 
   const saveMutation = useMutation({
     mutationFn: (overwriteExisting: boolean) => {
-      const rows = (mappingsQuery.data ?? [])
-        .filter((row) => selected[row.testId])
+      const rows = selectedTariffRows(mappingsQuery.data ?? [], selected)
         .map((row) => {
           return { testId: row.testId, ...resolveCommissionDraft(row, drafts[row.testId]) };
         });
@@ -100,9 +100,10 @@ export function DoctorCommissionMappingContent() {
 
   const copyMutation = useMutation({
     mutationFn: async () => {
-      const mappings = (mappingsQuery.data ?? []).filter((row) => selected[row.testId]).map((row) => ({ testId: row.testId, ...resolveCommissionDraft(row, drafts[row.testId]) }));
+      const mappings = selectedTariffRows(mappingsQuery.data ?? [], selected).map((row) => ({ testId: row.testId, ...resolveCommissionDraft(row, drafts[row.testId]) }));
       let copied = 0;
-      for (const targetId of copyDoctorIds) {
+      if (!mappings.length) throw new Error("Select a source commission set before copying.");
+      for (const targetId of new Set(copyDoctorIds.filter((id) => id !== doctorId))) {
         try {
           await assignCommissionMappings(targetId, departmentId, mappings, true);
           copied += 1;
@@ -129,6 +130,7 @@ export function DoctorCommissionMappingContent() {
   };
 
   const doctors = (doctorsQuery.data ?? []).filter((doctor) => doctor.active !== false);
+  const destinationDoctors = doctors.filter((doctor) => doctor.id !== doctorId);
   const departments = departmentsQuery.data ?? [];
   const rows = mappingsQuery.data ?? [];
 
@@ -141,9 +143,7 @@ export function DoctorCommissionMappingContent() {
   const allSelected = visibleRows.length > 0 && visibleRows.every((row) => selected[row.testId]);
 
   const toggleAll = (checked: boolean) => {
-    const next = { ...selected };
-    for (const row of visibleRows) next[row.testId] = checked;
-    setSelected(next);
+    setSelected((current) => selectTariffScope(current, visibleRows.map((row) => row.testId), checked));
   };
 
   const updateDraft = (testId: string, patch: Partial<CommissionDraft>) => {
@@ -229,7 +229,7 @@ export function DoctorCommissionMappingContent() {
               step="0.01"
               className="h-7 w-20 text-right"
               value={drafts[row.testId]?.percent ?? (row.commissionPercent !== undefined ? String(row.commissionPercent) : "")}
-              placeholder="0"
+
               onChange={(event) =>
                 updateDraft(row.testId, { percent: event.target.value })
               }
@@ -250,7 +250,7 @@ export function DoctorCommissionMappingContent() {
               step="0.01"
               className="h-7 w-24 text-right"
               value={drafts[row.testId]?.amount ?? (row.commissionAmount !== undefined ? String(row.commissionAmount) : "")}
-              placeholder="0.00"
+
               onChange={(event) =>
                 updateDraft(row.testId, { amount: event.target.value })
               }
@@ -393,10 +393,10 @@ export function DoctorCommissionMappingContent() {
       {copyMode && (
         <FormSection title="Select Doctors">
           <label className="flex items-center gap-2 text-xs">
-            <Checkbox disabled={busy} aria-label="Select all destination doctors" checked={doctors.length > 0 && doctors.every((doctor) => copyDoctorIds.includes(doctor.id))} onChange={(event) => setCopyDoctorIds(event.target.checked ? doctors.map((doctor) => doctor.id) : [])} />All
+            <Checkbox disabled={busy} aria-label="Select all destination doctors" checked={destinationDoctors.length > 0 && destinationDoctors.every((doctor) => copyDoctorIds.includes(doctor.id))} onChange={(event) => setCopyDoctorIds(event.target.checked ? destinationDoctors.map((doctor) => doctor.id) : [])} />All
           </label>
           <div className="lis-commission-copy-doctors">
-            {doctors.map((doctor) => <label key={doctor.id} className="flex items-center gap-2 text-xs"><Checkbox disabled={busy} aria-label={`Copy to ${doctor.name}`} checked={copyDoctorIds.includes(doctor.id)} onChange={(event) => setCopyDoctorIds((ids) => event.target.checked ? [...ids, doctor.id] : ids.filter((id) => id !== doctor.id))} />{doctor.name}</label>)}
+            {destinationDoctors.map((doctor) => <label key={doctor.id} className="flex items-center gap-2 text-xs"><Checkbox disabled={busy} aria-label={`Copy to ${doctor.name}`} checked={copyDoctorIds.includes(doctor.id)} onChange={(event) => setCopyDoctorIds((ids) => event.target.checked ? [...ids, doctor.id] : ids.filter((id) => id !== doctor.id))} />{doctor.name}</label>)}
           </div>
           <button type="button" className="lis-commission-copy-button" disabled={busy} onClick={() => { if (selectedCount === 0 || copyDoctorIds.length === 0) showNotice("warn", "Select tests and destination doctors to copy"); else setCopyConfirmOpen(true); }}>Copy</button>
         </FormSection>

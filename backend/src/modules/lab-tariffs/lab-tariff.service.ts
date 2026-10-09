@@ -39,7 +39,10 @@ export async function listTariffs({
   limit: number;
 }): Promise<PaginatedTariffs> {
   const filter: FilterQuery<ILabTest> = {};
-  if (departmentId) {
+  if (departmentId === "all") {
+    const departments = await Department.find({ active: true }).select("_id").exec();
+    filter.departmentId = { $in: departments.map((department) => department._id) };
+  } else if (departmentId) {
     filter.departmentId = isValidObjectId(departmentId)
       ? new Types.ObjectId(departmentId)
       : new Types.ObjectId("000000000000000000000000");

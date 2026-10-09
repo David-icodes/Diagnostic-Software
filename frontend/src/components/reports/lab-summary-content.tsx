@@ -24,7 +24,8 @@ import { ReportPrintSheet, type PrintColumn } from "@/components/reports/report-
 import { useReportFind } from "@/components/reports/use-report-find";
 import {
   formatCriteriaDate,
-  downloadCsv,
+  downloadReport,
+  type ReportExportFormat,
   reportCsvName,
 } from "@/components/reports/report-export";
 import { fetchDepartments, fetchLabTests } from "@/services/billing";
@@ -498,18 +499,19 @@ export function LabSummaryContent() {
     return parts.join("  |  ");
   }, [applied, departments, tests]);
 
-  const handleExport = useCallback(() => {
+  const handleExport = useCallback((format: ReportExportFormat = "excel") => {
     if (!result) return;
-    runExport(applied)
-      .then((rows) => {
-        downloadCsv(
+    return runExport(applied)
+      .then(async (rows) => {
+        await downloadReport(
           reportCsvName("lab-summary-report"),
           printColumns.map((column) => column.header),
           rows.map((row) => printColumns.map((column) => column.render(row))),
+          format, criteriaText,
         );
       })
-      .catch(() => setError("Unable to export the report. Please try again."));
-  }, [result, applied, runExport, printColumns]);
+      .catch((error) => { setError(error instanceof Error ? error.message : "Unable to export report"); throw error; });
+  }, [criteriaText, result, applied, runExport, printColumns]);
 
   const handlePrint = useCallback(() => {
     if (!result || printing) return;
@@ -572,7 +574,7 @@ export function LabSummaryContent() {
               searchPlaceholder="Search Test"
               maxHeightClassName="max-h-32"
             />
-            
+
           </div>
 <div className="lis-summary-criteria grid grid-cols-2 gap-2">
             <ReportDateRange
@@ -600,7 +602,7 @@ export function LabSummaryContent() {
               label="Bill Number"
               value={filters.billNumber}
               onChange={(value) => setFilter("billNumber", value)}
-              placeholder="e.g. OSP202600001"
+
             />
             <ReportSelect
               id="ls-lab-status"

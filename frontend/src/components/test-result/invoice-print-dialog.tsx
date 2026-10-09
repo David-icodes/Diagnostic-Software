@@ -48,7 +48,7 @@ export function InvoiceDocument({ bill, printedBy }: { bill: LabBill; printedBy:
           <div><strong>REFER BY</strong><span>: {bill.doctorName ?? "Self"}</span></div>
         </div>
         <table className="mt-3"><thead><tr><th className="w-8 text-left">SNo</th><th className="text-left">INVESTIGATIONS</th><th className="w-24 text-right">AMOUNT</th></tr></thead>
-          <tbody>{bill.items.map((item,index) => <tr key={item.testId}><td>{index+1}</td><td>{item.testName}{item.quantity !== 1 ? ` × ${item.quantity}` : ""}</td><td className="text-right">{formatMoney(item.total)}</td></tr>)}</tbody>
+          <tbody>{bill.items.map((item,index) => <tr key={item.testId}><td>{index+1}</td><td>{item.testCode ? `${item.testCode} - ` : ""}{item.testName}{item.quantity !== 1 ? ` × ${item.quantity}` : ""}</td><td className="text-right">{formatMoney(item.total)}</td></tr>)}</tbody>
         </table>
         <div className="grid grid-cols-2 border border-t-0 border-black p-1">
           <div><p>{rupeesInWords(bill.paidAmount)}</p><p>MODE OF PAYMENT : {bill.paymentMode.replaceAll("_"," ").toUpperCase()}</p>{bill.displayComments && <p>{bill.displayComments}</p>}</div>
@@ -60,7 +60,7 @@ export function InvoiceDocument({ bill, printedBy }: { bill: LabBill; printedBy:
             <dt>BALANCE AMOUNT :</dt><dd>{formatMoney(bill.dueAmount)}</dd>
           </dl>
         </div>
-        <footer><strong>PRINTED BY : {printedBy}</strong><strong>AUTHORISED SIGNATURE</strong></footer>
+        <footer><strong>PREPARED BY : {printedBy}</strong><strong>AUTHORISED SIGNATURE</strong></footer>
       </article>
     </div>);
 }

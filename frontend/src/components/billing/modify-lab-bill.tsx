@@ -91,14 +91,13 @@ export function ModifyLabBill() {
 
   const editable = Boolean(
     bill &&
-      bill.status !== "cancelled" &&
-      !(bill.status === "generated" && (bill.paidAmount ?? 0) > 0),
+      bill.status !== "cancelled",
   );
   const lockReason = !bill
     ? ""
     : bill.status === "cancelled"
       ? "This bill has been cancelled and cannot be modified."
-      : "This bill already has payments and cannot be modified.";
+      : "";
 
   const totals = (() => {
     const totalAmount = round2(
@@ -110,11 +109,11 @@ export function ModifyLabBill() {
     const discountAmount = round2((totalAmount * discountCapped) / 100);
     const netAmount = round2(Math.max(0, totalAmount - discountAmount));
     const paidAmount = round2(Math.max(0, bill?.paidAmount ?? 0));
-    const balanceAmount = round2(netAmount - paidAmount);
-    return { totalAmount, discountAmount, netAmount, paidAmount, balanceAmount };
+    const balanceAmount = round2(Math.max(0, netAmount - paidAmount));
+    const creditAmount = round2(Math.max(0, paidAmount - netAmount));
+    return { totalAmount, discountAmount, netAmount, paidAmount, balanceAmount, creditAmount };
   })();
 
-  const paidExceedsNet = totals.netAmount < totals.paidAmount;
 
   const isDirty = useMemo(() => {
     if (!bill) return false;
@@ -181,6 +180,7 @@ export function ModifyLabBill() {
           departmentName,
           unitPrice,
           quantity: 1,
+          containerType: test.containerType,
           ...outside,
         },
       ];
@@ -247,9 +247,6 @@ export function ModifyLabBill() {
       }
       if (items.some((item) => (item.out ?? Boolean(item.outsideLabId)) && !item.outsideLabId)) {
         throw new ApiError("Select an outside lab for every test marked Out.");
-      }
-      if (paidExceedsNet) {
-        throw new ApiError("Net amount cannot be less than the paid amount.");
       }
       return modifyLabBill(bill.id, {
         items: items.map((item) => ({ testId: item.testId, quantity: item.quantity, out: Boolean(item.out ?? item.outsideLabId), outsideLabId: item.outsideLabId ?? null })),
@@ -605,7 +602,6 @@ export function ModifyLabBill() {
                       onChange={(event) => setDiscountPercent(event.target.value)}
                       disabled={lockEdits}
                       className="h-8 w-20 text-right text-xs"
-                      aria-invalid={paidExceedsNet}
                     />
                     <span className="w-8 text-right text-xs text-muted-foreground">
                       ₹{formatMoney(totals.discountAmount)}
@@ -629,9 +625,7 @@ export function ModifyLabBill() {
                   <span
                     className={cn(
                       "text-sm font-semibold",
-                      paidExceedsNet
-                        ? "text-destructive"
-                        : totals.balanceAmount > 0
+                      totals.balanceAmount > 0
                           ? "text-amber-600"
                           : "text-emerald-600",
                     )}
@@ -639,11 +633,10 @@ export function ModifyLabBill() {
                     ₹{formatMoney(totals.balanceAmount)}
                   </span>
                 </div>
-                {paidExceedsNet && (
-                  <p className="rounded-md border border-destructive/30 bg-destructive/5 px-2 py-1.5 text-xs text-destructive">
-                    Paid amount ₹{formatMoney(totals.paidAmount)} exceeds the new
-                    net ₹{formatMoney(totals.netAmount)}. Reduce items or apply a
-                    discount so the net covers the paid amount.
+                {totals.creditAmount > 0 && (
+                  <p role="status" className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1.5 text-xs text-blue-800">
+                    Overpayment credit: ₹{formatMoney(totals.creditAmount)}. Recorded
+                    payments remain unchanged. No refund has been issued.
                   </p>
                 )}
               </div>
@@ -656,7 +649,7 @@ export function ModifyLabBill() {
         submitLabel="Submit"
         submitIcon={<FilePen />}
         submitting={modifyMutation.isPending}
-        submitDisabled={!bill || !editable || paidExceedsNet}
+        submitDisabled={!bill || !editable}
         onSubmit={() => {
           setFormError(null);
           void modifyMutation.mutate();

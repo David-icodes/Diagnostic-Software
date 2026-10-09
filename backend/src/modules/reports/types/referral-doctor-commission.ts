@@ -2,6 +2,9 @@ export type CommissionBasisValue = "referral" | "cons_op_ip";
 export type CommissionAmountBasis = "net" | "paid";
 
 export interface ReferralDoctorCommissionRow {
+  sNo: number;
+  segmentTotal: number;
+  segmentDiscount: number;
   id: string;
   billNumber: string;
   billDate: string;

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/common/empty-state";
 import { ErrorState } from "@/components/common/error-state";
-import { fetchDepartments, fetchLabTests } from "@/services/billing";
+import { fetchDepartments, fetchLabTests, fetchLabTest } from "@/services/billing";
 import { formatMoney, cn } from "@/lib/utils";
 import type { LabTest } from "@/types/billing";
 import { selectedTransfer } from "@/lib/lab-workflows";
@@ -21,6 +21,7 @@ export interface SelectedTestItem extends OutsideChoice {
   departmentName: string;
   unitPrice: number;
   quantity: number;
+  containerType?: string;
 }
 
 interface TestSelectorProps {
@@ -37,7 +38,6 @@ export function TestSelector({
   items,
   onAdd,
   onRemove,
-  onQuantityChange,
   disabled = false,
   selectedTitle = "Selected Lab Tests",
   showSerial = true,
@@ -67,6 +67,13 @@ export function TestSelector({
     enabled: Boolean(selectedDepartmentId),
   });
 
+  const containerQuery = useQuery({
+    queryKey: ["lab-tests", "selected-containers", items.filter((item) => item.containerType === undefined).map((item) => item.testId)],
+    queryFn: async () => Object.fromEntries(await Promise.all(items.filter((item) => item.containerType === undefined).map(async (item) => {
+      try { const test = await fetchLabTest(item.testId); return [item.testId, test.containerType ?? ""]; }
+      catch { return [item.testId, ""]; }
+    }))), enabled: items.some((item) => item.containerType === undefined),
+  });
   const departments = departmentsQuery.data ?? [];
   const visibleDepartments = departmentSearch.trim()
     ? departments.filter((department) =>
@@ -262,7 +269,7 @@ export function TestSelector({
                 <th className="px-2 py-1">Dept Name</th>
                 <th className="px-2 py-1">Lab Test Name</th>
                 <th className="px-2 py-1 text-right">Amount</th>
-                <th className="w-20 px-2 py-1 text-center">Qty</th>
+                <th className="w-20 px-2 py-1 text-center">Tube Container</th>
                 <th className="px-2 py-1 text-right">Total</th>
               </tr>
             </thead>
@@ -313,22 +320,7 @@ export function TestSelector({
                       {formatMoney(item.unitPrice)}
                     </td>
                     <td className="px-2 py-1">
-                      <Input
-                        type="number"
-                        inputMode="numeric"
-                        min={1}
-                        max={100}
-                        disabled={disabled}
-                        value={item.quantity}
-                        onChange={(event) => {
-                          const parsed = Number(event.target.value);
-                          if (Number.isFinite(parsed)) {
-                            onQuantityChange(item.testId, parsed);
-                          }
-                        }}
-                        className="mx-auto h-7 w-14 px-1 text-center text-xs"
-                        aria-label={`Quantity for ${item.testName}`}
-                      />
+                      <span className="block text-center">{item.containerType || containerQuery.data?.[item.testId] || "—"}</span>
                     </td>
                     <td className="px-2 py-1 text-right font-semibold text-slate-800">
                       {formatMoney(item.unitPrice * item.quantity)}

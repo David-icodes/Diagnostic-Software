@@ -312,3 +312,6 @@ export function setDoctorActive(
     `/doctors/${encodeURIComponent(id)}/${active ? "activate" : "deactivate"}`,
   );
 }
+export function deleteDatabaseDepartment(id: string): Promise<{ deleted: boolean }> {
+  return api.delete(`/departments/${encodeURIComponent(id)}`);
+}

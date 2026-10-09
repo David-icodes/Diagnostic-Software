@@ -1,0 +1,20 @@
+{
+  "checks": [
+    "Dashboard exact five columns, equal spacing at 1280/1440/1920",
+    "OSP update preserves other fields; failed bill keeps form; success resets without redirect; tube from catalog",
+    "Vendor shared test table uses saved container",
+    "Partially paid outstanding bill modification enabled",
+    "ALL tariff scope selects across pages; deselection and save 59/60; changing scope resets",
+    "Doctor Select All/deselect/copy to target uses commission values and selected rows",
+    "Client Select All respects searched scope and saves only selected record",
+    "Sample/container dropdowns and reopen existing saved values",
+    "Referral exact twelve columns",
+    "Sample Cancel performs no write; failure stays in confirmation; retry collects on same page; redundant block absent",
+    "WhatsApp compact review, preparation failure/Retry readiness, greeting without PDF, centered acceptance, concise 131049 failure",
+    "Lab Reprint reuses compact selector and preserves legacy report_ready option"
+  ],
+  "browserErrors": [],
+  "reactConsoleErrors": [],
+  "interceptedWriteCount": 17,
+  "liveMessages": 0
+}

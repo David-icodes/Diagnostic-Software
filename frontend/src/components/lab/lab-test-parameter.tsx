@@ -822,7 +822,7 @@ export function LabTestParameterContent() {
                   value={form.subtitle}
                   onChange={(value) => update({ subtitle: value })}
                   options={subtitlesQuery.data ?? []}
-                  placeholder="Optional"
+
                 />
               </CompactField>
 
@@ -830,7 +830,7 @@ export function LabTestParameterContent() {
                 <Input
                   id="param-name"
                   value={form.parameterName}
-                  placeholder="e.g. Glucose"
+
                   onChange={(event) => update({ parameterName: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -868,7 +868,7 @@ export function LabTestParameterContent() {
                   id="param-default"
                   rows={2}
                   value={form.defaultValue}
-                  placeholder="Optional"
+
                   onChange={(event) => update({ defaultValue: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -878,7 +878,7 @@ export function LabTestParameterContent() {
                 <Input
                   id="param-unit"
                   value={form.unit}
-                  placeholder="e.g. mg/dL"
+
                   onChange={(event) => update({ unit: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -900,7 +900,7 @@ export function LabTestParameterContent() {
                 <Input
                   id="param-method"
                   value={form.method}
-                  placeholder="e.g. GOD-POD"
+
                   onChange={(event) => update({ method: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -915,7 +915,7 @@ export function LabTestParameterContent() {
                   <Input
                     id="param-options"
                     value={form.options}
-                    placeholder="e.g. Normal, High, Low"
+
                     onChange={(event) => update({ options: event.target.value })}
                     disabled={saveMutation.isPending}
                   />
@@ -1053,7 +1053,6 @@ export function LabTestParameterContent() {
                               aria-label={`${GENDER_RANGE_LABELS[gender]} range text`}
                               className="min-w-0 flex-1"
                               value={form.genderRanges[gender].text}
-                              placeholder="Range text"
                               onChange={(event) =>
                                 updateGenderRange(gender, { text: event.target.value })
                               }
@@ -1073,7 +1072,6 @@ export function LabTestParameterContent() {
                           type="number"
                           step="any"
                           value={form.rangeFrom}
-                          placeholder="From"
                           onChange={(event) => update({ rangeFrom: event.target.value })}
                           disabled={readOnlyRange}
                         />
@@ -1083,7 +1081,6 @@ export function LabTestParameterContent() {
                           type="number"
                           step="any"
                           value={form.rangeTo}
-                          placeholder="To"
                           onChange={(event) => update({ rangeTo: event.target.value })}
                           disabled={readOnlyRange}
                         />
@@ -1091,7 +1088,6 @@ export function LabTestParameterContent() {
                           aria-label="General range text"
                           className="min-w-0 flex-1"
                           value={form.rangeText}
-                          placeholder="Range text"
                           onChange={(event) => update({ rangeText: event.target.value })}
                           disabled={readOnlyRange}
                         />
@@ -1124,11 +1120,7 @@ export function LabTestParameterContent() {
                       // so it is not a controlled field without an onChange.
                       readOnly
                       value={genderWise ? genderPreview : form.rangeText}
-                      placeholder={
-                        genderWise
-                          ? "Compose the rows on the left to build the display text"
-                          : "Reference range display text"
-                      }
+
                       className="font-mono text-xs"
                     />
                   </div>

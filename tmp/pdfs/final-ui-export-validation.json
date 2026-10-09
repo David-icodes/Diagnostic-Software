@@ -1,0 +1,119 @@
+{
+  "docs": [
+    {
+      "report": "generated-lab-bills",
+      "format": "excel",
+      "filename": "generated-lab-bills-2026-10-09.csv",
+      "bytes": 831
+    },
+    {
+      "report": "generated-lab-bills",
+      "format": "pdf",
+      "filename": "generated-lab-bills-2026-10-09.pdf",
+      "bytes": 50330
+    },
+    {
+      "report": "generated-lab-bills",
+      "format": "word",
+      "filename": "generated-lab-bills-2026-10-09.docx",
+      "bytes": 10383
+    },
+    {
+      "report": "lab-summary",
+      "format": "excel",
+      "filename": "lab-summary-report-2026-10-09.csv",
+      "bytes": 1853
+    },
+    {
+      "report": "lab-summary",
+      "format": "pdf",
+      "filename": "lab-summary-report-2026-10-09.pdf",
+      "bytes": 53192
+    },
+    {
+      "report": "lab-summary",
+      "format": "word",
+      "filename": "lab-summary-report-2026-10-09.docx",
+      "bytes": 10610
+    },
+    {
+      "report": "referral-doctor-commission",
+      "format": "excel",
+      "filename": "referral-doctor-commission-report-2026-10-09.csv",
+      "bytes": 659
+    },
+    {
+      "report": "referral-doctor-commission",
+      "format": "pdf",
+      "filename": "referral-doctor-commission-report-2026-10-09.pdf",
+      "bytes": 50376
+    },
+    {
+      "report": "referral-doctor-commission",
+      "format": "word",
+      "filename": "referral-doctor-commission-report-2026-10-09.docx",
+      "bytes": 10331
+    },
+    {
+      "report": "outside-sent-lab-tests",
+      "format": "excel",
+      "filename": "outside-sent-lab-tests-report-2026-10-09.csv",
+      "bytes": 175
+    },
+    {
+      "report": "outside-sent-lab-tests",
+      "format": "pdf",
+      "filename": "outside-sent-lab-tests-report-2026-10-09.pdf",
+      "bytes": 43683
+    },
+    {
+      "report": "outside-sent-lab-tests",
+      "format": "word",
+      "filename": "outside-sent-lab-tests-report-2026-10-09.docx",
+      "bytes": 10015
+    },
+    {
+      "report": "hospital-price-card",
+      "format": "excel",
+      "filename": "hospital-price-card-report-2026-10-09.csv",
+      "bytes": 7688
+    },
+    {
+      "report": "hospital-price-card",
+      "format": "pdf",
+      "filename": "hospital-price-card-report-2026-10-09.pdf",
+      "bytes": 75391
+    },
+    {
+      "report": "hospital-price-card",
+      "format": "word",
+      "filename": "hospital-price-card-report-2026-10-09.docx",
+      "bytes": 13459
+    },
+    {
+      "report": "lab-collection-summary",
+      "format": "excel",
+      "filename": "lab-collection-summary-report-2026-10-09.csv",
+      "bytes": 75
+    },
+    {
+      "report": "lab-collection-summary",
+      "format": "pdf",
+      "filename": "lab-collection-summary-report-2026-10-09.pdf",
+      "bytes": 39981
+    },
+    {
+      "report": "lab-collection-summary",
+      "format": "word",
+      "filename": "lab-collection-summary-report-2026-10-09.docx",
+      "bytes": 9897
+    }
+  ],
+  "empty": [
+    "bills-wise-collection",
+    "cancelled-bills",
+    "client-generated-lab-bills",
+    "due-bills"
+  ],
+  "browserErrors": []
+}

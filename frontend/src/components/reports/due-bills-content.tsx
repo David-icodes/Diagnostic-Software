@@ -17,7 +17,8 @@ import { ReportPrintSheet, type PrintColumn } from "@/components/reports/report-
 import { useReportFind } from "@/components/reports/use-report-find";
 import {
   formatCriteriaDate,
-  downloadCsv,
+  downloadReport,
+  type ReportExportFormat,
   reportCsvName,
 } from "@/components/reports/report-export";
 import { fetchDueBills, fetchReportOptions } from "@/services/reports";
@@ -256,18 +257,19 @@ export function DueBillsContent() {
     [applied],
   );
 
-  const handleExport = useCallback(() => {
+  const handleExport = useCallback((format: ReportExportFormat = "excel") => {
     if (!result) return;
     fetchDueBills({ ...buildParams(1, applied), export: "1" })
-      .then((response) => {
-        downloadCsv(
+      .then(async (response) => {
+        await downloadReport(
           reportCsvName("due-bills-report"),
           printColumns.map((column) => column.header),
           response.data.map((row) => printColumns.map((column) => column.render(row))),
+          format, criteriaText,
         );
       })
-      .catch(() => setError("Unable to export the report. Please try again."));
-  }, [result, applied, printColumns]);
+      .catch((error) => { setError(error instanceof Error ? error.message : "Unable to export report"); throw error; });
+  }, [criteriaText, result, applied, printColumns]);
 
   const handlePrint = useCallback(() => {
     if (!result || printing) return;
@@ -309,7 +311,7 @@ export function DueBillsContent() {
               label="Patient ID"
               value={filters.patientId}
               onChange={(value) => setFilter("patientId", value)}
-              placeholder="e.g. GP202600001"
+
             />
             <div className="grid grid-cols-1 gap-3 sm:col-span-2 lg:col-span-2">
               <ReportSelectionPanel

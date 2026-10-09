@@ -21,7 +21,8 @@ export const bulkLabTariffSchema = z
     rows: z
       .array(tariffRowSchema)
       .min(1, "Select at least one test")
-      .max(500, "Too many rows in one save"),
+      .max(500, "Too many rows in one save")
+      .refine((rows) => new Set(rows.map((row) => row.testId)).size === rows.length, "Duplicate tests in tariff update"),
   })
   .strict();
 

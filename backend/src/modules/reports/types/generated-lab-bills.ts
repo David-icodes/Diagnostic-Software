@@ -1,3 +1,7 @@
+export interface RevenueAnalytics {
+  daily: { date: string; netAmount: number; paidAmount: number; dueAmount: number }[];
+  paymentModes: { mode: string; paidAmount: number }[];
+}
 export type ReportPaymentStatus = "paid" | "partial" | "unpaid";
 
 export interface GeneratedLabBillReportRow {
@@ -43,6 +47,7 @@ export interface GeneratedLabBillsPagination {
 }
 
 export interface GeneratedLabBillsResult {
+  analytics: RevenueAnalytics;
   data: GeneratedLabBillReportRow[];
   pagination: GeneratedLabBillsPagination;
   summary: GeneratedLabBillsSummary;

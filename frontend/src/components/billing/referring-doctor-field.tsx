@@ -249,7 +249,7 @@ export function ReferringDoctorField({
               id="referringDoctorName"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="e.g. Dr. Ramesh Gupta"
+
               className="h-8"
             />
           </div>
@@ -260,7 +260,7 @@ export function ReferringDoctorField({
                 id="referringQualification"
                 value={qualification}
                 onChange={(event) => setQualification(event.target.value)}
-                placeholder="e.g. MBBS, MD"
+
                 className="h-8"
               />
             </div>
@@ -270,7 +270,7 @@ export function ReferringDoctorField({
                 id="referringSpecialization"
                 value={specialization}
                 onChange={(event) => setSpecialization(event.target.value)}
-                placeholder="e.g. Cardiology"
+
                 className="h-8"
               />
             </div>

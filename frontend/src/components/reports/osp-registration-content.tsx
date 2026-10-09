@@ -349,14 +349,14 @@ export function OspRegistrationContent() {
             label="Mobile No"
             value={filters.mobile}
             onChange={(value) => setFilter("mobile", value)}
-            placeholder="Enter mobile number"
+
           />
 <ReportSearchInput
             id="osp-name"
             label="Patient Name"
             value={filters.name}
             onChange={(value) => setFilter("name", value)}
-            placeholder="Enter patient name"
+
           />
 <ReportSelect
             id="osp-bill-type"

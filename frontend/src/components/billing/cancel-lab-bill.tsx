@@ -169,7 +169,7 @@ export function CancelLabBill() {
               <Input
                 id="billNumber"
                 type="text"
-                placeholder="OSP202600001"
+
                 value={billNumber}
                 onChange={(event) => setBillNumber(event.target.value)}
                 onKeyDown={(event) => {
@@ -315,7 +315,7 @@ export function CancelLabBill() {
             <Textarea
               id="cancellationRemarks"
               rows={3}
-              placeholder="Enter reason for cancellation..."
+
               value={remarks}
               onChange={(event) => setRemarks(event.target.value)}
               aria-invalid={Boolean(remarksError)}

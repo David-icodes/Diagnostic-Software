@@ -312,7 +312,6 @@ export function LocationContent() {
               <Input
                 id={`loc-${level}-name`}
                 value={entry.newName}
-                placeholder={`Enter new ${label} name`}
                 autoFocus
                 onChange={(event) => handleNewName(level, event.target.value)}
               />

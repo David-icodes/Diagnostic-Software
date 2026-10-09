@@ -75,3 +75,6 @@
   .lis-header-name { white-space: normal; font-size: 17px; }
   .lis-result-patient-name { flex-basis: 100%; }
 }
+
+.lis-dashboard .lis-bills-panel table.lis-today-bills-table th:nth-child(n) { width: 20%; }
+.lis-dashboard .lis-bills-panel table.lis-today-bills-table :is(th,td) { white-space: nowrap; overflow-wrap: normal; overflow: hidden; text-overflow: ellipsis; }

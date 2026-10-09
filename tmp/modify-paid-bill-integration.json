@@ -1,0 +1,68 @@
+{
+  "isolatedLocalMongo": true,
+  "database": "lis_modify_payment_verification_1791567124956",
+  "checks": [
+    {
+      "name": "UNPAID",
+      "status": 200,
+      "paid": 0,
+      "net": 100,
+      "due": 100,
+      "credit": 0,
+      "paymentHistoryUnchanged": true
+    },
+    {
+      "name": "PARTIAL",
+      "status": 200,
+      "paid": 40,
+      "net": 90,
+      "due": 50,
+      "credit": 0,
+      "paymentHistoryUnchanged": true
+    },
+    {
+      "name": "SETTLED",
+      "status": 200,
+      "paid": 100,
+      "net": 100,
+      "due": 0,
+      "credit": 0,
+      "paymentHistoryUnchanged": true
+    },
+    {
+      "name": "SETTLED-LOWER",
+      "status": 200,
+      "paid": 100,
+      "net": 90,
+      "due": 0,
+      "credit": 10,
+      "paymentHistoryUnchanged": true
+    },
+    {
+      "name": "INCREASED-TOTAL",
+      "due": 100,
+      "paid": 100
+    },
+    {
+      "name": "AUTH-VALIDATION-INTEGRITY",
+      "unauthenticated": 401,
+      "unauthorized": 403,
+      "invalidPayload": 400,
+      "cancelled": 422,
+      "linkedSampleRemoval": 422,
+      "reportDueGuard": "preserved"
+    },
+    {
+      "name": "OSP202600097-BROWSER-SAVED",
+      "paid": 1250,
+      "revisedNet": 1125,
+      "due": 0,
+      "overpaymentCredit": 125,
+      "paymentHistoryUnchanged": true,
+      "reopenedFromMongo": true,
+      "browserErrors": 0
+    }
+  ],
+  "liveWhatsAppMessages": 0,
+  "productionDatabaseWrites": 0
+}

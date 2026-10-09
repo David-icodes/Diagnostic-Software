@@ -139,7 +139,7 @@ export function WhatsAppTestPanel() {
                 type="text"
                 inputMode="tel"
                 autoComplete="off"
-                placeholder="e.g. 919876543210"
+
                 className="h-8"
                 value={to}
                 onChange={(event) => setTo(event.target.value)}

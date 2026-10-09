@@ -17,7 +17,7 @@ import { ReportTitleBar } from "@/components/reports/report-title-bar";
 import { ReportPreview } from "@/components/reports/report-preview";
 import { ReportToolbar } from "@/components/reports/report-toolbar";
 import { useReportFind } from "@/components/reports/use-report-find";
-import { formatCriteriaDate } from "@/components/reports/report-export";
+import { formatCriteriaDate, downloadReport, reportCsvName, type ReportExportFormat } from "@/components/reports/report-export";
 import {
   fetchDepartments,
   fetchDoctors,
@@ -427,6 +427,13 @@ export function GeneratedLabBillsContent() {
     return parts.join("  |  ");
   }, [applied, collectors, departments, doctors, payModes]);
 
+  const handleExport = async (format: ReportExportFormat = "excel") => {
+    const response = await fetchGeneratedLabBills({ ...buildParams(1, applied), export: "1" });
+    await downloadReport(reportCsvName("generated-lab-bills"),
+      ["SNo", "Bill Date", "Bill No", "Pat Id", "Name", "Dr Name", "Lab Test", "Total", "Dscnt", "Net", "Paid", "Balance", "User", "Pay Mode", "Patient Type", "Payment Status"],
+      response.data.map((row, index) => [String(index + 1), formatDateTime(row.billDate), row.billNumber, row.patientId, row.patientName, row.doctorName, row.tests.join(", "), formatMoney(row.totalAmount), formatMoney(row.discountAmount), formatMoney(row.netAmount), formatMoney(row.paidAmount), formatMoney(row.dueAmount), row.collectedBy, row.payModeLabel, patientTypeLabel(row.patientType), paymentStatusLabel(row.paymentStatus)]), format, criteriaText);
+  };
+
   return (
     <div data-tmis-page="generated-lab-bills" className="lis-tmis lis-generated-report mx-auto flex max-w-[1800px] flex-col gap-2 p-2 sm:p-3">
       <ReportTitleBar
@@ -586,6 +593,7 @@ export function GeneratedLabBillsContent() {
                 loading={loading}
                 onPageChange={handlePageChange}
                 onRefresh={handleSearch}
+                onExport={handleExport}
                 findValue={find.findValue}
                 onFindChange={find.onFindChange}
                 matches={find.matches}
@@ -596,6 +604,20 @@ export function GeneratedLabBillsContent() {
           </>
         )}
       </ReportPreview>}
+      <section aria-label="Revenue Analytics" className="rounded border border-slate-200 bg-white p-3 text-xs">
+        <h2 className="mb-1 text-sm font-medium">Revenue Analytics — Anjali Diagnostics</h2>
+        <p className="mb-2 text-slate-600">{criteriaText}. Totals cover all matching generated bills; cancelled bills are excluded. Collections are current paid balances on bills in this bill-date range, not payments received during the range.</p>
+        {loading ? <p>Loading revenue analytics…</p> : error ? <p role="alert" className="text-destructive">{error}</p> : !result ? <p>Select a date range and click Show to view analytics.</p> : <>
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+            {[["Total billed", result.summary.totalAmount], ["Discounts", result.summary.totalDiscount], ["Net revenue", result.summary.totalNet], ["Collected", result.summary.totalPaid], ["Outstanding", result.summary.totalDue], ["Bills", result.summary.totalBills]].map(([label,value]) =>
+              <div key={String(label)} className="rounded border p-2"><div className="text-slate-600">{label}</div><div className="mt-1 font-medium">{label === "Bills" ? value : formatMoney(Number(value))}</div></div>)}
+          </div>
+          {!result.summary.totalBills ? <p className="mt-2">No generated bills match this range and criteria.</p> : <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <div className="max-h-56 overflow-auto"><h3 className="mb-1 font-medium">Revenue by bill day</h3><table className="w-full text-right"><thead><tr><th className="text-left">Day</th><th>Net</th><th>Collected</th><th>Outstanding</th></tr></thead><tbody>{result.analytics.daily.map((day) => <tr key={day.date} className="border-t"><td className="py-1 text-left">{formatCriteriaDate(day.date)}</td><td>{formatMoney(day.netAmount)}</td><td>{formatMoney(day.paidAmount)}</td><td>{formatMoney(day.dueAmount)}</td></tr>)}</tbody></table></div>
+            <div><h3 className="mb-1 font-medium">Collected by stored bill payment mode</h3><p className="mb-1 text-slate-600">Groups paid bill balances by the bill’s recorded mode; mixed later payments are not a transaction-mode breakdown.</p>{result.analytics.paymentModes.map((mode) => <div key={mode.mode} className="flex justify-between border-t py-1"><span>{mode.mode}</span><span>{formatMoney(mode.paidAmount)}</span></div>)}</div>
+          </div>}
+        </>}
+      </section>
     </div>
   );
 }

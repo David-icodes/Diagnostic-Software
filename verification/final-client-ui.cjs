@@ -1,0 +1,212 @@
+// Isolated browser fixtures: every application write is fulfilled locally.
+// Only login and read-only requests reach the existing local API.
+const { chromium } = require('../backend/node_modules/playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    const api = 'http://localhost:5000/api/v1';
+    const login = await context.request.post(api + '/auth/login', { data: { username: process.env.LIS_VERIFY_USERNAME, password: process.env.LIS_VERIFY_PASSWORD } });
+    assert.equal(login.ok(), true, 'Local test login');
+    const get = async (path) => { const response = await context.request.get(api + path); assert.equal(response.ok(), true); return (await response.json()).data; };
+    const original = (await get('/lab-bills/6ac889ad77bfff99eda526ed')).bill;
+    const entry = await get('/lab-test-results/bill-entry?billId=' + original.id);
+    const selectedTest = original.items[0];
+    const catalog = (await get('/lab-tests/' + selectedTest.testId)).test;
+    const patient = { ...original.patientId, firstName: 'SYNTHETIC', lastName: 'PERSON', fullName: 'SYNTHETIC PERSON', mobile: '9876543210', city: 'Existing City', state: 'Existing State', pincode: '500001', status: 'active' };
+    const bill = { ...original, patientId: patient, totalAmount: 100, netAmount: 90, discountAmount: 10, discountPercent: 10, paidAmount: 40, dueAmount: 50,
+      items: [{ ...selectedTest, unitPrice: 100, quantity: 1, total: 100 }] };
+    entry.patientName = patient.fullName;
+    const test = { ...catalog, containerType: 'Lavander', sampleType: 'EDTA', active: true, price: 100 };
+    const dept = { id: selectedTest.departmentId, name: selectedTest.departmentName, active: true, testCount: 60 };
+    const otherDept = { id: '507f1f77bcf86cd799439015', name: 'Other department', active: true, testCount: 1 };
+    const doctors = [{ id: '507f1f77bcf86cd799439016', name: 'Source Doctor', active: true }, { id: '507f1f77bcf86cd799439017', name: 'Destination Doctor', active: true }];
+    const clients = [{ id: '507f1f77bcf86cd799439018', name: 'Synthetic Client', active: true }];
+    const mappingRows = ['Alpha', 'Beta', 'Gamma'].map((name, i) => ({ testId: String(i + 1).padStart(24, '0'), testName: name, amount: 100, price: 100, clientPrice: 80, commissionPercent: 10, configured: true }));
+    const tariffRows = Array.from({ length: 60 }, (_, i) => ({ ...mappingRows[0], testId: String(i + 1).padStart(24, '0'), departmentId: dept.id, departmentName: dept.name, testName: 'Tariff ' + (i + 1), price: 100 }));
+    let sample = { id: '507f1f77bcf86cd799439019', sampleId: 'SYN-SAMPLE', billId: bill.id, testId: selectedTest.testId, patientId: patient.id, sampleStatus: 'SELECT', outsideLabId: null };
+    const writes = []; const errors = []; const consoles = []; const checks = [];
+    let failBill = false; let failSample = false; let failReview = false; let failSend = false;
+    const page = await context.newPage();
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => { if (message.type() === 'error' && /React|hydration|controlled|uncontrolled/i.test(message.text())) consoles.push(message.text()); });
+    const pagination = (total, limit = 100, current = 1) => ({ page: current, limit, total, totalPages: Math.ceil(total / limit) });
+    await context.route('**/api/**', async (route) => {
+      const request = route.request(); const url = new URL(request.url()); const path = url.pathname.replace('/api/v1', '');
+      const method = request.method();
+      const ok = (data) => route.fulfill({ json: { success: true, data } });
+      const failure = (message) => route.fulfill({ status: 503, json: { success: false, message } });
+      if (method !== 'GET' && method !== 'OPTIONS') {
+        const body = request.postDataJSON(); writes.push({ path, method, body });
+        if (path.startsWith('/patients/')) { Object.assign(patient, body, { fullName: [body.firstName, body.lastName].filter(Boolean).join(' ') }); return ok({ patient }); }
+        if (path === '/patients') throw new Error('Unexpected duplicate patient creation in fixture');
+        if (path === '/lab-bills') return failBill ? failure('Simulated bill failure') : ok({ bill });
+        if (path.endsWith('/status')) { if (failSample) return failure('Simulated collection failure'); sample = { ...sample, sampleStatus: 'COLLECTED' }; return ok({ sample }); }
+        if (path === '/lab-tariffs/bulk') return ok({ updated: body.rows.length });
+        if (path === '/commission-mappings/assign') return ok({ assigned: body.mappings.length, removed: 0 });
+        if (path === '/client-tariffs/apply') return ok({ applied: body.rows.length, removed: 0 });
+        if (path.includes('/lis/review')) {
+          if (failReview) return failure('The actual PDF could not be generated. Retry document preparation.');
+          return ok({ reviewId: 'fixture-review', templateName: body.templateName, languageCode: 'en', configurationError: null, patientName: patient.fullName, patientCode: patient.patientId, billNumber: bill.billNumber, mobile: '+919876543210', centreName: 'Configured Centre', variables: [], attachment: body.templateName === 'patient_thank_you' ? null : { filename: 'fixture.pdf', mimeType: 'application/pdf', base64: 'JVBERi0xLjQ=' } });
+        }
+        if (path.includes('/lis/send')) return failSend ? failure('Meta did not deliver this message because of its messaging engagement restrictions. Wait before trying again.') : ok({ metaMessageId: 'mock-meta-id' });
+        return failure('Unexpected write blocked by browser fixture: ' + path);
+      }
+      if (path === '/patients') return ok({ data: [patient], pagination: pagination(1) });
+      if (path.startsWith('/patients/')) return ok({ patient });
+      if (path === '/departments') return ok([dept, otherDept]);
+      if (path === '/doctors') return ok(doctors);
+      if (path === '/lab-clients') return ok(clients);
+      if (path === '/lab-tests') return ok({ items: [test], pagination: pagination(1) });
+      if (path.startsWith('/lab-tests/')) return ok({ test });
+      if (path === '/lab-bills') return ok({ data: [bill], pagination: pagination(1) });
+      if (path.startsWith('/lab-bills/')) return ok({ bill });
+      if (path === '/lab-samples') return ok({ data: [sample], pagination: pagination(1) });
+      if (path === '/lab-technicians') return ok({ technicians: [] });
+      if (path === '/lab-test-results/bill-entry') return ok(entry);
+      if (path === '/lab-test-results/results') return ok({ results: [] });
+      if (path === '/lab-test-results/workflow') return ok({ billId: bill.id, patientId: patient.id, outstandingDue: 50, hasOutstandingDue: true, tests: [{ testId: test.id, submitted: true }] });
+      if (path === '/commission-mappings') return ok({ data: mappingRows });
+      if (path === '/client-tariffs') return ok({ data: mappingRows });
+      if (path === '/lab-tariffs') {
+        const current = Number(url.searchParams.get('page') || 1); const limit = Number(url.searchParams.get('limit') || 200);
+        const rows = url.searchParams.get('departmentId') === 'all' ? tariffRows : tariffRows.slice(0, 3);
+        return ok({ data: rows.slice((current - 1) * limit, current * limit), pagination: pagination(rows.length, limit, current) });
+      }
+      if (path === '/dashboard/today-bills') return ok([{ id: bill.id, billNo: bill.billNumber, patientId: patient.patientId, patientName: 'LONG SYNTHETIC PATIENT NAME THAT MUST STAY WITHIN ITS CELL', age: 26, gender: 'Male', completed: false }]);
+      if (path === '/dashboard/due-bills') return ok([]);
+      if (path === '/reports/referral-doctor-commission') return ok({ data: [{ id: bill.id, sNo: 1, billDate: bill.createdAt, billNumber: bill.billNumber, patientId: patient.patientId, patientName: patient.fullName, patientType: 'osp', doctorName: doctors[0].name, tests: test.testName, segmentTotal: 100, segmentDiscount: 10, segmentNet: 90, segmentPaid: 40, commissionAmount: 9, configMissing: false }], pagination: pagination(1, 20), summary: { totalBills: 1, totalNet: 90, totalPaid: 40, totalCommission: 9, missingConfigs: 0 }, meta: { commissionBasis: 'referral', amountBasis: 'net', claimTypes: ['all'] } });
+      return route.continue();
+    });
+    const navigate = async (path) => page.goto('http://localhost:3000' + path);
+    const choosePatient = async () => {
+      await page.getByLabel('Search patient by name, patient ID or mobile').fill('Synthetic');
+      await page.getByRole('dialog', { name: 'Select existing patient' }).getByRole('button', { name: /SYNTHETIC PERSON/ }).click();
+    };
+    const addTest = async () => {
+      await page.getByRole('button', { name: new RegExp(dept.name) }).first().click();
+      await page.getByRole('button', { name: test.testName, exact: true }).click();
+      await page.getByRole('button', { name: 'Transfer selected test', exact: true }).click();
+    };
+    await navigate('/dashboard');
+    for (const width of [1280, 1440, 1920]) {
+      await page.setViewportSize({ width, height: 1000 });
+      const table = page.locator('table').first();
+      await table.locator('thead th').first().waitFor();
+      assert.deepEqual(await table.locator('thead th').allTextContents(), ['Bill No', 'Pat Id', 'Pat Name', 'Age', 'Gender']);
+      const widths = await table.locator('thead th').evaluateAll((cells) => cells.map((cell) => cell.getBoundingClientRect().width));
+      assert.ok(Math.max(...widths) - Math.min(...widths) < 3);
+      await page.screenshot({ path: '../tmp/pdfs/final-dashboard-' + width + '.png' });
+      await page.getByRole('button', { name: 'Expand sidebar', exact: true }).click();
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.getByRole('button', { name: 'Collapse sidebar', exact: true }).click();
+    }
+    checks.push('Dashboard exact five columns, equal spacing at 1280/1440/1920');
+    await navigate('/billing/osp/new');
+    await choosePatient();
+    await page.getByLabel('Patient name', { exact: true }).fill('SYNTHETIC UPDATED');
+    await page.getByRole('button', { name: 'Update OSP', exact: true }).click();
+    await page.getByText('Patient details updated successfully.', { exact: true }).waitFor();
+    const update = writes.find((row) => row.path.startsWith('/patients/'));
+    assert.equal(update.body.city, 'Existing City'); assert.equal(update.body.state, 'Existing State');
+    await addTest(); assert.equal(await page.getByRole('columnheader', { name: 'Tube Container', exact: true }).count(), 1);
+    await page.getByText('Lavander', { exact: true }).waitFor();
+    failBill = true; await page.getByRole('button', { name: 'SUBMIT', exact: true }).click();
+    await page.getByText('Simulated bill failure').waitFor(); assert.equal(await page.getByLabel('Patient name', { exact: true }).inputValue(), 'SYNTHETIC UPDATED');
+    failBill = false; await page.getByRole('button', { name: 'SUBMIT', exact: true }).click();
+    await page.getByRole('dialog', { name: 'OSP lab bill registered successfully.' }).waitFor();
+    assert.ok(page.url().endsWith('/billing/osp/new')); assert.equal(await page.getByLabel('Patient name', { exact: true }).inputValue(), '');
+    await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).last().click();
+    assert.equal(writes.filter((row) => row.path === '/patients').length, 0);
+    checks.push('OSP update preserves other fields; failed bill keeps form; success resets without redirect; tube from catalog');
+    await navigate('/laboratory/billing/vendor-client');
+    await addTest(); await page.getByText('Lavander', { exact: true }).waitFor();
+    assert.equal(await page.getByRole('columnheader', { name: 'Tube Container', exact: true }).count(),1);
+    checks.push('Vendor shared test table uses saved container');
+    await navigate('/laboratory/billing/modify');
+    await page.getByLabel('Select bill '+bill.billNumber,{exact:true}).click();
+    assert.equal(await page.getByRole('button',{name:'Submit',exact:true}).isDisabled(),false);
+    checks.push('Partially paid outstanding bill modification enabled');
+    await navigate('/laboratory/master/lab-tariffs');
+    await page.locator('#tariff-dept').selectOption('all');
+    await page.getByLabel('Select All', { exact: true }).check();
+    await page.getByLabel('Select Tariff 1', { exact: true }).uncheck();
+    await page.getByRole('button', { name: 'Save', exact: true }).click();
+    await page.getByText('Tariffs updated for 59 test(s)', { exact: true }).waitFor();
+    assert.equal(writes.find((row) => row.path === '/lab-tariffs/bulk').body.rows.length, 59);
+    await page.locator('#tariff-dept').selectOption(dept.id); assert.equal(await page.getByLabel('Select All', { exact: true }).isChecked(), false);
+    checks.push('ALL tariff scope selects across pages; deselection and save 59/60; changing scope resets');
+    await navigate('/laboratory/master/doctor-commission-mapping');
+    await page.locator('#comm-doctor').selectOption(doctors[0].id); await page.locator('#comm-dept').selectOption(dept.id);
+    await page.getByLabel('Select All', { exact: true }).check(); await page.getByLabel('Select Beta', { exact: true }).uncheck();
+    await page.getByText('Copy The Above Tariff Set', { exact: true }).locator('input').check();
+    await page.getByLabel('Copy to Destination Doctor', { exact: true }).check(); await page.getByRole('button', { name: 'Copy', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Copy', exact: true }).click();
+    await page.getByText('Commission set copied to 1 doctor(s)', { exact: true }).waitFor();
+    const copy = writes.find((row) => row.path === '/commission-mappings/assign');
+    assert.equal(copy.body.doctorId, doctors[1].id); assert.equal(copy.body.mappings.length, 2); assert.equal(copy.body.mappings[0].commissionPercent, 10);
+    checks.push('Doctor Select All/deselect/copy to target uses commission values and selected rows');
+    await navigate('/laboratory/master/client-lab-tariffs');
+    await page.locator('#client-tariff-client').selectOption(clients[0].id); await page.locator('#client-tariff-dept').selectOption(dept.id);
+    await page.getByLabel('Search lab tests', { exact: true }).fill('Alpha');
+    await page.getByLabel('Select All', { exact: true }).check(); await page.getByRole('button', { name: 'Submit', exact: true }).click();
+    await page.getByText('Tariffs applied to 1 test(s)', { exact: true }).waitFor();
+    assert.equal(writes.find((row) => row.path === '/client-tariffs/apply').body.rows.length, 1);
+    checks.push('Client Select All respects searched scope and saves only selected record');
+    await navigate('/laboratory/master/create-lab-test');
+    await page.locator('#test-sample').waitFor();
+    assert.deepEqual(await page.locator('#test-sample option').allTextContents(), ['--Select--', 'EDTA', 'PLASMA', 'SERUM', 'Stool', 'URINE']);
+    assert.deepEqual(await page.locator('#test-container option').allTextContents(), ['--Select--', 'Lavander', 'Red']);
+    await page.getByRole('button', { name: 'Edit ' + test.testName, exact: true }).click(); assert.equal(await page.locator('#test-container').inputValue(), 'Lavander');
+    checks.push('Sample/container dropdowns and reopen existing saved values');
+    await navigate('/reports/referral-doctor-commission'); await page.getByRole('button', { name: 'Show', exact: true }).click();
+    await page.getByRole('columnheader', { name: 'Ref Amnt', exact: true }).waitFor();
+    assert.deepEqual(await page.locator('.lis-report-table thead th').allTextContents(), ['SNo', 'Bill Date', 'Bill No', 'Pat Id', 'Patient Name', 'Type', 'Lab Tests', 'Referral Dr', 'Total', 'Discount', 'Paid', 'Ref Amnt']);
+    checks.push('Referral exact twelve columns');
+    await navigate('/laboratory/test-result/parameter-based-test-results');
+    await page.getByText(bill.billNumber, { exact: true }).first().click();
+    const collect = page.getByLabel('Collect sample for ' + test.testName, { exact: true }); await collect.click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Cancel', exact: true }).click();
+    assert.equal(writes.filter((row) => row.path.endsWith('/status')).length, 0);
+    failSample = true; await collect.click(); await page.getByRole('dialog').getByRole('button', { name: 'Collect', exact: true }).click();
+    await page.getByText('Simulated collection failure').waitFor(); failSample = false;
+    await page.getByRole('dialog').getByRole('button', { name: 'Collect', exact: true }).click();
+    await page.getByLabel('Sample collected for ' + test.testName, { exact: true }).waitFor();
+    assert.ok(page.url().includes('/parameter-based-test-results')); assert.equal(await page.locator('.lis-result-patient').count(), 0);
+    checks.push('Sample Cancel performs no write; failure stays in confirmation; retry collects on same page; redundant block absent');
+    failReview = true; await page.getByRole('button', { name: 'Send WhatsApp', exact: true }).click();
+    await page.getByRole('dialog').getByText(/actual PDF could not be generated/).waitFor(); assert.equal(await page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).isDisabled(), true);
+    failReview = false; await page.getByRole('dialog').getByRole('button', { name: 'Retry', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).waitFor();
+    await page.getByRole('dialog').getByLabel('WhatsApp template').selectOption('patient_thank_you');
+    await page.getByRole('dialog').getByLabel('WhatsApp recipient mobile number').waitFor();
+    assert.equal(await page.getByRole('dialog').getByText('Recent delivery status').count(), 0);
+    assert.equal(await page.getByRole('dialog').getByRole('link').count(), 0);
+    await page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
+    await page.getByRole('dialog', { name: 'WhatsApp message submitted successfully.' }).waitFor();
+    assert.equal(await page.getByRole('dialog').getByText(/mock-meta-id/).count(), 0);
+    await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).last().click();
+    failSend = true; await page.getByRole('button', { name: 'Send WhatsApp', exact: true }).click();
+    await page.getByRole('dialog').getByLabel('WhatsApp template').selectOption('patient_thank_you');
+    await page.getByRole('dialog').getByLabel('WhatsApp recipient mobile number').waitFor();
+    await page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
+    await page.getByRole('dialog').getByText(/engagement restrictions/).waitFor();
+    checks.push('WhatsApp compact review, preparation failure/Retry readiness, greeting without PDF, centered acceptance, concise 131049 failure');
+    await page.getByRole('dialog').getByRole('button',{name:'Close',exact:true}).click();
+    await navigate('/laboratory/test-result/lab-reprint');
+    await page.getByText(bill.billNumber,{exact:true}).first().click();
+    await page.getByRole('button',{name:'Send WhatsApp',exact:true}).click();
+    await page.getByRole('dialog').getByLabel('WhatsApp template').waitFor();
+    assert.deepEqual(await page.getByRole('dialog').getByLabel('WhatsApp template').locator('option').evaluateAll(options=>options.map(o=>o.value)),['lab_report_ready','lab_invoice_ready','patient_thank_you','report_ready']);
+    await page.getByRole('dialog').getByLabel('WhatsApp template').selectOption('patient_thank_you');
+    await page.getByRole('dialog').getByLabel('WhatsApp recipient mobile number').waitFor();
+    assert.equal(await page.getByRole('dialog').getByLabel('WhatsApp recipient mobile number').textContent(),'+919876543210');
+    checks.push('Lab Reprint reuses compact selector and preserves legacy report_ready option');
+    assert.deepEqual(errors, []); assert.deepEqual(consoles, []);
+    await fs.writeFile('../tmp/pdfs/final-client-ui-validation.json', JSON.stringify({ checks, browserErrors: errors, reactConsoleErrors: consoles, interceptedWriteCount: writes.length, liveMessages: 0 }, null, 2));
+    console.log(JSON.stringify({ checks: checks.length, browserErrors: errors.length, interceptedWrites: writes.length, liveMessages: 0 }));
+  } finally { await browser.close(); }
+})().catch((error) => { console.error(error.stack); process.exit(1); });

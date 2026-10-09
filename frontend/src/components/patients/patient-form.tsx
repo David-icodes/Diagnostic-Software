@@ -119,7 +119,7 @@ export function PatientForm({
                 <Input
                   id="firstName"
                   autoComplete="given-name"
-                  placeholder="First name"
+
                   className={baseControlClass}
                   aria-invalid={Boolean(errors.firstName)}
                   {...register("firstName")}
@@ -134,7 +134,7 @@ export function PatientForm({
                 <Input
                   id="lastName"
                   autoComplete="family-name"
-                  placeholder="Last name"
+
                   className={baseControlClass}
                   aria-invalid={Boolean(errors.lastName)}
                   {...register("lastName")}
@@ -185,7 +185,7 @@ export function PatientForm({
                   inputMode="numeric"
                   min={0}
                   max={150}
-                  placeholder="Years"
+
                   className={baseControlClass}
                   aria-invalid={Boolean(errors.age)}
                   {...register("age", { valueAsNumber: true })}
@@ -248,7 +248,7 @@ export function PatientForm({
                     id="email"
                     type="email"
                     autoComplete="email"
-                    placeholder="Email address"
+
                     className={baseControlClass}
                     aria-invalid={Boolean(errors.email)}
                     {...register("email")}
@@ -263,7 +263,7 @@ export function PatientForm({
                   <Input
                     id="emergencyContact"
                     inputMode="numeric"
-                    placeholder="10-digit mobile"
+
                     className={baseControlClass}
                     aria-invalid={Boolean(errors.emergencyContact)}
                     {...register("emergencyContact")}
@@ -285,7 +285,7 @@ export function PatientForm({
                 >
                   <Input
                     id="address"
-                    placeholder="Street, house no., area"
+
                     className={baseControlClass}
                     aria-invalid={Boolean(errors.address)}
                     {...register("address")}
@@ -299,7 +299,7 @@ export function PatientForm({
                 >
                   <Input
                     id="city"
-                    placeholder="City"
+
                     className={baseControlClass}
                     aria-invalid={Boolean(errors.city)}
                     {...register("city")}
@@ -313,7 +313,7 @@ export function PatientForm({
                 >
                   <Input
                     id="state"
-                    placeholder="State"
+
                     className={baseControlClass}
                     aria-invalid={Boolean(errors.state)}
                     {...register("state")}
@@ -328,7 +328,7 @@ export function PatientForm({
                   <Input
                     id="pincode"
                     inputMode="numeric"
-                    placeholder="6-digit pincode"
+
                     className={baseControlClass}
                     aria-invalid={Boolean(errors.pincode)}
                     {...register("pincode")}

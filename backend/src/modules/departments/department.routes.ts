@@ -1,3 +1,4 @@
+import { deleteDepartment } from "./department.controller";
 import { Router } from "express";
 import { authenticate } from "../../middleware/authenticate";
 import { requirePermission } from "../../middleware/require-permission";
@@ -45,5 +46,7 @@ router.patch(
   requirePermission("database.department.write"),
   deactivateDepartment,
 );
+
+router.delete("/:id", requirePermission("database.department.write"), deleteDepartment);
 
 export default router;

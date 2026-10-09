@@ -1,0 +1,26 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { outsideLabInputSchema, saveOutsideLab, listOutsideLabs, deleteOutsideLab } from "./outside-labs.service";
+import { OutsideLab } from "../../../models/outside-lab.model";
+import { LabBill } from "../../../models/lab-bill.model";
+import { LabSample } from "../../../models/lab-sample.model";
+const id = "507f1f77bcf86cd799439011";
+test("outside lab create/list/edit use the existing source; deletion preserves assignments", async(t) => {
+  let deleted = 0; let lab: Record<string,unknown>;
+  t.mock.method(OutsideLab,"create", async(input: Record<string, unknown>) => { lab={...input,id, deleteOne: async() => { deleted++; }, save: async() => lab }; return lab; });
+  t.mock.method(OutsideLab,"findById", () => ({ exec: async() => lab }));
+  t.mock.method(OutsideLab,"find", () => ({ sort: () => ({ select: () => ({ exec: async() => [lab] }) }) }));
+  let billReference = true; let sampleReference = false;
+  t.mock.method(LabBill,"exists", async() => billReference ? {_id:id} : null);
+  t.mock.method(LabSample,"exists", async() => sampleReference ? {_id:id} : null);
+  const input=outsideLabInputSchema.parse({code:" test ",name:"Synthetic Outside Lab",city:"Hyderabad"});
+  assert.equal(input.code,"TEST");
+  await saveOutsideLab(id,input);
+  assert.equal((await listOutsideLabs())[0].id,id);
+  await saveOutsideLab(id,{...input,name:"Updated Outside Lab"},id);
+  assert.equal((await listOutsideLabs())[0].name,"Updated Outside Lab");
+  await assert.rejects(deleteOutsideLab(id),/Cannot delete/); billReference=false; sampleReference=true;
+  await assert.rejects(deleteOutsideLab(id),/Cannot delete/); assert.equal(deleted,0);
+  sampleReference=false; await deleteOutsideLab(id); assert.equal(deleted,1);
+  assert.equal(outsideLabInputSchema.safeParse({name:"x",code:""}).success,false);
+});

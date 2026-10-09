@@ -314,13 +314,12 @@ export function DoctorCreateContent() {
     },
   ];
 
-  const numberInput = (id: string, value: string, setter: (v: string) => void, placeholder: string) => (
+  const numberInput = (id: string, value: string, setter: (v: string) => void) => (
     <Input
       id={id}
       type="number"
       min={0}
       value={value}
-      placeholder={placeholder}
       onChange={(event) => setter(event.target.value)}
       disabled={saveMutation.isPending}
     />
@@ -362,7 +361,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-employee"
                   value={form.employeeId}
-                  placeholder="e.g. EMP-001"
                   onChange={(event) => update({ employeeId: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -371,7 +369,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-first"
                   value={form.firstName}
-                  placeholder="First name"
                   onChange={(event) => update({ firstName: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -380,7 +377,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-middle"
                   value={form.middleName}
-                  placeholder="Middle name"
                   onChange={(event) => update({ middleName: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -389,7 +385,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-last"
                   value={form.lastName}
-                  placeholder="Last name"
                   onChange={(event) => update({ lastName: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -398,7 +393,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-short"
                   value={form.shortName}
-                  placeholder="e.g. Dr. A"
                   onChange={(event) => update({ shortName: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -422,7 +416,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-qualification"
                   value={form.qualification}
-                  placeholder="e.g. MBBS, DM"
                   onChange={(event) => update({ qualification: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -431,7 +424,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-phone"
                   value={form.phone}
-                  placeholder="Landline"
                   onChange={(event) => update({ phone: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -440,7 +432,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-mobile"
                   value={form.mobile}
-                  placeholder="10-digit mobile"
                   maxLength={10}
                   onChange={(event) => update({ mobile: event.target.value })}
                   disabled={saveMutation.isPending}
@@ -451,7 +442,6 @@ export function DoctorCreateContent() {
                   id="doc-email"
                   type="email"
                   value={form.email}
-                  placeholder="doctor@example.com"
                   onChange={(event) => update({ email: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -460,7 +450,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-city"
                   value={form.city}
-                  placeholder="City"
                   onChange={(event) => update({ city: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -533,7 +522,6 @@ export function DoctorCreateContent() {
                 <Input
                   id="doc-address"
                   value={form.address}
-                  placeholder="Address"
                   onChange={(event) => update({ address: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
@@ -557,7 +545,6 @@ export function DoctorCreateContent() {
                   "doc-opfee",
                   form.opConsultationFee,
                   (value) => update({ opConsultationFee: value }),
-                  "0.00",
                 )}
               </FormField>
               <FormField id="doc-hfee" label="Hospital Fee">
@@ -565,7 +552,6 @@ export function DoctorCreateContent() {
                   "doc-hfee",
                   form.hospitalFee,
                   (value) => update({ hospitalFee: value }),
-                  "0.00",
                 )}
               </FormField>
               <FormField id="doc-ipfee" label="IP Consultation Fee">
@@ -573,7 +559,6 @@ export function DoctorCreateContent() {
                   "doc-ipfee",
                   form.ipConsultationFee,
                   (value) => update({ ipConsultationFee: value }),
-                  "0.00",
                 )}
               </FormField>
               <FormField id="doc-erfee" label="ER Consultation Fee">
@@ -581,7 +566,6 @@ export function DoctorCreateContent() {
                   "doc-erfee",
                   form.erConsultationFee,
                   (value) => update({ erConsultationFee: value }),
-                  "0.00",
                 )}
               </FormField>
               <FormField id="doc-freevisits" label="Max Free Visits">
@@ -589,7 +573,6 @@ export function DoctorCreateContent() {
                   "doc-freevisits",
                   form.maxFreeVisits,
                   (value) => update({ maxFreeVisits: value }),
-                  "0",
                 )}
               </FormField>
               <FormField id="doc-freedays" label="Max Free Days Visits">
@@ -597,14 +580,12 @@ export function DoctorCreateContent() {
                   "doc-freedays",
                   form.maxFreeDaysVisits,
                   (value) => update({ maxFreeDaysVisits: value }),
-                  "0",
                 )}
               </FormField>
               <FormField id="doc-room" label="Room Number">
                 <Input
                   id="doc-room"
                   value={form.roomNumber}
-                  placeholder="e.g. 204"
                   onChange={(event) => update({ roomNumber: event.target.value })}
                   disabled={saveMutation.isPending}
                 />

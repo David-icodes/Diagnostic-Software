@@ -1,5 +1,6 @@
 "use client";
 
+import { OutsideLabManager } from "./outside-lab-manager";
 import { ReportPreview } from "@/components/reports/report-preview";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -16,7 +17,8 @@ import { ReportPrintSheet, type PrintColumn } from "@/components/reports/report-
 import { useReportFind } from "@/components/reports/use-report-find";
 import {
   formatCriteriaDate,
-  downloadCsv,
+  downloadReport,
+  type ReportExportFormat,
   reportCsvName,
 } from "@/components/reports/report-export";
 import { fetchOutsideLabs, fetchOutsideSentLabTests } from "@/services/reports";
@@ -239,18 +241,19 @@ export function OutsideSentLabTestContent() {
     return parts.join("  |  ");
   }, [applied, labs]);
 
-  const handleExport = useCallback(() => {
+  const handleExport = useCallback((format: ReportExportFormat = "excel") => {
     if (!result) return;
-    runExport(applied)
-      .then((rows) => {
-        downloadCsv(
+    return runExport(applied)
+      .then(async (rows) => {
+        await downloadReport(
           reportCsvName("outside-sent-lab-tests-report"),
           printColumns.map((column) => column.header),
           rows.map((row) => printColumns.map((column) => column.render(row))),
+          format, criteriaText,
         );
       })
-      .catch(() => setError("Unable to export the report. Please try again."));
-  }, [result, applied, runExport, printColumns]);
+      .catch((error) => { setError(error instanceof Error ? error.message : "Unable to export report"); throw error; });
+  }, [criteriaText, result, applied, runExport, printColumns]);
 
   const handlePrint = useCallback(() => {
     if (!result || printing) return;
@@ -272,6 +275,7 @@ export function OutsideSentLabTestContent() {
           title="Outside Sent LabTest Details"
         />
 
+        <OutsideLabManager labs={labs} onSaved={async () => setLabs(await fetchOutsideLabs())} />
         <div className="lis-outside-filter-layout">
           <div className="lg:col-span-3">
             <ReportFilterBar

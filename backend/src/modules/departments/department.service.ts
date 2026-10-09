@@ -1,3 +1,9 @@
+import { LabClientTariff } from "../../models/lab-client-tariff.model";
+import { DoctorCommission } from "../../models/doctor-commission.model";
+import { Doctor } from "../../models/doctor.model";
+import { LabPackage } from "../../models/lab-package.model";
+import { LabSample } from "../../models/lab-sample.model";
+import { LabBill } from "../../models/lab-bill.model";
 import { Types, type FilterQuery } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import {
@@ -130,4 +136,21 @@ export async function setDepartmentActive(
   Object.assign(department, { updatedBy: new Types.ObjectId(userId) });
   await department.save();
   return department;
+}
+/** All references, including inactive masters and historical documents, block deletion. */
+export async function deleteDepartment(id: string): Promise<void> {
+  const department = await getDepartment(id);
+  const dependencies = await Promise.all([
+    LabTest.exists({ departmentId: id }),
+    LabBill.exists({ "items.departmentId": id }),
+    LabSample.exists({ departmentId: id }),
+    LabPackage.exists({ "items.departmentId": id }),
+    Doctor.exists({ departmentId: id }),
+    DoctorCommission.exists({ departmentId: id }),
+    LabClientTariff.exists({ departmentId: id }),
+  ]);
+  if (dependencies.some(Boolean)) {
+    throw new ApiError(409, "Cannot delete: this department is referenced by tests, bills, samples, packages, doctors or tariff/commission records. Existing records must be preserved.");
+  }
+  await department.deleteOne();
 }

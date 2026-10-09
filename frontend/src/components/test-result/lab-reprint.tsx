@@ -756,8 +756,25 @@ export function PrintPreview({
       className={visible ? "block" : "hidden print:block"}
       data-print-title={documentTitle}
     >
+      <style>{`@media print {
+        @page lab-report { @bottom-center {
+          content: ${JSON.stringify(REPORT_ADDRESS)} "\\A" ${JSON.stringify(REPORT_CONTACT)};
+          white-space: pre; font-family: "Times New Roman", Times, serif;
+          font-size: 7pt; line-height: 10pt; vertical-align: middle;
+        } }
+      }`}</style>
       {bill && patient && (
         <div className="lis-report-paper mx-auto w-[186mm] bg-white font-serif text-[9pt] leading-[13pt] text-black">
+          {/* Results */}
+          <table className="mt-[2mm] w-full table-fixed border-collapse text-left align-top">
+            <colgroup>
+              <col className="w-[35.7%]" />
+              <col className="w-[26.6%]" />
+              <col className="w-[12.9%]" />
+              <col className="w-[24.8%]" />
+            </colgroup>
+            <thead>
+              <tr><td colSpan={4} className="lis-clinical-repeat-header">
           {/* Letterhead */}
           {(includeHeader || letterhead) ? <div className={cn("lis-clinical-letterhead leading-none", letterhead && "invisible")} aria-label={letterhead ? "Reserved letterhead space" : undefined} aria-hidden={letterhead || undefined}>
             <Image src="/Main logo.png" alt="Anjali Diagnostics logo" width={1254} height={1254} unoptimized loading="eager" className="lis-clinical-logo" />
@@ -821,15 +838,7 @@ export function PrintPreview({
             {testName || "—"}
           </p>
 
-          {/* Results */}
-          <table className="mt-[2mm] w-full table-fixed border-collapse text-left align-top">
-            <colgroup>
-              <col className="w-[35.7%]" />
-              <col className="w-[26.6%]" />
-              <col className="w-[12.9%]" />
-              <col className="w-[24.8%]" />
-            </colgroup>
-            <thead>
+              </td></tr>
               <tr className="border-t border-black text-[8.5pt] font-bold">
                 <th className="py-[1mm] pr-[2mm] text-left font-bold">
                   Investigation
@@ -891,7 +900,7 @@ export function PrintPreview({
                           <td
                             className={cn(
                               "py-[0.7mm] pr-[2mm]",
-                              abnormal && "font-bold",
+                              abnormal && "lis-abnormal-result font-bold text-[10pt]",
                             )}
                           >
                             {value === undefined ||
@@ -913,8 +922,7 @@ export function PrintPreview({
                 ))
               )}
             </tbody>
-          </table>
-
+            <tbody><tr><td colSpan={4} className="lis-clinical-ending-cell">
           <div className="lis-clinical-ending">
           {/* Clinical note */}
           <p className="mt-[3mm] text-[8pt]">
@@ -950,6 +958,8 @@ export function PrintPreview({
             </div>
           </div>
           </div>
+            </td></tr></tbody>
+          </table>
         </div>
       )}
     </section>

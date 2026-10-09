@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -30,6 +30,7 @@ import {
 import { OspPatientSearch } from "@/components/billing/osp-patient-search";
 import { ClientPicker } from "@/components/billing/client-picker";
 import { ConfirmDialog } from "@/components/database/confirm-dialog";
+import { Dialog } from "@/components/ui/dialog";
 import {
   TestSelector,
   type OutsideChoice, type SelectedTestItem,
@@ -138,7 +139,7 @@ function detailsAgeYears(details: PatientDetails): number | undefined {
   return Math.min(150, Math.max(0, Math.floor(years)));
 }
 
-function detailsToPatientValues(details: PatientDetails): PatientFormValues {
+function detailsToPatientValues(details: PatientDetails, existing?: Patient | null): PatientFormValues {
   const gender = genderToStoredValue(details.gender);
   const age = detailsAgeYears(details);
   return {
@@ -150,12 +151,12 @@ function detailsToPatientValues(details: PatientDetails): PatientFormValues {
     mobile: details.mobile.trim(),
     email: details.email.trim(),
     address: details.address.trim(),
-    city: "",
-    state: "",
-    pincode: "",
-    emergencyContact: "",
-    bloodGroup: "",
-    status: "active",
+    city: existing?.city ?? "",
+    state: existing?.state ?? "",
+    pincode: existing?.pincode ?? "",
+    emergencyContact: existing?.emergencyContact ?? "",
+    bloodGroup: existing?.bloodGroup ?? "",
+    status: existing?.status ?? "active",
   };
 }
 
@@ -190,6 +191,10 @@ export function RemoteLabBillForm({
   const isVendor = variant === "vendor";
   const router = useRouter();
   const queryClient = useQueryClient();
+  const submittingRef = useRef(false);
+  const reusingPatientRef = useRef(false);
+  const [successDialog, setSuccessDialog] = useState(false);
+  const [patientNotice, setPatientNotice] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [details, setDetails] = useState<PatientDetails>(
     emptyPatientDetails(),
@@ -284,9 +289,11 @@ export function RemoteLabBillForm({
     mutationFn: async ({
       status,
       allowDuplicateMobile = false,
+      patientOverride,
     }: {
       status: "draft" | "generated";
       allowDuplicateMobile?: boolean;
+      patientOverride?: Patient;
     }) => {
       const billClientId = (() => {
         if (isVendor) {
@@ -315,9 +322,10 @@ export function RemoteLabBillForm({
         );
       }
 
-      let patientForBill = selectedPatient;
-      if (!selectedPatient || !detailsEqualToPatient(details, selectedPatient)) {
-        const values = detailsToPatientValues(details);
+      const existingPatient = patientOverride ?? selectedPatient;
+      let patientForBill = existingPatient;
+      if (!existingPatient || !detailsEqualToPatient(details, existingPatient)) {
+        const values = detailsToPatientValues(details, existingPatient);
         const parsed = patientFormSchema.safeParse(values);
         if (!parsed.success) {
           setFieldErrors(extractFieldErrors(parsed));
@@ -326,10 +334,10 @@ export function RemoteLabBillForm({
             400,
           );
         }
-        patientForBill = selectedPatient
-          ? await updatePatient(selectedPatient.id, {
+        patientForBill = existingPatient
+          ? await updatePatient(existingPatient.id, {
               ...parsed.data,
-              ...patientNameForUpdate(parsed.data, selectedPatient, details.name.trim() === patientToDetails(selectedPatient).name),
+              ...patientNameForUpdate(parsed.data, existingPatient, details.name.trim() === patientToDetails(existingPatient).name),
             })
           : await createPatient(parsed.data, { allowDuplicateMobile }).catch(
               (error) => {
@@ -401,7 +409,8 @@ export function RemoteLabBillForm({
         queryKeys.patients,
         queryKeys.dashboard,
       );
-      router.push(`/billing/osp/${bill.id}`);
+      if (isVendor) router.push(`/billing/osp/${bill.id}`);
+      else { clearAll(); setSuccessDialog(true); }
     },
     onError: (error) => {
       // The duplicate-patient prompt replaces the inline error for this case.
@@ -416,6 +425,18 @@ export function RemoteLabBillForm({
       }
       setFormError(error.message || "Failed to save the bill.");
     },
+    onSettled: () => { submittingRef.current = false; },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedPatient) throw new ApiError("Select an existing patient to update.");
+      const parsed = patientFormSchema.safeParse(detailsToPatientValues(details, selectedPatient));
+      if (!parsed.success) { setFieldErrors(extractFieldErrors(parsed)); throw new ApiError("Please correct the highlighted patient details."); }
+      return updatePatient(selectedPatient.id, { ...parsed.data, ...patientNameForUpdate(parsed.data, selectedPatient, details.name.trim() === patientToDetails(selectedPatient).name) });
+    },
+    onSuccess: (patient) => { handlePatientSelect(patient); setFormError(null); setPatientNotice("Patient details updated successfully."); void invalidateRoots(queryClient, queryKeys.patients, queryKeys.labBills, queryKeys.dashboard); },
+    onError: (error) => { setPatientNotice(null); setFormError(error.message); },
   });
 
   const handleAddTest = (test: LabTest, departmentName: string, outside: OutsideChoice = {}) => {
@@ -430,6 +451,7 @@ export function RemoteLabBillForm({
           departmentName,
           unitPrice: test.price,
           quantity: 1,
+          containerType: test.containerType,
           ...outside,
         },
       ];
@@ -455,6 +477,7 @@ export function RemoteLabBillForm({
     setDetails(patientToDetails(patient));
     setFieldErrors({});
     setPatientExpanded(true);
+    setPatientNotice(null);
   };
 
   const clearAll = () => {
@@ -474,19 +497,24 @@ export function RemoteLabBillForm({
     setFormError(null);
     setFieldErrors({});
     setPatientExpanded(true);
+    setPatientNotice(null);
+    setDuplicatePatient(null);
+    setPendingStatus(null);
   };
 
 const submitGenerated = () => {
     // A second click while the request is in flight must not create a second
     // bill, so the pending request itself blocks the action.
-    if (createMutation.isPending) return;
+    if (submittingRef.current || createMutation.isPending || updateMutation.isPending) return;
+    submittingRef.current = true;
     setFormError(null);
     setPendingStatus("generated");
     createMutation.mutate({ status: "generated" });
 };
 
 const saveDraft = () => {
-    if (createMutation.isPending) return;
+    if (submittingRef.current || createMutation.isPending || updateMutation.isPending) return;
+    submittingRef.current = true;
     setFormError(null);
     setPendingStatus("draft");
     createMutation.mutate({ status: "draft" });
@@ -496,14 +524,15 @@ const saveDraft = () => {
 // check interrupted. The identity comes from the existing record; any contact
 // detail the operator corrected in the meantime is written back to it.
 const reuseExistingPatient = async () => {
-    if (!duplicatePatient || createMutation.isPending) return;
+    if (!duplicatePatient || createMutation.isPending || reusingPatientRef.current) return;
+    reusingPatientRef.current = true;
     const status = pendingStatus;
     try {
       const patient = await fetchPatient(duplicatePatient.id);
       let resolved = patient;
       if (!detailsEqualToPatient(details, patient)) {
         const parsed = patientFormSchema.safeParse(
-          detailsToPatientValues(details),
+          detailsToPatientValues(details, patient),
         );
         if (parsed.success) {
           resolved = await updatePatient(patient.id, {
@@ -516,7 +545,7 @@ const reuseExistingPatient = async () => {
       setDuplicatePatient(null);
       setPendingStatus(null);
       if (status) {
-        createMutation.mutate({ status });
+        createMutation.mutate({ status, patientOverride: resolved });
       }
     } catch (error) {
       setDuplicatePatient(null);
@@ -524,6 +553,8 @@ const reuseExistingPatient = async () => {
       setFormError(
         error instanceof Error ? error.message : "Failed to load the patient.",
       );
+    } finally {
+      reusingPatientRef.current = false;
     }
   };
 
@@ -601,6 +632,7 @@ const createSeparatePatient = async () => {
         </div>
       </header>
 
+      {patientNotice && <p role="status" className="text-sm text-emerald-700">{patientNotice}</p>}
       {formError && (
         <div
           role="alert"
@@ -623,6 +655,7 @@ const createSeparatePatient = async () => {
             mobileError={fieldErrors.mobile}
             emailError={fieldErrors.email}
             dobError={fieldErrors.dob}
+            updateAction={!isVendor ? <Button type="button" size="sm" disabled={!selectedPatient || createMutation.isPending || updateMutation.isPending} onClick={() => { setPatientNotice(null); updateMutation.mutate(); }}>{updateMutation.isPending ? "Updating…" : "Update OSP"}</Button> : undefined}
           />
         </section>
       ) : (
@@ -688,7 +721,7 @@ const createSeparatePatient = async () => {
       <BillActionBar
         submitLabel={isVendor ? "Generate Bill" : "SUBMIT"}
         submitIcon={isVendor ? <Send /> : <CheckCircle2 />}
-        submitting={createMutation.isPending}
+        submitting={createMutation.isPending || updateMutation.isPending}
         submitDisabled={items.length === 0 || paidExceedsNet || discountInvalid}
         onSubmit={submitGenerated}
         onClear={clearAll}
@@ -709,6 +742,7 @@ const createSeparatePatient = async () => {
         ) : null}
       </BillActionBar>
 
+      <Dialog open={successDialog} centered title="OSP lab bill registered successfully." onOpenChange={setSuccessDialog}><div className="flex justify-center"><Button onClick={() => setSuccessDialog(false)}>Close</Button></div></Dialog>
       <ConfirmDialog
         open={duplicatePatient !== null}
         onOpenChange={(open) => {

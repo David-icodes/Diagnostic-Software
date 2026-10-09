@@ -1,3 +1,4 @@
+import { deleteDepartment as deleteDepartmentService } from "./department.service";
 import type { Request, Response } from "express";
 import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
@@ -60,4 +61,9 @@ export const deactivateDepartment = asyncHandler(async (req: Request, res: Respo
   const userId = requireUserId(req);
   const department = await setDepartmentActiveService(userId, req.params.id, false);
   return sendSuccess(res, { department });
+});
+export const deleteDepartment = asyncHandler(async (req: Request, res: Response) => {
+  requireUserId(req);
+  await deleteDepartmentService(req.params.id);
+  return sendSuccess(res, { deleted: true });
 });

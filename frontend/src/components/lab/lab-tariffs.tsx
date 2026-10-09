@@ -1,5 +1,6 @@
 "use client";
 
+import { selectTariffScope, selectedTariffRows } from "@/lib/tariff-selection";
 import { useMemo, useState } from "react";
 import { invalidateMasterData } from "@/lib/master-data-cache";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -79,15 +80,24 @@ export function LabTariffsContent() {
   });
 
   const listQuery = useQuery({
-    queryKey: ["lab-tariffs", { departmentId, page }],
-    queryFn: () => fetchLabTariffs({ departmentId, page, limit: PAGE_LIMIT }),
+    queryKey: ["lab-tariffs", { departmentId }],
+    queryFn: async () => {
+      const first = await fetchLabTariffs({ departmentId, page: 1, limit: 200 });
+      const data = [...first.data];
+      for (let current = 2; current <= first.pagination.totalPages; current++) {
+        const next = await fetchLabTariffs({ departmentId, page: current, limit: 200 });
+        if (next.pagination.total !== first.pagination.total) throw new Error("Test list changed. Reload before saving tariffs.");
+        data.push(...next.data);
+      }
+      if (data.length !== first.pagination.total) throw new Error("Unable to load the complete tariff set.");
+      return { data, pagination: { page, limit: PAGE_LIMIT, total: data.length, totalPages: Math.max(1, Math.ceil(data.length / PAGE_LIMIT)) } };
+    },
     enabled: departmentId.length > 0,
   });
 
   const saveMutation = useMutation({
     mutationFn: () => {
-      const rows = (listQuery.data?.data ?? [])
-        .filter((row) => selected[row.testId])
+      const rows = selectedTariffRows(listQuery.data?.data ?? [], selected)
         .map((row) => {
           const draft = drafts[row.testId];
           return {
@@ -128,8 +138,9 @@ export function LabTariffsContent() {
   };
 
   const departments = departmentsQuery.data ?? [];
-  const rows = listQuery.data?.data ?? [];
-  const pagination = listQuery.data?.pagination;
+  const scopeRows = listQuery.data?.data ?? [];
+  const rows = scopeRows.slice((page - 1) * PAGE_LIMIT, page * PAGE_LIMIT);
+  const pagination = useMemo(() => listQuery.data ? { ...listQuery.data.pagination, page } : undefined, [listQuery.data, page]);
 
   const selectedCount = useMemo(
     () => Object.values(selected).filter(Boolean).length,
@@ -137,12 +148,10 @@ export function LabTariffsContent() {
   );
 
   const allOnPageSelected =
-    rows.length > 0 && rows.every((row) => selected[row.testId]);
+    scopeRows.length > 0 && scopeRows.every((row) => selected[row.testId]);
 
   const toggleAll = (checked: boolean) => {
-    const next: Record<string, boolean> = {};
-    for (const row of rows) next[row.testId] = checked;
-    setSelected(next);
+    setSelected((current) => selectTariffScope(current, scopeRows.map((row) => row.testId), checked));
   };
 
   const updateDraft = (testId: string, patch: Partial<TariffDraft>) => {
@@ -293,6 +302,7 @@ export function LabTariffsContent() {
               }}
             >
               <option value="">--Select--</option>
+              <option value="all">ALL</option>
               {departments.map((department) => (
                 <option key={department.id} value={department.id}>
                   {department.name}
@@ -326,7 +336,7 @@ export function LabTariffsContent() {
                   <Checkbox
                     checked={allOnPageSelected}
                     onChange={(event) => toggleAll(event.target.checked)}
-                    disabled={rows.length === 0 || saveMutation.isPending}
+                    aria-label="Select All" disabled={scopeRows.length === 0 || saveMutation.isPending}
                   />
                   Select All
                 </label>
@@ -334,6 +344,7 @@ export function LabTariffsContent() {
                   {selectedCount} test(s) selected
                 </span>
               </div>
+              {listQuery.isError && <p role="alert">{listQuery.error.message}</p>}
               <DataTable
                 data={rows}
                 rowKey={(row) => row.testId}
@@ -351,8 +362,6 @@ export function LabTariffsContent() {
                 }
                 onPageChange={(target) => {
                   setPage(target);
-                  setSelected({});
-                  setDrafts({});
                   window.scrollTo({ top: 0 });
                 }}
                 columns={columns}

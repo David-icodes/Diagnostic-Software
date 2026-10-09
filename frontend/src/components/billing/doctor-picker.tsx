@@ -233,7 +233,7 @@ export function DoctorPicker({ selected, onSelect }: DoctorPickerProps) {
                   id="doctorName"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
-                  placeholder="e.g. Dr. Ramesh Gupta"
+
                   className="h-8"
                 />
               </div>
@@ -244,7 +244,7 @@ export function DoctorPicker({ selected, onSelect }: DoctorPickerProps) {
                     id="qualification"
                     value={qualification}
                     onChange={(event) => setQualification(event.target.value)}
-                    placeholder="e.g. MBBS, MD"
+
                     className="h-8"
                   />
                 </div>
@@ -254,7 +254,7 @@ export function DoctorPicker({ selected, onSelect }: DoctorPickerProps) {
                     id="specialization"
                     value={specialization}
                     onChange={(event) => setSpecialization(event.target.value)}
-                    placeholder="e.g. Cardiology"
+
                     className="h-8"
                   />
                 </div>

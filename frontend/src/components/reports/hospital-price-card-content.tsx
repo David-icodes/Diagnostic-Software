@@ -14,7 +14,8 @@ import { ReportToolbar } from "@/components/reports/report-toolbar";
 import { ReportPrintSheet, type PrintColumn } from "@/components/reports/report-print-sheet";
 import { useReportFind } from "@/components/reports/use-report-find";
 import {
-  downloadCsv,
+  downloadReport,
+  type ReportExportFormat,
   reportCsvName,
 } from "@/components/reports/report-export";
 import { fetchDepartments } from "@/services/billing";
@@ -258,18 +259,19 @@ export function HospitalPriceCardContent() {
     [applied, serviceTypes, departments, labNames],
   );
 
-  const handleExport = useCallback(() => {
+  const handleExport = useCallback((format: ReportExportFormat = "excel") => {
     if (!result) return;
     fetchHospitalPriceCard({ ...buildParams(1, applied), export: "1" })
-      .then((response) => {
-        downloadCsv(
+      .then(async (response) => {
+        await downloadReport(
           reportCsvName("hospital-price-card-report"),
           printColumns.map((column) => column.header),
           response.data.map((row) => printColumns.map((column) => column.render(row))),
+          format, criteriaText,
         );
       })
-      .catch(() => setError("Unable to export the report. Please try again."));
-  }, [result, applied, printColumns]);
+      .catch((error) => { setError(error instanceof Error ? error.message : "Unable to export report"); throw error; });
+  }, [criteriaText, result, applied, printColumns]);
 
   const handlePrint = useCallback(() => {
     if (!result || printing) return;
