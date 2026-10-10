@@ -19,6 +19,8 @@ import { maskedRecipient } from "./lis-delivery.service";
 import { uploadLisPdf } from "./lis-media.service";
 import { pdfFailure, rendererOrigin, rendererTarget, rendererErrorKind } from "./lis-pdf-diagnostics";
 import type { ReviewLisMessageInput } from "../../validations/whatsapp-lis";
+import { pdfStorage, type PdfScope } from "../documents/pdf-storage.service";
+import { validatePdf } from "../documents/pdf-integrity";
 
 const json = (value: unknown) => JSON.parse(JSON.stringify(value));
 const fingerprint = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -85,11 +87,15 @@ export async function loadLisContext(input: ReviewLisMessageInput, printedBy: st
 type Review = {
   owner: string; input: ReviewLisMessageInput; printedBy: string; expires: number;
   context: Awaited<ReturnType<typeof loadLisContext>>; digest: string;
-  pdf?: Buffer; filename?: string; state: "review" | "sending" | "sent" | "failed";
+  pdf?: Buffer; storedPdfKey?: string; filename?: string; state: "review" | "sending" | "sent" | "failed";
   result?: { metaMessageId: string; waId?: string }; rendering: boolean;
 };
 const reviews = new Map<string, Review>();
 let activeRenderers = 0;
+function pdfScope(review: Review): PdfScope {
+  return { owner: review.owner, patientId: review.input.patientId, billId: review.input.billId,
+    kind: review.input.templateName === "lab_report_ready" ? "report" : "invoice" };
+}
 
 function pruneReviews() {
   for (const [id, review] of reviews) if (review.expires < Date.now() && review.state !== "sending") reviews.delete(id);
@@ -247,6 +253,10 @@ export async function reviewLisMessage(input: ReviewLisMessageInput, req: Reques
       let pdf: Buffer;
       try { pdf = await renderPdf(id, req); }
       finally { activeRenderers--; }
+      const scope = pdfScope(review);
+      await validatePdf(pdf, scope.kind);
+      review.storedPdfKey = await pdfStorage.store(pdf, scope);
+      if (review.storedPdfKey) pdf = await pdfStorage.retrieve(review.storedPdfKey, scope);
       const retainedBytes = [...reviews.values()].reduce((sum, row) => sum + (row.pdf?.length ?? 0), 0);
       if (retainedBytes + pdf.length > 64 * 1024 * 1024) throw new ApiError(429, "Document review capacity reached. Wait for an existing review to expire.");
       review.pdf = pdf;
@@ -279,7 +289,15 @@ export async function sendLisReview(reviewId: string, req: Request) {
     const latest = await loadLisContext(review.input, review.printedBy);
     if (fingerprint(latest) !== review.digest) throw new ApiError(409, "Patient, bill, result or centre information changed. Review the document again before sending.");
     if (LIS_TEMPLATES[review.input.templateName].document && !review.pdf) throw new ApiError(422, "The actual generated PDF is unavailable");
-    const mediaId = review.pdf ? await uploadLisPdf(review.pdf, review.filename!) : undefined;
+    // A stored review must retrieve its restricted asset; never fall back to memory on failure.
+    const pdf = review.pdf;
+    // If storage was enabled after review creation, it must also gate this send.
+    if (pdf && !review.storedPdfKey) {
+      review.storedPdfKey = await pdfStorage.store(pdf, pdfScope(review));
+    }
+    const attachment = review.storedPdfKey ? await pdfStorage.retrieve(review.storedPdfKey, pdfScope(review)) : pdf;
+    if (attachment) await validatePdf(attachment, pdfScope(review).kind);
+    const mediaId = attachment ? await uploadLisPdf(attachment, review.filename!) : undefined;
     // Recheck report availability and dues after PDF upload as well.
     if (review.input.templateName === "lab_report_ready") await assertResultReportAllowed(review.input.billId, review.input.testIds, review.input.workflow !== "lab-reprint");
     attempted = true;

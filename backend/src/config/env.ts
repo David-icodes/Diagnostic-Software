@@ -41,6 +41,10 @@ const envSchema = z.object({
   WHATSAPP_LOCAL_COUNTRY_CODE: z.string().trim().regex(/^\d{1,3}$|^$/).default(""),
   // API origin used by the isolated authenticated PDF renderer.
   WHATSAPP_RENDER_API_ORIGIN: z.string().url().default("http://localhost:5000"),
+  // Optional PDF storage. Partial configuration is rejected before PDF storage.
+  CLOUDINARY_CLOUD_NAME: z.string().trim().default(""),
+  CLOUDINARY_API_KEY: z.string().trim().default(""),
+  CLOUDINARY_API_SECRET: z.string().trim().default(""),
 });
 
 export type Env = z.infer<typeof envSchema>;

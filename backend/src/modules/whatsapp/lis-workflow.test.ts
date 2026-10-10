@@ -8,6 +8,7 @@ import { AuditLog } from "../../models/audit-log.model";
 import { LabSample } from "../../models/lab-sample.model";
 import { WhatsAppMessage } from "../../models/whatsapp-message.model";
 import type { Request } from "express";
+import { PDFDocument, PageSizes } from "pdf-lib";
 
 // Test-only configuration. No database connection or actual Meta call is made.
 process.env.MONGODB_URI = "mongodb://127.0.0.1/test_whatsapp_no_connection";
@@ -168,6 +169,9 @@ test("Meta under-review rejection returns an actual error, logs failure, and nev
 test("renderer failure deletes its job; retry prepares one attachment without sending", async (t) => {
   const { reviewLisMessage, findLisReview } = await workflow;
   const { chromium } = await import("playwright");
+  const fixture = await PDFDocument.create();
+  fixture.addPage([PageSizes.A4[1], PageSizes.A4[0]]).drawText("Synthetic invoice");
+  const fixturePdf = Buffer.from(await fixture.save());
   t.mock.method(LabBill, "findById", () => query(bill));
   t.mock.method(Patient, "findById", () => query(patient));
   t.mock.method(LabSample, "find", () => query([]));
@@ -195,7 +199,7 @@ test("renderer failure deletes its job; retry prepares one attachment without se
       return { ok: () => true, status: () => 200 };
     },
     locator: () => ({ waitFor: async () => {}, getAttribute: async (name: string) => name === "data-http-status" ? httpStatus : marker }), evaluate: async () => {}, emulateMedia: async () => {},
-    addStyleTag: async () => {}, pdf: async () => { pdfCalls++; return Buffer.from("%PDF-1.4\nunit fixture only"); },
+    addStyleTag: async () => {}, pdf: async () => { pdfCalls++; return fixturePdf; },
   };
   t.mock.method(chromium, "launch", async () => ({
     newContext: async () => ({ addCookies: async () => {}, cookies: async () => [{ name: "diagnostic_token", expires: -1 }], route: async () => {}, newPage: async () => page }), close: async () => {},
@@ -224,8 +228,59 @@ test("renderer failure deletes its job; retry prepares one attachment without se
   assert.equal(reviewed.attachment?.mimeType, "application/pdf");
   assert.equal(findLisReview(reviewed.reviewId, "review-owner").state, "review");
   assert.equal(providerCalls, 0);
+  const { pdfStorage } = await import("../documents/pdf-storage.service.js");
+  t.mock.method(AuditLog, "create", async () => ({}));
+  const { env } = await import("../../config/env.js");
+  const previous = { language: env.WHATSAPP_LAB_INVOICE_READY_LANGUAGE, token: env.WHATSAPP_ACCESS_TOKEN, phone: env.WHATSAPP_PHONE_NUMBER_ID };
+  Object.assign(env, { WHATSAPP_LAB_INVOICE_READY_LANGUAGE: "approved-locale", WHATSAPP_ACCESS_TOKEN: "mock", WHATSAPP_PHONE_NUMBER_ID: "mock" });
+  t.after(() => Object.assign(env, { WHATSAPP_LAB_INVOICE_READY_LANGUAGE: previous.language, WHATSAPP_ACCESS_TOKEN: previous.token, WHATSAPP_PHONE_NUMBER_ID: previous.phone }));
+  t.mock.method(pdfStorage, "store", async () => { throw new Error("Storage unavailable"); });
+  await assert.rejects(reviewLisMessage(invoice, req), /Storage unavailable/);
+  assert.throws(() => findLisReview(failedReviewId, "review-owner"), /expired/);
+  const retained = findLisReview(reviewed.reviewId, "review-owner");
+  retained.storedPdfKey = "stored-asset";
+  t.mock.method(pdfStorage, "retrieve", async () => { throw new Error("Retrieval unavailable"); });
+  const { sendLisReview } = await workflow;
+  await assert.rejects(sendLisReview(reviewed.reviewId, req), /Retrieval unavailable/);
+  assert.equal(providerCalls, 0, "Stored-PDF failure must not upload media or send, even with an in-memory PDF");
+  await assert.rejects(sendLisReview(reviewed.reviewId, req), /already in progress or has been attempted/);
   const greeting = await reviewLisMessage(input, req);
   assert.equal(greeting.attachment, null);
+  t.mock.method(pdfStorage, "store", async () => "fixture-key");
+  let retrievals = 0;
+  t.mock.method(pdfStorage, "retrieve", async (_key: string, scope: { owner: string; patientId: string; billId: string; kind: string }) => {
+    retrievals++;
+    assert.equal(scope.owner, "review-owner"); assert.equal(scope.patientId, String(patientId));
+    assert.equal(scope.billId, String(billId)); assert.equal(scope.kind, "invoice"); return fixturePdf;
+  });
+  let mediaUploads = 0; let acceptedMessages = 0;
+  t.mock.method(WhatsAppMessage, "updateOne", () => query({}));
+  t.mock.method(globalThis, "fetch", async (url: URL | string, options?: RequestInit) => {
+    if (String(url).endsWith("/media")) {
+      mediaUploads++;
+      const file = (options!.body as FormData).get("file") as File;
+      assert.deepEqual(Buffer.from(await file.arrayBuffer()), fixturePdf);
+      return new Response(JSON.stringify({ id: "stored-pdf-media" }));
+    }
+    if (String(url).endsWith("/messages")) {
+      acceptedMessages++;
+      const payload = JSON.parse(String(options!.body));
+      assert.equal(payload.template.name, "lab_invoice_ready");
+      assert.equal(payload.template.language.code, "approved-locale");
+      assert.equal(payload.template.components[0].parameters[0].document.id, "stored-pdf-media");
+      assert.equal(payload.template.components[0].parameters[0].document.link, undefined);
+      return new Response(JSON.stringify({ messages: [{ id: "wamid.stored-fixture" }] }));
+    }
+    return new Response(JSON.stringify({ name: "Configured centre" }));
+  });
+  const storedReview = await reviewLisMessage(invoice, req);
+  const count = retrievals;
+  await assert.rejects(sendLisReview(storedReview.reviewId, { ...req, user: { ...req.user!, id: "other-owner" } } as Request), /expired/);
+  assert.equal(retrievals, count);
+  assert.equal(mediaUploads, 0); assert.equal(acceptedMessages, 0);
+  assert.equal((await sendLisReview(storedReview.reviewId, req)).metaMessageId, "wamid.stored-fixture");
+  await sendLisReview(storedReview.reviewId, req);
+  assert.equal(mediaUploads, 1); assert.equal(acceptedMessages, 1);
 });
 
 test("explicit Meta 131049 rejection is failed, keeps the code/exact text, and cannot be resubmitted", async (t) => {
