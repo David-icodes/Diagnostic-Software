@@ -1,0 +1,186 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Doctor Lab Test Commission Mapping" [level=3]
+- group "Select Doctor":
+  - generic: Select Doctor
+  - textbox "Doctor.."
+  - listbox:
+    - option "OSD -- Referal"
+    - option "Dr.K.KRISHNAVENI -- Referal"
+    - option "Dr.G.VENKATESWAR RAO -- Referal"
+    - option "Dr.CH SNSVSN MURTHY -- Referal"
+    - option "Dr.SUNITHA GUDIPETI -- Referal"
+    - option "Dr.MADHAVI -- Referal"
+    - option "Dr.RAGHAVENDRA RAO -- Referal"
+    - option "Dr.S.HARITHA -- Referal"
+    - option "Dr.SRINIVAS -- Referal"
+    - option "Dr.PAVAN KUMAR -- Referal"
+    - option "Dr.POOJA AKULA -- Referal"
+    - option "Dr.DHANUNJAY -- Referal"
+    - option "Dr.VENKATA DURGA -- Referal"
+    - option "Dr.SUSMITHA -- Referal"
+    - option "Dr.BHAVYA -- Referal"
+    - option "Dr.SWATHI -- Referal"
+    - option "Dr.VIJAY KUMAR -- Referal"
+    - option "Dr.K.KALYAN -- Referal"
+    - option "Dr.KRISHNA RAO -- Referal"
+    - option "Dr.SWETHA REDDY L -- Referal"
+    - option "Dr.K.SUBBA RAO -- Referal"
+    - option "Dr.VAMSHI KRISHNA -- Referal"
+    - option "Dr NAGARAJU -- Referal"
+    - option "Dr.NAGESH -- Referal"
+    - option "Dr.AJITH KUMAR AZAD -- Referal"
+    - option "Dr.KAMINENI ASHWINI -- Referal"
+    - option "Dr.SHIVA KUMAR REDDY -- Referal"
+    - option "Dr.PADMANABA VARMA -- Referal"
+    - option "Dr.SUBHAPRADA -- Referal"
+    - option "Dr.ARIF AHMED FAROOQUI -- Referal"
+    - option "Dr.SUBBA RAO -- Referal"
+    - option "Dr.T.NARASIMHA RAO -- Referal"
+    - option "Dr.C.V.MADHURI -- Referal"
+    - option "Dr.RADHIKA -- Referal"
+    - option "Dr.SWATHI REDDY -- Referal"
+    - option "Dr.B.NAVEEN -- Referal"
+    - option "Dr.PRAVALIKA -- Referal"
+    - option "Dr.K RAMA SWAMY -- Referal"
+    - option "Dr.MAHESWAR REDDY -- Referal"
+    - option "Dr.LAKSHMI SOWJANYA -- Referal"
+    - option "Dr.PRASADA REDDY -- Referal"
+    - option "Dr.TARAKESWARI -- Referal"
+    - option "Dr.RAJESH -- Referal"
+    - option "Dr.SAGUNA -- Referal"
+    - option "Dr.ASHWINI -- Referal"
+    - option "Dr.SRUHYA -- Referal"
+    - option "Dr.SANJAY -- Referal"
+    - option "Dr.K S RAJU -- Referal"
+    - option "Dr.SRINIVAS B -- Referal"
+    - option "Dr.SAILESH -- Referal"
+    - option "Dr,HARI PRAKASH -- Referal"
+    - option "Dr.RAJA RAJESWARI -- Referal"
+    - option "Dr.KRISHNAM RAJU -- Referal"
+    - option "Dr.SRAVYA -- Referal"
+    - option "Dr.USMAN -- Referal"
+    - option "Dr.SURESH -- Referal"
+    - option "Dr.CHANDRASHEKHAR -- Referal"
+    - option "Dr.N N SIRISHA -- Referal"
+    - option "Dr.DIVYA -- Referal"
+    - option "Dr.MADHURI -- Referal"
+    - option "DR.JEEWAN RAM VISHNOI -- Referal"
+    - option "Dr.BALAJI -- Referal"
+    - option "Dr.VIKAS MATHURI MD -- Referal"
+    - option "Dr.RAVI SEKHAR REDDY -- Referal"
+    - option "Dr.ASWANI KUMAR -- Referal"
+    - option "Dr.PHANIDHAR DHANEKULA -- Referal"
+    - option "Dr.VENKATA RAMANA -- Referal"
+    - option "Dr.MURTHY -- Referal"
+    - option "Dr.SRAVANI -- Referal"
+    - option "Dr.AJAY KUMAR -- Referal"
+    - option "Dr.HARITHA -- Referal"
+    - option "Dr.MOHAN CHAND -- Referal"
+    - option "Dr.PRIYANKA -- Referal"
+    - option "Dr.RAVI KUMAR -- Referal"
+    - option "Dr.MAHENDAR -- Referal"
+    - option "Dr.SAMBASHIVA RAO -- Referal"
+    - option "Dr.SANDEEP -- Referal"
+    - option "Dr.VIKRAM -- Referal"
+    - option "Dr.RAVIVARMA -- Referal"
+    - option "Dr.FINI A.PHILIP -- Referal"
+    - option "Dr.LIKITHA -- Referal"
+    - option "Dr.K PAVAN KUMAR -- Referal"
+    - option "Dr.KAMALA PRIYA -- Referal"
+    - option "Dr.VIPLAV GOWTHAM REDDY -- Referal"
+    - option "Dr.ADDANIKI VEERANNA -- Referal"
+    - option "Dr.SHRAVAN KUMAR -- Referal"
+    - option "Dr.DEVINENI SAI SAHUL -- Referal"
+    - option "Dr.RAMACHANDRAM -- Referal"
+    - option "Dr.SARADA -- Referal"
+    - option "Dr.KRISHNAVENI -- Referal"
+    - option "Dr.SUSHMA VANI -- Referal"
+- group "Departments":
+  - generic: Departments
+  - textbox "Search.."
+  - listbox:
+    - option "ALL"
+    - option "BIO CHEMISTRY"
+    - option "BIOCHEMISTRY"
+    - option "Hematology"
+    - option "MICROBIOLOGY"
+    - option "PATHOLOGY"
+    - option "Packages/Profiles"
+- textbox "COMM %"
+- textbox "COMM RS/-"
+- textbox "Search.."
+- table:
+  - rowgroup:
+    - row "S.No Lab Test Name Amount Comm % Comm RS/-":
+      - columnheader:
+        - checkbox
+      - columnheader "S.No"
+      - columnheader "Lab Test Name"
+      - columnheader "Amount"
+      - columnheader "Comm %"
+      - columnheader "Comm RS/-"
+- button "SUBMIT"
+- button "CLEAR"
+- button "HOME"
+- checkbox "Copy The Above Tariff Set"
+- generic: Copy The Above Tariff Set
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

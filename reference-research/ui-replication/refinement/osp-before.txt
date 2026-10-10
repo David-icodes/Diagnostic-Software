@@ -1,0 +1,167 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Generate OSP Investigations Bill" [level=1]
+  - searchbox "Search patient"
+  - button "Search":
+    - text: Search
+  - button "Add":
+    - text: Add
+  - button "Toggle patient details":
+  - region "Patient details":
+    - generic: Name
+    - combobox "Title":
+      - option "--Select--" [selected]
+      - option "Mr."
+      - option "Miss."
+      - option "Mrs."
+      - option "Dr."
+      - option "Ms."
+      - option "Baby_Boy."
+      - option "Baby_Girl."
+      - option "Baby_Of."
+      - option "Baby."
+      - option "Master."
+    - textbox "Patient name"
+    - generic: DOB
+    - textbox "Date of birth":
+      - /placeholder: dd-mm-yyyy
+    - button "Open calendar":
+    - generic: Gender
+    - combobox "Gender":
+      - option "--Select--" [selected]
+      - option "Female"
+      - option "Male"
+    - generic: Age
+    - spinbutton "Age years"
+    - generic: "Y"
+    - spinbutton "Age months"
+    - generic: M
+    - spinbutton "Age days"
+    - generic: D
+    - generic: MobileNo
+    - textbox "Mobile number":
+      - /placeholder: 10-digit mobile
+    - generic: Email-Id
+    - textbox "Email id":
+      - /placeholder: Email address
+    - generic: Refer by
+    - textbox "Referring doctor":
+      - /placeholder: Doctor..
+    - button "Add new doctor":
+    - generic: Address
+    - textbox "Address"
+    - generic: (Max:45)
+  - region "Test selection":
+    - heading "* Departments" [level=3]
+    - searchbox "Search departments"
+    - list:
+      - button "Biochemistry 144":
+        - generic: Biochemistry
+        - generic: "144"
+      - button "Hematology 19":
+        - generic: Hematology
+        - generic: "19"
+      - button "Microbiology 6":
+        - generic: Microbiology
+        - generic: "6"
+      - button "Pathology 7":
+        - generic: Pathology
+        - generic: "7"
+      - button "Immunology / Serology 2":
+        - generic: Immunology / Serology
+        - generic: "2"
+      - button "Hormones 1":
+        - generic: Hormones
+        - generic: "1"
+      - button "Molecular Biology 1":
+        - generic: Molecular Biology
+        - generic: "1"
+      - button "Clinical Pathology 0":
+        - generic: Clinical Pathology
+        - generic: "0"
+      - button "Packages / Profiles 2":
+        - generic: Packages / Profiles
+        - generic: "2"
+      - button "Pharmacy Support 0":
+        - generic: Pharmacy Support
+        - generic: "0"
+    - heading "* Lab Tests" [level=3]
+    - searchbox "Search tests" [disabled]
+    - paragraph: Select a department to view tests
+    - button "Transfer all tests" [disabled]:
+    - heading "Selected Lab Tests" [level=3]
+    - generic: 0 items
+    - table:
+      - rowgroup:
+        - row "Delete S No Dept Name Lab Test Name Amount Qty Total":
+          - columnheader "Delete":
+            - generic: Delete
+          - columnheader "S No"
+          - columnheader "Dept Name"
+          - columnheader "Lab Test Name"
+          - columnheader "Amount"
+          - columnheader "Qty"
+          - columnheader "Total"
+      - rowgroup:
+        - row "No tests selected yet":
+          - cell "No tests selected yet":
+            - paragraph: No tests selected yet
+    - generic: Subtotal
+    - generic: ₹0.00
+  - region "Payment Summary":
+    - generic: Payment Mode
+    - combobox "Payment Mode":
+      - option "Cash" [selected]
+      - option "Upi"
+      - option "Card"
+      - option "Bank Transfer"
+      - option "Other"
+    - generic: Patient Type
+    - combobox "Patient Type":
+      - option "OSP" [selected]
+      - option "OP"
+      - option "IP"
+      - option "EMERGENCY"
+      - option "CORPORATE"
+    - heading "Comments" [level=2]
+    - checkbox "Display comments in Bill" [checked]
+    - text: Display comments in Bill
+    - textbox "Optional note for this bill"
+    - paragraph: Prices are applied from the test catalog at bill time.
+    - generic: Total Amount
+    - textbox: ₹0.00
+    - generic: "Enter Discount : %"
+    - spinbutton "Discount percent": "0"
+    - generic: "%"
+    - generic: ₹
+    - spinbutton "Discount amount": "0"
+    - generic: Net Amount
+    - textbox: ₹0.00
+    - generic: Paying Amount
+    - generic: ₹
+    - spinbutton "Paying amount": "0"
+    - generic: Balance Amount
+    - textbox: ₹0.00
+  - button "SUBMIT" [disabled]
+  - button "Clear"
+  - button "Home"

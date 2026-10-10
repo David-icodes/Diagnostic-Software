@@ -1,0 +1,97 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Doctor Designation" [level=1]
+  - paragraph: Add and manage doctor designations
+  - link "Home":
+    - /url: /dashboard
+  - text: Designation
+  - generic: "*"
+  - textbox "Designation *" [active]:
+    - /placeholder: e.g. Senior Consultant
+  - button "Submit"
+  - button "Clear"
+  - link "Home":
+    - /url: /dashboard
+  - heading "Designation List" [level=2]
+  - searchbox "Search records..."
+  - table:
+    - rowgroup:
+      - row "S.No Designation Status Action":
+        - columnheader "S.No"
+        - columnheader "Designation"
+        - columnheader "Status"
+        - columnheader "Action"
+    - rowgroup:
+      - row "1 Chief Resident Active Edit Chief Resident Deactivate Chief Resident":
+        - cell "1"
+        - cell "Chief Resident"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Chief Resident Deactivate Chief Resident":
+          - button "Edit Chief Resident":
+          - button "Deactivate Chief Resident":
+      - row "2 Consultant Active Edit Consultant Deactivate Consultant":
+        - cell "2"
+        - cell "Consultant"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Consultant Deactivate Consultant":
+          - button "Edit Consultant":
+          - button "Deactivate Consultant":
+      - row "3 HOD Active Edit HOD Deactivate HOD":
+        - cell "3"
+        - cell "HOD"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit HOD Deactivate HOD":
+          - button "Edit HOD":
+          - button "Deactivate HOD":
+      - row "4 Resident Active Edit Resident Deactivate Resident":
+        - cell "4"
+        - cell "Resident"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Resident Deactivate Resident":
+          - button "Edit Resident":
+          - button "Deactivate Resident":
+      - row "5 Senior Consultant Active Edit Senior Consultant Deactivate Senior Consultant":
+        - cell "5"
+        - cell "Senior Consultant"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Senior Consultant Deactivate Senior Consultant":
+          - button "Edit Senior Consultant":
+          - button "Deactivate Senior Consultant":
+      - row "6 Visiting Consultant Active Edit Visiting Consultant Deactivate Visiting Consultant":
+        - cell "6"
+        - cell "Visiting Consultant"
+        - cell "Active":
+          - generic: Active
+        - cell "Edit Visiting Consultant Deactivate Visiting Consultant":
+          - button "Edit Visiting Consultant":
+          - button "Deactivate Visiting Consultant":
+  - paragraph: Showing 1–6 of 6 records · Page 1 of 1
+  - button "Previous" [disabled]:
+    - text: Previous
+  - button "Next" [disabled]:
+    - text: Next

@@ -1,0 +1,81 @@
+/* DM-only rules measured against Wilco at 1440 × 900. */
+.lis-content .lis-dm { width: 100%; max-width: none; padding: 0; gap: 0; background: #fff; border: 1px solid #eee; }
+.lis-dm > * { margin-block: 0; }
+.lis-dm > .lis-page-header { height: 50px; border: 0; border-bottom: 1px solid #eee; padding: 0 20px; border-radius: 0; }
+.lis-dm > .lis-page-header h1 { font-size: 19px; font-weight: 300; }
+.lis-dm .lis-form-section { border-radius: 0; box-shadow: none; padding: 2px 12px; border: 0; }
+.lis-dm .lis-form-section > header { padding: 4px 0; border: 0; margin-bottom: 6px; }
+.lis-dm .lis-form-section > header h2 { font-size: 13px; font-weight: 400; }
+.lis-dm .lis-form-section > header p { display: none; }
+.lis-dm :is(label,[data-slot="label"]) { font-size: 13px; font-weight: 400; color: #515151; }
+.lis-dm :is(input,select):not([type="checkbox"]):not([type="radio"]):not([size]) { height: 30px; min-height: 30px; padding: 4px 12px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; background: #fff; }
+.lis-dm textarea { min-height: 40px; font-size: 14px; border-color: #ccc; border-radius: 4px; }
+.lis-dm .lis-form-field { min-height: 39px; }
+.lis-dm .lis-form-field > :not(label):not(p) { margin-top: 0; }
+.lis-dm .lis-form-field > p { font-size: 13px; }
+.lis-dm [data-slot="button"] { height: 34px; font-size: 14px; border-radius: 4px; padding: 6px 12px; }
+.lis-dm .lis-master-actions { padding: 6px; gap: 6px; border-top: 1px solid #eee; grid-column: 1 / -1; }
+.lis-dm .lis-master-actions [data-slot="button"] { color: #404040; background: #fff; border: 1px solid #dedede; }
+.lis-dm .lis-data-grid { border: 1px solid #eee; border-radius: 0; box-shadow: none; }
+.lis-dm .lis-data-grid > [data-slot="table-container"] { max-height: 400px; overflow: auto; }
+.lis-dm :is(th,td) { padding: 5px 8px; font-size: 13px; line-height: 18px; border-color: #eee; }
+.lis-content .lis-dm th { background: #999a9c; color: #fff; font-weight: 600; text-transform: none; letter-spacing: normal; height: 32px; }
+.lis-dm td :is(p,span) { font-size: 13px; }
+.lis-dm tbody tr:nth-child(even) { background: #fafafa; }
+.lis-dm tbody tr.bg-blue-50 { background: #eff6ff; }
+.lis-dm td [data-slot="button"] { width: 30px; height: 30px; padding: 5px; }
+.lis-dm td input:not([type="checkbox"]) { width: 96px; max-width: 100%; }
+.lis-dm .lis-master-listbox { max-width: none; }
+.lis-dm .lis-master-listbox select[size] { height: 280px; font-size: 13px; border-color: #ccc; border-radius: 0; padding: 4px; }
+.lis-dm .lis-master-listbox select[size] option { padding: 2px 4px; }
+.lis-content .lis-dm:is(.lis-commission,.lis-client-tariffs) th,.lis-content .lis-dm.lis-tariffs th,.lis-content .lis-dm .lis-selected-package-tests th { color: #515151; background: #f5f5f5; }
+.lis-dm:is(.lis-commission,.lis-client-tariffs) > .lis-form-section > header { display: none; }
+.lis-dm:is(.lis-commission,.lis-client-tariffs) .lis-data-grid > [data-slot="table-container"] { min-height: 280px; max-height: 400px; }
+.lis-dm:is(.lis-commission,.lis-client-tariffs) .lis-form-field > label { margin-bottom: 4px; }
+.lis-dm.lis-tariffs .lis-form-section > header > div:first-child { display: none; }
+.lis-dm.lis-tariffs .lis-form-section > header { justify-content: flex-start; }
+.lis-dm.lis-tariffs .lis-data-grid > [data-slot="table-container"] { min-height: 360px; }
+.lis-dm .lis-dm-table-search { display: flex; justify-content: flex-end; }
+.lis-dm .lis-dm-table-search input { width: 280px; max-width: 100%; }
+.lis-dm .lis-parameter-form { border-radius: 0; box-shadow: none; padding: 6px 12px; }
+.lis-dm.lis-parameter-master > div:has(> fieldset) { border-radius: 0; box-shadow: none; padding: 6px 12px; }
+.lis-dm .lis-compact-field { min-height: 40px; border-bottom: 1px solid #eee; }
+.lis-dm .lis-compact-field > label { font-size: 13px; }
+.lis-dm .lis-reference-config { border-radius: 0; padding: 6px; background: #fff; border-color: #eee; }
+.lis-dm .lis-reference-config :is(.text-\[11px\],.text-xs) { font-size: 13px; }
+.lis-dm.lis-master-record { min-height: 480px; }
+.lis-dm.lis-master-record .lis-form-section:first-child > header,.lis-dm.lis-location .lis-form-section:first-child > header,.lis-dm.lis-department .lis-form-section:first-child > header { display: none; }
+.lis-dm .lis-package-editor .lis-form-section > header { display: none; }
+.lis-dm .lis-package-editor .lis-selected-package-tests > header { display: flex; }
+.lis-dm .lis-package-editor .lis-selected-package-tests { min-width: 0; }
+.lis-dm.lis-package .lis-package-prices { gap: 0 20px; }
+@media (min-width: 1024px) {
+  .lis-content .lis-dm:is(.lis-doctor,.lis-location,.lis-department,.lis-master-record) > .grid { grid-template-columns: 1fr; gap: 0; }
+  .lis-dm:is(.lis-doctor,.lis-lab-test,.lis-department) .lis-form-field { grid-template-columns: 30% minmax(0,1fr); border-bottom: 1px solid #eee; }
+  .lis-dm.lis-doctor .lis-form-field > :not(label):not(p) { max-width: 295px; }
+  .lis-dm.lis-doctor .lis-form-field:has(#doc-employee) { grid-column: 1 / -1; width: 50%; margin-left: auto; }
+  .lis-dm.lis-lab-test .lis-form-field > :not(label):not(p) { max-width: 216px; }
+  .lis-dm.lis-master-record .lis-form-section:first-child { width: 680px; max-width: 100%; margin: 0 auto; padding-top: 10px; }
+  .lis-dm.lis-master-record .lis-form-field { grid-template-columns: 45% minmax(0,1fr); }
+  .lis-dm.lis-master-record .lis-master-actions { margin-top: 18px; }
+  .lis-dm.lis-master-record .lis-form-section:last-child { width: min(100%,945px); margin: 0 auto; }
+  .lis-dm.lis-location .lis-form-field { grid-template-columns: 30% minmax(0,1fr); border-bottom: 1px solid #eee; }
+  .lis-dm.lis-location .lis-form-field > div { max-width: none; flex-direction: row; gap: 20px; }
+  .lis-dm.lis-location .lis-form-field select,.lis-dm.lis-location .lis-form-field input { width: 261px; max-width: 100%; }
+  .lis-content .lis-dm:is(.lis-commission,.lis-client-tariffs) { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .lis-dm:is(.lis-commission,.lis-client-tariffs) > .lis-page-header { grid-column: 1 / -1; }
+  .lis-dm:is(.lis-commission,.lis-client-tariffs) .lis-form-field > .lis-master-listbox { max-width: none; }
+  .lis-dm.lis-package .lis-package-editor { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 0; }
+  .lis-dm.lis-package .lis-package-editor > .lis-form-section:first-child { grid-column: 1 / -1; }
+  .lis-dm.lis-package .lis-package-editor > .lis-form-section:nth-child(2) > div { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+  .lis-dm.lis-package .lis-package-editor > .lis-form-section:nth-child(2) .lis-form-field { display: block; }
+  .lis-dm.lis-package .lis-package-editor > .lis-form-section:nth-child(2) .lis-form-field > :not(label):not(p) { max-width: none; }
+  .lis-dm.lis-package .lis-package-editor select[size] { width: 100%; height: 260px; font-size: 13px; padding: 4px; appearance: auto; border-radius: 0; }
+  .lis-dm .lis-parameter-fields { gap: 0 20px; }
+  .lis-dm .lis-compact-field { display: grid; grid-template-columns: 35% minmax(0,1fr); align-items: center; gap: 8px; }
+  .lis-dm .lis-parameter-fields > .lis-compact-field:has(#param-default),.lis-dm .lis-parameter-fields > .lis-compact-field:has(#param-unit) { grid-column: 1 / -1; width: 50%; }
+  .lis-dm .lis-reference-controls { grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); align-items: center; }
+}
+@media (max-width: 1023px) {
+  .lis-content .lis-dm:is(.lis-commission,.lis-client-tariffs) { display: block; }
+}

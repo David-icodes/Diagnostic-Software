@@ -1,0 +1,824 @@
+[
+  {
+    "page": "result-patient-sample-out-draft",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "page": "result-patient-sample-out-draft",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "page": "result-patient-sample-out-draft",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "page": "result-patient-sample-out-draft",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "page": "result-patient-sample-out-draft",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1920
+  },
+  {
+    "page": "result-patient-sample-out-draft",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1920
+  },
+  {
+    "page": "create-package-edit",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "create-package-edit",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "create-package-edit",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "create-package-edit",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "create-package-edit",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "create-package-edit",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "osp-selected",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "osp-selected",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "osp-selected",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "osp-selected",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "osp-selected",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "osp-selected",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "modify-existing-bill",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "modify-existing-bill",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "modify-existing-bill",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "modify-existing-bill",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "modify-existing-bill",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "modify-existing-bill",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "vendor-selected",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "vendor-selected",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "vendor-selected",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "vendor-selected",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "vendor-selected",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "vendor-selected",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "outside-report-today-empty",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "outside-report-today-empty",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1280
+  },
+  {
+    "page": "outside-report-today-empty",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "outside-report-today-empty",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1440
+  },
+  {
+    "page": "outside-report-today-empty",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "outside-report-today-empty",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [],
+    "resultInputs": [],
+    "width": 1920
+  },
+  {
+    "page": "result-final-compact",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "page": "result-final-compact",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "page": "result-final-compact",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "page": "result-final-compact",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "page": "result-final-compact",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1920
+  },
+  {
+    "page": "result-final-compact",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "height": 900,
+    "overflows": [],
+    "patientFont": [
+      {
+        "size": "13px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "14px",
+        "weight": "500"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      },
+      {
+        "size": "13px",
+        "weight": "400"
+      }
+    ],
+    "resultInputs": [
+      {
+        "height": 30,
+        "size": "14px"
+      },
+      {
+        "height": 30,
+        "size": "14px"
+      }
+    ],
+    "width": 1920
+  }
+]

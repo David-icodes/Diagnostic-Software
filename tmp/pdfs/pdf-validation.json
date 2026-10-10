@@ -1,0 +1,136 @@
+{
+  "refined-actual-report": {
+    "pages": 1,
+    "sizes": [
+      [
+        595.0,
+        841.9
+      ]
+    ],
+    "patient_header_counts": [
+      1
+    ],
+    "address_counts": [
+      1
+    ],
+    "department_order": [
+      [
+        false,
+        false
+      ]
+    ]
+  },
+  "refined-actual-invoice": {
+    "pages": 1,
+    "sizes": [
+      [
+        841.9,
+        595.0
+      ]
+    ],
+    "patient_header_counts": [
+      1
+    ],
+    "address_counts": [
+      1
+    ],
+    "department_order": [
+      [
+        false,
+        false
+      ]
+    ]
+  },
+  "refined-long-report-fixture": {
+    "pages": 5,
+    "sizes": [
+      [
+        595.0,
+        841.9
+      ],
+      [
+        595.0,
+        841.9
+      ],
+      [
+        595.0,
+        841.9
+      ],
+      [
+        595.0,
+        841.9
+      ],
+      [
+        595.0,
+        841.9
+      ]
+    ],
+    "patient_header_counts": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "address_counts": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "department_order": [
+      [
+        false,
+        false
+      ],
+      [
+        false,
+        false
+      ],
+      [
+        false,
+        false
+      ],
+      [
+        false,
+        false
+      ],
+      [
+        false,
+        false
+      ]
+    ]
+  },
+  "refined-multi-department-fixture": {
+    "pages": 2,
+    "sizes": [
+      [
+        595.0,
+        841.9
+      ],
+      [
+        595.0,
+        841.9
+      ]
+    ],
+    "patient_header_counts": [
+      1,
+      2
+    ],
+    "address_counts": [
+      1,
+      1
+    ],
+    "department_order": [
+      [
+        true,
+        false
+      ],
+      [
+        false,
+        true
+      ]
+    ]
+  }
+}

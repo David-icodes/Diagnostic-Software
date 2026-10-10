@@ -1,0 +1,89 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Client Generated Lab Bills" [level=1]
+  - paragraph: Vendor / client billed lab bill list with payment details.
+  - link "Home":
+    - /url: /dashboard
+  - heading "Client Name" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search client…"
+  - checkbox "Sai Health Care Foundation (VC202600002)"
+  - generic: Sai Health Care Foundation (VC202600002)
+  - checkbox "Sterling Diagnostics LLP (VC202600001)"
+  - generic: Sterling Diagnostics LLP (VC202600001)
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - generic: Ref. Doctor
+  - combobox "Ref. Doctor":
+    - option "All" [selected]
+    - option "Dr. Anil Mehta"
+    - option "Dr. Kavita Nair"
+    - option "Dr. Priya Sharma"
+    - option "Dr. Ramesh Gupta"
+    - option "Dr.ANJALI"
+    - option "Meenal K Venkatesh"
+  - generic: Date Order
+  - combobox "Date Order":
+    - option "All" [selected]
+    - option "Descending"
+    - option "Ascending"
+  - button "Show"
+  - button "Clear"
+  - link "Home":
+    - /url: /dashboard
+  - generic: Total Bills
+  - generic: "0"
+  - generic: Total Amount
+  - generic: "0.00"
+  - generic: Discount
+  - generic: "0.00"
+  - generic: Net Amount
+  - generic: "0.00"
+  - generic: Paid Amount
+  - generic: "0.00"
+  - generic: Balance Due
+  - generic: "0.00"
+  - heading "Client Generated Lab Bills" [level=2]
+  - paragraph: "Apply Date : — To — | Sort : Descending"
+  - paragraph: "Total records: 0"
+  - table:
+    - rowgroup:
+      - row "Bill No Bill Date Client Name Patient Ref. Doctor Test Total Discount Net Paid Balance Status":
+        - columnheader "Bill No"
+        - columnheader "Bill Date"
+        - columnheader "Client Name"
+        - columnheader "Patient"
+        - columnheader "Ref. Doctor"
+        - columnheader "Test"
+        - columnheader "Total"
+        - columnheader "Discount"
+        - columnheader "Net"
+        - columnheader "Paid"
+        - columnheader "Balance"
+        - columnheader "Status"
+    - rowgroup:
+      - row "No client bills found. Adjust the filters and search again.":
+        - cell "No client bills found. Adjust the filters and search again."

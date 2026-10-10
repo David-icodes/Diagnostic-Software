@@ -1,0 +1,93 @@
+/* TMIS measurements at 1440 × 900. All rules are confined to report roots. */
+.lis-content .lis-tmis { width: 100%; max-width: none; padding: 0; gap: 0; background: #fff; border: 1px solid #eee; min-height: calc(100vh - 132px); }
+.lis-tmis > * { margin-top: 0; }
+.lis-tmis :is(.lis-page-header,.lis-report-title) { border: 0; border-bottom: 1px solid #eee; height: 50px; padding: 0 20px; border-radius: 0; }
+.lis-tmis :is(.lis-page-header,.lis-report-title) h1 { font-size: 18px; font-weight: 400; }
+.lis-tmis .lis-report-filter { border: 0; border-bottom: 1px solid #eee; border-radius: 0; }
+.lis-tmis .lis-report-filter > div:first-child { padding: 6px 12px; }
+.lis-tmis :is(label,[data-slot="label"]) { font-size: 13px; font-weight: 400; color: #515151; }
+.lis-tmis :is(input,select):not([type="checkbox"]):not([type="radio"]) { height: 30px; min-height: 30px; border: 1px solid #ccc; border-radius: 4px; padding: 4px 12px; font-size: 14px; background: #fff; }
+.lis-tmis [data-slot="button"] { height: 34px; padding: 6px 12px; font-size: 14px; border-radius: 4px; }
+.lis-tmis .lis-report-actions { gap: 6px; padding: 6px; border-top: 1px solid #eee; }
+.lis-tmis .lis-report-actions svg:not(.animate-spin) { display: none; }
+.lis-tmis .lis-report-actions > [data-slot="button"] { background: #fff; color: #404040; border: 1px solid #dedede; }
+.lis-tmis .lis-report-selection { border: 1px solid #eee; border-radius: 0; box-shadow: none; gap: 0; padding: 0; min-width: 0; }
+.lis-tmis .lis-report-selection [data-slot="card-content"] { padding: 0; }
+.lis-tmis .lis-report-selection h3 { font-size: 13px; font-weight: 400; letter-spacing: normal; text-transform: none; }
+.lis-tmis .lis-report-selection [data-slot="card-content"] > div:first-child { background: #fff; padding: 3px 6px; border: 0; }
+.lis-tmis .lis-report-selection > div:first-child { background: #fff; padding: 3px 6px; border: 0; }
+.lis-tmis .lis-report-selection > div:nth-child(2),.lis-tmis .lis-report-selection [data-slot="card-content"] > div:nth-child(2) { padding: 2px 4px; border: 0; }
+.lis-tmis .lis-report-selection input:not([type="checkbox"]) { padding-left: 8px; }
+.lis-tmis .lis-report-selection div.relative > svg { display: none; }
+.lis-tmis .lis-report-selection > div:last-child,.lis-tmis .lis-report-selection [data-slot="card-content"] > div:last-child { height: 128px; max-height: 128px; padding: 2px 6px; }
+.lis-tmis .lis-report-selection label { padding: 2px 0; gap: 4px; border-radius: 0; min-height: 22px; line-height: 18px; }
+.lis-tmis .lis-report-selection label > span:first-child:has(svg) { display: none; }
+.lis-tmis .lis-report-selection input[type="checkbox"] { position: static; width: 13px; height: 13px; clip: auto; clip-path: none; margin: 0; overflow: visible; }
+.lis-tmis [data-slot="card"]:has(.lis-report-table) { border: 0; border-radius: 0; box-shadow: none; gap: 0; padding: 0; }
+.lis-tmis [data-slot="card-content"]:has(.lis-report-table) { padding: 0; }
+.lis-tmis .overflow-auto:has(> .lis-report-table) { min-height: 260px; max-height: 520px; }
+.lis-tmis .lis-report-table { font-size: 13px; border: 1px solid #eee; }
+.lis-tmis .lis-report-table :is(th,td) { padding: 4px 8px; font-size: 13px; line-height: 18px; }
+.lis-tmis .lis-report-table th { background: #f5f5f5; color: #515151; border-color: #eee; font-weight: 600; text-transform: none; letter-spacing: normal; }
+.lis-tmis .lis-report-table tbody tr:nth-child(even) { background: #fafafa; }
+.lis-tmis .lis-report-table tbody tr.bg-blue-50 { background: #eff6ff; }
+.lis-tmis [data-slot="card"]:has(> [data-slot="card-content"] > .grid > div > span) { border: 0; border-radius: 0; box-shadow: none; padding: 0; }
+.lis-tmis [data-slot="card-content"] > .grid.min-w-\[640px\] { min-width: 0; display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.lis-tmis [data-slot="card-content"] > .grid.min-w-\[640px\] > div { flex-direction: row; gap: 8px; padding: 0; border: 0; background: #fff; }
+.lis-tmis [data-slot="card-content"] > .grid.min-w-\[640px\] span { font-size: 13px; line-height: 20px; margin: 0; text-transform: none; }
+.lis-tmis [data-slot="card-content"]:has(> .grid.min-w-\[640px\]) { padding: 6px 12px; }
+.lis-tmis > section { border: 0; border-radius: 0; }
+.lis-tmis > section { width: min(100%,1050px); margin: 12px 0 0; }
+.lis-tmis > section > div:first-of-type { border-bottom: 1px solid #ddd; }
+.lis-tmis > section > div:first-of-type h2 { font-size: 15px; font-weight: 600; }
+.lis-tmis:not([data-tmis-page="referral-doctor-commission"]):not([data-tmis-page="cancelled-bills"]) .lis-report-table th { background: #4c68a2; color: #fff; border-color: #6b85b5; }
+.lis-tmis .lis-report-toolbar { background: #f0f0e8; border-top: 1px solid #ddd; padding: 4px 8px; }
+.lis-tmis .lis-report-toolbar [data-slot="button"] { height: 28px; padding: 3px 8px; font-size: 13px; }
+.lis-tmis .lis-outside-filter-layout { border-bottom: 1px solid #eee; }
+.lis-tmis .lis-outside-filter-layout .lis-report-selection { width: 275px; margin-top: 6px; }
+.lis-tmis[data-tmis-page="outside-sent-lab-test"] .lis-report-selection > div:last-child,.lis-tmis[data-tmis-page="outside-sent-lab-test"] .lis-report-selection [data-slot="card-content"] > div:last-child { height: 104px; max-height: 104px; }
+@media (min-width: 1024px) {
+  .lis-tmis .lis-report-filter .space-y-1:has(> [data-slot="label"] + :is(input,select)),.lis-tmis .lis-report-date-range > div { display: grid; grid-template-columns: 35% minmax(0,1fr); min-height: 34px; align-items: center; }
+  .lis-tmis .lis-report-date-range { max-width: none; gap: 8px 20px; }
+  .lis-content .lis-tmis .lis-generated-filter-columns { grid-template-columns: minmax(0,3fr) minmax(0,2fr); gap: 12px; }
+  .lis-tmis .lis-generated-filter-lists { grid-template-columns: .6fr .7fr 1.3fr 1fr; gap: 6px; }
+  .lis-tmis .lis-generated-filter-criteria { gap: 2px 12px; }
+  .lis-tmis .lis-summary-layout { grid-template-columns: minmax(0,1fr) minmax(0,2fr); gap: 8px; }
+  .lis-tmis .lis-summary-lists { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+  .lis-tmis .lis-summary-lists > :last-child { grid-column: auto; }
+  .lis-tmis .lis-summary-criteria { gap: 4px 16px; }
+  .lis-tmis .lis-summary-criteria .lis-report-selection { grid-column: 1; grid-row: 2; }
+  .lis-tmis .lis-summary-criteria .lis-report-selection > div:nth-child(2) { display: none; }
+  .lis-tmis .lis-summary-criteria .lis-report-selection > div:last-child { height: auto; max-height: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .lis-tmis .lis-summary-criteria .lis-report-selection > div:first-child { padding: 0 6px; }
+  .lis-tmis .lis-referral-filter-columns { grid-template-columns: minmax(0,3fr) minmax(0,2fr); gap: 8px; }
+  .lis-tmis .lis-referral-lists { grid-column: 1; grid-row: 1; grid-template-columns: .9fr .9fr 1.2fr; gap: 6px; }
+  .lis-tmis .lis-referral-criteria { grid-column: 2; grid-row: 1; }
+  .lis-tmis .lis-referral-criteria .lis-report-selection { grid-column: 1 / -1; }
+  .lis-tmis .lis-referral-criteria .lis-report-selection [data-slot="card-content"] > div:nth-child(2) { display: none; }
+  .lis-tmis .lis-referral-criteria .lis-report-selection [data-slot="card-content"] > div:last-child { display: flex; flex-wrap: wrap; gap: 6px; height: auto; max-height: none; }
+  .lis-tmis .lis-referral-lists .lis-report-selection > div:last-child,.lis-tmis .lis-referral-lists .lis-report-selection [data-slot="card-content"] > div:last-child { height: 160px; max-height: 160px; }
+  .lis-tmis .lis-price-filter-columns { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px 20px; }
+  .lis-tmis .lis-price-filter-columns > div { display: grid; grid-template-columns: 45% minmax(0,1fr); min-height: 34px; align-items: center; }
+  .lis-tmis .lis-price-filter-columns select { width: 262px; max-width: 100%; margin-top: 0; }
+  .lis-tmis .lis-client-report-layout { grid-template-columns: minmax(0,1fr) minmax(0,5fr); gap: 8px; padding: 6px 12px; }
+  .lis-tmis .lis-client-report-layout > .lg\:col-span-3 { grid-column: 2; }
+  .lis-tmis .lis-due-filter-columns { grid-template-columns: minmax(0,1fr) minmax(0,4fr); gap: 4px 20px; }
+  .lis-tmis .lis-due-filter-columns > div:has(.lis-report-selection) { grid-column: 1; grid-row: 1 / span 2; }
+  .lis-tmis .lis-due-filter-columns > .lis-report-date-range { grid-column: 2; grid-row: 1; }
+  .lis-tmis .lis-due-filter-columns > div:has(#due-patient-id) { grid-column: 2; grid-row: 2; max-width: 450px; }
+  .lis-tmis .lis-cancelled-layout > :first-child { grid-column: 1 / span 7; }
+  .lis-tmis .lis-cancelled-layout > :last-child { grid-column: 8 / span 5; }
+  .lis-tmis .lis-billwise-layout > :first-child { grid-column: 1 / span 6; }
+  .lis-tmis .lis-billwise-layout > :last-child { grid-column: 7 / span 6; }
+  .lis-tmis .lis-outside-filter-layout .lis-report-date-range { width: 900px; max-width: 100%; }
+  .lis-tmis[data-tmis-page="lab-collection-summary"] .lis-report-filter > div:first-child > div { grid-template-columns: 1fr; }
+  .lis-tmis[data-tmis-page="lab-collection-summary"] .lis-report-date-range { width: 900px; max-width: 100%; }
+}
+.lis-tmis[data-tmis-page="bills-wise-collection"] .lis-report-table,
+.lis-tmis[data-tmis-page="referral-doctor-commission"] .lis-report-table { min-width: 1300px; }
+@media (max-width: 1023px) {
+  .lis-content .lis-tmis .lis-generated-filter-columns,.lis-tmis .lis-generated-filter-lists,.lis-tmis .lis-generated-filter-criteria { grid-template-columns: 1fr; grid-area: auto; }
+  .lis-tmis .lis-outside-filter-layout .lis-report-selection { max-width: 100%; }
+}
+

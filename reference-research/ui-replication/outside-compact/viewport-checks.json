@@ -1,0 +1,1448 @@
+[
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "generated-lab-bills",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "generated-lab-bills",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "generated-lab-bills",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "generated-lab-bills",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "generated-lab-bills",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "generated-lab-bills",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-summary",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-summary",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-summary",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-summary",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-summary",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-summary",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "osp-registration",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "osp-registration",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "osp-registration",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "osp-registration",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "osp-registration",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "osp-registration",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-collection-summary",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-collection-summary",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-collection-summary",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-collection-summary",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-collection-summary",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "lab-collection-summary",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "referral-doctor-commission",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "referral-doctor-commission",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "referral-doctor-commission",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "referral-doctor-commission",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "referral-doctor-commission",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "referral-doctor-commission",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "client-generated-lab-bills",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "client-generated-lab-bills",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "client-generated-lab-bills",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "client-generated-lab-bills",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "client-generated-lab-bills",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "client-generated-lab-bills",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "outside-sent-lab-tests",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "outside-sent-lab-tests",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "outside-sent-lab-tests",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "outside-sent-lab-tests",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "outside-sent-lab-tests",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "outside-sent-lab-tests",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "hospital-price-card",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "hospital-price-card",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "hospital-price-card",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "hospital-price-card",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": false,
+    "height": 900,
+    "overflows": [],
+    "page": "hospital-price-card",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": true,
+    "height": 900,
+    "overflows": [],
+    "page": "hospital-price-card",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": false,
+    "fonts": [
+      {
+        "size": "13px",
+        "text": "OSP202600093"
+      },
+      {
+        "size": "13px",
+        "text": "GP202600055"
+      },
+      {
+        "size": "15px",
+        "text": "SHRI"
+      },
+      {
+        "size": "13px",
+        "text": "Male"
+      },
+      {
+        "size": "13px",
+        "text": "08 Oct 2026"
+      },
+      {
+        "size": "13px",
+        "text": "Test ParametersHEM_CBPCOMPLETE BLOOD PICTURE"
+      },
+      {
+        "size": "13px",
+        "text": "PatientGP202600054DAVIDSex MaleAge 21Bill OSP20260"
+      },
+      {
+        "size": "15px",
+        "text": "DAVID"
+      }
+    ],
+    "height": 900,
+    "overflows": [],
+    "page": "result-entry",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1280,
+    "documentWidth": 1280,
+    "expanded": true,
+    "fonts": [
+      {
+        "size": "13px",
+        "text": "OSP202600093"
+      },
+      {
+        "size": "13px",
+        "text": "GP202600055"
+      },
+      {
+        "size": "15px",
+        "text": "SHRI"
+      },
+      {
+        "size": "13px",
+        "text": "Male"
+      },
+      {
+        "size": "13px",
+        "text": "08 Oct 2026"
+      },
+      {
+        "size": "13px",
+        "text": "Test ParametersHEM_CBPCOMPLETE BLOOD PICTURE"
+      },
+      {
+        "size": "13px",
+        "text": "PatientGP202600054DAVIDSex MaleAge 21Bill OSP20260"
+      },
+      {
+        "size": "15px",
+        "text": "DAVID"
+      }
+    ],
+    "height": 900,
+    "overflows": [],
+    "page": "result-entry",
+    "width": 1280,
+    "requestedWidth": 1280,
+    "scrollWidth": 1280,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": false,
+    "fonts": [
+      {
+        "size": "13px",
+        "text": "OSP202600093"
+      },
+      {
+        "size": "13px",
+        "text": "GP202600055"
+      },
+      {
+        "size": "15px",
+        "text": "SHRI"
+      },
+      {
+        "size": "13px",
+        "text": "Male"
+      },
+      {
+        "size": "13px",
+        "text": "08 Oct 2026"
+      },
+      {
+        "size": "13px",
+        "text": "Test ParametersHEM_CBPCOMPLETE BLOOD PICTURE"
+      },
+      {
+        "size": "13px",
+        "text": "PatientGP202600054DAVIDSex MaleAge 21Bill OSP20260"
+      },
+      {
+        "size": "15px",
+        "text": "DAVID"
+      }
+    ],
+    "height": 900,
+    "overflows": [],
+    "page": "result-entry",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1440,
+    "documentWidth": 1440,
+    "expanded": true,
+    "fonts": [
+      {
+        "size": "13px",
+        "text": "OSP202600093"
+      },
+      {
+        "size": "13px",
+        "text": "GP202600055"
+      },
+      {
+        "size": "15px",
+        "text": "SHRI"
+      },
+      {
+        "size": "13px",
+        "text": "Male"
+      },
+      {
+        "size": "13px",
+        "text": "08 Oct 2026"
+      },
+      {
+        "size": "13px",
+        "text": "Test ParametersHEM_CBPCOMPLETE BLOOD PICTURE"
+      },
+      {
+        "size": "13px",
+        "text": "PatientGP202600054DAVIDSex MaleAge 21Bill OSP20260"
+      },
+      {
+        "size": "15px",
+        "text": "DAVID"
+      }
+    ],
+    "height": 900,
+    "overflows": [],
+    "page": "result-entry",
+    "width": 1440,
+    "requestedWidth": 1440,
+    "scrollWidth": 1440,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": false,
+    "fonts": [
+      {
+        "size": "13px",
+        "text": "OSP202600093"
+      },
+      {
+        "size": "13px",
+        "text": "GP202600055"
+      },
+      {
+        "size": "15px",
+        "text": "SHRI"
+      },
+      {
+        "size": "13px",
+        "text": "Male"
+      },
+      {
+        "size": "13px",
+        "text": "08 Oct 2026"
+      },
+      {
+        "size": "13px",
+        "text": "Test ParametersHEM_CBPCOMPLETE BLOOD PICTURE"
+      },
+      {
+        "size": "13px",
+        "text": "PatientGP202600054DAVIDSex MaleAge 21Bill OSP20260"
+      },
+      {
+        "size": "15px",
+        "text": "DAVID"
+      }
+    ],
+    "height": 900,
+    "overflows": [],
+    "page": "result-entry",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "collapsed",
+    "overflow": []
+  },
+  {
+    "actualWidth": 1920,
+    "documentWidth": 1920,
+    "expanded": true,
+    "fonts": [
+      {
+        "size": "13px",
+        "text": "OSP202600093"
+      },
+      {
+        "size": "13px",
+        "text": "GP202600055"
+      },
+      {
+        "size": "15px",
+        "text": "SHRI"
+      },
+      {
+        "size": "13px",
+        "text": "Male"
+      },
+      {
+        "size": "13px",
+        "text": "08 Oct 2026"
+      },
+      {
+        "size": "13px",
+        "text": "Test ParametersHEM_CBPCOMPLETE BLOOD PICTURE"
+      },
+      {
+        "size": "13px",
+        "text": "PatientGP202600054DAVIDSex MaleAge 21Bill OSP20260"
+      },
+      {
+        "size": "15px",
+        "text": "DAVID"
+      }
+    ],
+    "height": 900,
+    "overflows": [],
+    "page": "result-entry",
+    "width": 1920,
+    "requestedWidth": 1920,
+    "scrollWidth": 1920,
+    "sidebar": "expanded",
+    "overflow": []
+  },
+  {
+    "page": "commission-copy",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "commission-copy",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "commission-copy",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "commission-copy",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "commission-copy",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "commission-copy",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "osp-outside-draft",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "osp-outside-draft",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "osp-outside-draft",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "osp-outside-draft",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "osp-outside-draft",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "osp-outside-draft",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "modify-outside-draft",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "modify-outside-draft",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "modify-outside-draft",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "modify-outside-draft",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "modify-outside-draft",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "modify-outside-draft",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "department",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "department",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "department",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "department",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "department",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "department",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "address",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "address",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "address",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "address",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "address",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "address",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "doctor",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "doctor",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "doctor",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "doctor",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "doctor",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "doctor",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "designation",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "designation",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "designation",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "designation",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "designation",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "designation",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "specialisation",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "specialisation",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "specialisation",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "specialisation",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "specialisation",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "specialisation",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "create-lab-test",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "create-lab-test",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "create-lab-test",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "create-lab-test",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "create-lab-test",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "create-lab-test",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "vendor-outside-draft",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "vendor-outside-draft",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  {
+    "page": "vendor-outside-draft",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "vendor-outside-draft",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "page": "vendor-outside-draft",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  },
+  {
+    "page": "vendor-outside-draft",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "height": 900,
+    "overflow": [],
+    "scrollWidth": 1920,
+    "width": 1920
+  }
+]

@@ -1,0 +1,244 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Bills Wise Collection" [level=1]
+  - paragraph: Collection details of each bill with payment mode breakdown.
+  - link "Home":
+    - /url: /dashboard
+  - heading "Bill Type" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search bill types…"
+  - checkbox "OSP"
+  - generic: OSP
+  - checkbox "Vendor"
+  - generic: Vendor
+  - heading "Collected By" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search collectors…"
+  - checkbox "Administrator"
+  - generic: Administrator
+  - checkbox "Operator One"
+  - generic: Operator One
+  - checkbox "Operator User"
+  - generic: Operator User
+  - heading "Pay Mode" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search pay modes…"
+  - checkbox "Cash"
+  - generic: Cash
+  - checkbox "UPI"
+  - generic: UPI
+  - checkbox "Card"
+  - generic: Card
+  - checkbox "Bank Transfer"
+  - generic: Bank Transfer
+  - checkbox "Other"
+  - generic: Other
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - generic: Patient ID
+  - textbox "Patient ID":
+    - /placeholder: e.g. GP202600001
+  - generic: Sort Order
+  - combobox "Sort Order":
+    - option "Date (Desc)"
+    - option "Descending" [selected]
+    - option "Ascending"
+  - text: Patient Type
+  - checkbox "GP"
+  - text: GP
+  - checkbox "OP"
+  - text: OP
+  - checkbox "IP"
+  - text: IP
+  - checkbox "ER"
+  - text: ER
+  - checkbox "With Cancelled Bills"
+  - text: With Cancelled Bills
+  - button "Show":
+    - text: Show
+  - button "Clear":
+    - text: Clear
+  - link "Home":
+    - /url: /dashboard
+  - generic: Total Records
+  - generic: "6"
+  - generic: Total Paid
+  - generic: 1,400.00
+  - generic: Cash
+  - generic: 1,250.00
+  - generic: UPI
+  - generic: "150.00"
+  - generic: Card
+  - generic: "0.00"
+  - generic: Bank Transfer
+  - generic: "0.00"
+  - generic: Other
+  - generic: "0.00"
+  - table:
+    - rowgroup:
+      - row "Bill Time Bill No Bill For Patient Ref Id Paid Amt Cash UPI Card Bank Transfer Other Pay Mode Collected":
+        - columnheader "Bill Time"
+        - columnheader "Bill No"
+        - columnheader "Bill For"
+        - columnheader "Patient"
+        - columnheader "Ref Id"
+        - columnheader "Paid Amt"
+        - columnheader "Cash"
+        - columnheader "UPI"
+        - columnheader "Card"
+        - columnheader "Bank Transfer"
+        - columnheader "Other"
+        - columnheader "Pay Mode"
+        - columnheader "Collected"
+    - rowgroup:
+      - row "06 Oct 2026, 06:57 am OSP202600088 OSP AADHYA GP202600045 — 50.00 50.00 0.00 0.00 0.00 0.00 Cash Administrator":
+        - cell "06 Oct 2026, 06:57 am"
+        - cell "OSP202600088"
+        - cell "OSP"
+        - cell "AADHYA GP202600045":
+          - generic: AADHYA
+          - generic: GP202600045
+        - cell "—"
+        - cell "50.00"
+        - cell "50.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "Cash"
+        - cell "Administrator"
+      - row "05 Oct 2026, 09:25 pm OSP202600086 OSP shiva GP202600049 Dr. Anil Mehta 150.00 150.00 0.00 0.00 0.00 0.00 Cash Administrator":
+        - cell "05 Oct 2026, 09:25 pm"
+        - cell "OSP202600086"
+        - cell "OSP"
+        - cell "shiva GP202600049":
+          - generic: shiva
+          - generic: GP202600049
+        - cell "Dr. Anil Mehta"
+        - cell "150.00"
+        - cell "150.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "Cash"
+        - cell "Administrator"
+      - row "05 Oct 2026, 08:52 pm OSP202600085 OSP david tester GP202600048 — 600.00 600.00 0.00 0.00 0.00 0.00 Cash Administrator":
+        - cell "05 Oct 2026, 08:52 pm"
+        - cell "OSP202600085"
+        - cell "OSP"
+        - cell "david tester GP202600048":
+          - generic: david tester
+          - generic: GP202600048
+        - cell "—"
+        - cell "600.00"
+        - cell "600.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "Cash"
+        - cell "Administrator"
+      - row "05 Oct 2026, 08:44 pm OSP202600083 IP praveena testing GP202600046 — 250.00 250.00 0.00 0.00 0.00 0.00 Cash Administrator":
+        - cell "05 Oct 2026, 08:44 pm"
+        - cell "OSP202600083"
+        - cell "IP"
+        - cell "praveena testing GP202600046":
+          - generic: praveena testing
+          - generic: GP202600046
+        - cell "—"
+        - cell "250.00"
+        - cell "250.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "Cash"
+        - cell "Administrator"
+      - row "05 Oct 2026, 08:36 pm OSP202600082 OSP AADHYA GP202600045 Dr.ANJALI 200.00 200.00 0.00 0.00 0.00 0.00 Cash Administrator":
+        - cell "05 Oct 2026, 08:36 pm"
+        - cell "OSP202600082"
+        - cell "OSP"
+        - cell "AADHYA GP202600045":
+          - generic: AADHYA
+          - generic: GP202600045
+        - cell "Dr.ANJALI"
+        - cell "200.00"
+        - cell "200.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "Cash"
+        - cell "Administrator"
+      - row "05 Oct 2026, 08:35 pm OSP202600081 ER Harshitha testing GP202600044 Dr. Priya Sharma 150.00 0.00 150.00 0.00 0.00 0.00 UPI Administrator":
+        - cell "05 Oct 2026, 08:35 pm"
+        - cell "OSP202600081"
+        - cell "ER"
+        - cell "Harshitha testing GP202600044":
+          - generic: Harshitha testing
+          - generic: GP202600044
+        - cell "Dr. Priya Sharma"
+        - cell "150.00"
+        - cell "0.00"
+        - cell "150.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "UPI"
+        - cell "Administrator"
+    - rowgroup:
+      - row "Total (6) 1,400.00 1,250.00 150.00 0.00 0.00 0.00":
+        - cell "Total (6)"
+        - cell "1,400.00"
+        - cell "1,250.00"
+        - cell "150.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell
+  - button "First" [disabled]:
+    - text: First
+  - button "Prev" [disabled]:
+    - text: Prev
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Last" [disabled]:
+    - text: Last
+  - generic: Page 1 of 1 · 6 records
+  - generic: "Find:"
+  - textbox "Find:":
+    - /placeholder: Type to find
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Refresh":
+    - text: Refresh
+  - button "Export":
+    - text: Export
+  - button "Print":
+    - text: Print

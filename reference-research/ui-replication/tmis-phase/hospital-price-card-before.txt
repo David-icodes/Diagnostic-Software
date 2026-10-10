@@ -1,0 +1,257 @@
+- button "Open Next.js Dev Tools":
+  - text: Compiling
+  - generic: .
+  - generic: .
+  - generic: .
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Hospital Price Card" [level=1]
+  - paragraph: Price list of lab tests for hospital charges.
+  - link "Home":
+    - /url: /dashboard
+  - generic: The LIS stores a single out-patient tariff per test. In-patient, insured-in-patient, emergency and insured-emergency tariffs are not configured yet and are shown as —.
+  - generic: Service Type
+  - combobox "Service Type":
+    - option "All"
+    - option "Lab Test" [selected]
+  - generic: Select Department
+  - combobox "Select Department":
+    - option "--Select--" [selected]
+    - option "Biochemistry"
+    - option "Clinical Pathology"
+    - option "Hematology"
+    - option "Hormones"
+    - option "Immunology / Serology"
+    - option "Microbiology"
+    - option "Molecular Biology"
+    - option "Packages / Profiles"
+    - option "Pathology"
+    - option "Pharmacy Support"
+  - generic: Select Lab Name
+  - combobox "Select Lab Name":
+    - option "--Select--" [selected]
+    - option "Anjali Diagnostics"
+  - generic: Status
+  - combobox "Status":
+    - option "All"
+    - option "Active" [selected]
+    - option "Inactive"
+    - option "All"
+  - button "Show":
+    - text: Show
+  - button "Clear":
+    - text: Clear
+  - link "Home":
+    - /url: /dashboard
+  - generic: Total Tests
+  - generic: "183"
+  - table:
+    - rowgroup:
+      - row "Dept Name Name OP Amt IP Amt Ins IP Amt ER Amt Ins ER Amt":
+        - columnheader "Dept Name"
+        - columnheader "Name"
+        - columnheader "OP Amt"
+        - columnheader "IP Amt"
+        - columnheader "Ins IP Amt"
+        - columnheader "ER Amt"
+        - columnheader "Ins ER Amt"
+    - rowgroup:
+      - row "Biochemistry 25 HYDROXY VITAMIN D 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "25 HYDROXY VITAMIN D"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry ALBUMIN 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "ALBUMIN"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry ALT (SGPT) 150.00 150.00 150.00 150.00 150.00":
+        - cell "Biochemistry"
+        - cell "ALT (SGPT)"
+        - cell "150.00"
+        - cell "150.00"
+        - cell "150.00"
+        - cell "150.00"
+        - cell "150.00"
+      - row "Biochemistry AMYLASE 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "AMYLASE"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry ANTI CARDIOLIPIN IgG 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "ANTI CARDIOLIPIN IgG"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry ANTI CARDIOLIPIN IgM 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "ANTI CARDIOLIPIN IgM"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry ANTI CCP 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "ANTI CCP"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry ANTI MULLERIN HORMONE(AMH) 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "ANTI MULLERIN HORMONE(AMH)"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry ANTI TPO 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "ANTI TPO"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry ANTIBODY TO HEPATITIS C VIRUS(CLIA) 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "ANTIBODY TO HEPATITIS C VIRUS(CLIA)"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry APLA PROFILE 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "APLA PROFILE"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry APOLIPOPROTEIN B (APO-B) 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "APOLIPOPROTEIN B (APO-B)"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry ASO 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "ASO"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry AST (SGOT) 150.00 150.00 150.00 150.00 150.00":
+        - cell "Biochemistry"
+        - cell "AST (SGOT)"
+        - cell "150.00"
+        - cell "150.00"
+        - cell "150.00"
+        - cell "150.00"
+        - cell "150.00"
+      - row "Hematology Absolute Eosinophil Count (AEC) 0.00 0.00 0.00 0.00 0.00":
+        - cell "Hematology"
+        - cell "Absolute Eosinophil Count (AEC)"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry Activated Partial Thromboplastin Time (APTT/PTTK) 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "Activated Partial Thromboplastin Time (APTT/PTTK)"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry Albumin/Creatinine Ratio 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "Albumin/Creatinine Ratio"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry Alkaline Phosphatase 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "Alkaline Phosphatase"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry Anti Nuclear Antibody 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "Anti Nuclear Antibody"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+      - row "Biochemistry BETA 2 GLYCOPROTEIN ANTY BODY IgG 0.00 0.00 0.00 0.00 0.00":
+        - cell "Biochemistry"
+        - cell "BETA 2 GLYCOPROTEIN ANTY BODY IgG"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+  - button "First" [disabled]:
+    - text: First
+  - button "Prev" [disabled]:
+    - text: Prev
+  - button "Next":
+    - text: Next
+  - button "Last":
+    - text: Last
+  - generic: Page 1 of 10 · 183 tests
+  - generic: "Find:"
+  - textbox "Find:":
+    - /placeholder: Type to find
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Refresh":
+    - text: Refresh
+  - button "Export":
+    - text: Export
+  - button "Print":
+    - text: Print

@@ -1,0 +1,94 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Cancelled Bills Report" [level=1]
+  - paragraph: List of cancelled bills with cancellation remarks.
+  - link "Home":
+    - /url: /dashboard
+  - heading "Bill Type" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search bill types…"
+  - checkbox "OSP"
+  - generic: OSP
+  - checkbox "Vendor"
+  - generic: Vendor
+  - heading "Pay Mode" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search pay modes…"
+  - checkbox "Cash"
+  - generic: Cash
+  - checkbox "UPI"
+  - generic: UPI
+  - checkbox "Card"
+  - generic: Card
+  - checkbox "Bank Transfer"
+  - generic: Bank Transfer
+  - checkbox "Other"
+  - generic: Other
+  - heading "Cancelled By" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search users…"
+  - checkbox "Administrator"
+  - generic: Administrator
+  - checkbox "Operator One"
+  - generic: Operator One
+  - checkbox "Operator User"
+  - generic: Operator User
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - text: Report Type
+  - radio "Summary" [checked]
+  - text: Summary
+  - radio "Detailed"
+  - text: Detailed
+  - button "Show"
+  - button "Clear"
+  - link "Home":
+    - /url: /dashboard
+  - generic: Total Bills
+  - generic: "0"
+  - generic: Net Amount
+  - generic: "0.00"
+  - heading "Cancelled Bills Report" [level=2]
+  - paragraph: "Apply Date : — To — · Mode : Summary"
+  - paragraph: "Total records: 0"
+  - table:
+    - rowgroup:
+      - row "Bill No Bill Date Cancelled Date Bill For Patient Tests Net Pay Mode Cancelled By Remarks":
+        - columnheader "Bill No"
+        - columnheader "Bill Date"
+        - columnheader "Cancelled Date"
+        - columnheader "Bill For"
+        - columnheader "Patient"
+        - columnheader "Tests"
+        - columnheader "Net"
+        - columnheader "Pay Mode"
+        - columnheader "Cancelled By"
+        - columnheader "Remarks"
+    - rowgroup:
+      - row "Records are not available":
+        - cell "Records are not available"

@@ -1,0 +1,42 @@
+{
+  "final-api-lab_report_ready": {
+    "pages": 1,
+    "sizePoints": [
+      595.0,
+      841.9
+    ],
+    "boldLargerAbnormalValues": 5
+  },
+  "final-api-lab_invoice_ready": {
+    "pages": 1,
+    "sizePoints": [
+      841.9,
+      595.0
+    ]
+  },
+  "refined-long-report-fixture": {
+    "pages": 5,
+    "sizePoints": [
+      595.0,
+      841.9
+    ]
+  },
+  "refined-multi-department-fixture": {
+    "pages": 2,
+    "sizePoints": [
+      595.0,
+      841.9
+    ]
+  },
+  "filtered-bills": {
+    "pages": 2,
+    "sizePoints": [
+      841.9,
+      595.0
+    ]
+  },
+  "docx": {
+    "validArchive": true,
+    "patientBillDetails": true
+  }
+}

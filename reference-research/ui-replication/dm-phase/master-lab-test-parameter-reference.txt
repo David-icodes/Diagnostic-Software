@@ -1,0 +1,224 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Create New Lab Test Parameter" [level=3]
+- table:
+  - rowgroup:
+    - row "Parameters Parameters For Templates":
+      - cell "Parameters":
+        - radio "Parameters" [checked]
+        - generic: Parameters
+      - cell "Parameters For Templates":
+        - radio "Parameters For Templates"
+        - generic: Parameters For Templates
+- table:
+  - rowgroup:
+    - row "Department Name --Select-- Test Name --Select--":
+      - cell "Department Name"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+          - option "MICROBIOLOGY"
+          - option "Hematology"
+          - option "BIOCHEMISTRY"
+          - option "PATHOLOGY"
+          - option "BIO CHEMISTRY"
+      - cell
+      - cell
+      - cell "Test Name"
+      - cell "--Select--":
+        - combobox:
+          - option "--Select--" [selected]
+      - cell
+    - row "Parameter/Subtitle ---Select--- Parameter Name":
+      - cell "Parameter/Subtitle"
+      - cell "---Select---":
+        - combobox:
+          - option "---Select---" [selected]
+          - option "Parameter"
+          - option "Subtitle"
+          - option "Only Text"
+      - cell
+      - cell
+      - cell "Parameter Name"
+      - cell:
+        - textbox
+      - cell
+    - row "Parameter Type Text OrderNo":
+      - cell "Parameter Type"
+      - cell "Text":
+        - combobox:
+          - option "Text" [selected]
+          - option "TextArea"
+          - option "Selection"
+      - cell
+      - cell
+      - cell "OrderNo"
+      - cell:
+        - textbox
+      - cell
+    - row "Default Value":
+      - cell "Default Value"
+      - cell:
+        - textbox
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell
+    - row "Units":
+      - cell "Units"
+      - cell:
+        - textbox
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell
+    - row "Active Status Y Method Name":
+      - cell "Active Status"
+      - cell "Y":
+        - combobox:
+          - option "--Select--"
+          - option "Y" [selected]
+          - option "N"
+      - cell
+      - cell
+      - cell "Method Name"
+      - cell:
+        - textbox
+      - cell
+    - row "General Range Gender Wise Range Reference Type Generic Only Reference Range Parameter From Parameter To  General 0 0":
+      - cell "General Range Gender Wise Range Reference Type Generic Only Reference Range Parameter From Parameter To  General 0 0":
+        - table:
+          - rowgroup:
+            - row "General Range Gender Wise Range Reference Type Generic Only Reference Range":
+              - cell "General Range":
+                - radio "General Range" [checked]
+                - generic: General Range
+              - cell "Gender Wise Range":
+                - radio "Gender Wise Range"
+                - generic: Gender Wise Range
+              - cell "Reference Type"
+              - cell "Generic":
+                - combobox:
+                  - option "Generic" [selected]
+                  - option "Age Wise"
+                  - option "Sex Wise"
+                  - option "Age & Sex Wise"
+              - cell
+              - cell "Only Reference Range":
+                - checkbox "Only Reference Range"
+                - generic: Only Reference Range
+            - row
+            - row "Parameter From Parameter To ":
+              - cell
+              - cell "Parameter From"
+              - cell "Parameter To"
+              - cell "":
+                - button ""
+              - cell:
+                - textbox
+            - row "General 0 0":
+              - cell "General"
+              - cell "0":
+                - textbox: "0"
+              - cell "0":
+                - textbox: "0"
+              - cell
+              - cell
+            - row:
+              - cell
+              - cell
+              - cell
+              - cell
+              - cell
+    - row "SUBMIT UPDATE HOME CLEAR":
+      - cell "SUBMIT UPDATE HOME CLEAR":
+        - button "SUBMIT"
+        - button "UPDATE" [disabled]
+        - button "HOME"
+        - button "CLEAR"
+- generic: Department Name
+- combobox:
+  - option "--Select--" [selected]
+  - option "MICROBIOLOGY"
+  - option "Hematology"
+  - option "BIOCHEMISTRY"
+  - option "PATHOLOGY"
+  - option "BIO CHEMISTRY"
+- generic: Test Name
+- combobox:
+  - option "--Select--" [selected]
+- table
+- table:
+  - rowgroup:
+    - row "S.No Lab Dept Lab Test Parameter Name Units Reference Range Order No View Edit Del":
+      - columnheader "S.No"
+      - columnheader "Lab Dept"
+      - columnheader "Lab Test"
+      - columnheader "Parameter Name"
+      - columnheader "Units"
+      - columnheader "Reference Range"
+      - columnheader "Order No"
+      - columnheader "View"
+      - columnheader "Edit"
+      - columnheader "Del"
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

@@ -1,0 +1,215 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Lab - Dr Referral - Bill wise" [level=3]
+- paragraph: Please Select any one of the Department
+- table:
+  - rowgroup:
+    - row "All BIO CHEMISTRY BIOCHEMISTRY Hematology MICROBIOLOGY Packages/Profiles PATHOLOGY All no All no From Date 08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+      - cell "All BIO CHEMISTRY BIOCHEMISTRY Hematology MICROBIOLOGY Packages/Profiles PATHOLOGY":
+        - table:
+          - rowgroup:
+            - row "All":
+              - cell:
+                - textbox "Department Search ..."
+              - cell "All":
+                - checkbox "All"
+                - generic: All
+        - table:
+          - rowgroup:
+            - row "BIO CHEMISTRY":
+              - cell "BIO CHEMISTRY":
+                - checkbox "BIO CHEMISTRY"
+                - generic: BIO CHEMISTRY
+            - row "BIOCHEMISTRY":
+              - cell "BIOCHEMISTRY":
+                - checkbox "BIOCHEMISTRY"
+                - generic: BIOCHEMISTRY
+            - row "Hematology":
+              - cell "Hematology":
+                - checkbox "Hematology"
+                - generic: Hematology
+            - row "MICROBIOLOGY":
+              - cell "MICROBIOLOGY":
+                - checkbox "MICROBIOLOGY"
+                - generic: MICROBIOLOGY
+            - row "Packages/Profiles":
+              - cell "Packages/Profiles":
+                - checkbox "Packages/Profiles"
+                - generic: Packages/Profiles
+            - row "PATHOLOGY":
+              - cell "PATHOLOGY":
+                - checkbox "PATHOLOGY"
+                - generic: PATHOLOGY
+      - cell "All no":
+        - table:
+          - rowgroup:
+            - row "All":
+              - cell:
+                - textbox "Investigation Search..."
+              - cell "All":
+                - checkbox "All"
+                - generic: All
+        - table:
+          - rowgroup:
+            - row "no":
+              - cell "no":
+                - checkbox "no"
+                - generic: "no"
+      - cell "All no":
+        - table:
+          - rowgroup:
+            - row "All":
+              - cell:
+                - textbox "Doctor Search..."
+              - cell "All":
+                - checkbox "All"
+                - generic: All
+        - table:
+          - rowgroup:
+            - row "no":
+              - cell "no":
+                - checkbox "no"
+                - generic: "no"
+      - cell "From Date"
+      - cell "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+              - cell "08-Oct-26 12:00 AM":
+                - textbox: 08-Oct-26 12:00 AM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+      - cell
+    - row "To Date 08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+      - cell "To Date"
+      - cell "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+        - table:
+          - rowgroup:
+            - row "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+              - cell "08-Oct-26 11:59 PM":
+                - textbox: 08-Oct-26 11:59 PM
+              - cell "Open the calendar popup.":
+                - link "Open the calendar popup.":
+                  - /url: "#"
+              - cell "Open the time view popup.":
+                - link "Open the time view popup.":
+                  - /url: "#"
+      - cell
+    - row "Patient Id":
+      - cell "Patient Id"
+      - cell:
+        - textbox
+      - cell
+    - row "Referral Dr Wise Only OP/IP Cons. Dr Wise":
+      - cell "Referral Dr Wise":
+        - radio "Referral Dr Wise" [checked]
+        - generic: Referral Dr Wise
+      - cell "Only OP/IP Cons. Dr Wise":
+        - radio "Only OP/IP Cons. Dr Wise"
+        - generic: Only OP/IP Cons. Dr Wise
+      - cell
+    - row "Patient Type OP IP GP":
+      - cell "Patient Type"
+      - cell "OP IP GP":
+        - table:
+          - rowgroup:
+            - row "OP IP GP":
+              - cell "OP":
+                - checkbox "OP" [checked]
+                - generic: OP
+              - cell "IP":
+                - checkbox "IP" [checked]
+                - generic: IP
+              - cell "GP":
+                - checkbox "GP" [checked]
+                - generic: GP
+      - cell
+    - row "% on Net Amount % on Paid Amount Claim Type All":
+      - cell "% on Net Amount":
+        - radio "% on Net Amount" [checked]
+        - generic: "% on Net Amount"
+      - cell "% on Paid Amount":
+        - radio "% on Paid Amount"
+        - generic: "% on Paid Amount"
+      - cell
+      - cell "Claim Type"
+      - cell "All":
+        - combobox:
+          - option "All" [selected]
+          - option "Non-Insurancce"
+          - option "Insurance"
+      - cell
+    - row "Show Home Clear":
+      - cell "Show Home Clear":
+        - button "Show"
+        - button "Home"
+        - button "Clear"
+- table:
+  - rowgroup:
+    - row:
+      - cell
+    - row:
+      - cell
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

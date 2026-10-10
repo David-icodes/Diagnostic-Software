@@ -1,0 +1,71 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Enter Test Result" [level=1]
+  - paragraph: Enter parameter based test results for a generated lab bill
+  - text: Test Result
+  - link "Home":
+    - /url: /dashboard
+  - radio "Today Lab Bills" [checked]
+  - text: Today Lab Bills
+  - radio "Criteria"
+  - text: Criteria
+  - checkbox "Include Client Bills"
+  - text: Include Client Bills
+  - button "Search":
+    - text: Search
+  - table:
+    - rowgroup:
+      - row "Bill No Pat Id Pat Name Sex/Age Bill Date":
+        - columnheader "Bill No"
+        - columnheader "Pat Id"
+        - columnheader "Pat Name"
+        - columnheader "Sex/Age"
+        - columnheader "Bill Date"
+    - rowgroup:
+      - row "No Records To Display":
+        - cell "No Records To Display"
+  - table:
+    - rowgroup:
+      - row "Print Dept Name Test Name Sample Out Lab Center":
+        - columnheader "Print"
+        - columnheader "Dept Name"
+        - columnheader "Test Name"
+        - columnheader "Sample"
+        - columnheader "Out"
+        - columnheader "Lab Center"
+    - rowgroup:
+      - row "Select a bill":
+        - cell "Select a bill"
+  - generic "Parameter results":
+    - table:
+      - rowgroup:
+        - row "Order Parameter Name Result Units Reference Range Method":
+          - columnheader "Order"
+          - columnheader "Parameter Name"
+          - columnheader "Result"
+          - columnheader "Units"
+          - columnheader "Reference Range"
+          - columnheader "Method"
+      - rowgroup:
+        - row "Select a bill to view parameters":
+          - cell "Select a bill to view parameters"

@@ -1,0 +1,119 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Generated Lab Bills" [level=1]
+  - paragraph: Generated lab bills with stored prices, discounts, payment mode and collector.
+  - heading "Patient Type" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search patient type…"
+  - checkbox "OSP"
+  - generic: OSP
+  - checkbox "OP"
+  - generic: OP
+  - checkbox "IP"
+  - generic: IP
+  - checkbox "Emergency"
+  - generic: Emergency
+  - checkbox "Corporate"
+  - generic: Corporate
+  - heading "Payment Mode" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search payment mode…"
+  - checkbox "Cash"
+  - generic: Cash
+  - checkbox "UPI"
+  - generic: UPI
+  - checkbox "Card"
+  - generic: Card
+  - checkbox "Bank Transfer"
+  - generic: Bank Transfer
+  - checkbox "Other"
+  - generic: Other
+  - heading "Referring Doctor" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search Doctor"
+  - paragraph: No options found
+  - heading "Collected By" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search Collected By"
+  - paragraph: No options found
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - generic: Bill No
+  - textbox "Bill No":
+    - /placeholder: e.g. OSP202600001
+  - generic: GPId
+  - textbox "GPId":
+    - /placeholder: e.g. GP202600001
+  - generic: Patient Name
+  - textbox "Patient Name":
+    - /placeholder: Enter patient name
+  - generic: Department
+  - combobox "Department":
+    - option "All" [selected]
+  - generic: Payment Status
+  - combobox "Payment Status":
+    - option "All" [selected]
+    - option "Paid"
+    - option "Partial"
+    - option "Unpaid"
+  - generic: Date Order
+  - combobox "Date Order":
+    - option "Newest first"
+    - 'option "Date: Newest first" [selected]'
+    - 'option "Date: Oldest first"'
+  - checkbox "Discounted bills only"
+  - text: Discounted bills only
+  - button "Loading…" [disabled]:
+    - text: Loading…
+  - button "Clear" [disabled]
+  - link "Home":
+    - /url: /dashboard
+  - heading "Generated Lab Bills Report" [level=2]
+  - paragraph: "Date : — to — | Order : Newest first"
+  - paragraph: "Total bills: 0"
+  - table:
+    - rowgroup:
+      - row "S No Bill No Date Patient Name GPId Patient Type Tests Doctor Total Discount Net Pay Mode Collected By Payment Status":
+        - columnheader "S No"
+        - columnheader "Bill No"
+        - columnheader "Date"
+        - columnheader "Patient Name"
+        - columnheader "GPId"
+        - columnheader "Patient Type"
+        - columnheader "Tests"
+        - columnheader "Doctor"
+        - columnheader "Total"
+        - columnheader "Discount"
+        - columnheader "Net"
+        - columnheader "Pay Mode"
+        - columnheader "Collected By"
+        - columnheader "Payment Status"
+    - rowgroup:
+      - row "Loading report data…":
+        - cell "Loading report data…"

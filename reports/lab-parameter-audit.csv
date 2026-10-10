@@ -1,0 +1,708 @@
+S.No,Lab Dept,Lab Test,Parameter Name,Units,Reference Range,Import Outcome,Stored Test Code,Stored Parameter Id,Detail,Needs Lab Review,Review Reason,Range Source,Range Limitations
+1,BIO CHEMISTRY,25 HYDROXY VITAMIN D,25 (OH) VITAMIN-D TEST,,"< 20 Deficient
+20-30 Insufficient
+>30 Sufficient",unchanged,IMPBIO001,6abcc3a258a3c5d2af9f048f,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+2,BIO CHEMISTRY,25 HYDROXY VITAMIN D,Interpretation,,,unchanged,IMPBIO001,6abcc3a258a3c5d2af9f0493,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+3,Hematology,Absolute Eosinophil Count (AEC),Absolute Eosinophil Count,Cells/Cumm,40-440Cells/Cumm,unchanged,IMPHEM001,6abcc3a258a3c5d2af9f0497,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+4,BIO CHEMISTRY,Activated Partial Thromboplastin Time (APTT/PTTK),Activated Partial Thromboplastin Time (APTT/PTTK),,,unchanged,IMPBIO002,6abcc3a258a3c5d2af9f049a,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+5,BIO CHEMISTRY,Activated Partial Thromboplastin Time (APTT/PTTK),PATIENT VALUE,seconds,26.0 to 34.3,unchanged,IMPBIO002,6abcc3a258a3c5d2af9f049d,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+6,BIO CHEMISTRY,Activated Partial Thromboplastin Time (APTT/PTTK),CONTROL VALUE,seconds,seconds,unchanged,IMPBIO002,6abcc3a258a3c5d2af9f04a0,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+7,BIO CHEMISTRY,Activated Partial Thromboplastin Time (APTT/PTTK),RATIO,,0.8 to 1.2,unchanged,IMPBIO002,6abcc3a258a3c5d2af9f04a3,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+8,BIO CHEMISTRY,ALBUMIN,Albumin,,,unchanged,IMPBIO003,6abcc3a258a3c5d2af9f04a6,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+9,BIOCHEMISTRY,Albumin/Creatinine Ratio,Albumin/Creatinine Ratio,,,unchanged,IMPBIO004,6abcc3a258a3c5d2af9f04aa,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+10,BIOCHEMISTRY,Albumin/Creatinine Ratio,Microalbumin,mg/L,< 20.0,unchanged,IMPBIO004,6abcc3a258a3c5d2af9f04ad,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+11,BIOCHEMISTRY,Albumin/Creatinine Ratio,Creatinine,mg/dL,28 - 217,unchanged,IMPBIO004,6abcc3a258a3c5d2af9f04b0,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+12,BIOCHEMISTRY,Albumin/Creatinine Ratio,Albumin/creatinine ratio,mg/g creat,"< 30.0 : Normal
+30-300 : High
+> 300 : Very High",duplicate-in-source,IMPBIO004,,Same parameter already imported from S.No 9; first occurrence kept,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+13,BIO CHEMISTRY,Alkaline Phosphatase,Alkaline Phosphatase,IU/L,40-120,unchanged,IMPBIO005,6abcc3a258a3c5d2af9f04b6,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+14,BIO CHEMISTRY,AMYLASE,SERUM AMYLASE,U/L,28 - 100,unchanged,IMPBIO006,6abcc3a258a3c5d2af9f04b9,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+15,BIOCHEMISTRY,ANTI CARDIOLIPIN IgG,CARDIOLIPIN IgG ANTIBODY,GPL U/ml,"< 10: Negative
+> 10: Positive",unchanged,IMPBIO007,6abcc3a258a3c5d2af9f04bc,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+16,BIOCHEMISTRY,ANTI CARDIOLIPIN IgM,CARDIOLIPIN IgM ANTIBODY,MPL U/ml,"< 7 \:Negative
+> 7 \:Positive",unchanged,IMPBIO008,6abcc3a258a3c5d2af9f04bf,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+17,BIO CHEMISTRY,ANTI CCP,ANTI CCP ANTIBODIES,U/mL,<35.0,unchanged,IMPBIO009,6abcc3a258a3c5d2af9f04c2,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+18,BIO CHEMISTRY,ANTI MULLERIN HORMONE(AMH),ANTI MULLERIAN HORMONE(AMH),,1.32-10.34,unchanged,IMPBIO010,6abcc3a258a3c5d2af9f04c5,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+19,BIO CHEMISTRY,Anti Nuclear Antibody,Antti Nuclear Antibody(ANA),s/co,"<0.9: Negative
+0.91-1.10 Equivocal
+>1.1: Positive",unchanged,IMPBIO011,6abcc3a258a3c5d2af9f04c8,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+20,BIO CHEMISTRY,ANTI TPO,Microsomal/Thryroperoxidase Antibody (AMA)(TPO),IU/mL,< 34,unchanged,IMPBIO012,6abcc3a258a3c5d2af9f04cb,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+21,BIO CHEMISTRY,ANTIBODY TO HEPATITIS C VIRUS(CLIA),Hepatitis C Virus,,,unchanged,IMPBIO013,6abcc3a258a3c5d2af9f04ce,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+22,BIO CHEMISTRY,APLA PROFILE,APA IgG IgM LA PA IgG IgM CL IgG IgM BG IgG IgM,,,unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04d1,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+23,BIO CHEMISTRY,APLA PROFILE,PHOSPHOLIPID ANTIBODIES IgM,MPL U/mL,"< 10 Normal
+> 10 Elevated",unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04d4,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+24,BIO CHEMISTRY,APLA PROFILE,PHOSPHOLIPID ANTIBODIES IgG,GPL U/mL,"< 10 Normal
+< 10 Elevated",unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04d7,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+25,BIO CHEMISTRY,APLA PROFILE,LUPUS ANTICOAGULANT,,,unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04da,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+26,BIO CHEMISTRY,APLA PROFILE,LA Screen,Sec,28-45,unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04dd,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+27,BIO CHEMISTRY,APLA PROFILE,LA Confirm,Sec,28 - 40,unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04e0,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+28,BIO CHEMISTRY,APLA PROFILE,LA Screen/Confirm Ratio,Sec,"< 1.3 : Normal
+1.3 - 1.8 : Moderate LA
+1.8 - 2.4 : High LA
+> 2.4 : Very High LA",unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04e3,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+29,BIO CHEMISTRY,APLA PROFILE,CARDIOLIPIN IgG ANTIBODY,GPL U/ml,"< 10: Negative
+> 10: Positive",unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04e6,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+30,BIO CHEMISTRY,APLA PROFILE,CARDIOLIPIN IgM ANTIBODY,MPL U/ml,"< 7 \:Negative
+> 7 \:Positive",unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04e9,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+31,BIO CHEMISTRY,APLA PROFILE,BETA GLYCOPROTEIN ANTI BODY IgG,SGU,"< 20 Negative
+> 20 Positive",unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04ec,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+32,BIO CHEMISTRY,APLA PROFILE,BETA GLYCOPROTEIN ANTI BODY IgM,SGU,"< 20 Negative
+> 20 Positive",unchanged,IMPBIO014,6abcc3a258a3c5d2af9f04ef,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+33,BIOCHEMISTRY,APOLIPOPROTEIN B (APO-B),Apolipoprotein b,g/L,0.66 – 1.44,unchanged,IMPBIO015,6abcc3a258a3c5d2af9f04f2,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+34,BIO CHEMISTRY,ASO,ASO (Titres (Anti Streptolysin O),IU/mL,<200 IU/mL,unchanged,IMPBIO016,6abcc3a258a3c5d2af9f04f5,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+35,BIOCHEMISTRY,BETA 2 GLYCOPROTEIN ANTY BODY IgG,BETA 2 GLYCOPROTEIN ANTY BODY IgG,SGU,"< 20 Negative
+> 20 Positive",unchanged,IMPBIO017,6abcc3a258a3c5d2af9f04f8,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+36,BIOCHEMISTRY,BETA 2 GLYCOPROTEIN ANTY BODY IgM,BETA 2 GLYCOPROTEIN ANTY BODY IgM,SGU,"< 20 Negative
+> 20 Positive",unchanged,IMPBIO018,6abcc3a258a3c5d2af9f04fb,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+37,BIOCHEMISTRY,BETA HCG,Beta HCG,mIU/mL,"Non pregnant woman <0.5-3.0
+1-10 weeks:50-221796
+11-15weeks:15205-227034
+16-24weeks:5002-75445
+25-40weeks:1501-69208",unchanged,IMPBIO019,6abcc3a258a3c5d2af9f04fe,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+38,BIO CHEMISTRY,BILIRUBIN,TOTAL BILIRUBIN,mg/dL,0.2-1.0 mg/dL,unchanged,IMPBIO020,6abcc3a258a3c5d2af9f0501,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+39,BIO CHEMISTRY,BILIRUBIN,DIRECT BILIRUBIN,mg/dl,0-0.2 mg/dL,unchanged,IMPBIO020,6abcc3a258a3c5d2af9f0504,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+40,BIO CHEMISTRY,BILIRUBIN,INDIRECT BILIRUBIN,mg/dL,,unchanged,IMPBIO020,6abcc3a258a3c5d2af9f0507,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+41,BIO CHEMISTRY,"BILIRUBIN,PAEDIATRIC",TOTAL BILIRUBIN,mg/dl,"Birth : Upto 3.5
+1st Day : Upto 5.0
+2nd Day : Upto 9.0
+3rd - 5th Day : Upto 13.0",unchanged,IMPBIO021,6abcc3a258a3c5d2af9f050a,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+42,BIO CHEMISTRY,"BILIRUBIN,PAEDIATRIC",DIRECT BILIRUBIN,mg/dl,0-0.2 mg/dl,unchanged,IMPBIO021,6abcc3a258a3c5d2af9f050d,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+43,BIO CHEMISTRY,"BILIRUBIN,PAEDIATRIC",INDIRECT BILIRUBIN,mg/dl,,unchanged,IMPBIO021,6abcc3a258a3c5d2af9f0510,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+44,Hematology,BLEEDING TIME CLOTTING TIME,BLEEDING TIME,Minutes,1 - 3 Minutes,unchanged,IMPHEM002,6abcc3a258a3c5d2af9f0513,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+45,Hematology,BLEEDING TIME CLOTTING TIME,CLOTTING TIME,Minutes,3 - 7 Minutes,unchanged,IMPHEM002,6abcc3a258a3c5d2af9f0516,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+46,Hematology,BLOOD GROUP,Blood Group,,,unchanged,IMPHEM003,6abcc3a258a3c5d2af9f0519,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+47,Hematology,BLOOD GROUP,Rh Type,,,unchanged,IMPHEM003,6abcc3a258a3c5d2af9f051c,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+48,Hematology,BLOOD GROUP,NOTE:-,,,unchanged,IMPHEM003,6abcc3a258a3c5d2af9f051f,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+49,BIOCHEMISTRY,BLOOD GROUPING & RH TYPING,BLOOD GROUPING,,,unchanged,IMPBIO022,6abcc3a258a3c5d2af9f0522,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+50,BIOCHEMISTRY,BLOOD GROUPING & RH TYPING,Rh Typing,,,unchanged,IMPBIO022,6abcc3a258a3c5d2af9f0525,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+51,BIOCHEMISTRY,BLOOD GROUPING & RH TYPING,NOTE:-,,,unchanged,IMPBIO022,6abcc3a258a3c5d2af9f0528,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+52,BIOCHEMISTRY,BLOOD UREA,Blood Urea,mg/dl,15-45,unchanged,IMPBIO023,6abcc3a258a3c5d2af9f052b,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+53,BIOCHEMISTRY,BLOOD UREA SERUM CREATININE,BLOOD UREA,mg/dL,15-45,unchanged,IMPBIO024,6abcc3a258a3c5d2af9f052e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+54,BIOCHEMISTRY,BLOOD UREA SERUM CREATININE,SERUM CREATININE,mg/dL,"Male :0.9-1.5mg/dL
+Female :0.8-1.3mg/dL
+Child :0-0mg/dL",unchanged,IMPBIO024,6abcc3a258a3c5d2af9f0531,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+55,BIOCHEMISTRY,BT/CT,BLEEDING TIME,minutes,1-6minutes,unchanged,IMPBIO025,6abcc3a258a3c5d2af9f0534,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+56,BIOCHEMISTRY,BT/CT,CLOTTING TIME,minutes,4-6minutes,unchanged,IMPBIO025,6abcc3a258a3c5d2af9f0537,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+57,BIOCHEMISTRY,c-peptide,C-PEPTIDE,ng/mL,1.1-4.1,unchanged,IMPBIO026,6abcc3a258a3c5d2af9f053a,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+58,BIO CHEMISTRY,CA 125,Cancer Antigen 125,U/mL,"Female :0-35U/mL
+Child :0-0U/mL",unchanged,IMPBIO027,6abcc3a258a3c5d2af9f053d,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+59,BIO CHEMISTRY,CARCINO EMBRYONIC ANTIGEN (CEA),CARCINO EMBRYONIC ANTIGEN (CEA),,"Male :0-5.2
+Female :0-3.3
+Child :0-0",unchanged,IMPBIO028,6abcc3a258a3c5d2af9f0540,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+60,BIOCHEMISTRY,CHIKUNGUNYA IgM,Chikungunya-IgM,,"<1.0 Negative
+>1.0 Positive",unchanged,IMPBIO029,6abcc3a258a3c5d2af9f0543,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+61,Hematology,COMPLETE BLOOD PICTURE,Haemoglobin,Grams %,"Male :13-17Grams %
+Female :12-15Grams %
+Child :11.0-15.5Grams %",unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0546,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+62,Hematology,COMPLETE BLOOD PICTURE,Red Cell Count,mill/cumm,"Males : 4.5 - 5.5 mill/cumm
+Females: 3.8 - 4.8 mill/cumm",unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0549,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+63,Hematology,COMPLETE BLOOD PICTURE,Hematocrit ( PCV ),Vol %,"Male : 40-50 Vol %
+Females : 36-46 Vol %",unchanged,HEM_CBP,6abcc3a258a3c5d2af9f054c,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+64,Hematology,COMPLETE BLOOD PICTURE,Total Leucocyte (WBC) count,cells/cumm,4000-10000 cells/cumm,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f054f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+65,Hematology,COMPLETE BLOOD PICTURE,Platelet Count,Lakhs/cumm,1.50 - 4.5 Lakhs/cumm,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0552,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+66,Hematology,COMPLETE BLOOD PICTURE,DIFFERENTIAL COUNT,,,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0555,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+67,Hematology,COMPLETE BLOOD PICTURE,Neutrophils,%,40-75%,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0558,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+68,Hematology,COMPLETE BLOOD PICTURE,Lymphocytes,%,20-40%,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f055b,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+69,Hematology,COMPLETE BLOOD PICTURE,Eosinophils,%,1-6%,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f055e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+70,Hematology,COMPLETE BLOOD PICTURE,Monocytes,%,2-10%,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0561,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+71,Hematology,COMPLETE BLOOD PICTURE,Basophils,%,0-1%,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0564,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+72,Hematology,COMPLETE BLOOD PICTURE,PERIPHERAL SMEAR,,,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0567,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+73,Hematology,COMPLETE BLOOD PICTURE,R B C,,,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f056a,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+74,Hematology,COMPLETE BLOOD PICTURE,W B C,,,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f056d,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+75,Hematology,COMPLETE BLOOD PICTURE,PLATELETS,,,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0570,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+76,Hematology,COMPLETE BLOOD PICTURE,Total WBC count,cells/cumm,4000-11000cells/cumm,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0573,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+77,Hematology,COMPLETE BLOOD PICTURE,ESR 1st Hour,mm,00 - 10 mm,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0576,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+78,Hematology,COMPLETE BLOOD PICTURE,ABSOLUTE EOSINOPHIL COUNT (AEC),Cells/cumm,40 - 440 Cells/cumm,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0579,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+79,Hematology,COMPLETE BLOOD PICTURE,Mean Corpuscular Volume(MCV),fl,83-101fl,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f057c,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+80,Hematology,COMPLETE BLOOD PICTURE,Mean Corpuscular Hemoglobin(MCH),pg,27-32pg,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f057f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+81,Hematology,COMPLETE BLOOD PICTURE,Mean Corpuscular Hemoglobin Concentration(MCHC),gm/dL,31.5-34.5gm/dL,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0582,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+82,Hematology,COMPLETE BLOOD PICTURE,Red Cell Distribution Width(RDW-CV),%,11.6-14%,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0585,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+83,Hematology,COMPLETE BLOOD PICTURE,ADVISE,,,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f0588,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+84,Hematology,COMPLETE BLOOD PICTURE,IMPRESSION,,,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f058b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+85,Hematology,COMPLETE BLOOD PICTURE,ERYTHROCYTE SEDIMENAION RATE,,0-20,unchanged,HEM_CBP,6abcc3a258a3c5d2af9f058e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+86,PATHOLOGY,COMPLETE STOOL EXAMINATION,MACROSCOPIC,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f0592,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+87,PATHOLOGY,COMPLETE STOOL EXAMINATION,COLOUR,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f0595,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+88,PATHOLOGY,COMPLETE STOOL EXAMINATION,APPEARANCE,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f0598,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+89,PATHOLOGY,COMPLETE STOOL EXAMINATION,MUCUS,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f059b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+90,PATHOLOGY,COMPLETE STOOL EXAMINATION,BLOOD,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f059e,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+91,PATHOLOGY,COMPLETE STOOL EXAMINATION,CHEMICAL EXAMINATION,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05a1,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+92,PATHOLOGY,COMPLETE STOOL EXAMINATION,REACTION,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05a4,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+93,PATHOLOGY,COMPLETE STOOL EXAMINATION,STOOL OF REDUCING SUBSTANCE,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05a7,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+94,PATHOLOGY,COMPLETE STOOL EXAMINATION,OCCULT BLOOD,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05aa,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+95,PATHOLOGY,COMPLETE STOOL EXAMINATION,MICROSCOPIC,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05ad,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+96,PATHOLOGY,COMPLETE STOOL EXAMINATION,OVA,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05b0,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+97,PATHOLOGY,COMPLETE STOOL EXAMINATION,CYSTS,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05b3,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+98,PATHOLOGY,COMPLETE STOOL EXAMINATION,PUS CELLS,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05b6,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+99,PATHOLOGY,COMPLETE STOOL EXAMINATION,RED BLOOD CELLS,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05b9,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+100,PATHOLOGY,COMPLETE STOOL EXAMINATION,EPITHEIAL CELLS,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05bc,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+101,PATHOLOGY,COMPLETE STOOL EXAMINATION,OTHERS,,,unchanged,IMPPAT001,6abcc3a258a3c5d2af9f05bf,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+102,PATHOLOGY,COMPLETE URINE EXAMINATION,PHYSICAL EXAMINATION,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05c2,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+103,PATHOLOGY,COMPLETE URINE EXAMINATION,Colour,,Colorless,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05c5,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+104,PATHOLOGY,COMPLETE URINE EXAMINATION,Appearance,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05c8,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+105,PATHOLOGY,COMPLETE URINE EXAMINATION,Reaction,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05cb,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+106,PATHOLOGY,COMPLETE URINE EXAMINATION,Specific Gravity,,1.015 - 1.030,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05ce,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+107,PATHOLOGY,COMPLETE URINE EXAMINATION,PH,,4.6-8.0,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05d1,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+108,PATHOLOGY,COMPLETE URINE EXAMINATION,CHEMICAL EXAMINATION,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05d4,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+109,PATHOLOGY,COMPLETE URINE EXAMINATION,Urine Protein,,NIL,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05d7,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+110,PATHOLOGY,COMPLETE URINE EXAMINATION,Urine Glucose,,Nil,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05da,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+111,PATHOLOGY,COMPLETE URINE EXAMINATION,Urine Ketones,,Negative,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05dd,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+112,PATHOLOGY,COMPLETE URINE EXAMINATION,Bilirubin,,Negative,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05e0,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+113,PATHOLOGY,COMPLETE URINE EXAMINATION,Blood,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05e3,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+114,PATHOLOGY,COMPLETE URINE EXAMINATION,Nitrite,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05e6,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+115,PATHOLOGY,COMPLETE URINE EXAMINATION,MICROSCOPIC EXAMINATION,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05e9,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+116,PATHOLOGY,COMPLETE URINE EXAMINATION,Pus cells,hpf,1 - 2 /hpf,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05ec,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+117,PATHOLOGY,COMPLETE URINE EXAMINATION,Epithelial cells,hpf,1 - 2 /hpf,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05ef,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+118,PATHOLOGY,COMPLETE URINE EXAMINATION,Red blood cells,hpf,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05f2,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+119,PATHOLOGY,COMPLETE URINE EXAMINATION,Crystals,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05f5,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+120,PATHOLOGY,COMPLETE URINE EXAMINATION,Casts,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05f8,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+121,PATHOLOGY,COMPLETE URINE EXAMINATION,Others,,,unchanged,PAT_CUE,6abcc3a258a3c5d2af9f05fb,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+122,BIO CHEMISTRY,CORTISOL,CORTISOL SERUM,ug/dL,4.8-19.9,unchanged,IMPBIO030,6abcc3a258a3c5d2af9f05fe,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+123,BIO CHEMISTRY,Creatine Kinase MB (CK-MB),Creatine Kinase MB (CK-MB),,,unchanged,IMPBIO031,6abcc3a258a3c5d2af9f0601,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+124,BIO CHEMISTRY,CREATININE PHOSPHOKINASE (CPK),CREATININE PHOSPHOKINASE (CPK),U/L,< 190,unchanged,IMPBIO032,6abcc3a258a3c5d2af9f0604,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+125,BIOCHEMISTRY,CRP (C - REACTIVE PROTEIN),C- REACTIVE PROTEIN (CRP),mg/L,Upto 6.0 mg/L,unchanged,BIO_CRP,6abcc3a258a3c5d2af9f0607,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+126,BIOCHEMISTRY,CRP (C - REACTIVE PROTEIN),Clinical Significance,,,unchanged,BIO_CRP,6abcc3a258a3c5d2af9f060a,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+127,BIOCHEMISTRY,CRP RF ASO,C-REACTIVE PROTEIN,mg/L,0-6.0,unchanged,IMPBIO033,6abcc3a258a3c5d2af9f060d,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+128,BIOCHEMISTRY,CRP RF ASO,RHEUMATOID FACTOR,IU/mL,<20,unchanged,IMPBIO033,6abcc3a258a3c5d2af9f0610,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+129,BIOCHEMISTRY,CRP RF ASO,ANTISTREPTOLYSIN,IU/mL,<200,unchanged,IMPBIO033,6abcc3a258a3c5d2af9f0613,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+130,BIO CHEMISTRY,D-DIMER,D- DIMER,ng/ml,< 500 ng/ml,unchanged,IMPBIO034,6abcc3a258a3c5d2af9f0616,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+131,BIOCHEMISTRY,Dengue NSI,Dengue NSI,,,unchanged,IMPBIO035,6abcc3a258a3c5d2af9f0619,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+132,BIO CHEMISTRY,Dengue Profile,Dengue NSI -Ag - Rapid,,,unchanged,IMPBIO036,6abcc3a258a3c5d2af9f061c,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+133,BIO CHEMISTRY,Dengue Profile,Dengue IgG,,,unchanged,IMPBIO036,6abcc3a258a3c5d2af9f061f,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+134,BIO CHEMISTRY,Dengue Profile,Dengue IgM,,,unchanged,IMPBIO036,6abcc3a258a3c5d2af9f0622,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+135,BIOCHEMISTRY,Erythrocyte sedimentation rate(Esr),ESR  First Hour,mm/hr,0 - 10 mm/hr,unchanged,BIO_ESR,6abcc3a258a3c5d2af9f0625,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+136,BIOCHEMISTRY,Erythrocyte sedimentation rate(Esr),ESR Second Hour,mm,10 - 20 mm,unchanged,BIO_ESR,6abcc3a258a3c5d2af9f0628,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+137,BIOCHEMISTRY,Erythrocyte sedimentation rate(Esr),HAEMOGLOBIN,g/dl,12-16g/dl,unchanged,BIO_ESR,6abcc3a258a3c5d2af9f062b,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+138,BIOCHEMISTRY,Erythrocyte sedimentation rate(Esr),ESR 1st Hour,mm/Hour,00-15 mm/Hour,unchanged,BIO_ESR,6abcc3a258a3c5d2af9f062e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+139,BIO CHEMISTRY,ESTRADIOL(E2),ESTRADIOL(E2),pg/mL,"30.9 – 90.4: Follicular Phase
+60.4 – 533 : Ovulation phase
+60.4 – 232 : Luteal Phase
+< 138 : Postmenopausal",unchanged,IMPBIO037,6abcc3a258a3c5d2af9f0631,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+140,BIOCHEMISTRY,FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR,FASTING PLASMA SUGAR,mg/dl,70-110mg/dl,unchanged,IMPBIO038,6abcc3a258a3c5d2af9f0634,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+141,BIOCHEMISTRY,FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR,CORRESPONDING URINE SUGAR,,,unchanged,IMPBIO038,6abcc3a258a3c5d2af9f0637,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+142,BIOCHEMISTRY,FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR,POST LUNCH BLOOD SUGAR,mg/dl,110-170mg/dl,unchanged,IMPBIO038,6abcc3a258a3c5d2af9f063a,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+143,BIOCHEMISTRY,FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR,CORRESPONDING URINE SUGAR,,,duplicate-in-source,IMPBIO038,,Same parameter already imported from S.No 141; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+144,BIO CHEMISTRY,FBS (FASTING BLOOD SUGAR),FASTING BLOOD SUGAR,mg/dl,70-110mg/dl,unchanged,IMPBIO039,6abcc3a258a3c5d2af9f063e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+145,BIO CHEMISTRY,FBS (FASTING BLOOD SUGAR),FASTING URINE SUGAR,,,unchanged,IMPBIO039,6abcc3a258a3c5d2af9f0641,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+146,Hematology,FIBRINOGEN,Fibrinogen,mg/dL,150-400,unchanged,IMPHEM004,6abcc3a258a3c5d2af9f0644,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+147,Hematology,FLUID CELL COUNT,PHYSICAL EXAMINATION,,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f0647,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+148,Hematology,FLUID CELL COUNT,Color,,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f064a,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+149,Hematology,FLUID CELL COUNT,Volume,,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f064d,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+150,Hematology,FLUID CELL COUNT,Appearance,,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f0650,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+151,Hematology,FLUID CELL COUNT,Reaction,,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f0653,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+152,Hematology,FLUID CELL COUNT,Sediment,,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f0656,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+153,Hematology,FLUID CELL COUNT,MICROSCOPIC EXAMINATION,,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f0659,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+154,Hematology,FLUID CELL COUNT,Neutrophils,%,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f065c,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+155,Hematology,FLUID CELL COUNT,Lymphocytes,%,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f065f,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+156,Hematology,FLUID CELL COUNT,Eosinophils,%,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f0662,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+157,Hematology,FLUID CELL COUNT,Monocytes,%,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f0665,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+158,Hematology,FLUID CELL COUNT,Basophils,%,,unchanged,IMPHEM005,6abcc3a258a3c5d2af9f0668,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+159,Hematology,FOLIC ACID,Folic Acid,ng/mL,"< 3.9 : Deficient
+4.0 – 5.8 : Indeterminate
+> 5.9 : Normal",unchanged,IMPHEM006,6abcc3a258a3c5d2af9f066b,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+160,BIOCHEMISTRY,FREE T3,FREE T3,ng/dL,1.8-4.2,unchanged,IMPBIO040,6abcc3a258a3c5d2af9f066e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+161,BIOCHEMISTRY,FREE T3 T4,FREE T3,ng/dL,1.8-4.2,unchanged,IMPBIO041,6abcc3a258a3c5d2af9f0671,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+162,BIOCHEMISTRY,FREE T3 T4,FREE T4,ng/dL,0.87-1.85,unchanged,IMPBIO041,6abcc3a258a3c5d2af9f0674,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+163,BIO CHEMISTRY,FREE-T4 (THYROXINE),FREE-T4 (THROXINE),,0.87-1.85,unchanged,IMPBIO042,6abcc3a258a3c5d2af9f0677,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+164,BIO CHEMISTRY,FSH,Follicle Stimulating Hormone (FSH),mIU/ml,"Follicular phase:3.5-12.5
+Ovulation period:4.7-21.5
+Luteal phase:1.7.21.5
+Post-mentopause:25.8-134.8",unchanged,IMPBIO043,6abcc3a258a3c5d2af9f067a,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+165,BIOCHEMISTRY,FSH LH PRL (FLP),Follicle-Stimulating Hormone(FSH),,"Follicular phase:3.5-12.5
+Ovulation period:4.7-21.5
+Luteal phase:1.7.21.5
+Post-mentopause:25.8-134.8",unchanged,IMPBIO044,6abcc3a258a3c5d2af9f067d,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+166,BIOCHEMISTRY,FSH LH PRL (FLP),LUTENIZING HORMONE(LH),,"Follicular phase:1.9-11.6
+Ovulation period:12.9-105.2
+Luteal phase:0.8-10.5
+Post-menopause:6.6-66.4",unchanged,IMPBIO044,6abcc3a258a3c5d2af9f0680,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+167,BIOCHEMISTRY,FSH LH PRL (FLP),PROLACTIN(PRL),,"Males : 2.07 - 10.45 ng/ml
+Females :2.76-15.042 ng/ml",unchanged,IMPBIO044,6abcc3a258a3c5d2af9f0683,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+168,BIO CHEMISTRY,Glomerular Filtration Rate (eGFR),Glomerular Filtration Rate (eGFR),,,unchanged,IMPBIO045,6abcc3a258a3c5d2af9f0686,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+169,BIO CHEMISTRY,Glomerular Filtration Rate (eGFR),CREATININE,,0.7-1.3,unchanged,IMPBIO045,6abcc3a258a3c5d2af9f0689,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+170,BIO CHEMISTRY,Glomerular Filtration Rate (eGFR),estimated Glomerular Filtration Rate (eGFR),mL/min/1.73m²,>90,unchanged,IMPBIO045,6abcc3a258a3c5d2af9f068c,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+171,BIOCHEMISTRY,GLUCOSE CHALLANGE TEST (GCT),Fasting Blood Sugar,,70-110,unchanged,IMPBIO046,6abcc3a258a3c5d2af9f068f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+172,BIOCHEMISTRY,GLUCOSE CHALLANGE TEST (GCT),After glucose 75 grams given,,,unchanged,IMPBIO046,6abcc3a258a3c5d2af9f0692,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+173,BIOCHEMISTRY,GLUCOSE CHALLANGE TEST (GCT),1st hour glucose,,< 180 mg/dL,unchanged,IMPBIO046,6abcc3a258a3c5d2af9f0695,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+174,BIOCHEMISTRY,GLUCOSE CHALLANGE TEST (GCT),2nd hour glucose,,< 155 mg/dL,unchanged,IMPBIO046,6abcc3a258a3c5d2af9f0698,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+175,BIOCHEMISTRY,GLUCOSE CHALLANGE TEST (GCT),Corresponding urine sugar,,,unchanged,IMPBIO046,6abcc3a258a3c5d2af9f069b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+176,BIO CHEMISTRY,GLUCOSE-FLUIDS,GLUCOSE,mg/dl,,unchanged,IMPBIO047,6abcc3a258a3c5d2af9f069e,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+177,Hematology,HAEMOGLOBIN,Haemoglobin,Grams,"Male :13-17 Grams %
+Female :12-15 Grams %
+Child :11.0-15.5 Grams %",unchanged,IMPHEM007,6abcc3a258a3c5d2af9f06a1,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+178,Hematology,HAEMOGRAM,Hemoglobin,gms/dl,"Male :13-17gms/dl
+Female :12-15gms/dl
+Child :0-0gms/dl",unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06a4,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+179,Hematology,HAEMOGRAM,P C V,Vol%,40-50Vol%,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06a7,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+180,Hematology,HAEMOGRAM,Red Cell Count,mill/cumm,"Male :4.5-5.5mill/cumm
+Female :3.8-4.8mill/cumm
+Child :0-0mill/cumm",unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06aa,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+181,Hematology,HAEMOGRAM,M.C.V,fl,83-101fl,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06ad,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+182,Hematology,HAEMOGRAM,M.C.H,pg,27-32 pg,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06b0,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+183,Hematology,HAEMOGRAM,R.D.W,%,10-15%,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06b3,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+184,Hematology,HAEMOGRAM,Platelet Count,Lakhs/cumm,1.50 - 4.20 Lakhs/cumm,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06b6,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+185,Hematology,HAEMOGRAM,DIFFERENTIAL COUNT,,,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06b9,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+186,Hematology,HAEMOGRAM,Neutrophils,%,40-80 %,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06bc,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+187,Hematology,HAEMOGRAM,Lymphocytes,%,20-40%,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06bf,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+188,Hematology,HAEMOGRAM,Eosinophils,%,1-6%,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06c2,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+189,Hematology,HAEMOGRAM,Monocytes,%,2-10%,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06c5,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+190,Hematology,HAEMOGRAM,Basophils,00 %,0-1 %,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06c8,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+191,Hematology,HAEMOGRAM,PERIPHERAL SMEAR,,,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06cb,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+192,Hematology,HAEMOGRAM,R B C,,,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06ce,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+193,Hematology,HAEMOGRAM,W B C,,,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06d1,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+194,Hematology,HAEMOGRAM,PLATELETS,,,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06d4,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+195,Hematology,HAEMOGRAM,Note,,,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06d7,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+196,Hematology,HAEMOGRAM,Advise,,,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06da,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+197,Hematology,HAEMOGRAM,Impression,,,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06dd,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+198,Hematology,HAEMOGRAM,M.C.H.C,gms/dl,32 - 36 gms/dl,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06e0,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+199,Hematology,HAEMOGRAM,HAEMOGRAM,,,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06e3,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+200,Hematology,HAEMOGRAM,Total Leucocyte(WBC) count,cells/cumm,4000 - 10000 cells/cumm,unchanged,IMPHEM008,6abcc3a258a3c5d2af9f06e6,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+201,BIO CHEMISTRY,HBA1C,Glycosylated Hemoglobin(HBA 1C),%,"<4-6 NON DIABETIC
+6-7 GOOD CONTROL
+7-8 POOR CONTROL
+>8 DIABETIC
+>10.10 VERY POOR CONTROL",unchanged,IMPBIO048,6abcc3a258a3c5d2af9f06e9,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+202,BIO CHEMISTRY,HBA1C,Estimated Average Glucose (EAG),mg/dL,"<110 mg/dL Non Diabetic
+110-140 mg/dL Excellent Control
+140-180 mg/dL Fair Control
+180-250 mg/dL Unsatisfactory Control
+>250 mg/dL Poor Control",unchanged,IMPBIO048,6abcc3a258a3c5d2af9f06ec,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+203,BIO CHEMISTRY,HBA1C,INTERPRETATION:,,,unchanged,IMPBIO048,6abcc3a258a3c5d2af9f06ef,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+204,MICROBIOLOGY,HBSAG,HbsAg,,,unchanged,IMPMIC001,6abcc3a258a3c5d2af9f06f3,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+205,BIO CHEMISTRY,HCG,BETA HCG,,"Non pregnant woman <0.5-3.0
+1-10 weeks:50-221796
+11-15weeks:15205-227034
+16-24weeks:5002-75445
+25-40weeks:1501-69208",unchanged,IMPBIO049,6abcc3a258a3c5d2af9f06f6,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+206,BIOCHEMISTRY,HCG PREGNANCY RAPID,HCG PREGNANCY RAPID,,,unchanged,IMPBIO050,6abcc3a258a3c5d2af9f06f9,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+207,BIOCHEMISTRY,HEMOGLOBIN,Haemoglobin,g/dL,"Male :13-17g/dL
+Female :12-15g/dL
+Child :0-0g/dL",unchanged,IMPBIO051,6abcc3a258a3c5d2af9f06fc,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+208,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Hemoglobinopathies,,,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f06ff,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+209,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Total Hemoglobin,g/dl,12.0 - 15.0,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0702,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+210,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Total RBC Count,mln/cmm,3.8 - 4.8,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0705,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+211,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),MCV,fl,83 - 101,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0708,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+212,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),MCH,pg,27 - 32,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f070b,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+213,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),RDW - CV,%,11.5 - 14.5,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f070e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+214,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Hb A0 Level,%,95-98,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0711,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+215,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Hb A2 Level,%,2.0 - 3.5,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0714,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+216,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Hb F (Foetal Hb) Level,%,< 1,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0717,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+217,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Sickle cell Window,%,00,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f071a,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+218,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Hb D -Window,%,00,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f071d,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+219,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Hb C -Window,%,00,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0720,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+220,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Hb E -Window,%,00,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0723,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+221,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Unknown Variant,%,00,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0726,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+222,MICROBIOLOGY,Hemoglobinopathy (Hb Electrophoresis),Impression,,,unchanged,IMPMIC002,6abcc3a258a3c5d2af9f0729,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+223,BIO CHEMISTRY,HEPATITIS B,HbsAg,,,unchanged,IMPBIO052,6abcc3a258a3c5d2af9f072c,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+224,BIO CHEMISTRY,HEPATITIS C,Hepatitis C Virus,,,unchanged,IMPBIO053,6abcc3a258a3c5d2af9f072f,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+225,BIOCHEMISTRY,HEPATITIS C VIRUS RAPID,HEPATITIS C VIRUS,,,unchanged,IMPBIO054,6abcc3a258a3c5d2af9f0732,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+226,PATHOLOGY,HIV,HIV I & II,,,unchanged,IMPPAT002,6abcc3a258a3c5d2af9f0735,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+227,Hematology,HLA-B27,HLA B27 DNA - Qualitative,,,unchanged,IMPHEM009,6abcc3a258a3c5d2af9f0738,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+228,BIOCHEMISTRY,HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance),HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance),,,unchanged,IMPBIO055,6abcc3a258a3c5d2af9f073b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+229,BIOCHEMISTRY,HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance),"Glucose Plasma, Fasting",mg/dL,70-110,unchanged,IMPBIO055,6abcc3a258a3c5d2af9f073e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+230,BIOCHEMISTRY,HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance),"Insulin Serum , Fasting",µU/mL,2-25,unchanged,IMPBIO055,6abcc3a258a3c5d2af9f0741,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+231,BIOCHEMISTRY,HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance),Beta Cell Function (%B),%,"80% – 100% : Normal
+50% - 79% : Mild
+<50 % : Severe",unchanged,IMPBIO055,6abcc3a258a3c5d2af9f0744,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+232,BIOCHEMISTRY,HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance),Insulin Sensitivity (%S),,,unchanged,IMPBIO055,6abcc3a258a3c5d2af9f0747,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+233,BIOCHEMISTRY,HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance),HOMA IR Index,,"< 1.0 : Optimal
+1.0 - 1.9 : Early IR
+1.9 - 2.9 : Significant IR
+>2.9 : High Risk",unchanged,IMPBIO055,6abcc3a258a3c5d2af9f074a,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+234,BIO CHEMISTRY,HOMOCYSTEIN,Homocysteine,µmol/L,"5 -15 : Normal
+16 – 30 : Mildly Elevated
+31 – 75 : Elevated
+>75 : Severely Elevated",unchanged,IMPBIO056,6abcc3a258a3c5d2af9f074d,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+235,BIO CHEMISTRY,HS TROP I,High Sensitive Troponin-I,ng/mL,upto 0.3 ng/mL,unchanged,IMPBIO057,6abcc3a258a3c5d2af9f0750,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+236,BIOCHEMISTRY,HSV 1 & 2 IgG,Herpes simplex virus 1 & 2 IgG,s/co,"<0.9 Negative
+0.9 -1.1 Equivocal
+>1.2 Positive",unchanged,IMPBIO058,6abcc3a258a3c5d2af9f0753,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+237,BIOCHEMISTRY,HSV 1 & 2 IgM,Herpes simplex virus 1 & 2 IgM,s/co,"<0.9 Negative
+0.9 -1.1 Equivocal
+>1.2 Positive",unchanged,IMPBIO059,6abcc3a258a3c5d2af9f0756,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+238,BIOCHEMISTRY,"HSV IgG,IgM",Herpes Simplex Virus 1 & 2 IgG,s/co,"<0.9 Negative
+0.9 -1.1 Equivocal
+>1.2 Positive",unchanged,IMPBIO060,6abcc3a258a3c5d2af9f0759,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+239,BIOCHEMISTRY,"HSV IgG,IgM",Herpes Simplex Virus 1 & 2 IgM,s/co,"<0.9 Negative
+0.9 -1.1 Equivocal
+>1.2 Positive",unchanged,IMPBIO060,6abcc3a258a3c5d2af9f075c,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+240,BIOCHEMISTRY,"HSV IgG,IgM",,,,unresolved-blank-parameter,IMPBIO060,,Source row has no Parameter Name; nothing was written,n/a,,,No reference range in the source CSV; laboratory confirmation required
+241,BIO CHEMISTRY,Immunoglobulin (IgG),Immunoglobin IgG,,7.0-16.0,unchanged,IMPBIO061,6abcc3a258a3c5d2af9f075f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+242,BIOCHEMISTRY,Immunoglobulin A (IgA),Immunoglobulin A (IgA),g/L,0.34 – 2.22,unchanged,IMPBIO062,6abcc3a258a3c5d2af9f0762,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+243,BIO CHEMISTRY,Immunoglobution (IgM),Immunoglobulin M (IgM),,0.40 – 2.3,unchanged,IMPBIO063,6abcc3a258a3c5d2af9f0765,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+244,BIOCHEMISTRY,INSULIN POST PRANDIAL,INSULIN POST PRANDIAL,,22-75,unchanged,IMPBIO064,6abcc3a258a3c5d2af9f0768,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+245,BIO CHEMISTRY,INSULIN-FASTING,INSULIN-FASTING,uIU/ml,2.5-25,unchanged,IMPBIO065,6abcc3a258a3c5d2af9f076b,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+246,BIO CHEMISTRY,Ionised Calcium,Ionised Calcium,mmol/L,1.10 - 1.35 mmol/L,unchanged,IMPBIO066,6abcc3a258a3c5d2af9f076e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+247,BIO CHEMISTRY,IRON,IRON SERUM,ug/dL,33-193,unchanged,IMPBIO067,6abcc3a258a3c5d2af9f0771,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+248,BIO CHEMISTRY,IRON DEFICIENCY PROFILE,IRON,ug/dL,33-193ug/dL,unchanged,IMPBIO068,6abcc3a258a3c5d2af9f0774,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+249,BIO CHEMISTRY,IRON DEFICIENCY PROFILE,Unsaturated Iron Binding Capacity,ug/dL,135-392ug/dL,unchanged,IMPBIO068,6abcc3a258a3c5d2af9f0777,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+250,BIO CHEMISTRY,IRON DEFICIENCY PROFILE,Iron Binding Capacity - Total (TIBC),ug/dL,250-400 ug/dL,unchanged,IMPBIO068,6abcc3a258a3c5d2af9f077a,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+251,BIO CHEMISTRY,IRON DEFICIENCY PROFILE,Transferrin,ug/dL,176-280 ug/dL,unchanged,IMPBIO068,6abcc3a258a3c5d2af9f077d,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+252,BIO CHEMISTRY,IRON DEFICIENCY PROFILE,Transferrin%,%,20-50%,unchanged,IMPBIO068,6abcc3a258a3c5d2af9f0780,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+253,BIO CHEMISTRY,IRON DEFICIENCY PROFILE,Ferritin,ng/mL,6-175ng/mL,unchanged,IMPBIO068,6abcc3a258a3c5d2af9f0783,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+254,BIOCHEMISTRY,KIDNEY FUNCTION TEST (KFT),SERUM CREATININE,mg/dL,"Male :0.9-1.5
+Female :0.8-1.3
+Child :0-0",unchanged,IMPBIO069,6abcc3a258a3c5d2af9f0786,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+255,BIOCHEMISTRY,KIDNEY FUNCTION TEST (KFT),BLOOD UREA,mg%,14-40mg%,unchanged,IMPBIO069,6abcc3a258a3c5d2af9f0789,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+256,BIOCHEMISTRY,KIDNEY FUNCTION TEST (KFT),SERUM URIC ACID,mg/dl,"Male :2.5-7
+Female :1.5-6
+Child :0-0",unchanged,IMPBIO069,6abcc3a258a3c5d2af9f078c,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+257,BIOCHEMISTRY,KIDNEY FUNCTION TEST (KFT),SERUM CALCIUM,mg/dl,8.5-11,unchanged,IMPBIO069,6abcc3a258a3c5d2af9f078f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+258,BIO CHEMISTRY,LDH,LDH,U/L,135-225,unchanged,IMPBIO070,6abcc3a258a3c5d2af9f0792,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+259,BIO CHEMISTRY,LDH,Sample Type,,,unchanged,IMPBIO070,6abcc3a258a3c5d2af9f0795,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+260,BIO CHEMISTRY,LDH,LACTATE DEHYDROGEN (LDH),U/L,135 - 225,unchanged,IMPBIO070,6abcc3a258a3c5d2af9f0798,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+261,BIO CHEMISTRY,LDH,Sample Type,,,duplicate-in-source,IMPBIO070,,Same parameter already imported from S.No 259; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+262,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),Total Bilirubin,mg/dl,0.2-1mg/dl,unchanged,IMPBIO071,6abcc3a258a3c5d2af9f079c,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+263,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),Direct Bilirubin,mg/dl,0-0.2 mg/dl,unchanged,IMPBIO071,6abcc3a258a3c5d2af9f079f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+264,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),Indirect Bilirubin,mg/dl,,unchanged,IMPBIO071,6abcc3a258a3c5d2af9f07a2,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+265,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),Serum Glutamic Pyruvic Transaminase(SGPT),IU/L,<40 IU/L,unchanged,IMPBIO071,6abcc3a258a3c5d2af9f07a5,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+266,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),Serum Glutamic-Oxaloacetic Transaminase(SGOT),IU/L,< 40 IU/L,unchanged,IMPBIO071,6abcc3a258a3c5d2af9f07a8,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+267,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),Alkaline Phosphatase (ALP),IU/L,"Adult 40 – 120 IU/L
+<16 yrs upto 369 IU/L",unchanged,IMPBIO071,6abcc3a258a3c5d2af9f07ab,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+268,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),Total Proteins,gms/dl,6.4 - 8.3 gms/dl,unchanged,IMPBIO071,6abcc3a258a3c5d2af9f07ae,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+269,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),Albumin,gms/dl,3.5-5.2 gms/dl,unchanged,IMPBIO071,6abcc3a258a3c5d2af9f07b1,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+270,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),Globulin,gms/dl,2.5-4.0 gms/dl,unchanged,IMPBIO071,6abcc3a258a3c5d2af9f07b4,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+271,BIO CHEMISTRY,LFT (LIVER FUNCTION TEST),A/G Ratio,,0.8-2.0,unchanged,IMPBIO071,6abcc3a258a3c5d2af9f07b7,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+272,BIO CHEMISTRY,LIPASE,Lipase,U/L,13-60,unchanged,IMPBIO072,6abcc3a258a3c5d2af9f07ba,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+273,BIOCHEMISTRY,LIPID PROFILE,TOTAL CHOLESTEROL,mg/dl,"<200 : Desirable
+200-239 : Boderline isk
+>240 : High risk",unchanged,BIO005,6ab635e931a9e640f1702292,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+274,BIOCHEMISTRY,LIPID PROFILE,HDL CHOLESTEROL,mg/dl,"Male :30-63mg/dl
+Female :35-75mg/dl",unchanged,BIO005,6ab635e931a9e640f170229a,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+275,BIOCHEMISTRY,LIPID PROFILE,TRIGLYCERIDES CHOLESTEROL,mg/dl,"< 150 : Normal
+150-199 : Borderline-High
+200-499 : High
+> 500 : Very High",unchanged,BIO005,6abcc3a258a3c5d2af9f07c3,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+276,BIOCHEMISTRY,LIPID PROFILE,LDL CHOLESTEROL,mg/dl,"Optimal : < 100 mg/dL
+Near optimal: 100 - 129
+Border line high: 130 -159
+High: 160 - 189
+Very high: > 190",unchanged,BIO005,6ab635e931a9e640f170229e,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+277,BIOCHEMISTRY,LIPID PROFILE,VLDL CHOLESTEROL,mg/dL,60-30 mg/dL,unchanged,BIO005,6abcc3a258a3c5d2af9f07c9,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+278,BIOCHEMISTRY,LIPID PROFILE,CHOL/HDL RATIO,,UP TO 5.0,unchanged,BIO005,6abcc3a258a3c5d2af9f07cc,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+279,BIOCHEMISTRY,LIPID PROFILE,Note:,,,unchanged,BIO005,6abcc3a258a3c5d2af9f07cf,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+280,BIOCHEMISTRY,LIPID PROFILE,LDL/HDL RATIO,,,unchanged,BIO005,6abcc3a258a3c5d2af9f07d2,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+281,BIOCHEMISTRY,LIPID PROFILE,CHOL/TGL RATIO,,,unchanged,BIO005,6abcc3a258a3c5d2af9f07d5,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+282,BIOCHEMISTRY,LIPOPROTEIN A (LP-A),Lipoprotein a,nmol/L,< 75,unchanged,IMPBIO073,6abcc3a258a3c5d2af9f07d8,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+283,BIOCHEMISTRY,LUPAS ANTICOAGULANT,LUPAS ANTICOAGULANT,,,unchanged,IMPBIO074,6abcc3a258a3c5d2af9f07db,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+284,BIOCHEMISTRY,LUPAS ANTICOAGULANT,LA SCREEN,Sec,28 - 45,unchanged,IMPBIO074,6abcc3a258a3c5d2af9f07de,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+285,BIOCHEMISTRY,LUPAS ANTICOAGULANT,LA CONFIRM,Sec,28 - 40,unchanged,IMPBIO074,6abcc3a258a3c5d2af9f07e1,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+286,BIOCHEMISTRY,LUPAS ANTICOAGULANT,LA SCREEN/CONFIRM RATIO,Sec,"< 1.3 : Normal
+1.3 - 1.8 : Moderate LA
+1.8 - 2.4 : High LA
+> 2.4 : Very High LA",unchanged,IMPBIO074,6abcc3a258a3c5d2af9f07e4,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+287,BIO CHEMISTRY,LUTENIZING HORMONE(LH),Luteinising Hormone (LH),mIU/ml,"Follicular phase:1.9-11.6
+Ovulation period:12.9-105.2
+Luteal phase:0.8-10.5
+Post-menopause:6.6-66.4",unchanged,IMPBIO075,6abcc3a258a3c5d2af9f07e7,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+288,BIO CHEMISTRY,MAGNESIUM,SERUM MAGNESIUM,mEq/L,1.3 - 2.5 mEq/L,unchanged,IMPBIO076,6abcc3a258a3c5d2af9f07ea,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+289,Hematology,MALARIA,Malarial Parasite (Pv),,NEGATIVE,unchanged,HEM_MAL,6abcc3a258a3c5d2af9f07ed,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+290,Hematology,MALARIA,Malarial Parasite (Pf),,NEGATIVE,unchanged,HEM_MAL,6abcc3a258a3c5d2af9f07f0,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+291,BIOCHEMISTRY,MANTOUX,Mantoux (Tuberculin)Test,mm,"Induration < 5  mm \:Negative
+Induration 9 to 6 mm \:Equivocal
+Induration > 10mm \:Positive",unchanged,IMPBIO077,6abcc3a258a3c5d2af9f07f3,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+292,BIOCHEMISTRY,MANTOUX,DOSE,TU,,unchanged,IMPBIO077,6abcc3a258a3c5d2af9f07f6,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+293,BIOCHEMISTRY,MICROFILARIA ANITIGEN,MICROFILARIA ANTIGEN,,,unchanged,IMPBIO078,6abcc3a258a3c5d2af9f07f9,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+294,BIO CHEMISTRY,NT- pro BNP,N-terminal pro-B-type natriuretic peptide (NT-proBNP),pg/mL,"< 300 : Normal (Rule out)
+300 - 450 : Borderline
+> 450 : Elevated
+> 5000 : High risk",unchanged,IMPBIO079,6abcc3a258a3c5d2af9f07fc,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+295,BIO CHEMISTRY,OGTT,Fasting Blood Sugar,mg/dL,70-100 mg/dL,unchanged,IMPBIO080,6abcc3a258a3c5d2af9f07ff,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+296,BIO CHEMISTRY,OGTT,Fasting urine sugar,%,,unchanged,IMPBIO080,6abcc3a258a3c5d2af9f0802,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+297,BIO CHEMISTRY,OGTT,0.5 Hour After Glucose,mg/dL,,unchanged,IMPBIO080,6abcc3a258a3c5d2af9f0805,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+298,BIO CHEMISTRY,OGTT,Urine Sugar,%,,unchanged,IMPBIO080,6abcc3a258a3c5d2af9f0808,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+299,BIO CHEMISTRY,OGTT,1.0 Hour After Glucose,mg/dL,<180 mg/dL,unchanged,IMPBIO080,6abcc3a258a3c5d2af9f080b,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+300,BIO CHEMISTRY,OGTT,Urine Sugar,%,,duplicate-in-source,IMPBIO080,,Same parameter already imported from S.No 298; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+301,BIO CHEMISTRY,OGTT,1.5 Hour After glucose,mg/dL,,unchanged,IMPBIO080,6abcc3a258a3c5d2af9f080f,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+302,BIO CHEMISTRY,OGTT,Urine Sugar,%,,duplicate-in-source,IMPBIO080,,Same parameter already imported from S.No 298; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+303,BIO CHEMISTRY,OGTT,2.0 Hour After Glucose,mg/dL,<140 mg/dL,unchanged,IMPBIO080,6abcc3a258a3c5d2af9f0813,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+304,BIO CHEMISTRY,OGTT,Urine Suagar,%,,unchanged,IMPBIO080,6abcc3a258a3c5d2af9f0816,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+305,BIO CHEMISTRY,PARA THYROID HORMONE-PTH,PARA THYROID HORMONE-PTH,pg/mL,"15.0 – 68.0 : 11 – 17 Yrs
+15.0 – 65.0 : 18 – 100 Yrs",unchanged,IMPBIO081,6abcc3a258a3c5d2af9f0819,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+306,Hematology,PERIPHERAL SMEAR,Peripheral Smear,,,unchanged,IMPHEM010,6abcc3a258a3c5d2af9f081c,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+307,Hematology,PERIPHERAL SMEAR,RBC:,,,unchanged,IMPHEM010,6abcc3a258a3c5d2af9f081f,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+308,Hematology,PERIPHERAL SMEAR,WBC:,,,unchanged,IMPHEM010,6abcc3a258a3c5d2af9f0822,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+309,Hematology,PERIPHERAL SMEAR,PLATELETS:,,,unchanged,IMPHEM010,6abcc3a258a3c5d2af9f0825,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+310,Hematology,PERIPHERAL SMEAR,HEMOPARASITES:,,,unchanged,IMPHEM010,6abcc3a258a3c5d2af9f0828,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+311,Hematology,PERIPHERAL SMEAR,ATYPICAL CELLS/BLASTS:,,,unchanged,IMPHEM010,6abcc3a258a3c5d2af9f082b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+312,Hematology,PERIPHERAL SMEAR,IMPRESSION,,,unchanged,IMPHEM010,6abcc3a258a3c5d2af9f082e,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+313,Hematology,PERIPHERAL SMEAR,NOTE,,,unchanged,IMPHEM010,6abcc3a258a3c5d2af9f0831,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+314,Hematology,PERIPHERAL SMEAR,Peripheral Smear,,,duplicate-in-source,IMPHEM010,,Same parameter already imported from S.No 306; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+315,Hematology,PERIPHERAL SMEAR,RBC:,,,duplicate-in-source,IMPHEM010,,Same parameter already imported from S.No 307; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+316,Hematology,PERIPHERAL SMEAR,WBC:,,,duplicate-in-source,IMPHEM010,,Same parameter already imported from S.No 308; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+317,Hematology,PERIPHERAL SMEAR,PLATELETS:,,,duplicate-in-source,IMPHEM010,,Same parameter already imported from S.No 309; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+318,Hematology,PERIPHERAL SMEAR,HEMOPARASITES:,,,duplicate-in-source,IMPHEM010,,Same parameter already imported from S.No 310; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+319,Hematology,PERIPHERAL SMEAR,ATYPICAL CELLS/BLASTS:,,,duplicate-in-source,IMPHEM010,,Same parameter already imported from S.No 311; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+320,Hematology,PERIPHERAL SMEAR,ADVISE:,,,unchanged,IMPHEM010,6abcc3a258a3c5d2af9f083a,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+321,BIOCHEMISTRY,PHOSPHOLIPID ANTIBODIES IgG,PHOSPHOLIPID ANTIBODIES IgG,MPL U/mL,"< 10 Normal
+> 10 Elevated",unchanged,IMPBIO082,6abcc3a258a3c5d2af9f083d,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+322,BIOCHEMISTRY,PHOSPHOLIPID ANTIBODIES IgM,PHOSPHOLIPID ANTIBODY IgM,GPL U/mL,"< 10 Normal
+> 10 Elevated",unchanged,IMPBIO083,6abcc3a258a3c5d2af9f0840,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+323,BIO CHEMISTRY,PHOSPHORUS,Phosphorus,mg/dL,2.5 - 4.5 mg/dL,unchanged,IMPBIO084,6abcc3a258a3c5d2af9f0843,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+324,Hematology,Platelet count,Platelet count,Lakhs/cumm,1.5-4.5,unchanged,IMPHEM011,6abcc3a258a3c5d2af9f0846,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+325,BIO CHEMISTRY,PLBS,Post Lunch Blood Sugar Test,mg/dl,110-170mg/dl,unchanged,IMPBIO085,6abcc3a258a3c5d2af9f0849,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+326,BIO CHEMISTRY,PLBS,Urine sugar,,,unchanged,IMPBIO085,6abcc3a258a3c5d2af9f084c,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+327,BIO CHEMISTRY,POTASSIUM,SERUM POTASSIUM,mmol/L,3.5 - 5.5 mmol/L,unchanged,IMPBIO086,6abcc3a258a3c5d2af9f084f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+328,BIO CHEMISTRY,POTASSIUM,Potassium,mmol/L,3.5 - 5.0 mmol/L,unchanged,IMPBIO086,6abcc3a258a3c5d2af9f0852,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+329,BIO CHEMISTRY,PROCALCITONIN(PCT),PROCALCITONIN,ng/mL,<0.10ng/mL,unchanged,IMPBIO087,6abcc3a258a3c5d2af9f0855,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+330,BIO CHEMISTRY,PROGESTERONE,PROOGESTERONE,ng/mL,"FEMALE :
+Follicular Phase:0.2-1.6
+Ovulation phase:0.3-2.1
+Luteal Phase:1.8-22.5
+Postmenophause:<1.05
+PREGNANCY FEMALES :
+First Trimester:3.9-60
+Second Trimester :15.4-60",unchanged,IMPBIO088,6abcc3a258a3c5d2af9f0858,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+331,BIO CHEMISTRY,PROLACTIN,PROLACTIN,ng/mL,"Males : 2.07 - 10.45 ng/ml
+Females :2.76-15.042 ng/ml",unchanged,IMPBIO089,6abcc3a258a3c5d2af9f085b,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+332,BIO CHEMISTRY,PROTEINS-FLUID,Protein-Any Fluid,g/dl,,unchanged,IMPBIO090,6abcc3a258a3c5d2af9f085e,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+333,BIO CHEMISTRY,PSA-TOTAL,Prostarate Specific Antigen Total,ng/mL,<4.0,unchanged,IMPBIO091,6abcc3a258a3c5d2af9f0861,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+334,Hematology,PT/INR,PATIENT VOLUE,Seconds,11-16,unchanged,IMPHEM012,6abcc3a258a3c5d2af9f0864,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+335,Hematology,PT/INR,PROTHROMBIN TIME,,,unchanged,IMPHEM012,6abcc3a258a3c5d2af9f0867,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+336,Hematology,PT/INR,(MNPT) PT CONTTROL VOLUE,Seconds,13.5,unchanged,IMPHEM012,6abcc3a258a3c5d2af9f086a,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+337,Hematology,PT/INR,PATIENT RATIO,,,unchanged,IMPHEM012,6abcc3a358a3c5d2af9f086d,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+338,Hematology,PT/INR,NORMAL INR,,0.8-1.2,unchanged,IMPHEM012,6abcc3a358a3c5d2af9f0870,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+339,Hematology,PT/INR,THERAPEUTIC INR (OAC THERAPY),,2.0-3.5,unchanged,IMPHEM012,6abcc3a358a3c5d2af9f0873,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+340,BIOCHEMISTRY,PT/INR & APTT,PT WITH INR,,,unchanged,IMPBIO092,6abcc3a358a3c5d2af9f0876,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+341,BIOCHEMISTRY,PT/INR & APTT,TEST,Seconds,10-14Seconds,unchanged,IMPBIO092,6abcc3a358a3c5d2af9f0879,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+342,BIOCHEMISTRY,PT/INR & APTT,CONTROL,Seconds,11-13.5 Seconds,unchanged,IMPBIO092,6abcc3a358a3c5d2af9f087c,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+343,BIOCHEMISTRY,PT/INR & APTT,INR,Seconds,1 - 1.4 Seconds,unchanged,IMPBIO092,6abcc3a358a3c5d2af9f087f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+344,BIOCHEMISTRY,PT/INR & APTT,ACTIVATED PARTIAL THROMBOPLASTIN,,,unchanged,IMPBIO092,6abcc3a358a3c5d2af9f0882,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+345,BIOCHEMISTRY,PT/INR & APTT,TEST,Seconds,26 - 40 Seconds,duplicate-in-source,IMPBIO092,,Same parameter already imported from S.No 341; first occurrence kept,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+346,BIOCHEMISTRY,PT/INR & APTT,CONTROL,Seconds,27-32Seconds,duplicate-in-source,IMPBIO092,,Same parameter already imported from S.No 342; first occurrence kept,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+347,BIO CHEMISTRY,RA FACTOR,RA FACTOR,IU/ml,Upto 20 IU/ml,unchanged,IMPBIO093,6abcc3a358a3c5d2af9f0887,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+348,BIOCHEMISTRY,RANDOM BLOOD SUGAR(RBS),RANDOM BLOOD SUGAR,mg/dl,60 - 160 mg/dl,unchanged,IMPBIO094,6abcc3a358a3c5d2af9f088a,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+349,BIOCHEMISTRY,"RBS,BT,CT",Random blood sugar,mg/dL,70-140,unchanged,IMPBIO095,6abcc3a358a3c5d2af9f088d,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+350,BIOCHEMISTRY,"RBS,BT,CT",Bleeding Time,,1 - 3 Mnts,unchanged,IMPBIO095,6abcc3a358a3c5d2af9f0890,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+351,BIOCHEMISTRY,"RBS,BT,CT",Clottiing Time,,3 - 7 Mnts,unchanged,IMPBIO095,6abcc3a358a3c5d2af9f0893,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+352,BIOCHEMISTRY,RENAL PROFILE 2 (RP2),RANDOM BLOOD SUGAR,mg/dL,<140,unchanged,IMPBIO096,6abcc3a358a3c5d2af9f0896,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+353,BIOCHEMISTRY,RENAL PROFILE 2 (RP2),SERUM CREATININE,mg/dl,"F 0.6-1.3
+M 0.9-1.5",unchanged,IMPBIO096,6abcc3a358a3c5d2af9f0899,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+354,BIOCHEMISTRY,RENAL PROFILE 2 (RP2),BLOOD UREA,mg/dl,15-45,unchanged,IMPBIO096,6abcc3a358a3c5d2af9f089c,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+355,BIOCHEMISTRY,RENAL PROFILE 2 (RP2),SERUM URIC ACID,mg/dl,"F 2.6-6.0
+M 3.4-7.0",unchanged,IMPBIO096,6abcc3a358a3c5d2af9f089f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+356,BIOCHEMISTRY,RENAL PROFILE 2 (RP2),SERUM ELECTROLYTES,,,unchanged,IMPBIO096,6abcc3a358a3c5d2af9f08a2,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+357,BIOCHEMISTRY,RENAL PROFILE 2 (RP2),SERUM SODIUM,mMol/L,135-150,unchanged,IMPBIO096,6abcc3a358a3c5d2af9f08a5,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+358,BIOCHEMISTRY,RENAL PROFILE 2 (RP2),SERUM POTASSIUM,mMol/L,3.5-5.5,unchanged,IMPBIO096,6abcc3a358a3c5d2af9f08a8,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+359,BIOCHEMISTRY,RENAL PROFILE 2 (RP2),SERUM CHLORIDE,mMol/L,98-107,unchanged,IMPBIO096,6abcc3a358a3c5d2af9f08ab,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+360,BIOCHEMISTRY,RENAL PROFILE-II,RANDOM BLOOD SUGAR,,80-140,unchanged,IMPBIO097,6abcc3a358a3c5d2af9f08ae,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+361,BIOCHEMISTRY,RENAL PROFILE-II,SERUM CREATININE,,"Male :0.9-1.5
+Female :0.8-1.3
+Child :0.3-0.7",unchanged,IMPBIO097,6abcc3a358a3c5d2af9f08b1,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+362,BIOCHEMISTRY,RENAL PROFILE-II,BLOOD UREA,,15-45,unchanged,IMPBIO097,6abcc3a358a3c5d2af9f08b4,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+363,BIOCHEMISTRY,RENAL PROFILE-II,SERUM URICACID,,"Male :3.4-7
+Female :2.4-5.7
+Child :0-0",unchanged,IMPBIO097,6abcc3a358a3c5d2af9f08b7,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+364,BIOCHEMISTRY,RENAL PROFILE-II,SERUM SODIUM,,135-150,unchanged,IMPBIO097,6abcc3a358a3c5d2af9f08ba,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+365,BIOCHEMISTRY,RENAL PROFILE-II,SERUM POTASSIUM,,3.5-5,unchanged,IMPBIO097,6abcc3a358a3c5d2af9f08bd,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+366,BIOCHEMISTRY,RENAL PROFILE-II,SERUM CHLORIDE,,94-110,unchanged,IMPBIO097,6abcc3a358a3c5d2af9f08c0,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+367,Hematology,RETICULOCYTE COUNT,Reticulocyte Count,%,"0.5-2.5%
+New born: 2.5-6%",unchanged,IMPHEM013,6abcc3a358a3c5d2af9f08c3,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+368,BIO CHEMISTRY,RFT(RENAL FUNCTION TEST),BLOOD UREA,mg/dl,15-45mg/dl,unchanged,IMPBIO098,6abcc3a358a3c5d2af9f08c6,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+369,BIO CHEMISTRY,RFT(RENAL FUNCTION TEST),SERUM URIC ACID,mg/dl,"Male :3.4-7mg/dl
+Female :2.4-5.7mg/dl
+Child :0-0mg/dl",unchanged,IMPBIO098,6abcc3a358a3c5d2af9f08c9,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+370,BIO CHEMISTRY,RFT(RENAL FUNCTION TEST),SODIUM,mMol/L,135-150,unchanged,IMPBIO098,6abcc3a358a3c5d2af9f08cc,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+371,BIO CHEMISTRY,RFT(RENAL FUNCTION TEST),POTASSIUM,mMol/L,3.5-5.0,unchanged,IMPBIO098,6abcc3a358a3c5d2af9f08cf,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+372,BIO CHEMISTRY,RFT(RENAL FUNCTION TEST),CHLORIDE,mMol/L,98-107,unchanged,IMPBIO098,6abcc3a358a3c5d2af9f08d2,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+373,BIO CHEMISTRY,RFT(RENAL FUNCTION TEST),SERUM CREATININE,mg/dl,"Male :0.9-1.5mg/dl
+Female :0.8-1.3mg/dl
+Child :0.3-0.7mg/dl",unchanged,IMPBIO098,6abcc3a358a3c5d2af9f08d5,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+374,BIO CHEMISTRY,RFT(RENAL FUNCTION TEST),Note,,,unchanged,IMPBIO098,6abcc3a358a3c5d2af9f08d8,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+375,BIO CHEMISTRY,RFT(RENAL FUNCTION TEST),SERUM CALCIUM,mg/dL,8.5-11,unchanged,IMPBIO098,6abcc3a358a3c5d2af9f08db,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+376,BIO CHEMISTRY,RHEUMATOID FACTOR,RHEUMATOID FACTOR (RF),IU/mL,<20,unchanged,IMPBIO099,6abcc3a358a3c5d2af9f08de,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+377,BIOCHEMISTRY,RUBELLA VIRUS IgG,RUBELLA IgG,,"< 0.9: Negative
+0.9-1.1: Equivocal
+>1.1 Positive",unchanged,IMPBIO100,6abcc3a358a3c5d2af9f08e1,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+378,BIO CHEMISTRY,Salmonella IgG,Salmonella typhi IgG,s/co,"<1.0 Negative
+>1.0 Positive",unchanged,IMPBIO101,6abcc3a358a3c5d2af9f08e4,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+379,BIO CHEMISTRY,Salmonella IgM,Salmonella typhi IgM,s/co,"<1.0 Negative
+>1.0 Positive",unchanged,IMPBIO102,6abcc3a358a3c5d2af9f08e7,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+380,BIOCHEMISTRY,"SALMONELLA TYPE IgG, IgM",Salmonella Type IgG,s/co,"<1.0 Negative
+>1.0 Positive",unchanged,IMPBIO103,6abcc3a358a3c5d2af9f08ea,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+381,BIOCHEMISTRY,"SALMONELLA TYPE IgG, IgM",Salmonella Type IgM,s/co,"<1.0 Negative
+>1.0 Positive",unchanged,IMPBIO103,6abcc3a358a3c5d2af9f08ed,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+382,MICROBIOLOGY,SALMONELLA TYPHI,SALMONELLA TYPHI-IGG,,NEGATIVE,unchanged,IMPMIC003,6abcc3a358a3c5d2af9f08f0,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+383,MICROBIOLOGY,SALMONELLA TYPHI,SALMONELLA TYPHI-IGM,,NEGATIVE,unchanged,IMPMIC003,6abcc3a358a3c5d2af9f08f3,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+384,PATHOLOGY,SEMEN ANALYSIS,Volume,,ml,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f08f6,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+385,PATHOLOGY,SEMEN ANALYSIS,Reaction,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f08f9,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+386,PATHOLOGY,SEMEN ANALYSIS,Viscocity,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f08fc,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+387,PATHOLOGY,SEMEN ANALYSIS,Liquefaction Time,,minutes,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f08ff,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+388,PATHOLOGY,SEMEN ANALYSIS,Total Sperm Count,,Million/ml,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0902,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+389,PATHOLOGY,SEMEN ANALYSIS,Microscopic Examination:,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0905,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+390,PATHOLOGY,SEMEN ANALYSIS,Impression,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0908,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+391,PATHOLOGY,SEMEN ANALYSIS,Colour,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f090b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+392,PATHOLOGY,SEMEN ANALYSIS,Note,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f090e,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+393,PATHOLOGY,SEMEN ANALYSIS,PUS Cells,cells/hpf,0-3 cells/hpf,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0911,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+394,PATHOLOGY,SEMEN ANALYSIS,RBC,cells/hpf,0-3 cells/hpf,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0914,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+395,PATHOLOGY,SEMEN ANALYSIS,Sluggish Motile,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0917,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+396,PATHOLOGY,SEMEN ANALYSIS,Normal Forms,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f091a,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+397,PATHOLOGY,SEMEN ANALYSIS,Active Motile,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f091d,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+398,PATHOLOGY,SEMEN ANALYSIS,Abnormal Forms,cells/hpf,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0920,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+399,PATHOLOGY,SEMEN ANALYSIS,Normal Morphology,%,>4%,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0923,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+400,PATHOLOGY,SEMEN ANALYSIS,Types of abnormal forms,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0926,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+401,PATHOLOGY,SEMEN ANALYSIS,Epithelial cells,cells/hpf,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0929,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+402,PATHOLOGY,SEMEN ANALYSIS,Non Motile,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f092c,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+403,PATHOLOGY,SEMEN ANALYSIS,Note:,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f092f,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+404,PATHOLOGY,SEMEN ANALYSIS,PH,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0932,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+405,PATHOLOGY,SEMEN ANALYSIS,PHYSICAL EXAMINATION,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0935,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+406,PATHOLOGY,SEMEN ANALYSIS,PLACE OF COLLECTION,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0938,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+407,PATHOLOGY,SEMEN ANALYSIS,TIME OF COLLECTION,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f093b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+408,PATHOLOGY,SEMEN ANALYSIS,LIQUIFACTION,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f093e,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+409,PATHOLOGY,SEMEN ANALYSIS,PROCESSING TIME,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0941,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+410,PATHOLOGY,SEMEN ANALYSIS,VOLUME,,,duplicate-in-source,IMPPAT003,,Same parameter already imported from S.No 384; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+411,PATHOLOGY,SEMEN ANALYSIS,COLOUR,,,duplicate-in-source,IMPPAT003,,Same parameter already imported from S.No 391; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+412,PATHOLOGY,SEMEN ANALYSIS,REACTION,,,duplicate-in-source,IMPPAT003,,Same parameter already imported from S.No 385; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+413,PATHOLOGY,SEMEN ANALYSIS,VISCOCITY,,,duplicate-in-source,IMPPAT003,,Same parameter already imported from S.No 386; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+414,PATHOLOGY,SEMEN ANALYSIS,MICROSCOPIC EXAMINATION,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0950,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+415,PATHOLOGY,SEMEN ANALYSIS,TOTAL SPERM COUNT,,,duplicate-in-source,IMPPAT003,,Same parameter already imported from S.No 388; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+416,PATHOLOGY,SEMEN ANALYSIS,MOTILITY RAPID,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0956,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+417,PATHOLOGY,SEMEN ANALYSIS,PROGRESSIVE,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0959,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+418,PATHOLOGY,SEMEN ANALYSIS,MORPHALOGY,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f095c,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+419,PATHOLOGY,SEMEN ANALYSIS,PUS CELLS,,,duplicate-in-source,IMPPAT003,,Same parameter already imported from S.No 393; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+420,PATHOLOGY,SEMEN ANALYSIS,EPTHELIAL CELLS,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0962,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+421,PATHOLOGY,SEMEN ANALYSIS,RED BLOOD CELLS,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0965,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+422,PATHOLOGY,SEMEN ANALYSIS,SPERMATOGONIA,,,unchanged,IMPPAT003,6abcc3a358a3c5d2af9f0968,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+423,PATHOLOGY,SEMEN ANALYSIS,IMPRESSION,,,duplicate-in-source,IMPPAT003,,Same parameter already imported from S.No 390; first occurrence kept,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+424,BIOCHEMISTRY,SERUM CALCIUM,SERUM CALCIUM,mg/dL,8.6-11mg/dL,unchanged,IMPBIO104,6abcc3a358a3c5d2af9f096e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+425,BIOCHEMISTRY,SERUM CREATININE,SERUM CREATININE,mg/dL,"Male :0.9-1.5mg/dL
+Female :0.8-1.3mg/dL
+Child :0-0mg/dL",unchanged,BIO004,6ab635e931a9e640f17022b2,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+426,BIOCHEMISTRY,SERUM ELECTROLYTES,SERUM SODIUM,mmol/L,135-150 mmol/L,unchanged,IMPBIO105,6abcc3a358a3c5d2af9f0974,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+427,BIOCHEMISTRY,SERUM ELECTROLYTES,SERUM POTASSIUM,mmol/L,3.5-5.0 mmol/L,unchanged,IMPBIO105,6abcc3a358a3c5d2af9f0977,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+428,BIOCHEMISTRY,SERUM ELECTROLYTES,SERUM CHLORIDE,mmol/L,94-110 mmol/L,unchanged,IMPBIO105,6abcc3a358a3c5d2af9f097a,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+429,BIOCHEMISTRY,SERUM ELECTROLYTES,Ionised Calcium (iCa),mmol/L,1.10 - 1.35 mmol/L,unchanged,IMPBIO105,6abcc3a358a3c5d2af9f097d,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+430,BIO CHEMISTRY,SERUM FERRTIN,FERRITIN,ng/mL,"Male :27-375ng/mL
+Female :12-135ng/mL
+Child :0-0ng/mL",unchanged,IMPBIO106,6abcc3a358a3c5d2af9f0980,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+431,BIO CHEMISTRY,SERUM PROTEINS,Protein,g/dl,6.4 - 8.3 g/dl,unchanged,IMPBIO107,6abcc3a358a3c5d2af9f0983,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+432,BIO CHEMISTRY,SERUM PROTEINS,Albumin,g/dl,3.5 - 5.2 g/dl,unchanged,IMPBIO107,6abcc3a358a3c5d2af9f0986,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+433,BIO CHEMISTRY,SERUM PROTEINS,Globulin,g/dl,2.5 - 3.5 g/dl,unchanged,IMPBIO107,6abcc3a358a3c5d2af9f0989,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+434,BIO CHEMISTRY,SERUM PROTEINS,A/G Ratio,,0.8 - 2.0,unchanged,IMPBIO107,6abcc3a358a3c5d2af9f098c,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+435,BIO CHEMISTRY,SERUM SODIUM,SODIUM,mmol/L,135 - 150 mmol/L,unchanged,IMPBIO108,6abcc3a358a3c5d2af9f098f,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+436,BIOCHEMISTRY,SERUM URIC ACID,SERUM URIC ACID,mg/dl,"Males : 3.5 - 7.2 mg/dl
+Females : 2.6 - 6.0 mg/dl",unchanged,IMPBIO109,6abcc3a358a3c5d2af9f0992,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+437,BIO CHEMISTRY,SGOT,SGOT,U/L,"Males : upto 35 U/L
+Females: upto 31 U/L",unchanged,IMPBIO110,6abcc3a358a3c5d2af9f0995,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+438,BIO CHEMISTRY,SGPT,SGPT,U/L,"Males : upto 45 U/L
+Females: upto 34 U/L",unchanged,IMPBIO111,6abcc3a358a3c5d2af9f0998,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+439,BIOCHEMISTRY,SODIUM POTASSIUM,SERUM SODIUM,,135 -155,unchanged,IMPBIO112,6abcc3a358a3c5d2af9f099b,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+440,BIOCHEMISTRY,SODIUM POTASSIUM,SERUM POTASSIUM,,3.5-5.5,unchanged,IMPBIO112,6abcc3a358a3c5d2af9f099e,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+441,PATHOLOGY,STOOL FOR OCCULT BLOOD,Stool for Occult Blood,,,unchanged,IMPPAT004,6abcc3a358a3c5d2af9f09a1,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+442,Hematology,TC/DC,TC & DC,,,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09a4,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+443,Hematology,TC/DC,PHYSICAL EXAMINATION,,,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09a7,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+444,Hematology,TC/DC,Volume,ml,,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09aa,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+445,Hematology,TC/DC,Color,,,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09ad,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+446,Hematology,TC/DC,Appearance,,,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09b0,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+447,Hematology,TC/DC,MICROSCOPIC EXAMINATION,,,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09b3,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+448,Hematology,TC/DC,RBC count,/HPF,,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09b6,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+449,Hematology,TC/DC,Total WBC count,/cumm,/cumm,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09b9,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+450,Hematology,TC/DC,Polymorphs,%,0 - 7 %,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09bc,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+451,Hematology,TC/DC,Lymphocytes,%,28 - 96 %,unchanged,IMPHEM014,6abcc3a358a3c5d2af9f09bf,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+452,BIO CHEMISTRY,TESTOSTERONE TOTAL,TESTOSTERONE,ng/dL,"MALES: 241 - 827 ng/mL
+FEMALES : 14 - 76 ng/ml",unchanged,IMPBIO113,6abcc3a358a3c5d2af9f09c2,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+453,BIO CHEMISTRY,Thyroid Function Test (TFT),Total Triiodo Thyronine [T3],ng/dl,"105-269: 1-5 Yrs
+8 - 241: 6 - 15 Yrs
+70-210: 16-50 years
+40-181: 51-90 years",unchanged,IMPBIO114,6abcc3a358a3c5d2af9f09c5,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+454,BIO CHEMISTRY,Thyroid Function Test (TFT),Total Thyroxine [T4],µg/dl,5.1-14.1µg/dl,unchanged,IMPBIO114,6abcc3a358a3c5d2af9f09c8,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+455,BIO CHEMISTRY,Thyroid Function Test (TFT),Thyroid Stimulating Hormone (TSH),uIU/mL,"0.30 – 4.20
+Pregnancy Reference Intervals
+0.03-3.40 : First trimester
+0.19-4.06 : Second trimester",unchanged,IMPBIO114,6abcc3a358a3c5d2af9f09cb,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+456,BIOCHEMISTRY,THYROID PROFILE,Total Triiodo Thyronine [T3],ng/dl,58.0-162,unchanged,IMPBIO115,6abcc3a358a3c5d2af9f09ce,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+457,BIOCHEMISTRY,THYROID PROFILE,Total Thyroxine [T4],µg/dl,5-12.5µg/dl,unchanged,IMPBIO115,6abcc3a358a3c5d2af9f09d1,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+458,BIOCHEMISTRY,THYROID PROFILE,Thyroid Stimulating Hormone (TSH),uIU/mL,0.3-5.1uIU/mL,unchanged,IMPBIO115,6abcc3a358a3c5d2af9f09d4,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+459,BIOCHEMISTRY,THYROID PROFILE-II,Thyroid Stimmulating Hormone(TSH),µIU/mL,0.3-5.1,unchanged,IMPBIO116,6abcc3a358a3c5d2af9f09d7,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+460,BIOCHEMISTRY,THYROID PROFILE-II,TriIodothyronine Free (FT3),ng/dL,1.8-4.2,unchanged,IMPBIO116,6abcc3a358a3c5d2af9f09da,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+461,BIOCHEMISTRY,THYROID PROFILE-II,Thyroxine - Free (FT4),ng/dL,0.87-1.85,unchanged,IMPBIO116,6abcc3a358a3c5d2af9f09dd,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+462,BIOCHEMISTRY,THYROID STIMULATING HARMONE (TSH),Thyroid Stimulating Harmone (TSH ),uIU/mL,"0.3 – 4.2
+Pregnancy Reference Intervals
+0.03-3.40 : First trimester
+0.19-4.06 : Second trimester",unchanged,IMPBIO117,6abcc3a358a3c5d2af9f09e0,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+463,BIO CHEMISTRY,THYROID STIMULATING HARMONE (TSH),Thyroid Stimulating Harmone (TSH ),uIU/mL,"0.3-5.1uIU/mL
+Pregnancy gestation
+First Trimester 0.09-4.87
+Second Trimester 0.47-4.79",duplicate-in-source,IMPBIO117,,Same parameter already imported from S.No 462; first occurrence kept,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+464,BIO CHEMISTRY,Tissue Transglutaminase Antibody - IgA,Tissue Transglutaminase Antibody - IgA,U/mL,"< 20 : Negative
+> 20 : Positive",unchanged,IMPBIO118,6abcc3a358a3c5d2af9f09e4,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+465,BIO CHEMISTRY,Total Cholesterol,Total cholesterol,,,unchanged,IMPBIO119,6abcc3a358a3c5d2af9f09e7,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+466,BIO CHEMISTRY,Total Cholesterol,Total Cholestrol,mg/dl,"Desirable Blood Cholesterol :
+<200 mg/dl
+Borderline High Blood
+Cholesterol: 200-239 mg/dl
+High Blood Cholesterol :
+>239 mg/dl",unchanged,IMPBIO119,6abcc3a358a3c5d2af9f09ea,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+467,BIO CHEMISTRY,TOTAL IGE,TOTAL IGE,IU/mL,,unchanged,IMPBIO120,6abcc3a358a3c5d2af9f09ed,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+468,BIO CHEMISTRY,Total Thyroxine [T4],Total Thyroxine [T4],ug/dl,"6.3 - 21.5 :<1 Months
+4.9-13.7 :1-11 Months
+4.6-10.9 :> 18 Years
+Pregancy
+4.6-10.9 : 1st Trimester
+4.6-18.5 : 2nd_3rd Trimester",unchanged,IMPBIO121,6abcc3a358a3c5d2af9f09f0,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+469,BIO CHEMISTRY,Total Triiodo Thyronine [T3],Total Triiodo Thyronine [T3],ng/dl,,unchanged,IMPBIO122,6abcc3a358a3c5d2af9f09f3,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+470,BIO CHEMISTRY,Treponema Palladium Hemagglutination (TPHA),Treponema Pallidum Hemagglutination (TPHA),,Non - Reactive,unchanged,IMPBIO123,6abcc3a358a3c5d2af9f09f6,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+471,BIOCHEMISTRY,TRIGLYCERIDES,Triglycerides,mg/dl,"Normal : <161 mg/dl
+High : 161-199 mg/dl
+Hyper Triglycerdemic : 200-499 mg/dl
+Very High : >499 mg/dl",unchanged,IMPBIO124,6abcc3a358a3c5d2af9f09f9,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+472,BIOCHEMISTRY,TROPONIN- I,Troponin-I,ng/ml,NEGATIVE,unchanged,IMPBIO125,6abcc3a358a3c5d2af9f09fc,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+473,BIOCHEMISTRY,TSH,THYROID STIMULATING HORMONE,,"0.3-5.1uIU/mL
+Pregnancy gestation
+First Trimester 0.09-4.87
+Second Trimester 0.47-4.79",unchanged,IMPBIO126,6abcc3a358a3c5d2af9f09ff,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+474,BIOCHEMISTRY,UPT (URINE PRAGNANCY TEST),PREGANCY FOR URINE TEST,,,unchanged,IMPBIO127,6abcc3a358a3c5d2af9f0a02,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+475,BIO CHEMISTRY,UREA,Blood Urea,mg/dL,"Males : <50 years 19-45 mg/dl
+>50 years 18-55 mg/dl
+Female : <50 years 13-40 mg/dl
+>50 years 21-43 mg/dl",unchanged,IMPBIO128,6abcc3a358a3c5d2af9f0a05,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+476,BIO CHEMISTRY,UREA,Creatinine,mg/dl,"Male :0.7-1.3mg/dl
+Female :0.6-1.1mg/dl
+Child :0.3-0.7 mg/dl",unchanged,IMPBIO128,6abcc3a358a3c5d2af9f0a08,Database already matches the source row,yes,conditional-range,data/lab_test_parameters_516.csv,Range text depends on gender/age/condition; applicability must be confirmed
+477,BIO CHEMISTRY,URINE ALBUMIN,URINE ALBUMIN,,,unchanged,IMPBIO129,6abcc3a358a3c5d2af9f0a0b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+478,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,URINE FOR CULTURE AND SENSITIVITY,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a0e,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+479,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,TEICOPLANIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a11,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+480,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,AZTREONAM,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a14,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+481,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,ERYTHROMYCIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a17,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+482,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,AZITHROMYCIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a1a,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+483,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,NITROFURANTOIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a1d,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+484,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,CO-TRIMOXAZOLE,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a20,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+485,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,PIPERACILLIN +    TAZOBACTAM,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a23,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+486,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,GENTAMYCIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a26,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+487,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,NETILMICIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a29,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+488,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,OFLOXACIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a2c,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+489,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,LEVOFLOXACIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a2f,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+490,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,GATIFLOXACIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a32,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+491,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,NORFLOXACIN,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a35,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+492,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,NALIDIXIC ACID,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a38,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+493,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,CEFAACLOR,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a3b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+494,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,CEFOTAXIME,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a3e,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+495,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,CEFAPERAZONE+ SULBACTAM,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a41,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+496,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,IMIPENEM,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a44,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+497,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,MEROPENEM,,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a47,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+498,BIOCHEMISTRY,URINE FOR CULTURE & SENSITIVITY,RESISTANT (R) SENSITIVITY (S) DRUG NOT USED (-),,,unchanged,IMPBIO130,6abcc3a358a3c5d2af9f0a4a,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+499,PATHOLOGY,URINE FOR KETONE BODIES,URINE KETONES,,,unchanged,IMPPAT005,6abcc3a358a3c5d2af9f0a4d,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+500,BIOCHEMISTRY,URINE MICROALBUMiN,MICROALBUMIN,mg/L,< 30.0,unchanged,IMPBIO131,6abcc3a358a3c5d2af9f0a50,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+501,BIO CHEMISTRY,URINE PROTEIN/CREATININE RATIO,URINE PROTEIN & CREATININE RATIO,,,unchanged,IMPBIO132,6abcc3a358a3c5d2af9f0a53,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+502,BIO CHEMISTRY,URINE PROTEIN/CREATININE RATIO,URINE PROTEIN,mg/L,< 150,unchanged,IMPBIO132,6abcc3a358a3c5d2af9f0a56,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+503,BIO CHEMISTRY,URINE PROTEIN/CREATININE RATIO,URINE CREATININE,mg/dL,28 - 217,unchanged,IMPBIO132,6abcc3a358a3c5d2af9f0a59,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+504,BIO CHEMISTRY,URINE PROTEIN/CREATININE RATIO,URINE PROTEIN CREATININE RATIO,,"<0.2 Normal
+0.2-1.0 Low-Grade Proteinuria
+1.0-5.0 Moderate Proteinuria
+>5.0 High-Grade Proteinuria",unchanged,IMPBIO132,6abcc3a358a3c5d2af9f0a5c,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+505,BIOCHEMISTRY,Venereal Disease Research Laboratory(VDRL),VDRL,,,unchanged,IMPBIO133,6abcc3a358a3c5d2af9f0a5f,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+506,BIOCHEMISTRY,Venereal Disease Research Laboratory(VDRL),Venereal Disease Research Laboratory,,,unchanged,IMPBIO133,6abcc3a358a3c5d2af9f0a62,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+507,BIO CHEMISTRY,VITAMIN - D,Vitamin-D,ng/ml,"Deficiency : < 10.0 ng/ml            
+Sufficiency :30- 100 ng/ml
+Insufficiency :10- 30 ng/ml
+Toxicity : > 100 ng/ml",unchanged,IMPBIO134,6abcc3a358a3c5d2af9f0a65,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+508,BIO CHEMISTRY,VITAMIN B12,Vitamin B12,pg/mL,180-916,unchanged,IMPBIO135,6abcc3a358a3c5d2af9f0a68,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+509,BIO CHEMISTRY,VITAMIN B12,ENTERPRETATION,,,unchanged,IMPBIO135,6abcc3a358a3c5d2af9f0a6b,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required
+510,BIOCHEMISTRY,VITAMIN PROFILE,25 HYDROXY VITAMIN D,,"< 20 Deficient
+20-30 Insufficient
+>30 Sufficient",unchanged,IMPBIO136,6abcc3a358a3c5d2af9f0a6e,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+511,BIOCHEMISTRY,VITAMIN PROFILE,VITAMIN B12,,180-916,unchanged,IMPBIO136,6abcc3a358a3c5d2af9f0a71,Database already matches the source row,no,,data/lab_test_parameters_516.csv,As supplied in the source CSV; not verified against method or population
+512,MICROBIOLOGY,WIDAL,S.Typhi O,,<1:80,unchanged,MIC_WIDAL,6abcc3a358a3c5d2af9f0a74,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+513,MICROBIOLOGY,WIDAL,S.Typhi H,,<1:80,unchanged,MIC_WIDAL,6abcc3a358a3c5d2af9f0a77,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+514,MICROBIOLOGY,WIDAL,S.Paratyphi AH,,<1:80,unchanged,MIC_WIDAL,6abcc3a358a3c5d2af9f0a7a,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+515,MICROBIOLOGY,WIDAL,S.Paratyphi BH,,<1:80,unchanged,MIC_WIDAL,6abcc3a358a3c5d2af9f0a7d,Database already matches the source row,yes,qualitative-range,data/lab_test_parameters_516.csv,"Qualitative or categorical wording, not a numeric comparison range"
+516,MICROBIOLOGY,WIDAL,Note :,,,unchanged,MIC_WIDAL,6abcc3a358a3c5d2af9f0a80,Database already matches the source row,yes,missing-range,,No reference range in the source CSV; laboratory confirmation required

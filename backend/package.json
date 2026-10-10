@@ -1,0 +1,49 @@
+{
+  "name": "diagnostic-lis-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Diagnostic Centre / LIS API — Express + TypeScript + MongoDB",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "pdf:install": "playwright install chromium",
+    "build:deployment": "npm run pdf:install && npm run build",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "seed": "tsx src/scripts/seedAdmin.ts",
+    "seed:patients": "tsx src/scripts/seedDemoPatients.ts",
+    "seed:lab": "tsx src/scripts/seedLabCatalog.ts",
+    "seed:lab-parameters": "tsx src/scripts/seedLabTestParameters.ts",
+    "lab-parameters:flag-review": "tsx src/scripts/flagLabParameterReview.ts",
+    "seed:bills": "tsx src/scripts/seedDemoBills.ts",
+    "seed:db": "tsx src/scripts/seedDatabase.ts",
+    "import:reference-config": "tsx src/scripts/importOldLisReferenceConfig.ts",
+    "render:build": "node scripts/render-runtime.cjs build",
+    "render:start": "node scripts/render-runtime.cjs start",
+    "render:verify": "node scripts/render-runtime.cjs verify"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "docx": "^9.9.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "libphonenumber-js": "^1.13.15",
+    "mongoose": "^8.9.5",
+    "playwright": "^1.64.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.7",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

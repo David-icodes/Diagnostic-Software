@@ -1,0 +1,183 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Cancelled Bills Report" [level=3]
+- paragraph: Please check any one of the Payment Mode or Bill Type or Collected By
+- table:
+  - rowgroup:
+    - row "Bill Type All OP Consultation Services Lab Pharmacy IP Final IP Advance Consulation Dues Investigation Dues Service Dues Pharmacy Dues Final Dues Pay Mode All Cash Credit Card Cheque Credit Net Banking Wallet All AnjaliAdmin vc_krishnaveni From Date 08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup. To Date 08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup. Summary Detailed Show Clear Home":
+      - cell "Bill Type All OP Consultation Services Lab Pharmacy IP Final IP Advance Consulation Dues Investigation Dues Service Dues Pharmacy Dues Final Dues":
+        - text: Bill Type
+        - checkbox "All"
+        - generic: All
+        - checkbox "OP Consultation"
+        - generic: OP Consultation
+        - checkbox "Services"
+        - generic: Services
+        - checkbox "Lab"
+        - generic: Lab
+        - checkbox "Pharmacy"
+        - generic: Pharmacy
+        - checkbox "IP Final"
+        - generic: IP Final
+        - checkbox "IP Advance"
+        - generic: IP Advance
+        - checkbox "Consulation Dues"
+        - generic: Consulation Dues
+        - checkbox "Investigation Dues"
+        - generic: Investigation Dues
+        - checkbox "Service Dues"
+        - generic: Service Dues
+        - checkbox "Pharmacy Dues"
+        - generic: Pharmacy Dues
+        - checkbox "Final Dues"
+        - generic: Final Dues
+      - cell
+      - cell "Pay Mode All Cash Credit Card Cheque Credit Net Banking Wallet":
+        - text: Pay Mode
+        - checkbox "All"
+        - generic: All
+        - checkbox "Cash"
+        - generic: Cash
+        - checkbox "Credit Card"
+        - generic: Credit Card
+        - checkbox "Cheque"
+        - generic: Cheque
+        - checkbox "Credit"
+        - generic: Credit
+        - checkbox "Net Banking"
+        - generic: Net Banking
+        - checkbox "Wallet"
+        - generic: Wallet
+      - cell
+      - cell "All AnjaliAdmin vc_krishnaveni":
+        - table:
+          - rowgroup:
+            - row "All":
+              - cell:
+                - textbox "Cancelled By Search..."
+              - cell "All":
+                - checkbox "All"
+                - generic: All
+        - table:
+          - rowgroup:
+            - row "AnjaliAdmin":
+              - cell "AnjaliAdmin":
+                - checkbox
+                - generic: AnjaliAdmin
+            - row "vc_krishnaveni":
+              - cell "vc_krishnaveni":
+                - checkbox
+                - generic: vc_krishnaveni
+      - cell
+      - cell "From Date 08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup. To Date 08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup. Summary Detailed Show Clear Home":
+        - table:
+          - rowgroup:
+            - row "From Date 08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+              - cell "From Date"
+              - cell "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+                - table:
+                  - rowgroup:
+                    - row "08-Oct-26 12:00 AM Open the calendar popup. Open the time view popup.":
+                      - cell "08-Oct-26 12:00 AM":
+                        - textbox: 08-Oct-26 12:00 AM
+                      - cell "Open the calendar popup.":
+                        - link "Open the calendar popup.":
+                          - /url: "#"
+                      - cell "Open the time view popup.":
+                        - link "Open the time view popup.":
+                          - /url: "#"
+              - cell
+            - row "To Date 08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+              - cell "To Date"
+              - cell "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+                - table:
+                  - rowgroup:
+                    - row "08-Oct-26 11:59 PM Open the calendar popup. Open the time view popup.":
+                      - cell "08-Oct-26 11:59 PM":
+                        - textbox: 08-Oct-26 11:59 PM
+                      - cell "Open the calendar popup.":
+                        - link "Open the calendar popup.":
+                          - /url: "#"
+                      - cell "Open the time view popup.":
+                        - link "Open the time view popup.":
+                          - /url: "#"
+              - cell
+            - row:
+              - cell
+            - row "Summary Detailed":
+              - cell "Summary":
+                - radio "Summary" [checked]
+                - generic: Summary
+              - cell "Detailed":
+                - radio "Detailed"
+                - generic: Detailed
+            - row "Show Clear Home":
+              - cell "Show Clear Home":
+                - button "Show"
+                - button "Clear"
+                - button "Home"
+- table:
+  - rowgroup:
+    - row:
+      - cell
+    - row:
+      - cell
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

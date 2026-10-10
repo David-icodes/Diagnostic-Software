@@ -1,0 +1,226 @@
+- banner:
+  - link " Wilco":
+    - /url: ../LIS/Default.aspx
+    - generic: 
+    - generic: Wilco
+  - list:
+    - link "":
+      - /url: "#"
+      - generic: 
+    - link "":
+      - /url: JavaScript:void(0);
+      - generic: 
+    - generic: Anjali Diagnostics
+  - list:
+    - text: 
+    - button "Technical Support 9390044899":
+      - img "Technical Support"
+      - text: "9390044899"
+    - button "View Dasboard":
+      - img "View Dasboard"
+    - button ""
+    - link "Profile Picture anjaliadmin":
+      - /url: "#"
+      - img "Profile Picture"
+      - generic: anjaliadmin
+    - text:  
+- navigation:
+  - list:
+    - link " Lab":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: Lab
+    - text:        
+    - link " UserAdmin":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: UserAdmin
+    - text: 
+    - link " TMIS":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: TMIS
+    - text:           
+    - link " DM":
+      - /url: javascript:void(0)
+      - generic: 
+      - text: DM
+    - text:           
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- button "":
+  - generic: 
+- heading "Create Package" [level=3]
+- table:
+  - rowgroup:
+    - row "Package Name":
+      - cell "Package Name"
+      - cell:
+        - textbox
+      - cell
+      - cell
+      - cell
+      - cell
+    - row "Package Amount Package Amount Ins 0":
+      - cell "Package Amount"
+      - cell:
+        - textbox
+      - cell
+      - cell "Package Amount Ins"
+      - cell "0":
+        - textbox: "0"
+      - cell
+    - row:
+      - cell:
+        - table:
+          - rowgroup:
+            - row "* Departments ALL * Lab Tests » Selected Lab Tests Del S No Dept Name Lab Test Name":
+              - cell "* Departments ALL":
+                - text: "* Departments"
+                - textbox "Search.."
+                - listbox:
+                  - option "ALL"
+                  - option "BIO CHEMISTRY"
+                  - option "BIOCHEMISTRY"
+                  - option "Hematology"
+                  - option "MICROBIOLOGY"
+                  - option "PATHOLOGY"
+                  - option "Packages/Profiles"
+              - cell "* Lab Tests":
+                - text: "* Lab Tests"
+                - textbox "Search.."
+                - listbox
+              - cell "»":
+                - button "»"
+              - cell "Selected Lab Tests Del S No Dept Name Lab Test Name":
+                - text: Selected Lab Tests
+                - table:
+                  - rowgroup:
+                    - row "Del S No Dept Name Lab Test Name":
+                      - columnheader "Del"
+                      - columnheader "S No"
+                      - columnheader "Dept Name"
+                      - columnheader "Lab Test Name"
+                  - rowgroup
+    - row "Save Clear Home":
+      - cell "Save Clear Home":
+        - button "Save"
+        - button "Clear"
+        - button "Home"
+- table:
+  - rowgroup:
+    - row "S.No Package Name Package Type Amount Ins Amount":
+      - columnheader "S.No"
+      - columnheader "Package Name"
+      - columnheader "Package Type"
+      - columnheader "Amount"
+      - columnheader "Ins Amount"
+      - columnheader
+  - rowgroup:
+    - row "1 MASTER PACKAGE-2 Lab 2000 2000":
+      - cell "1"
+      - cell "MASTER PACKAGE-2"
+      - cell "Lab"
+      - cell "2000"
+      - cell "2000"
+      - cell:
+    - row "2 FEVER PROFILE Lab 1380 1380":
+      - cell "2"
+      - cell "FEVER PROFILE"
+      - cell "Lab"
+      - cell "1380"
+      - cell "1380"
+      - cell:
+    - row "3 FEVER PROFILE2 Lab 1600 1600":
+      - cell "3"
+      - cell "FEVER PROFILE2"
+      - cell "Lab"
+      - cell "1600"
+      - cell "1600"
+      - cell:
+    - row "4 DIABETIC PROFILE-1 Lab 1200 1200":
+      - cell "4"
+      - cell "DIABETIC PROFILE-1"
+      - cell "Lab"
+      - cell "1200"
+      - cell "1200"
+      - cell:
+    - row "5 MASTER PROFILE3 Lab 2500 7500":
+      - cell "5"
+      - cell "MASTER PROFILE3"
+      - cell "Lab"
+      - cell "2500"
+      - cell "7500"
+      - cell:
+    - row "6 RENAL PROFILE2 (RP2) Lab 800 800":
+      - cell "6"
+      - cell "RENAL PROFILE2 (RP2)"
+      - cell "Lab"
+      - cell "800"
+      - cell "800"
+      - cell:
+    - row "7 VITAMIN PROFILE Lab 1500 1500":
+      - cell "7"
+      - cell "VITAMIN PROFILE"
+      - cell "Lab"
+      - cell "1500"
+      - cell "1500"
+      - cell:
+    - row "8 RENAL PROFILE-II Lab 950 950":
+      - cell "8"
+      - cell "RENAL PROFILE-II"
+      - cell "Lab"
+      - cell "950"
+      - cell "950"
+      - cell:
+    - row "9 MINOR SURGICAL PROFILE Lab 1000 1000":
+      - cell "9"
+      - cell "MINOR SURGICAL PROFILE"
+      - cell "Lab"
+      - cell "1000"
+      - cell "1000"
+      - cell:
+    - row "10 ANTENATAL PROFILE Lab 1800 1800":
+      - cell "10"
+      - cell "ANTENATAL PROFILE"
+      - cell "Lab"
+      - cell "1800"
+      - cell "1800"
+      - cell:
+    - row "11 DIABETIC PROFILE2 Lab 1450 1450":
+      - cell "11"
+      - cell "DIABETIC PROFILE2"
+      - cell "Lab"
+      - cell "1450"
+      - cell "1450"
+      - cell:
+    - row "12 VITAMIN PROFILE Lab 1500 1500":
+      - cell "12"
+      - cell "VITAMIN PROFILE"
+      - cell "Lab"
+      - cell "1500"
+      - cell "1500"
+      - cell:
+    - row "13 MASTER PROFILE-4 Lab 3000 7000":
+      - cell "13"
+      - cell "MASTER PROFILE-4"
+      - cell "Lab"
+      - cell "3000"
+      - cell "7000"
+      - cell:
+    - row "14 ANTIFUNGAL PROFILE Lab 1950 1950":
+      - cell "14"
+      - cell "ANTIFUNGAL PROFILE"
+      - cell "Lab"
+      - cell "1950"
+      - cell "1950"
+      - cell:
+- contentinfo:
+  - generic: "Technical Support Contact : 9390044899, Mail: support@wilcosolutions.com"
+  - paragraph: Wilco Solutions IT Pvt Ltd.
+- button "":
+  - generic: 

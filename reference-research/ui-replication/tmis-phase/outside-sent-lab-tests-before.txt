@@ -1,0 +1,66 @@
+- button "Open Next.js Dev Tools":
+  - text: Compiling
+  - generic: .
+  - generic: .
+  - generic: .
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Outside Sent LabTest Details" [level=1]
+  - paragraph: Tests sent to outside lab centres within the selected date range.
+  - link "Home":
+    - /url: /dashboard
+  - paragraph: Only samples marked as sent to an outside lab centre within the selected date range are shown.
+  - paragraph: "\"Total Amount\" reflects the amount charged on the originating bill for the sample; no separate outside-centre charge is recorded."
+  - paragraph: No lab centre selected - all outside-sent tests are included.
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - button "Show":
+    - text: Show
+  - button "Clear":
+    - text: Clear
+  - link "Home":
+    - /url: /dashboard
+  - heading "Lab Center" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search lab center…"
+  - checkbox "Metropolis Reference Lab (Mumbai)"
+  - generic: Metropolis Reference Lab (Mumbai)
+  - checkbox "Neuberg Diagnostics (Chennai)"
+  - generic: Neuberg Diagnostics (Chennai)
+  - generic: Total Records
+  - generic: "0"
+  - generic: Total Amount
+  - generic: "0.00"
+  - table:
+    - rowgroup:
+      - row "Sent Date Lab Center Patient Test Total Amount":
+        - columnheader "Sent Date"
+        - columnheader "Lab Center"
+        - columnheader "Patient"
+        - columnheader "Test"
+        - columnheader "Total Amount"
+    - rowgroup:
+      - row "No outside-sent tests found. Adjust the filters and search again.":
+        - cell "No outside-sent tests found. Adjust the filters and search again."

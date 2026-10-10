@@ -1,0 +1,29 @@
+{
+  "commission": {
+    "doctor": "Dr.ANJALI",
+    "department": "Hematology",
+    "rows": 19,
+    "error": false
+  },
+  "clientTariffs": {
+    "client": "Sai Health Care Foundation",
+    "department": "Hematology",
+    "rows": 19,
+    "error": false
+  },
+  "tariffs": {
+    "department": "Hematology",
+    "rows": 19,
+    "error": false
+  },
+  "calculatorButton": {
+    "width": 86.7,
+    "height": 34
+  },
+  "mappingDialog": {
+    "width": 1100,
+    "height": 670,
+    "editableFont": 14
+  },
+  "recordMutations": 0
+}

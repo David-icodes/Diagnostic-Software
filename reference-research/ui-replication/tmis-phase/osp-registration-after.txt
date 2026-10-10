@@ -1,0 +1,189 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "General Patient Registration Report" [level=1]
+  - paragraph: Registrations created within the selected date range.
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - generic: Gender
+  - combobox "Gender":
+    - option "All" [selected]
+    - option "Male"
+    - option "Female"
+    - option "Other"
+  - generic: Mobile No
+  - textbox "Mobile No":
+    - /placeholder: Enter mobile number
+  - generic: Patient Name
+  - textbox "Patient Name":
+    - /placeholder: Enter patient name
+  - generic: Bill Type
+  - combobox "Bill Type":
+    - option "All" [selected]
+    - option "OSP"
+    - option "Vendor"
+  - button "Show"
+  - button "Clear"
+  - link "Home":
+    - /url: /dashboard
+  - heading "GP Patients Report" [level=2]
+  - paragraph: "Date : — to —"
+  - paragraph: "Total patients: 8"
+  - table:
+    - rowgroup:
+      - row "S No Date GPId Name Age Gender Mobile Address Bill For Delete":
+        - columnheader "S No"
+        - columnheader "Date"
+        - columnheader "GPId"
+        - columnheader "Name"
+        - columnheader "Age"
+        - columnheader "Gender"
+        - columnheader "Mobile"
+        - columnheader "Address"
+        - columnheader "Bill For"
+        - columnheader "Delete"
+    - rowgroup:
+      - row "1 07 Oct 2026 GP202600052 Rahul Sing 16 yrs 4 mo Male 7997171134 5, Suraram Market Rd Suraram Colony, Dayanand Lab Delete":
+        - cell "1"
+        - cell "07 Oct 2026"
+        - cell "GP202600052"
+        - cell "Rahul Sing"
+        - cell "16 yrs 4 mo"
+        - cell "Male"
+        - cell "7997171134"
+        - cell "5, Suraram Market Rd Suraram Colony, Dayanand":
+          - generic: 5, Suraram Market Rd Suraram Colony, Dayanand
+        - cell "Lab"
+        - cell "Delete":
+          - button "Delete":
+            - text: Delete
+      - row "2 06 Oct 2026 GP202600051 AADHYA 3 yrs Female 9440626892 HYD Lab Delete":
+        - cell "2"
+        - cell "06 Oct 2026"
+        - cell "GP202600051"
+        - cell "AADHYA"
+        - cell "3 yrs"
+        - cell "Female"
+        - cell "9440626892"
+        - cell "HYD"
+        - cell "Lab"
+        - cell "Delete":
+          - button "Delete":
+            - text: Delete
+      - row "3 06 Oct 2026 GP202600050 ANJANEYULU 42 yrs Male 9989220938 HYD Lab Delete":
+        - cell "3"
+        - cell "06 Oct 2026"
+        - cell "GP202600050"
+        - cell "ANJANEYULU"
+        - cell "42 yrs"
+        - cell "Male"
+        - cell "9989220938"
+        - cell "HYD"
+        - cell "Lab"
+        - cell "Delete":
+          - button "Delete":
+            - text: Delete
+      - row "4 05 Oct 2026 GP202600049 shiva 0 yrs Male 8125072004 Hno 629 NTR Nagar Colony Near Madhura nagar N Lab Delete":
+        - cell "4"
+        - cell "05 Oct 2026"
+        - cell "GP202600049"
+        - cell "shiva"
+        - cell "0 yrs"
+        - cell "Male"
+        - cell "8125072004"
+        - cell "Hno 629 NTR Nagar Colony Near Madhura nagar N":
+          - generic: Hno 629 NTR Nagar Colony Near Madhura nagar N
+        - cell "Lab"
+        - cell "Delete":
+          - button "Delete":
+            - text: Delete
+      - row "5 05 Oct 2026 GP202600048 david tester 0 yrs Male 8125072004 Hno 629 NTR Nagar Colony Near Madhura nagar N Lab Delete":
+        - cell "5"
+        - cell "05 Oct 2026"
+        - cell "GP202600048"
+        - cell "david tester"
+        - cell "0 yrs"
+        - cell "Male"
+        - cell "8125072004"
+        - cell "Hno 629 NTR Nagar Colony Near Madhura nagar N":
+          - generic: Hno 629 NTR Nagar Colony Near Madhura nagar N
+        - cell "Lab"
+        - cell "Delete":
+          - button "Delete":
+            - text: Delete
+      - row "6 05 Oct 2026 GP202600046 praveena testing 20 yrs 9 mo Female 9989114010 suraram Lab Delete":
+        - cell "6"
+        - cell "05 Oct 2026"
+        - cell "GP202600046"
+        - cell "praveena testing"
+        - cell "20 yrs 9 mo"
+        - cell "Female"
+        - cell "9989114010"
+        - cell "suraram"
+        - cell "Lab"
+        - cell "Delete":
+          - button "Delete":
+            - text: Delete
+      - row "7 05 Oct 2026 GP202600045 AADHYA 3 yrs Female 9440626892 HYD Lab Delete":
+        - cell "7"
+        - cell "05 Oct 2026"
+        - cell "GP202600045"
+        - cell "AADHYA"
+        - cell "3 yrs"
+        - cell "Female"
+        - cell "9440626892"
+        - cell "HYD"
+        - cell "Lab"
+        - cell "Delete":
+          - button "Delete":
+            - text: Delete
+      - row "8 05 Oct 2026 GP202600044 Harshitha testing 22 yrs 1 mo Female 9581101669 nizampet Lab Delete":
+        - cell "8"
+        - cell "05 Oct 2026"
+        - cell "GP202600044"
+        - cell "Harshitha testing"
+        - cell "22 yrs 1 mo"
+        - cell "Female"
+        - cell "9581101669"
+        - cell "nizampet"
+        - cell "Lab"
+        - cell "Delete":
+          - button "Delete":
+            - text: Delete
+  - button "First" [disabled]:
+    - text: First
+  - button "Prev" [disabled]:
+    - text: Prev
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Last" [disabled]:
+    - text: Last
+  - generic: Page 1 of 1 · 8 patients
+  - generic: "Find:"
+  - textbox "Find:":
+    - /placeholder: Type to find
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Refresh":
+    - text: Refresh

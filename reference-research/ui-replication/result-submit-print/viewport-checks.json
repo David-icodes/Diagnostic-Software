@@ -1,0 +1,560 @@
+[
+  {
+    "state": "sample-centre-modal",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "dialogs": 1,
+    "documentWidth": 1280,
+    "overflows": [],
+    "width": 1280
+  },
+  {
+    "state": "sample-centre-modal",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "dialogs": 1,
+    "documentWidth": 1280,
+    "overflows": [],
+    "width": 1280
+  },
+  {
+    "state": "sample-centre-modal",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "dialogs": 1,
+    "documentWidth": 1440,
+    "overflows": [],
+    "width": 1440
+  },
+  {
+    "state": "sample-centre-modal",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "dialogs": 1,
+    "documentWidth": 1440,
+    "overflows": [],
+    "width": 1440
+  },
+  {
+    "state": "sample-centre-modal",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "dialogs": 1,
+    "documentWidth": 1920,
+    "overflows": [],
+    "width": 1920
+  },
+  {
+    "state": "sample-centre-modal",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "dialogs": 1,
+    "documentWidth": 1920,
+    "overflows": [],
+    "width": 1920
+  },
+  {
+    "state": "pending-typed",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "false",
+        "submitted": "true"
+      },
+      {
+        "background": "rgb(255, 251, 194)",
+        "printDisabled": true,
+        "selected": "true",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "state": "pending-typed",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "false",
+        "submitted": "true"
+      },
+      {
+        "background": "rgb(255, 251, 194)",
+        "printDisabled": true,
+        "selected": "true",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "state": "pending-typed",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "false",
+        "submitted": "true"
+      },
+      {
+        "background": "rgb(255, 251, 194)",
+        "printDisabled": true,
+        "selected": "true",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "state": "pending-typed",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "false",
+        "submitted": "true"
+      },
+      {
+        "background": "rgb(255, 251, 194)",
+        "printDisabled": true,
+        "selected": "true",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "state": "pending-typed",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "false",
+        "submitted": "true"
+      },
+      {
+        "background": "rgb(255, 251, 194)",
+        "printDisabled": true,
+        "selected": "true",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1920
+  },
+  {
+    "state": "pending-typed",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "false",
+        "submitted": "true"
+      },
+      {
+        "background": "rgb(255, 251, 194)",
+        "printDisabled": true,
+        "selected": "true",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1920
+  },
+  {
+    "state": "submitted-after-refresh",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "state": "submitted-after-refresh",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "state": "submitted-after-refresh",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "state": "submitted-after-refresh",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "state": "submitted-after-refresh",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1920
+  },
+  {
+    "state": "submitted-after-refresh",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1920
+  },
+  {
+    "state": "final-submitted-layout",
+    "requestedWidth": 1280,
+    "sidebar": "collapsed",
+    "documentWidth": 1280,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "state": "final-submitted-layout",
+    "requestedWidth": 1280,
+    "sidebar": "expanded",
+    "documentWidth": 1280,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1280
+  },
+  {
+    "state": "final-submitted-layout",
+    "requestedWidth": 1440,
+    "sidebar": "collapsed",
+    "documentWidth": 1440,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "state": "final-submitted-layout",
+    "requestedWidth": 1440,
+    "sidebar": "expanded",
+    "documentWidth": 1440,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "state": "final-submitted-layout",
+    "requestedWidth": 1920,
+    "sidebar": "collapsed",
+    "documentWidth": 1920,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1920
+  },
+  {
+    "state": "final-submitted-layout",
+    "requestedWidth": 1920,
+    "sidebar": "expanded",
+    "documentWidth": 1920,
+    "overflows": [],
+    "rows": [
+      {
+        "background": "rgb(149, 203, 242)",
+        "printDisabled": false,
+        "selected": "true",
+        "submitted": "true"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      },
+      {
+        "background": "rgb(249, 249, 249)",
+        "printDisabled": true,
+        "selected": "false",
+        "submitted": "false"
+      }
+    ],
+    "width": 1920
+  }
+]

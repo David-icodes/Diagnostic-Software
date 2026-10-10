@@ -1,0 +1,37 @@
+[
+  {
+    "route": "/database/package/create",
+    "heading": "Create Package",
+    "overflow": false,
+    "scroll": 390,
+    "width": 390
+  },
+  {
+    "route": "/reports/referral-doctor-commission",
+    "heading": "Referral Doctor Commission",
+    "overflow": false,
+    "scroll": 378,
+    "width": 390
+  },
+  {
+    "route": "/laboratory/test-result/sample-collections",
+    "heading": "Lab Sample Collection Status",
+    "overflow": false,
+    "scroll": 390,
+    "width": 390
+  },
+  {
+    "route": "/laboratory/master/lab-test-parameter",
+    "heading": "Create New Lab Test Parameter",
+    "overflow": false,
+    "scroll": 390,
+    "width": 390
+  },
+  {
+    "route": "/billing/osp/new",
+    "heading": "Generate OSP Investigations Bill",
+    "overflow": false,
+    "scroll": 390,
+    "width": 390
+  }
+]

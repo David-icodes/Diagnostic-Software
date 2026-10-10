@@ -1,0 +1,323 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Referral Doctor Commission" [level=1]
+  - paragraph: Bill-wise referral doctor commission on referred tests.
+  - link "Home":
+    - /url: /dashboard
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - generic: Patient ID
+  - textbox "Patient ID":
+    - /placeholder: e.g. GP202600001
+  - generic: Commission Basis
+  - combobox "Commission Basis":
+    - option "All" [selected]
+    - option "Billwise Referral"
+    - option "Consolidated OP + IP"
+  - generic: Amount Basis
+  - combobox "Amount Basis":
+    - option "All" [selected]
+    - option "Bill Net"
+    - option "Paid Amount"
+  - generic: Claim Type
+  - combobox "Claim Type":
+    - option "All" [selected]
+    - option "All"
+  - button "Loading…" [disabled]:
+    - text: Loading…
+  - button "Clear" [disabled]:
+    - text: Clear
+  - link "Home":
+    - /url: /dashboard
+  - heading "Department" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search department…"
+  - checkbox "Biochemistry"
+  - generic: Biochemistry
+  - checkbox "Clinical Pathology"
+  - generic: Clinical Pathology
+  - checkbox "Hematology"
+  - generic: Hematology
+  - checkbox "Hormones"
+  - generic: Hormones
+  - checkbox "Immunology / Serology"
+  - generic: Immunology / Serology
+  - checkbox "Microbiology"
+  - generic: Microbiology
+  - checkbox "Molecular Biology"
+  - generic: Molecular Biology
+  - checkbox "Packages / Profiles"
+  - generic: Packages / Profiles
+  - checkbox "Pathology"
+  - generic: Pathology
+  - checkbox "Pharmacy Support"
+  - generic: Pharmacy Support
+  - heading "Test" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search test…"
+  - checkbox "25 HYDROXY VITAMIN D"
+  - generic: 25 HYDROXY VITAMIN D
+  - checkbox "Absolute Eosinophil Count (AEC)"
+  - generic: Absolute Eosinophil Count (AEC)
+  - checkbox "Activated Partial Thromboplastin Time (APTT/PTTK)"
+  - generic: Activated Partial Thromboplastin Time (APTT/PTTK)
+  - checkbox "ALBUMIN"
+  - generic: ALBUMIN
+  - checkbox "Albumin/Creatinine Ratio"
+  - generic: Albumin/Creatinine Ratio
+  - checkbox "Alkaline Phosphatase"
+  - generic: Alkaline Phosphatase
+  - checkbox "ALT (SGPT)"
+  - generic: ALT (SGPT)
+  - checkbox "AMYLASE"
+  - generic: AMYLASE
+  - checkbox "ANTI CARDIOLIPIN IgG"
+  - generic: ANTI CARDIOLIPIN IgG
+  - checkbox "ANTI CARDIOLIPIN IgM"
+  - generic: ANTI CARDIOLIPIN IgM
+  - checkbox "ANTI CCP"
+  - generic: ANTI CCP
+  - checkbox "ANTI MULLERIN HORMONE(AMH)"
+  - generic: ANTI MULLERIN HORMONE(AMH)
+  - checkbox "Anti Nuclear Antibody"
+  - generic: Anti Nuclear Antibody
+  - checkbox "ANTI TPO"
+  - generic: ANTI TPO
+  - checkbox "ANTIBODY TO HEPATITIS C VIRUS(CLIA)"
+  - generic: ANTIBODY TO HEPATITIS C VIRUS(CLIA)
+  - checkbox "APLA PROFILE"
+  - generic: APLA PROFILE
+  - checkbox "APOLIPOPROTEIN B (APO-B)"
+  - generic: APOLIPOPROTEIN B (APO-B)
+  - checkbox "ASO"
+  - generic: ASO
+  - checkbox "AST (SGOT)"
+  - generic: AST (SGOT)
+  - checkbox "Basic Health Package (CBC + Glucose + Lipid)"
+  - generic: Basic Health Package (CBC + Glucose + Lipid)
+  - checkbox "BETA 2 GLYCOPROTEIN ANTY BODY IgG"
+  - generic: BETA 2 GLYCOPROTEIN ANTY BODY IgG
+  - checkbox "BETA 2 GLYCOPROTEIN ANTY BODY IgM"
+  - generic: BETA 2 GLYCOPROTEIN ANTY BODY IgM
+  - checkbox "BETA HCG"
+  - generic: BETA HCG
+  - checkbox "BILIRUBIN"
+  - generic: BILIRUBIN
+  - checkbox "BILIRUBIN,PAEDIATRIC"
+  - generic: BILIRUBIN,PAEDIATRIC
+  - checkbox "BLEEDING TIME CLOTTING TIME"
+  - generic: BLEEDING TIME CLOTTING TIME
+  - checkbox "BLOOD GROUP"
+  - generic: BLOOD GROUP
+  - checkbox "BLOOD GROUPING & RH TYPING"
+  - generic: BLOOD GROUPING & RH TYPING
+  - checkbox "Blood Sugar Fasting"
+  - generic: Blood Sugar Fasting
+  - checkbox "BLOOD UREA"
+  - generic: BLOOD UREA
+  - checkbox "BLOOD UREA SERUM CREATININE"
+  - generic: BLOOD UREA SERUM CREATININE
+  - checkbox "BT/CT"
+  - generic: BT/CT
+  - checkbox "C-Reactive Protein (CRP)"
+  - generic: C-Reactive Protein (CRP)
+  - checkbox "CA 125"
+  - generic: CA 125
+  - checkbox "CARCINO EMBRYONIC ANTIGEN (CEA)"
+  - generic: CARCINO EMBRYONIC ANTIGEN (CEA)
+  - checkbox "CHIKUNGUNYA IgM"
+  - generic: CHIKUNGUNYA IgM
+  - checkbox "Complete Blood Count (CBC)"
+  - generic: Complete Blood Count (CBC)
+  - checkbox "COMPLETE BLOOD PICTURE"
+  - generic: COMPLETE BLOOD PICTURE
+  - checkbox "COMPLETE STOOL EXAMINATION"
+  - generic: COMPLETE STOOL EXAMINATION
+  - checkbox "Complete Thyroid Profile"
+  - generic: Complete Thyroid Profile
+  - checkbox "COMPLETE URINE EXAMINATION"
+  - generic: COMPLETE URINE EXAMINATION
+  - checkbox "CORTISOL"
+  - generic: CORTISOL
+  - checkbox "Creatine Kinase MB (CK-MB)"
+  - generic: Creatine Kinase MB (CK-MB)
+  - checkbox "CREATININE PHOSPHOKINASE (CPK)"
+  - generic: CREATININE PHOSPHOKINASE (CPK)
+  - checkbox "CRP (C - REACTIVE PROTEIN)"
+  - generic: CRP (C - REACTIVE PROTEIN)
+  - checkbox "CRP RF ASO"
+  - generic: CRP RF ASO
+  - checkbox "D-DIMER"
+  - generic: D-DIMER
+  - checkbox "Dengue NS1 Antigen"
+  - generic: Dengue NS1 Antigen
+  - checkbox "Dengue NSI"
+  - generic: Dengue NSI
+  - checkbox "Dengue Profile"
+  - generic: Dengue Profile
+  - checkbox "Erythrocyte sedimentation rate(Esr)"
+  - generic: Erythrocyte sedimentation rate(Esr)
+  - checkbox "ESR"
+  - generic: ESR
+  - checkbox "ESTRADIOL(E2)"
+  - generic: ESTRADIOL(E2)
+  - checkbox "FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR"
+  - generic: FASTING BLOOD SUGAR & POST LUNCH BLOOD SUGAR
+  - checkbox "FBS (FASTING BLOOD SUGAR)"
+  - generic: FBS (FASTING BLOOD SUGAR)
+  - checkbox "FIBRINOGEN"
+  - generic: FIBRINOGEN
+  - checkbox "FLUID CELL COUNT"
+  - generic: FLUID CELL COUNT
+  - checkbox "FOLIC ACID"
+  - generic: FOLIC ACID
+  - checkbox "FREE T3"
+  - generic: FREE T3
+  - checkbox "FREE T3 T4"
+  - generic: FREE T3 T4
+  - checkbox "FREE-T4 (THYROXINE)"
+  - generic: FREE-T4 (THYROXINE)
+  - checkbox "FSH"
+  - generic: FSH
+  - checkbox "FSH LH PRL (FLP)"
+  - generic: FSH LH PRL (FLP)
+  - checkbox "Glomerular Filtration Rate (eGFR)"
+  - generic: Glomerular Filtration Rate (eGFR)
+  - checkbox "GLUCOSE CHALLANGE TEST (GCT)"
+  - generic: GLUCOSE CHALLANGE TEST (GCT)
+  - checkbox "GLUCOSE-FLUIDS"
+  - generic: GLUCOSE-FLUIDS
+  - checkbox "HAEMOGLOBIN"
+  - generic: HAEMOGLOBIN
+  - checkbox "HAEMOGRAM"
+  - generic: HAEMOGRAM
+  - checkbox "HBA1C"
+  - generic: HBA1C
+  - checkbox "HBSAG"
+  - generic: HBSAG
+  - checkbox "HCG"
+  - generic: HCG
+  - checkbox "HCG PREGNANCY RAPID"
+  - generic: HCG PREGNANCY RAPID
+  - checkbox "HEMOGLOBIN"
+  - generic: HEMOGLOBIN
+  - checkbox "Hemoglobin (Hb)"
+  - generic: Hemoglobin (Hb)
+  - checkbox "Hemoglobinopathy (Hb Electrophoresis)"
+  - generic: Hemoglobinopathy (Hb Electrophoresis)
+  - checkbox "HEPATITIS B"
+  - generic: HEPATITIS B
+  - checkbox "HEPATITIS C"
+  - generic: HEPATITIS C
+  - checkbox "HEPATITIS C VIRUS RAPID"
+  - generic: HEPATITIS C VIRUS RAPID
+  - checkbox "HIV"
+  - generic: HIV
+  - checkbox "HLA-B27"
+  - generic: HLA-B27
+  - checkbox "HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance)"
+  - generic: HOMA2-IR (Homeostatic Model Assessment 2 - Insulin Resistance)
+  - checkbox "HOMOCYSTEIN"
+  - generic: HOMOCYSTEIN
+  - checkbox "HS TROP I"
+  - generic: HS TROP I
+  - checkbox "HSV 1 & 2 IgG"
+  - generic: HSV 1 & 2 IgG
+  - checkbox "HSV 1 & 2 IgM"
+  - generic: HSV 1 & 2 IgM
+  - checkbox "HSV IgG,IgM"
+  - generic: HSV IgG,IgM
+  - checkbox "Immunoglobulin (IgG)"
+  - generic: Immunoglobulin (IgG)
+  - checkbox "Immunoglobulin A (IgA)"
+  - generic: Immunoglobulin A (IgA)
+  - checkbox "Immunoglobution (IgM)"
+  - generic: Immunoglobution (IgM)
+  - checkbox "INSULIN POST PRANDIAL"
+  - generic: INSULIN POST PRANDIAL
+  - checkbox "INSULIN-FASTING"
+  - generic: INSULIN-FASTING
+  - checkbox "Ionised Calcium"
+  - generic: Ionised Calcium
+  - checkbox "IRON"
+  - generic: IRON
+  - checkbox "IRON DEFICIENCY PROFILE"
+  - generic: IRON DEFICIENCY PROFILE
+  - checkbox "KIDNEY FUNCTION TEST (KFT)"
+  - generic: KIDNEY FUNCTION TEST (KFT)
+  - checkbox "LDH"
+  - generic: LDH
+  - checkbox "LFT (LIVER FUNCTION TEST)"
+  - generic: LFT (LIVER FUNCTION TEST)
+  - checkbox "LIPASE"
+  - generic: LIPASE
+  - checkbox "LIPOPROTEIN A (LP-A)"
+  - generic: LIPOPROTEIN A (LP-A)
+  - checkbox "LUPAS ANTICOAGULANT"
+  - generic: LUPAS ANTICOAGULANT
+  - heading "Doctor" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search doctor…"
+  - checkbox "Dr. Anil Mehta"
+  - generic: Dr. Anil Mehta
+  - checkbox "Dr. Kavita Nair"
+  - generic: Dr. Kavita Nair
+  - checkbox "Dr. Priya Sharma"
+  - generic: Dr. Priya Sharma
+  - checkbox "Dr. Ramesh Gupta"
+  - generic: Dr. Ramesh Gupta
+  - checkbox "Dr.ANJALI"
+  - generic: Dr.ANJALI
+  - checkbox "Meenal K Venkatesh"
+  - generic: Meenal K Venkatesh
+  - heading "Patient Type" [level=3]
+  - checkbox "Select All"
+  - text: Select All
+  - textbox "Search patient type…"
+  - checkbox "OP"
+  - generic: OP
+  - checkbox "IP"
+  - generic: IP
+  - checkbox "GP"
+  - generic: GP
+  - table:
+    - rowgroup:
+      - row "Bill No Bill Date Patient Patient Type Doctor Test Bill Net Bill Paid Rate Commission":
+        - columnheader "Bill No"
+        - columnheader "Bill Date"
+        - columnheader "Patient"
+        - columnheader "Patient Type"
+        - columnheader "Doctor"
+        - columnheader "Test"
+        - columnheader "Bill Net"
+        - columnheader "Bill Paid"
+        - columnheader "Rate"
+        - columnheader "Commission"
+    - rowgroup:
+      - row "Loading report data…":
+        - cell "Loading report data…"

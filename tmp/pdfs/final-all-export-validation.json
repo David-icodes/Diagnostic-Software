@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "report": "generated-lab-bills",
+      "csvRecords": 4,
+      "columns": 16
+    },
+    {
+      "report": "lab-summary",
+      "csvRecords": 9,
+      "columns": 18
+    },
+    {
+      "report": "referral-doctor-commission",
+      "csvRecords": 4,
+      "columns": 12
+    },
+    {
+      "report": "outside-sent-lab-tests",
+      "csvRecords": 1,
+      "columns": 6
+    },
+    {
+      "report": "hospital-price-card",
+      "csvRecords": 183,
+      "columns": 7
+    },
+    {
+      "report": "lab-collection-summary",
+      "csvRecords": 1,
+      "columns": 3
+    }
+  ],
+  "validDocuments": 18,
+  "emptyReports": [
+    "bills-wise-collection",
+    "cancelled-bills",
+    "client-generated-lab-bills",
+    "due-bills"
+  ]
+}

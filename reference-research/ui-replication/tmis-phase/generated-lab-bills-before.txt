@@ -1,0 +1,323 @@
+- button "Open Next.js Dev Tools":
+- alert
+- banner:
+  - button "Expand sidebar":
+  - generic: Anjali Diagnostics
+  - paragraph: 24x7 Support
+  - paragraph: dprtechsolutionss@gmail.com
+  - button "Application" [disabled]:
+  - button "Toggle fullscreen":
+  - button "User menu":
+    - generic: Administrator
+    - generic: admin
+  - button "Logout":
+- complementary:
+  - navigation:
+    - link "Home":
+      - /url: /dashboard
+    - button "Lab":
+    - button "UserAdmin":
+    - button "TMIS":
+    - button "DM":
+- main:
+  - heading "Generated Lab Bills Report" [level=1]
+  - paragraph: Generated lab bills with stored prices, discounts, payment mode and collector.
+  - generic: From Date
+  - textbox "From Date"
+  - generic: To Date
+  - textbox "To Date"
+  - generic: Bill No
+  - textbox "Bill No":
+    - /placeholder: e.g. OSP202600001
+  - generic: GPId
+  - textbox "GPId":
+    - /placeholder: e.g. GP202600001
+  - generic: Patient Name
+  - textbox "Patient Name":
+    - /placeholder: Enter patient name
+  - generic: Department
+  - combobox "Department":
+    - option "All" [selected]
+    - option "Biochemistry"
+    - option "Clinical Pathology"
+    - option "Hematology"
+    - option "Hormones"
+    - option "Immunology / Serology"
+    - option "Microbiology"
+    - option "Molecular Biology"
+    - option "Packages / Profiles"
+    - option "Pathology"
+    - option "Pharmacy Support"
+  - generic: Payment Status
+  - combobox "Payment Status":
+    - option "All" [selected]
+    - option "Paid"
+    - option "Partial"
+    - option "Unpaid"
+  - generic: Date Order
+  - combobox "Date Order":
+    - option "Newest first"
+    - 'option "Date: Newest first" [selected]'
+    - 'option "Date: Oldest first"'
+  - checkbox "Discounted bills only"
+  - text: Discounted bills only
+  - heading "Patient Type" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search patient type…"
+  - checkbox "OSP"
+  - generic: OSP
+  - checkbox "OP"
+  - generic: OP
+  - checkbox "IP"
+  - generic: IP
+  - checkbox "Emergency"
+  - generic: Emergency
+  - checkbox "Corporate"
+  - generic: Corporate
+  - heading "Payment Mode" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search payment mode…"
+  - checkbox "Cash"
+  - generic: Cash
+  - checkbox "UPI"
+  - generic: UPI
+  - checkbox "Card"
+  - generic: Card
+  - checkbox "Bank Transfer"
+  - generic: Bank Transfer
+  - checkbox "Other"
+  - generic: Other
+  - heading "Referring Doctor" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search Doctor"
+  - checkbox "Dr. Anil Mehta"
+  - generic: Dr. Anil Mehta
+  - checkbox "Dr. Kavita Nair"
+  - generic: Dr. Kavita Nair
+  - checkbox "Dr. Priya Sharma"
+  - generic: Dr. Priya Sharma
+  - checkbox "Dr. Ramesh Gupta"
+  - generic: Dr. Ramesh Gupta
+  - checkbox "Dr.ANJALI"
+  - generic: Dr.ANJALI
+  - checkbox "Meenal K Venkatesh"
+  - generic: Meenal K Venkatesh
+  - heading "Collected By" [level=3]
+  - checkbox "All"
+  - text: All
+  - textbox "Search Collected By"
+  - checkbox "Administrator"
+  - generic: Administrator
+  - checkbox "Operator One"
+  - generic: Operator One
+  - checkbox "Operator User"
+  - generic: Operator User
+  - button "Show":
+    - text: Show
+  - button "Clear":
+    - text: Clear
+  - link "Home":
+    - /url: /dashboard
+  - heading "Generated Lab Bills Report" [level=2]
+  - paragraph: "Date : — to — | Order : Newest first"
+  - paragraph: "Total bills: 10"
+  - table:
+    - rowgroup:
+      - row "S No Bill No Date Patient Name GPId Patient Type Tests Doctor Total Discount Net Pay Mode Collected By Payment Status":
+        - columnheader "S No"
+        - columnheader "Bill No"
+        - columnheader "Date"
+        - columnheader "Patient Name"
+        - columnheader "GPId"
+        - columnheader "Patient Type"
+        - columnheader "Tests"
+        - columnheader "Doctor"
+        - columnheader "Total"
+        - columnheader "Discount"
+        - columnheader "Net"
+        - columnheader "Pay Mode"
+        - columnheader "Collected By"
+        - columnheader "Payment Status"
+    - rowgroup:
+      - row "1 OSP202600090 07 Oct 2026 Rahul Sing GP202600052 OSP BLOOD GROUP, COMPLETE BLOOD PICTURE, Complete Blood Count (CBC), ESR, FIBRINOGEN, FLUID CELL COUNT, FOLIC ACID, HAEMOGLOBIN, HAEMOGRAM, HLA-B27, Hemoglobin (Hb), MALARIA, PERIPHERAL SMEAR, PT/INR, Platelet count, RETICULOCYTE COUNT, TC/DC Dr. Anil Mehta 1,080.00 0.00 1,080.00 Cash Administrator Unpaid":
+        - cell "1"
+        - cell "OSP202600090"
+        - cell "07 Oct 2026"
+        - cell "Rahul Sing"
+        - cell "GP202600052"
+        - cell "OSP"
+        - cell "BLOOD GROUP, COMPLETE BLOOD PICTURE, Complete Blood Count (CBC), ESR, FIBRINOGEN, FLUID CELL COUNT, FOLIC ACID, HAEMOGLOBIN, HAEMOGRAM, HLA-B27, Hemoglobin (Hb), MALARIA, PERIPHERAL SMEAR, PT/INR, Platelet count, RETICULOCYTE COUNT, TC/DC":
+          - generic: BLOOD GROUP, COMPLETE BLOOD PICTURE, Complete Blood Count (CBC), ESR, FIBRINOGEN, FLUID CELL COUNT, FOLIC ACID, HAEMOGLOBIN, HAEMOGRAM, HLA-B27, Hemoglobin (Hb), MALARIA, PERIPHERAL SMEAR, PT/INR, Platelet count, RETICULOCYTE COUNT, TC/DC
+        - cell "Dr. Anil Mehta"
+        - cell "1,080.00"
+        - cell "0.00"
+        - cell "1,080.00"
+        - cell "Cash"
+        - cell "Administrator"
+        - cell "Unpaid":
+          - generic: Unpaid
+      - row "2 OSP202600089 06 Oct 2026 AADHYA GP202600051 OSP COMPLETE BLOOD PICTURE Dr.ANJALI 450.00 0.00 450.00 Cash Administrator Unpaid":
+        - cell "2"
+        - cell "OSP202600089"
+        - cell "06 Oct 2026"
+        - cell "AADHYA"
+        - cell "GP202600051"
+        - cell "OSP"
+        - cell "COMPLETE BLOOD PICTURE"
+        - cell "Dr.ANJALI"
+        - cell "450.00"
+        - cell "0.00"
+        - cell "450.00"
+        - cell "Cash"
+        - cell "Administrator"
+        - cell "Unpaid":
+          - generic: Unpaid
+      - row "3 OSP202600088 06 Oct 2026 AADHYA GP202600045 OSP Blood Sugar Fasting — 100.00 0.00 100.00 Cash Administrator Partial":
+        - cell "3"
+        - cell "OSP202600088"
+        - cell "06 Oct 2026"
+        - cell "AADHYA"
+        - cell "GP202600045"
+        - cell "OSP"
+        - cell "Blood Sugar Fasting"
+        - cell "—"
+        - cell "100.00"
+        - cell "0.00"
+        - cell "100.00"
+        - cell "Cash"
+        - cell "Administrator"
+        - cell "Partial":
+          - generic: Partial
+      - row "4 OSP202600087 06 Oct 2026 ANJANEYULU GP202600050 OSP 25 HYDROXY VITAMIN D Dr.ANJALI 0.00 0.00 0.00 Cash Administrator Free":
+        - cell "4"
+        - cell "OSP202600087"
+        - cell "06 Oct 2026"
+        - cell "ANJANEYULU"
+        - cell "GP202600050"
+        - cell "OSP"
+        - cell "25 HYDROXY VITAMIN D"
+        - cell "Dr.ANJALI"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "Cash"
+        - cell "Administrator"
+        - cell "Free":
+          - generic: Free
+      - row "5 OSP202600086 05 Oct 2026 shiva GP202600049 OSP MALARIA Dr. Anil Mehta 150.00 0.00 150.00 Cash Administrator Paid":
+        - cell "5"
+        - cell "OSP202600086"
+        - cell "05 Oct 2026"
+        - cell "shiva"
+        - cell "GP202600049"
+        - cell "OSP"
+        - cell "MALARIA"
+        - cell "Dr. Anil Mehta"
+        - cell "150.00"
+        - cell "0.00"
+        - cell "150.00"
+        - cell "Cash"
+        - cell "Administrator"
+        - cell "Paid":
+          - generic: Paid
+      - row "6 OSP202600085 05 Oct 2026 david tester GP202600048 OSP ALT (SGPT), Blood Sugar Fasting, CRP (C - REACTIVE PROTEIN) — 600.00 0.00 600.00 Cash Administrator Paid":
+        - cell "6"
+        - cell "OSP202600085"
+        - cell "05 Oct 2026"
+        - cell "david tester"
+        - cell "GP202600048"
+        - cell "OSP"
+        - cell "ALT (SGPT), Blood Sugar Fasting, CRP (C - REACTIVE PROTEIN)":
+          - generic: ALT (SGPT), Blood Sugar Fasting, CRP (C - REACTIVE PROTEIN)
+        - cell "—"
+        - cell "600.00"
+        - cell "0.00"
+        - cell "600.00"
+        - cell "Cash"
+        - cell "Administrator"
+        - cell "Paid":
+          - generic: Paid
+      - row "7 OSP202600083 05 Oct 2026 praveena testing GP202600046 IP Hemoglobin (Hb), MALARIA — 250.00 0.00 250.00 Cash Administrator Paid":
+        - cell "7"
+        - cell "OSP202600083"
+        - cell "05 Oct 2026"
+        - cell "praveena testing"
+        - cell "GP202600046"
+        - cell "IP"
+        - cell "Hemoglobin (Hb), MALARIA"
+        - cell "—"
+        - cell "250.00"
+        - cell "0.00"
+        - cell "250.00"
+        - cell "Cash"
+        - cell "Administrator"
+        - cell "Paid":
+          - generic: Paid
+      - row "8 OSP202600082 05 Oct 2026 AADHYA GP202600045 OSP COMPLETE BLOOD PICTURE, ESR, ANTI CCP Dr.ANJALI 530.00 0.00 530.00 Cash Administrator Partial":
+        - cell "8"
+        - cell "OSP202600082"
+        - cell "05 Oct 2026"
+        - cell "AADHYA"
+        - cell "GP202600045"
+        - cell "OSP"
+        - cell "COMPLETE BLOOD PICTURE, ESR, ANTI CCP":
+          - generic: COMPLETE BLOOD PICTURE, ESR, ANTI CCP
+        - cell "Dr.ANJALI"
+        - cell "530.00"
+        - cell "0.00"
+        - cell "530.00"
+        - cell "Cash"
+        - cell "Administrator"
+        - cell "Partial":
+          - generic: Partial
+      - row "9 OSP202600081 05 Oct 2026 Harshitha testing GP202600044 Emergency ALBUMIN, ALT (SGPT) Dr. Priya Sharma 150.00 0.00 150.00 UPI Administrator Paid":
+        - cell "9"
+        - cell "OSP202600081"
+        - cell "05 Oct 2026"
+        - cell "Harshitha testing"
+        - cell "GP202600044"
+        - cell "Emergency"
+        - cell "ALBUMIN, ALT (SGPT)"
+        - cell "Dr. Priya Sharma"
+        - cell "150.00"
+        - cell "0.00"
+        - cell "150.00"
+        - cell "UPI"
+        - cell "Administrator"
+        - cell "Paid":
+          - generic: Paid
+      - row "10 ZZUI1790870411813 01 Oct 2026 — — OSP ZZUI1790870411813 — 0.00 0.00 0.00 Cash — Free":
+        - cell "10"
+        - cell "ZZUI1790870411813"
+        - cell "01 Oct 2026"
+        - cell "—"
+        - cell "—"
+        - cell "OSP"
+        - cell "ZZUI1790870411813"
+        - cell "—"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "0.00"
+        - cell "Cash"
+        - cell "—"
+        - cell "Free":
+          - generic: Free
+  - button "First" [disabled]:
+    - text: First
+  - button "Prev" [disabled]:
+    - text: Prev
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Last" [disabled]:
+    - text: Last
+  - generic: Page 1 of 1 · 10 bills
+  - generic: "Find:"
+  - textbox "Find:":
+    - /placeholder: Type to find
+  - button "Next" [disabled]:
+    - text: Next
+  - button "Refresh":
+    - text: Refresh
