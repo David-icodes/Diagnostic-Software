@@ -1,3 +1,4 @@
+import { CALCULATION_FORMULAS, normalizeCalculationUnit } from "../../utils/configured-calculations";
 import { Types, type FilterQuery, type HydratedDocument } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { isValidObjectId } from "../../utils/object-id";
@@ -48,6 +49,8 @@ export interface ParameterRow extends ReferenceMappingSummary {
   departmentName?: string;
   testName?: string;
   parameterName: string;
+  itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
+  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
   subtitle?: string;
   displayOrder: number;
   resultType: ILabTestParameter["resultType"];
@@ -206,12 +209,19 @@ export function toParameterMapping(doc: IReferenceMapping): ParameterMapping {
   };
 }
 
+export function normalizeParameterItem(input: Partial<ILabTestParameter>) {
+ if (input.calculation && (!input.itemType || input.itemType === "PARAMETER")) input.resultType = "NUMBER";
+ if(input.itemType === "SUBTITLE" || input.itemType === "TEXT_AREA") Object.assign(input,{resultType:input.itemType === "SUBTITLE"?"TEXT":"TEXTAREA",calculation:null,unit:undefined,rangeFrom:undefined,rangeTo:undefined,rangeText:undefined,referenceRange:undefined,referenceMappings:[],mappingTypes:[],genderRanges:[],onlyReferenceRange:false});
+ return input;
+}
 function row(doc: ILabTestParameter): ParameterRow {
   return {
     ...summariseMappings(doc.referenceMappings as IReferenceMapping[]),
     id: String((doc as ILabTestParameter & { _id: unknown })._id),
     testId: String(doc.testId),
     parameterName: doc.parameterName,
+    itemType: doc.itemType ?? "PARAMETER",
+    calculation: doc.calculation,
     subtitle: doc.subtitle,
     displayOrder: doc.displayOrder,
     resultType: doc.resultType,
@@ -361,16 +371,34 @@ export async function listSubtitles(testId: string): Promise<string[]> {
     .sort((a, b) => a.localeCompare(b));
 }
 
+/** Reject broken explicit source bindings before saving new configuration. */
+async function validateCalculationBinding(testId: string, calculation: ILabTestParameter["calculation"], unit?: string, itemType?: string, id?: string) {
+ if (!calculation || itemType === "SUBTITLE" || itemType === "TEXT_AREA") return;
+ const formula = CALCULATION_FORMULAS.find(row => row.id === calculation.formulaId);
+ if (!formula) throw new ApiError(422, "Select a supported calculation formula");
+ // Legacy configurations without bindings use the engine's controlled exact-alias fallback.
+ if (!calculation.dependencyIds) return;
+ if (calculation.dependencyIds.length !== formula.sources.length || calculation.dependencyIds.includes(id ?? "")) throw new ApiError(422, "Select each source parameter; a calculation cannot depend on itself");
+ const sources = await LabTestParameter.find({_id:{$in:calculation.dependencyIds},testId,active:true}).exec();
+ const ordered = calculation.dependencyIds.map(sourceId => sources.find(row => String(row._id) === sourceId));
+ if (ordered.some(row => !row || row.itemType === "SUBTITLE" || row.itemType === "TEXT_AREA" || !["NUMBER","RANGE"].includes(row.resultType))) throw new ApiError(422, "Calculation sources must be numeric parameters in this test");
+ const units = ordered.map(row => normalizeCalculationUnit(row!.unit));
+ const countUnits = ["cells/ul","thousand/ul"];
+ if (!formula.units.every((required,index) => required === "count" ? countUnits.includes(units[index]) : required === units[index]) || (formula.outputUnit === "count" ? normalizeCalculationUnit(unit) !== units[0] : normalizeCalculationUnit(unit) !== formula.outputUnit)) throw new ApiError(422, "Configure compatible source and output units");
+}
+
 export async function createParameter(
   userId: string,
   input: CreateParameterInput,
 ): Promise<ParameterDoc> {
   await ensureTestExists(String(input.testId));
+  await validateCalculationBinding(String(input.testId), input.calculation, input.unit, input.itemType);
   const referenceRange = composeReferenceRange(input);
   try {
+    normalizeParameterItem(input);
     return await LabTestParameter.create({
       ...input,
-      referenceRange,
+      referenceRange: input.itemType === "SUBTITLE" || input.itemType === "TEXT_AREA" ? undefined : referenceRange,
       createdBy: userId,
     });
   } catch (error) {
@@ -399,6 +427,8 @@ export async function updateParameter(
   if (input.testId !== undefined) {
     await ensureTestExists(String(input.testId));
   }
+  await validateCalculationBinding(String(input.testId ?? parameter.testId), input.calculation === undefined ? parameter.calculation : input.calculation, input.unit ?? parameter.unit, input.itemType ?? parameter.itemType, id);
+  Object.assign(input,normalizeParameterItem({ ...input,itemType:input.itemType ?? parameter.itemType }));
   Object.assign(parameter, input, {
     updatedBy: new Types.ObjectId(userId),
   });

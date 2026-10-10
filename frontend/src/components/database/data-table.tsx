@@ -60,6 +60,7 @@ export function DataTable<T>({
             {columns.map((column) => (
               <TableHead
                 key={column.key}
+                data-column={column.key}
                 className={cn(
                   column.align === "right" && "text-right",
                   column.align === "center" && "text-center",

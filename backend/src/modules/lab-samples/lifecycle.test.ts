@@ -1,0 +1,27 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { Types } from "mongoose";
+import { LabSample } from "../../models/lab-sample.model";
+import { LabBill } from "../../models/lab-bill.model";
+import { LabTest } from "../../models/lab-test.model";
+import { LabTestResult } from "../../models/lab-test-result.model";
+import { Patient } from "../../models/patient.model";
+import { OutsideLab } from "../../models/outside-lab.model";
+import { AuditLog } from "../../models/audit-log.model";
+import { updateLabSampleStatus, canTransitionSample } from "./lab-sample.service";
+const query=(value:unknown)=>{const q={exec:async()=>value,select:()=>q,lean:()=>q};return q;};
+test("collection/rejection/recollection persists each event and returns authoritative bill/test context",async t=>{
+ const user=String(new Types.ObjectId());const billId=new Types.ObjectId();const testId=new Types.ObjectId();const patientId=new Types.ObjectId();let saves=0;const audits:any[]=[];
+ const sample:any={_id:new Types.ObjectId(),sampleId:"SYNTHETIC-001",billId,testId,patientId,sampleStatus:"SELECT",history:[],save:async()=>{saves++;return sample;}};
+ t.mock.method(LabSample,"findById",()=>query(sample));
+ t.mock.method(LabSample,"findOneAndUpdate",(filter:any,update:any)=>{const allowed = typeof filter.sampleStatus === "string" ? filter.sampleStatus === sample.sampleStatus : filter.sampleStatus.$in.includes(sample.sampleStatus); if (!allowed) return query(null); Object.assign(sample,update.$set);sample.history.push(update.$push.history);saves++;return query(sample);});
+ t.mock.method(LabBill,"findById",()=>query({billNumber:"SYNTHETIC-001",createdAt:new Date(),dueAmount:50,items:[{testId,testCode:"INVG202",testName:"Synthetic CBC"}]}));
+ t.mock.method(Patient,"findById",()=>query({patientId:"SYNTHETIC-P001",fullName:"Synthetic Patient"}));
+ t.mock.method(LabTest,"findById",()=>query({testCode:"INVG202",testName:"Synthetic CBC"}));
+ t.mock.method(OutsideLab,"find",()=>query([]));t.mock.method(LabTestResult,"exists",async()=>null);t.mock.method(AuditLog,"create",async (data:any)=>{audits.push(data);return data;});
+ const lifecycle=["COLLECTED","REJECTED","RECOLLECTED","COLLECTED","RECEIVED","PROCESSED"] as const;
+ for(const status of lifecycle){const result=await updateLabSampleStatus(user,String(sample._id),{status,time:"10:30",comments:"Synthetic "+status});assert.equal(result.sampleStatus,status);assert.equal(result.testId,String(testId));assert.equal(result.billId,String(billId));assert.equal(result.testName,"Synthetic CBC");assert.match(result.lastStatusChangeAt!.toISOString(),/T05:00:00/);}
+ assert.equal(saves,6);assert.equal(audits.length,6);assert.deepEqual(sample.history.map((event:any)=>event.status),lifecycle);assert.equal(sample.history[1].comments,"Synthetic REJECTED");assert.ok(sample.rejectedAt);assert.ok(sample.recollectedAt);
+ await assert.rejects(updateLabSampleStatus(user,String(sample._id),{status:"COLLECTED"}),/cannot move/);assert.equal(saves,6);
+ assert.equal(canTransitionSample("REJECTED","RECOLLECTED"),true);assert.equal(canTransitionSample("RECOLLECTED","COLLECTED"),true);assert.equal(canTransitionSample("SELECT","PROCESSED"),false);
+});

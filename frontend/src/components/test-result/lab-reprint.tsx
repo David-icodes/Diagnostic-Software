@@ -2,6 +2,7 @@
 
 import { Fragment, useMemo, useState } from "react";
 import Image from "next/image";
+import { businessDateInput, businessTimeInput } from "@/lib/business-date";
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -13,6 +14,7 @@ import {
   RotateCcw,
   Search,
 } from "lucide-react";
+import { checkBillDocumentEligibility } from "@/services/test-results";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
@@ -47,12 +49,7 @@ import type {
 
 type BillMode = "today" | "criteria";
 
-function todayInput(): string {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${now.getFullYear()}-${month}-${day}`;
-}
+const todayInput = businessDateInput;
 
 function toPatientBill(bill: LabBill) {
   return typeof bill.patientId === "object" ? bill.patientId : null;
@@ -159,13 +156,13 @@ export function LabReprint() {
     setError(null);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedBill) {
       setError("Select a bill before opening its invoice.");
       return;
     }
     setError(null);
-    setInvoiceOpen(true);
+    try { await checkBillDocumentEligibility(selectedBill.id); setInvoiceOpen(true); } catch(reason) { setError(reason instanceof Error?reason.message:"Unable to verify document eligibility"); }
   };
 
   /**
@@ -388,7 +385,8 @@ export function LabReprint() {
                   </p>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full text-xs">
+                  <table className="lis-bill-summary w-full min-w-[610px] table-fixed text-xs">
+                <colgroup>{[22,20,26,15,17].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
                     <thead>
                       <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                         <th className="px-3 py-1.5">Bill No</th>
@@ -667,11 +665,9 @@ function formatReportDateTime(value?: string | Date | null): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  const pad = (part: number) => String(part).padStart(2, "0");
-  const hours = date.getHours();
-  const period = hours >= 12 ? "PM" : "AM";
-  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
-  return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()} ${pad(hour12)}:${pad(date.getMinutes())} ${period}`;
+  const [year,month,day] = businessDateInput(date).split("-");
+  const [hours,minutes] = businessTimeInput(date).split(":").map(Number);
+  return `${day}-${month}-${year} ${String(hours % 12 || 12).padStart(2,"0")}:${String(minutes).padStart(2,"0")} ${hours>=12?"PM":"AM"}`;
 }
 
 function ReportInfoRow({ label, value }: { label: string; value: string }) {
@@ -740,7 +736,7 @@ export function PrintPreview({
   for (const parameter of [...parameters].sort(
     (a, b) => a.displayOrder - b.displayOrder,
   )) {
-    if (onlyEntered && !hasEnteredResult(resultByParameter.get(parameter.id)?.result)) continue;
+    if (parameter.itemType !== "SUBTITLE" && onlyEntered && !hasEnteredResult(resultByParameter.get(parameter.id)?.result)) continue;
     const subtitle = (parameter.subtitle ?? "").trim();
     const last = groups[groups.length - 1];
     if (!last || last.subtitle !== subtitle) {
@@ -874,11 +870,12 @@ export function PrintPreview({
                       </tr>
                     )}
                     {group.rows.map((parameter) => {
+                      if(parameter.itemType === "SUBTITLE")return <tr key={parameter.id}><th colSpan={4} className="py-[1mm] text-left">{parameter.parameterName}</th></tr>;
                       const result = resultByParameter.get(parameter.id);
                       const value = result?.result;
                       const method = result?.method ?? parameter.method;
                       const reference = referenceResolutions?.[parameter.id];
-                      const numericValue = typeof value === "number" ? value : enteredNumber(typeof value === "string" ? value : undefined);
+                      const numericValue = parameter.itemType === "TEXT_AREA" ? undefined : typeof value === "number" ? value : enteredNumber(typeof value === "string" ? value : undefined);
                       const abnormal = reference
                         ? previewFlag(numericValue, reference) === "out-of-range"
                         : result?.referenceSnapshot?.flag === "OUT_OF_RANGE";
@@ -899,7 +896,7 @@ export function PrintPreview({
                           </td>
                           <td
                             className={cn(
-                              "py-[0.7mm] pr-[2mm]",
+                              "py-[0.7mm] pr-[2mm] whitespace-pre-wrap",
                               abnormal && "lis-abnormal-result font-bold text-[10pt]",
                             )}
                           >

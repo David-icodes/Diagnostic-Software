@@ -20,13 +20,26 @@ export function persistedSubmission(
       (typeof row.result === "string" && Boolean(row.result.trim()))));
 }
 
+export function verifiedOutstandingDue(bill: { dueAmount: number; netAmount?: number; paidAmount?: number }) {
+ if(!Number.isFinite(bill.dueAmount)||bill.dueAmount<0)throw new ApiError(422,"Bill outstanding due could not be verified. Document generation is not allowed.");
+ if(bill.netAmount===undefined&&bill.paidAmount===undefined)return bill.dueAmount;
+ if(!Number.isFinite(bill.netAmount)||!Number.isFinite(bill.paidAmount)||bill.netAmount!<0||bill.paidAmount!<0)throw new ApiError(422,"Bill balance could not be verified.");
+ return Math.max(bill.dueAmount,Math.round(Math.max(0,bill.netAmount!-bill.paidAmount!)*100)/100);
+}
+export async function assertBillDocumentAllowed(billId:string) {
+ if(!Types.ObjectId.isValid(billId))throw new ApiError(400,"Invalid bill ID");
+ const bill=await LabBill.findById(billId).exec();if(!bill)throw new ApiError(404,"Bill not found");
+ if(bill.status!=="generated")throw new ApiError(422,"Documents require a generated, non-cancelled bill");
+ const due=verifiedOutstandingDue(bill);if(due>0)throw new ApiError(422,"This bill has an outstanding due. Settle dues before generating or releasing a report or invoice.");
+ return {billId:String(bill._id),patientId:String(bill.patientId),outstandingDue:due};
+}
 export async function getResultWorkflow(billId: string) {
   if (!Types.ObjectId.isValid(billId)) throw new ApiError(400, "Invalid bill ID");
   const bill = await LabBill.findById(billId).exec();
   if (!bill) throw new ApiError(404, "Bill not found");
   if (bill.status !== "generated") throw new ApiError(422, "Reports require a generated, non-cancelled bill");
   const results = await LabTestResult.find({ billId: bill._id, patientId: bill.patientId }).exec();
-  const due = bill.dueAmount;
+  const due = verifiedOutstandingDue(bill);
   if (!Number.isFinite(due) || due < 0) {
     throw new ApiError(422, "Bill outstanding due could not be verified. Report generation is not allowed.");
   }
@@ -53,6 +66,8 @@ export async function assertResultReportAllowed(billId: string, testIds: string[
   if (testIds.some((id) => !workflow.tests.some((test) => test.testId === id && test.submitted))) {
     throw new ApiError(422, "Submit the selected test results successfully before printing.");
   }
-  if (restrictDue && workflow.hasOutstandingDue) throw new ApiError(422, PATIENT_DUE_MESSAGE);
+  // Legacy callers cannot use this compatibility argument to bypass financial rules.
+  void restrictDue;
+  if (workflow.hasOutstandingDue) throw new ApiError(422, PATIENT_DUE_MESSAGE);
   return workflow;
 }

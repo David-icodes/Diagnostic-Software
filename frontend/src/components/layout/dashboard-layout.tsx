@@ -16,7 +16,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const { isAuthenticated, isLoading } = useAuth();
   const [collapsed, setCollapsed] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileState, setMobileState] = useState({ pathname, open: false });
+  if (mobileState.pathname !== pathname) setMobileState({ pathname, open: false });
+  const mobileOpen = mobileState.pathname === pathname && mobileState.open;
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -26,13 +28,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // Any route change closes the mobile drawer, so navigating Home (or anywhere)
   // never leaves the drawer overlaying the destination page.
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+
 
   const handleToggleSidebar = () => {
     if (window.matchMedia("(max-width: 767px)").matches) {
-      setMobileOpen((open) => !open);
+      setMobileState(current => ({ pathname, open: !current.open }));
     } else {
       setCollapsed((value) => !value);
     }
@@ -57,10 +57,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
       <div className="flex flex-1 overflow-hidden">
         <div className="contents print:hidden">
-          <Sidebar
+          <Sidebar key={pathname}
             collapsed={collapsed}
             mobileOpen={mobileOpen}
-            onCloseMobile={() => setMobileOpen(false)}
+            onCloseMobile={() => setMobileState({ pathname, open: false })}
             onNavigate={() => setCollapsed(true)}
           />
         </div>

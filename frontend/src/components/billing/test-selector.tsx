@@ -258,25 +258,22 @@ export function TestSelector({
           </span>
         </div>
         <div className="min-h-0 flex-1 overflow-auto">
-          <table className="min-w-full text-xs">
+          <table className="w-full min-w-[560px] table-fixed text-xs">
+            <colgroup>{[10,18,29,12,19,12].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
             <thead className="sticky top-0 z-10">
-              <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <th className="w-10 px-2 py-1">
-                  <span className="sr-only">Delete</span>
-                  <Trash2 className="size-3" />
-                </th>
-                {showSerial && <th className="w-12 px-2 py-1">S No</th>}
+              <tr className="bg-slate-100 text-left text-xs font-semibold text-slate-500 [&>th]:whitespace-nowrap">
+                <th className="px-2 py-1 whitespace-nowrap">S No</th>
                 <th className="px-2 py-1">Dept Name</th>
                 <th className="px-2 py-1">Lab Test Name</th>
                 <th className="px-2 py-1 text-right">Amount</th>
-                <th className="w-20 px-2 py-1 text-center">Tube Container</th>
+                <th className="px-2 py-1 text-center whitespace-nowrap">Tube Container</th>
                 <th className="px-2 py-1 text-right">Total</th>
               </tr>
             </thead>
             <tbody>
               {items.length === 0 ? (
                 <tr data-empty>
-                  <td colSpan={showSerial ? 7 : 6} className="h-full px-2 py-4 text-center">
+                  <td colSpan={6} className="h-full px-2 py-4 text-center">
                     <Inbox className="mx-auto size-6 text-slate-300" />
                     <p className="mt-1 text-xs text-muted-foreground">
                       No tests selected yet
@@ -292,6 +289,7 @@ export function TestSelector({
                     className="border-t border-border/70"
                   >
                     <td className="px-2 py-1">
+                      {showSerial && <span>{index + 1}</span>}
                       <Button
                         type="button"
                         variant="ghost"
@@ -304,7 +302,7 @@ export function TestSelector({
                         <Trash2 />
                       </Button>
                     </td>
-                    {showSerial && <td className="px-2 py-1 text-slate-600">{index + 1}</td>}
+
                     <td className="px-2 py-1 text-[11px] text-slate-600">
                       {item.departmentName}
                     </td>

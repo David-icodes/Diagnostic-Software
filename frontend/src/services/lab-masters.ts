@@ -71,6 +71,13 @@ export async function fetchSpecimenOptions(): Promise<SpecimenOptions> {
   return api.get<SpecimenOptions>("/lab-tests/specimen-options");
 }
 
+export async function fetchAllLabMasterTests(params: LabTestMasterParams = {}): Promise<LabTestListResult> {
+  const first = await fetchLabMasterTests({ ...params, page: 1, limit: 100 });
+  const remaining = await Promise.all(Array.from({ length: Math.max(0, first.pagination.totalPages - 1) }, (_, index) => fetchLabMasterTests({ ...params, page: index + 2, limit: 100 })));
+  return { ...first, items: [...first.items, ...remaining.flatMap(page => page.items)] };
+}
+export function createSpecimenOption(kind: "sample" | "tube", name: string): Promise<{ kind: "sample" | "tube"; name: string }> { return api.post("/lab-tests/specimen-options", { kind, name }); }
+
 export interface LabParameterParams {
   departmentId?: string;
   testId?: string;

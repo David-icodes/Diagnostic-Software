@@ -1,3 +1,4 @@
+import { CALCULATION_FORMULAS } from "../utils/configured-calculations";
 import { z } from "zod";
 import {
   GENDER_RANGE_GENDERS,
@@ -213,13 +214,15 @@ const baseFields = {
     .trim()
     .min(1, "Parameter name is required")
     .max(150, "Parameter name is too long"),
+  itemType: z.enum(["PARAMETER", "SUBTITLE", "TEXT_AREA"]).optional(),
+  calculation: z.object({ formulaId: z.enum(CALCULATION_FORMULAS.map(f => f.id) as [string, ...string[]]), dependencyIds: z.array(z.string().regex(/^[a-f0-9]{24}$/i)).length(2).optional() }).strict().nullable().optional(),
   subtitle: optionalText(150, "Subtitle is too long"),
   displayOrder: z.number().int().min(0, "Order number cannot be negative").max(9999, "Order number is too large").default(0),
   resultType: z
     .enum(PARAMETER_RESULT_TYPES as unknown as [ParameterResultType, ...ParameterResultType[]])
     .default("TEXT"),
   parameterType: optionalText(50, "Parameter type is too long"),
-  defaultValue: optionalText(120, "Default value is too long"),
+  defaultValue: optionalText(2000, "Default value is too long"),
   unit: optionalText(50, "Unit is too long"),
   method: optionalText(120, "Method name is too long"),
   referenceType: z

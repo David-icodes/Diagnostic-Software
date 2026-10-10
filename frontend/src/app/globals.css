@@ -158,3 +158,20 @@
   }
 }
 
+
+/* Shared screen-grid spacing and identifier widths. Printed documents own their layout. */
+@media screen {
+ .lis-content table thead th { white-space: nowrap; font-size: 11px; }
+ .lis-content table :is(th,td) { padding-left: 0.5rem; padding-right: 0.5rem; vertical-align: middle; }
+ .lis-content table td.font-mono, .lis-content .lis-bill-summary td:nth-child(5) { white-space: nowrap; }
+ .lis-content table :is(th,td)[data-column="billNumber"] { min-width: 9rem; white-space: nowrap; }
+ .lis-content table :is(th,td)[data-column="patientId"], .lis-content table :is(th,td)[data-column="patientCode"] { min-width: 8rem; white-space: nowrap; }
+ .lis-content table :is(th,td)[data-column="testCode"] { min-width: 7rem; white-space: nowrap; }
+ .lis-content table :is(th,td)[data-column="date"], .lis-content table :is(th,td)[data-column="billDate"] { min-width: 7rem; white-space: nowrap; }
+ .lis-content table :is(th,td)[data-column="patientName"], .lis-content table :is(th,td)[data-column="testName"] { min-width: 12rem; white-space: normal; overflow-wrap: anywhere; }
+}
+@media screen {
+  .lis-content .lis-test-selector table { min-width: 620px; }
+  .lis-content .lis-test-selector th { white-space: nowrap; overflow-wrap: normal; font-size: 10px; }
+  .lis-content .lis-test-selector td p.font-mono { white-space: nowrap; overflow-wrap: normal; }
+}

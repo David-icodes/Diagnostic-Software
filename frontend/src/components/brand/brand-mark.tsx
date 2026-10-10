@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
@@ -26,9 +27,7 @@ export function BrandMark({
   alt?: string;
 }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- fixed local PNGs served
-    // straight from public/, kept to one cached request each.
-    <img
+    <Image unoptimized width={src === BRAND_ASSETS.header ? 2172 : 1254} height={src === BRAND_ASSETS.header ? 724 : 1254}
       src={src ?? BRAND_ASSETS.main}
       alt={alt}
       draggable={false}

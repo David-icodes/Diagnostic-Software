@@ -1,16 +1,16 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Search, UserPlus, Users } from "lucide-react";
+import { Loader2, Search, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { createPortal } from "react-dom";
 import { EmptyState } from "@/components/common/empty-state";
 import { PatientForm } from "@/components/patients/patient-form";
 import { createPatient, fetchPatients } from "@/services/patients";
-import { formatAgeYearsMonthsDays, formatGender } from "@/lib/utils";
+import { formatAgeYearsMonthsDays, formatGender, formatDate } from "@/lib/utils";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import type { Patient } from "@/types/patient";
 import type { PatientFormValues } from "@/validations/patient";
@@ -26,12 +26,11 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
-  const blurTimer = useRef<number | null>(null);
-  const searchTimer = useRef<number | null>(null);
+  const [page, setPage] = useState(1);
 
   const searchQuery = useQuery({
-    queryKey: ["patients", "osp-search", search],
-    queryFn: () => fetchPatients({ search: search || undefined, limit: 12 }),
+    queryKey: ["patients", "osp-search", search, page],
+    queryFn: () => fetchPatients({ search: search || undefined, limit: 20, page }),
     enabled: open && Boolean(search),
   });
 
@@ -49,15 +48,7 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
     },
   });
 
-  const runSearch = (raw: string) => {
-    setOpen(true);
-    if (searchTimer.current !== null) {
-      window.clearTimeout(searchTimer.current);
-    }
-    searchTimer.current = window.setTimeout(() => {
-      setSearch(raw.trim());
-    }, 350);
-  };
+  const runSearch = (raw: string) => { setSearch(raw.trim()); setPage(1); setOpen(true); };
 
   const rows = searchQuery.data?.data ?? [];
 
@@ -70,15 +61,12 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
-              runSearch(event.target.value);
+
             }}
             onFocus={() => setOpen(true)}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                if (blurTimer.current !== null) {
-                  window.clearTimeout(blurTimer.current);
-                }
-                setSearch(query.trim());
+                runSearch(query);
               }
             }}
             className="h-8 min-w-0 flex-1 md:w-[266px] md:flex-none"
@@ -87,11 +75,7 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
           <Button
             type="button"
             onClick={() => {
-              if (blurTimer.current !== null) {
-                window.clearTimeout(blurTimer.current);
-              }
-              setSearch(query.trim());
-              setOpen(true);
+              runSearch(query);
             }}
             disabled={searchQuery.isFetching}
             className="h-8 px-2.5"
@@ -117,95 +101,28 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
           </Button>
         </div>
 
-        {open && (
-          <>
-            <div
-              className="fixed inset-0 z-20"
-              onMouseDown={() => {
-                blurTimer.current = window.setTimeout(() => setOpen(false), 120);
-              }}
-            />
-            <div role="dialog" aria-label="Select existing patient" className="absolute left-0 top-[calc(100%+4px)] z-30 w-[440px] max-w-[calc(100vw-100px)] overflow-hidden rounded-lg border border-border bg-card shadow-xl">
-              <div className="flex items-center justify-between border-b border-border px-2 py-1.5">
-                <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-600">
-                  <Users className="size-3.5" />
-                  Patient List
-                </p>
-                {selected && (
-                  <span className="text-xs text-muted-foreground">
-                    <span className="font-medium text-slate-700">
-                      {selected.fullName.toUpperCase()}
-                    </span>{" "}
-                    ({selected.patientId})
-                  </span>
-                )}
-              </div>
-              <div className="max-h-[min(240px,44vh)] overflow-y-auto">
-                {search && (searchQuery.isFetching || search !== query.trim()) ? (
-                  <div className="flex flex-col gap-1.5 p-2" aria-busy>
-                    {Array.from({ length: 4 }).map((_, index) => (
-                      <div
-                        key={index}
-                        className="h-8 animate-pulse rounded bg-muted"
-                      />
-                    ))}
-                  </div>
-                ) : !search || rows.length === 0 ? (
-                  <EmptyState
-                    message={
-                      search
-                        ? "No patients match your search"
-                        : "Type to search the registry"
-                    }
-                  />
-                ) : (
-                  <ul className="divide-y divide-border/70">
-                    {rows.map((patient) => (
-                      <li key={patient.id}>
-                        <button
-                          type="button"
-                          className="flex w-full items-center justify-between gap-3 px-2 py-1.5 text-left transition-colors hover:bg-muted"
-                          aria-pressed={selected?.id === patient.id}
-                          disabled={searchQuery.isFetching}
-                          onClick={() => {
-                            if (blurTimer.current !== null) {
-                              window.clearTimeout(blurTimer.current);
-                            }
-                            onSelect(patient);
-                            if (searchTimer.current !== null) window.clearTimeout(searchTimer.current);
-                            setOpen(false);
-                            setQuery("");
-                            setSearch("");
-                          }}
-                        >
-                          <span className="min-w-0">
-                            <span className="block truncate text-xs font-medium text-slate-800">
-                              {patient.fullName.toUpperCase()}
-                              <Badge variant="outline" className="ml-2">
-                                {patient.patientId}
-                              </Badge>
-                            </span>
-                            <span className="block truncate text-[11px] text-muted-foreground">
-                              {formatGender(patient.gender)}
-                              {patient.age !== undefined
-                                ? ` · ${patient.age} yrs`
-                                : patient.dateOfBirth
-                                  ? ` · ${formatAgeYearsMonthsDays(patient.dateOfBirth)}`
-                                  : ""}
-                              {` · ${patient.mobile}`}
-                            </span>
-                          </span>
-                          <span className="text-[11px] font-medium text-primary">
-                            Select
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+        {open && typeof document !== "undefined" && document.getElementById("osp-patient-results") && createPortal(
+          <section aria-label="Patient search results" className="border border-border bg-card">
+            <div className="flex items-center justify-between px-2 py-1 text-xs">
+              <span>{searchQuery.isFetching ? "Searching…" : `Patient List (${searchQuery.data?.pagination.total ?? 0})`}</span>
+              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Close</Button>
             </div>
-          </>
+            <div className="max-h-[260px] overflow-auto">
+              <table className="w-full min-w-[800px] table-fixed text-xs lis-patient-table">
+                <colgroup>{[6,6,14,22,11,9,13,19].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
+                <thead className="sticky top-0 bg-slate-100"><tr>{["Select","S.No","Pat Id","Patient Name","Age","Gender","Mobile No","Reg Date"].map(label=><th key={label} className="px-2 py-1 text-left whitespace-nowrap">{label}</th>)}</tr></thead>
+                <tbody>
+                  {searchQuery.isError ? <tr><td colSpan={8} role="alert" className="p-3 text-destructive">{searchQuery.error.message}</td></tr> : !rows.length ? <tr><td colSpan={8}><EmptyState message={search ? "No patients match your search" : "Type a name, patient ID or mobile and search"} /></td></tr> : rows.map((patient,index)=><tr key={patient.id} aria-selected={selected?.id===patient.id} className="border-t border-border hover:bg-muted">
+                    <td className="px-2 py-1"><button type="button" className="text-primary underline" aria-label={`Select ${patient.patientId}`} onClick={()=>{onSelect(patient);setOpen(false);}}>Select</button></td>
+                    <td className="px-2 py-1">{(page-1)*20+index+1}</td><td className="px-2 py-1 whitespace-nowrap">{patient.patientId}</td>
+                    <td className="px-2 py-1 break-words">{patient.fullName}</td><td className="px-2 py-1">{patient.age!==undefined ? patient.age+" years" : formatAgeYearsMonthsDays(patient.dateOfBirth)}</td>
+                    <td className="px-2 py-1">{formatGender(patient.gender)}</td><td className="px-2 py-1 whitespace-nowrap">{patient.mobile}</td><td className="px-2 py-1 whitespace-nowrap">{formatDate(patient.createdAt)}</td>
+                  </tr>)}
+                </tbody>
+              </table>
+            </div>
+            {(searchQuery.data?.pagination.totalPages??1)>1 && <div className="flex items-center justify-end gap-2 p-1"><Button type="button" variant="outline" disabled={page<=1||searchQuery.isFetching} onClick={()=>setPage(page-1)}>Previous</Button><span className="text-xs">{page} / {searchQuery.data?.pagination.totalPages}</span><Button type="button" variant="outline" disabled={page>=(searchQuery.data?.pagination.totalPages??1)||searchQuery.isFetching} onClick={()=>setPage(page+1)}>Next</Button></div>}
+          </section>, document.getElementById("osp-patient-results")!
         )}
       </div>
 

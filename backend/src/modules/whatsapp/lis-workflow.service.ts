@@ -10,7 +10,7 @@ import { LabTechnician } from "../../models/lab-technician.model";
 import { WhatsAppMessage } from "../../models/whatsapp-message.model";
 import { getLabBill } from "../lab-bills/lab-bill.service";
 import { getBillResultEntry } from "../test-results/test-result.service";
-import { assertResultReportAllowed } from "../test-results/result-workflow.service";
+import { assertBillDocumentAllowed, assertResultReportAllowed } from "../test-results/result-workflow.service";
 import { recordAudit } from "../audit/audit.service";
 import { sendWhatsAppTemplateMessage } from "./whatsapp-send.service";
 import { normalizeLisRecipient } from "./lis-recipient";
@@ -50,6 +50,7 @@ export async function loadLisContext(input: ReviewLisMessageInput, printedBy: st
   const isReport = input.templateName === "lab_report_ready";
   const testIds = [...new Set(input.testIds)];
   if (isReport) await assertResultReportAllowed(input.billId, testIds, input.workflow !== "lab-reprint");
+  if (LIS_TEMPLATES[input.templateName].document) await assertBillDocumentAllowed(input.billId);
   const centreName = await deploymentCentre();
   const [populatedBill, entry, results, samples, technician] = await Promise.all([
     getLabBill(input.billId),
@@ -262,6 +263,10 @@ export async function reviewLisMessage(input: ReviewLisMessageInput, req: Reques
       review.pdf = pdf;
       review.filename = `${context.billNumber}-${input.templateName === "lab_report_ready" ? "report" : "invoice"}.pdf`.replace(/[^a-zA-Z0-9._-]/g, "_");
     }
+    if (needsPdf) {
+      const latest = await loadLisContext(input, req.user!.name);
+      if (fingerprint(latest) !== review.digest) throw new ApiError(409, "Patient, bill or result information changed during PDF preparation. Review the document again.");
+    }
     review.rendering = false;
     return { reviewId: id, ...context, document: undefined, templateName: input.templateName,
       languageCode: env[LIS_TEMPLATES[input.templateName].languageSetting] || null,
@@ -270,9 +275,11 @@ export async function reviewLisMessage(input: ReviewLisMessageInput, req: Reques
   } catch (error) { reviews.delete(id); throw error; }
 }
 
-export function lisDocumentData(reviewId: string, userId: string) {
+export async function lisDocumentData(reviewId: string, userId: string) {
   const review = findLisReview(reviewId, userId);
   if (!review.rendering) throw new ApiError(410, "Document rendering job has finished");
+  if (LIS_TEMPLATES[review.input.templateName].document) await assertBillDocumentAllowed(review.input.billId);
+  if (review.input.templateName === "lab_report_ready") await assertResultReportAllowed(review.input.billId, review.input.testIds);
   return { ...review.context.document, templateName: review.input.templateName };
 }
 
@@ -290,6 +297,7 @@ export async function sendLisReview(reviewId: string, req: Request) {
     if (fingerprint(latest) !== review.digest) throw new ApiError(409, "Patient, bill, result or centre information changed. Review the document again before sending.");
     if (LIS_TEMPLATES[review.input.templateName].document && !review.pdf) throw new ApiError(422, "The actual generated PDF is unavailable");
     // A stored review must retrieve its restricted asset; never fall back to memory on failure.
+    if(LIS_TEMPLATES[review.input.templateName].document)await assertBillDocumentAllowed(review.input.billId);
     const pdf = review.pdf;
     // If storage was enabled after review creation, it must also gate this send.
     if (pdf && !review.storedPdfKey) {

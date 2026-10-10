@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { formatDateTime, formatGender, formatMoney } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { rupeesInWords } from "@/lib/amount-words";
+import { checkBillDocumentEligibility } from "@/services/test-results";
 import { printDocument } from "@/lib/print-document";
 import type { LabBill } from "@/types/billing";
 
@@ -20,7 +21,7 @@ export function InvoicePrintDialog({ bill, onClose }: { bill: LabBill; onClose: 
   return createPortal(<Dialog open onOpenChange={(open) => { if (!open) onClose(); }} title="Lab bill print preview" size="lg" className="lis-print-dialog">
     <div className="lis-print-controls flex justify-end gap-2 pb-3">
       {printError && <p role="alert">{printError}</p>}
-      <Button disabled={!patient} onClick={async () => { setPrintError(null); try { await printDocument(documentRef.current); } catch (error) { setPrintError(error instanceof Error ? error.message : "Unable to print this bill."); } }}>Print bill</Button>
+      <Button disabled={!patient} onClick={async () => { setPrintError(null); try { await checkBillDocumentEligibility(bill.id); await printDocument(documentRef.current); } catch (error) { setPrintError(error instanceof Error ? error.message : "Unable to print this bill."); } }}>Print bill</Button>
       <Button variant="outline" onClick={onClose}>Close preview</Button>
     </div>
     {!patient ? <p role="alert">Patient information is not available for this bill.</p> : <div ref={documentRef}><InvoiceDocument bill={bill} printedBy={user?.name ?? ""} /></div>}
@@ -29,6 +30,7 @@ export function InvoicePrintDialog({ bill, onClose }: { bill: LabBill; onClose: 
 
 export function InvoiceDocument({ bill, printedBy }: { bill: LabBill; printedBy: string }) {
   const patient = typeof bill.patientId === "object" ? bill.patientId : null;
+  if(bill.dueAmount>0)return <p role="alert">Settle outstanding dues before generating an invoice.</p>;
   if (!patient) return <p role="alert">Patient information is not available for this bill.</p>;
   return (<div  className="lis-print-document" aria-label="Lab bill invoice preview">
       <div className="lis-invoice-page-watermark" aria-hidden="true"><Image src="/Main logo.png" alt="" width={1254} height={1254} unoptimized loading="eager" /></div>

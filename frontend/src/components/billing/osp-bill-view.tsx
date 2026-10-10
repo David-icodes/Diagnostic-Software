@@ -13,6 +13,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { checkBillDocumentEligibility } from "@/services/test-results";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ErrorState } from "@/components/common/error-state";
@@ -123,7 +124,7 @@ export function OspBillView({ billId }: OspBillViewProps) {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => window.print()}
+            onClick={async()=>{try{await checkBillDocumentEligibility(bill.id);window.print();}catch(error){window.alert(error instanceof Error?error.message:"Unable to verify invoice eligibility");}}}
             disabled={bill.status === "cancelled"}
           >
             <Printer />

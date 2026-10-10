@@ -392,10 +392,7 @@ export function Sidebar({
   // Navigating from anywhere — the sidebar itself, a page Home button, or the
   // header — must leave the menu clean: drop any open flyout and re-derive the
   // expanded section from the new route so no submenu floats over the page.
-  useEffect(() => {
-    closeFlyoutNow();
-    setExpandedSection(activeMenuFor(pathname));
-  }, [pathname, closeFlyoutNow]);
+  // The parent keys this sidebar by route, resetting menu/flyout state on navigation.
 
   // Keep the panel pinned to its trigger while the page scrolls or resizes.
   useEffect(() => {

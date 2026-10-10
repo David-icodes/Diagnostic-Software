@@ -91,3 +91,5 @@ export function fetchResultWorkflow(billId: string): Promise<ResultWorkflow> {
 export function checkResultReportEligibility(billId: string, testIds: string[]): Promise<ResultWorkflow> {
   return api.get(`/lab-test-results/report-eligibility?billId=${encodeURIComponent(billId)}&testIds=${encodeURIComponent(testIds.join(","))}`);
 }
+
+export function checkBillDocumentEligibility(billId:string):Promise<{billId:string;patientId:string;outstandingDue:number}> { return api.get(`/lab-bills/${encodeURIComponent(billId)}/document-eligibility`); }

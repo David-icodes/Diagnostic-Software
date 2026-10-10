@@ -59,7 +59,7 @@ test("patient dues and successful/failed/partial submissions are verified from s
   await submitTestResults(String(userId), input);
   assert.equal((await getResultWorkflow(String(billId))).tests[0].submitted, true);
   await assert.rejects(assertResultReportAllowed(String(billId), [String(testId)]), /outstanding due/);
-  assert.equal((await assertResultReportAllowed(String(billId), [String(testId)], false)).hasOutstandingDue, true);
+  await assert.rejects(assertResultReportAllowed(String(billId), [String(testId)], false), /outstanding due/);
   bill.dueAmount = 0;
   assert.equal((await assertResultReportAllowed(String(billId), [String(testId)])).outstandingDue, 0);
   // No temporary client variable: a separate read retains confirmation.
@@ -87,4 +87,22 @@ test("patient dues and successful/failed/partial submissions are verified from s
   await assert.rejects(getResultWorkflow(String(billId)), /could not be verified/);
   assert.equal(bill.netAmount, 100); assert.equal(bill.paidAmount, 100); assert.ok(Number.isNaN(bill.dueAmount));
   assert.equal(rows[0].referenceSnapshot.flag, "OUT_OF_RANGE");
+});
+
+test("configured CBC results are recalculated by the server, audited and preserved across revisions despite dues", async t => {
+ const billId=new Types.ObjectId(), patientId=new Types.ObjectId(), testId=new Types.ObjectId(), userId=new Types.ObjectId();
+ const rbcId=new Types.ObjectId(), mcvId=new Types.ObjectId(), pcvId=new Types.ObjectId();
+ const bill={_id:billId,patientId,status:"generated",items:[{testId}],netAmount:100,paidAmount:0,dueAmount:100};
+ const parameters=[{_id:rbcId,testId,active:true,parameterName:"Custom RBC",resultType:"NUMBER",unit:"million/µL"},{_id:mcvId,testId,active:true,parameterName:"Custom MCV",resultType:"NUMBER",unit:"fL"},{_id:pcvId,testId,active:true,parameterName:"Custom PCV",resultType:"NUMBER",unit:"%",calculation:{formulaId:"pcv",dependencyIds:[String(rbcId),String(mcvId)]}}];
+ const rows:any[]=[];const audits:any[]=[];const query=(value:unknown)=>{const q={exec:async()=>value,sort:()=>q,select:()=>q,lean:()=>q};return q;};
+ t.mock.method(LabBill,"findById",()=>query(bill));t.mock.method(Patient,"findById",()=>query({gender:"male",age:30}));t.mock.method(LabTestParameter,"find",()=>query(parameters));
+ t.mock.method(LabTestResult,"findOne",(filter:any)=>query(rows.find(row=>String(row.parameterId)===String(filter.parameterId))??null));
+ t.mock.method(LabTestResult,"find",()=>query(rows));
+ t.mock.method(LabTestResult,"create",async (data:any)=>{const row={...data,_id:data._id??new Types.ObjectId(),save:async()=>row};rows.push(row);return row;});
+ t.mock.method(AuditLog,"create",async (data:any)=>{const row={...data,_id:new Types.ObjectId(),save:async()=>row};audits.push(row);return row;});
+ const input={billId:String(billId),testId:String(testId),entries:[{parameterId:String(rbcId),result:4},{parameterId:String(mcvId),result:90},{parameterId:String(pcvId),result:999}]};
+ await submitTestResults(String(userId),input);const pcv=rows.find(row=>String(row.parameterId)===String(pcvId));assert.equal(pcv.result,36);assert.equal(pcv.version,1);assert.equal(audits[0].action,SUBMISSION_CONFIRMED);
+ input.entries[0].result=5;await submitTestResults(String(userId),input);assert.equal(pcv.result,45);assert.equal(pcv.version,2);assert.equal(pcv.revisions[0].result,36);
+ await assert.rejects(submitTestResults(String(userId),{...input,entries:input.entries.filter(entry=>entry.parameterId!==String(rbcId))}),/source values/);assert.equal(pcv.result,45);assert.equal(pcv.version,2);
+ assert.equal(bill.dueAmount,100);assert.equal(bill.paidAmount,0);
 });

@@ -1,0 +1,82 @@
+// Synthetic browser acceptance: all API traffic is fulfilled locally; external traffic is blocked.
+const {chromium}=require('../backend/node_modules/playwright');
+const assert=require('node:assert/strict');
+const fs=require('node:fs/promises');
+const id=n=>n.toString(16).padStart(24,'0');
+(async()=>{
+ const browser=await chromium.launch({headless:true});const checks=[];const errors=[];const unexpected=[];
+ try{
+  const context=await browser.newContext({viewport:{width:1440,height:1000}});const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));
+  const dept={id:id(1),name:'Synthetic Hematology',code:'SYN',active:true};
+  const patient={id:id(2),patientId:'SYNTHETIC-P001',firstName:'Synthetic',fullName:'Synthetic Patient',gender:'male',age:30,mobile:'0000000000',createdAt:'2026-10-10T20:00:00Z',status:'active'};
+  const test={id:id(3),testCode:'INVG202',testName:'Synthetic CBC',shortName:'CBC',departmentId:dept.id,departmentName:dept.name,sampleType:'Synthetic EDTA',containerType:'Synthetic Tube',price:100,active:true,resultMode:'PARAMETER_BASED'};
+  const bill={id:id(4),billNumber:'SYNTHETIC-B001',patientId:patient,billType:'osp',patientType:'osp',status:'generated',createdAt:'2026-10-11T04:00:00Z',netAmount:100,totalAmount:100,paidAmount:0,dueAmount:100,discountAmount:0,discountPercent:0,paymentMode:'cash',items:[{testId:test.id,testCode:test.testCode,testName:test.testName,departmentId:dept.id,departmentName:dept.name,containerType:test.containerType,unitPrice:100,quantity:1,total:100}]};
+  const reference={status:'NOT_CONFIGURED',displayValue:'',reason:'No configured reference'};
+  const parameters=[{parameterId:id(10),parameterName:'Synthetic Indices',itemType:'SUBTITLE',resultType:'TEXT',displayOrder:1},{parameterId:id(11),parameterName:'Synthetic RBC',resultType:'NUMBER',unit:'million/µL',displayOrder:2},{parameterId:id(12),parameterName:'Synthetic MCV',resultType:'NUMBER',unit:'fL',displayOrder:3},{parameterId:id(13),parameterName:'Synthetic PCV',resultType:'NUMBER',unit:'%',displayOrder:4,calculation:{formulaId:'pcv',dependencyIds:[id(11),id(12)]}},{parameterId:id(14),parameterName:'Synthetic Narrative',itemType:'TEXT_AREA',resultType:'TEXTAREA',displayOrder:5}].map(p=>({...p,reference,referenceMappings:[],mappingTypes:[],genderRanges:[],active:true}));
+  let sample={id:id(5),sampleId:'SYNTHETIC-S001',billId:bill.id,billNumber:bill.billNumber,billDate:bill.createdAt,patientId:patient.id,patientCode:patient.patientId,patientName:patient.fullName,testId:test.id,testName:test.testName,testCode:test.testCode,departmentName:dept.name,sampleStatus:'SELECT',testStatus:'OPEN',testLinked:true,testNameFromBillItem:true};
+  const specimen={sampleTypes:[],containerTypes:[]};const masters=[];const configured=[];let savedResults=[];let failStatus=false;const writes=[];
+  const pagination=(total,page=1,limit=100)=>({total,page,limit,totalPages:Math.max(1,Math.ceil(total/limit))});
+  await context.route('**/*',async route=>{
+   const req=route.request(),url=new URL(req.url());
+   if(!url.pathname.includes('/api/')){if(url.hostname==='localhost'&&url.port==='3001')return route.continue();return route.abort();}
+   const path=url.pathname.replace(/^.*\/api\/v1/,'');const method=req.method();
+   const ok=data=>route.fulfill({json:{success:true,data}});const fail=message=>route.fulfill({status:422,json:{success:false,message}});
+   if(method==='OPTIONS')return route.fulfill({status:204});
+   if(method!=='GET'){
+    const body=req.postDataJSON();writes.push({path,body});
+    if(path==='/lab-tests/specimen-options'){const list=body.kind==='sample'?specimen.sampleTypes:specimen.containerTypes;if(!list.includes(body.name))list.push(body.name);return ok(body);}
+    if(path==='/lab-tests'){const row={...body,id:id(1000),departmentName:dept.name};masters.push(row);return ok({test:row});}
+    if(path==='/lab-test-parameters'){const parameter={...body,id:id(1001+configured.length),departmentId:dept.id,departmentName:dept.name,testName:'Synthetic New Test',referenceMappings:[],mappingTypes:[],genderRanges:[]};configured.push(parameter);return ok({parameter});}
+    if(path.endsWith('/status')){if(failStatus)return fail('Synthetic status failure');sample={...sample,sampleStatus:body.status,comments:body.comments,lastStatusChangeAt:new Date().toISOString()};return ok({sample});}
+    if(path==='/lab-test-results/results/submit'){savedResults=body.entries.map(e=>({...e,id:e.parameterId,billId:bill.id,patientId:patient.id,testId:test.id,enteredAt:new Date().toISOString(),version:1}));return ok({results:savedResults,testId:test.id});}
+    unexpected.push(path);return fail('Unexpected mutation blocked');
+   }
+   if(path==='/auth/me')return ok({user:{id:id(90),name:'Synthetic Operator',username:'synthetic',role:'admin',status:'active'}});
+   if(path==='/database/options')return ok({});if(path==='/departments')return ok([dept]);
+   if(path==='/lab-tests/specimen-options')return ok(specimen);
+   if(path==='/lab-tests'){
+    if(url.searchParams.has('departmentId')||masters.length){const rows=[...Array.from({length:100},(_,i)=>({...test,id:id(100+i),testName:'Existing synthetic '+i,testCode:'SYN'+i})),...masters];const pageNumber=Number(url.searchParams.get('page')||1),limit=Number(url.searchParams.get('limit')||100);return ok({items:rows.slice((pageNumber-1)*limit,pageNumber*limit),pagination:pagination(rows.length,pageNumber,limit)});}
+    return ok({items:[test],pagination:pagination(1)});
+   }
+   if(path.startsWith('/lab-tests/'))return ok({test});
+   if(path.endsWith('/subtitles'))return ok({subtitles:[]});if(path==='/lab-test-parameters')return ok({data:configured,pagination:pagination(configured.length)});
+   if(path==='/patients')return ok({data:[patient],pagination:pagination(1)});if(path.startsWith('/patients/'))return ok({patient});
+   if(path==='/lab-bills')return ok({items:[bill],data:[bill],bills:[bill],pagination:pagination(1)});
+   if(path.endsWith('/document-eligibility')||path==='/lab-test-results/report-eligibility')return bill.dueAmount>0?fail('Settle outstanding dues before generating documents.'):ok({billId:bill.id,patientId:patient.id,outstandingDue:0,hasOutstandingDue:false,tests:[{testId:test.id,submitted:true}]});
+   if(path.startsWith('/lab-bills/'))return ok({bill});if(path==='/lab-samples')return ok({data:[sample],pagination:{...pagination(1),sampleCount:1}});
+   if(path==='/lab-test-results/bill-entry')return ok({billId:bill.id,billNumber:bill.billNumber,patientId:patient.id,patientCode:patient.patientId,patientName:patient.fullName,patientGender:'male',patientAge:30,tests:[{testId:test.id,testName:test.testName,testCode:test.testCode,testLinked:true,parameters}]});
+   if(path==='/lab-test-results/results')return ok({results:savedResults});if(path==='/lab-test-results/workflow')return ok({billId:bill.id,patientId:patient.id,outstandingDue:bill.dueAmount,hasOutstandingDue:bill.dueAmount>0,tests:[{testId:test.id,submitted:savedResults.length>0}]});
+   if(path==='/lab-technicians')return ok({technicians:[]});if(path==='/doctors'||path==='/lab-clients'||path==='/outside-labs')return ok([]);
+   if(path.startsWith('/dashboard/'))return ok({});return ok({data:[],pagination:pagination(0)});
+  });
+  const go=path=>page.goto('http://localhost:3001'+path);
+  await go('/laboratory/master/create-lab-test');await page.locator('#test-code').waitFor();assert.equal(await page.locator('#test-code').inputValue(),'INVG202');
+  for(const [button,name,select] of [['+ Add Sample','Synthetic EDTA','#test-sample'],['+ Add Tube','Synthetic Tube','#test-container']]){
+   await page.getByRole('button',{name:button,exact:true}).click();await page.getByLabel('Option name').fill(name);await page.getByRole('dialog').getByRole('button',{name:'Save',exact:true}).click();await page.getByRole('dialog').waitFor({state:'hidden'});
+   const selected=await page.locator(select).inputValue();assert.equal(selected,name);
+  }
+  await page.locator('#test-dept').selectOption(dept.id);await page.locator('#test-name').fill('Synthetic New Test');await page.locator('#test-short').fill('SYN');await page.locator('#test-price').fill('100');await page.getByRole('button',{name:'Submit',exact:true}).click();await page.getByText('Lab test created successfully',{exact:true}).waitFor();checks.push('New test and specimen creation/selection');
+  await page.reload();await page.locator('#test-sample option').filter({hasText:'Synthetic EDTA'}).waitFor({state:"attached"});checks.push('Specimen options survive reload');
+  await go('/laboratory/master/lab-test-parameter');await page.locator('#param-dept').selectOption(dept.id);await page.locator('#param-test option[value="'+id(1000)+'"]').waitFor({state:"attached"});await page.locator('#param-test').selectOption(id(1000));checks.push('New test beyond first 100 appears in parameter options');
+  await page.locator('#param-item-type').selectOption('TEXT_AREA');await page.locator('#param-name').fill('Synthetic Narrative Configuration');await page.locator('#param-default').fill('Configured line\nSecond line');await page.getByRole('button',{name:'Submit',exact:true}).click();await page.getByText('Synthetic Narrative Configuration',{exact:true}).waitFor();assert.equal(configured[0].itemType,'TEXT_AREA');checks.push('Narrative type and multiline configuration saved');
+  await go('/laboratory/test-result/sample-collections');const status=page.getByLabel('Sample status for '+sample.sampleId);
+  for(const next of ['COLLECTED','REJECTED','RECOLLECTED','COLLECTED']){await status.selectOption(next);await page.getByRole('button',{name:'Save',exact:true}).click();await page.waitForFunction(value=>document.querySelector('select[aria-label="Sample status for SYNTHETIC-S001"]')?.value===value,next);await page.getByRole('button',{name:'Save',exact:true}).waitFor();assert.equal(sample.sampleStatus,next);}
+  await page.reload();assert.equal(await status.inputValue(),'COLLECTED');failStatus=true;await status.selectOption('REJECTED');await page.getByRole('button',{name:'Save',exact:true}).click();await page.getByText('Synthetic status failure',{exact:true}).waitFor();assert.equal(await status.inputValue(),'COLLECTED');failStatus=false;checks.push('Sample lifecycle/reload and failed-save draft restoration');
+  for(const width of [1280,1440,1920]){await page.setViewportSize({width,height:1000});const headers=page.locator('table thead th');assert.equal(await headers.count(),12);assert.equal(await headers.evaluateAll(cells=>cells.every(cell=>getComputedStyle(cell).whiteSpace==='nowrap')),true);assert.equal(await headers.evaluateAll(cells=>cells.every(cell=>{const range=document.createRange();range.selectNodeContents(cell);return range.getBoundingClientRect().width+16<=cell.getBoundingClientRect().width;})),true,'Headers fit deliberate column widths');await page.locator('table').evaluate(table=>{table.parentElement.scrollLeft=0;});await page.screenshot({path:'tmp/lis-samples-'+width+'.png',fullPage:true});}
+  checks.push('Sample table headers at 1280/1440/1920');
+  await go('/billing/osp/new');await page.getByLabel('Search patient by name, patient ID or mobile').fill('Synthetic');await page.getByRole('button',{name:'Search',exact:true}).first().click();await page.getByRole('region',{name:'Patient search results'}).waitFor();assert.deepEqual(await page.locator('.lis-patient-table thead th').allTextContents(),['Select','S.No','Pat Id','Patient Name','Age','Gender','Mobile No','Reg Date']);await page.getByRole('button',{name:'Select SYNTHETIC-P001',exact:true}).click();checks.push('Full-width OSP patient table selects exact patient');
+  const selected=page.locator('table').filter({has:page.getByRole('columnheader',{name:'Tube Container',exact:true})});assert.deepEqual(await selected.locator('thead th').allTextContents(),['S No','Dept Name','Lab Test Name','Amount','Tube Container','Total']);assert.equal(await selected.locator('thead th').evaluateAll(cells=>cells.every(cell=>getComputedStyle(cell).whiteSpace==='nowrap')),true);checks.push('Shared selected-test columns and single-line headers');
+  await go('/laboratory/test-result/parameter-based-test-results');await page.getByText(bill.billNumber,{exact:true}).first().click();await page.getByText(test.testName,{exact:true}).first().click();await page.getByLabel('Result for Synthetic RBC').fill('4');await page.getByLabel('Result for Synthetic MCV').fill('90');assert.equal(await page.getByLabel('Result for Synthetic PCV').inputValue(),'36');assert.equal(await page.getByLabel('Result for Synthetic PCV').isDisabled(),true);assert.equal(await page.getByLabel('Result for Synthetic Indices').count(),0);await page.getByLabel('Result for Synthetic Narrative').fill('Synthetic narrative\nSecond line');checks.push('Configured calculation and noneditable subtitle despite outstanding dues');
+  await page.getByLabel('Result for Synthetic RBC').fill('5');assert.equal(await page.getByLabel('Result for Synthetic PCV').inputValue(),'45');await page.getByLabel('Result for Synthetic RBC').fill('');assert.equal(await page.getByLabel('Result for Synthetic PCV').inputValue(),'');await page.getByLabel('Result for Synthetic RBC').fill('4');await page.getByRole('button',{name:'Submit',exact:true}).click();await page.waitForFunction(()=>document.body.textContent.includes('saved for Synthetic CBC'));assert.equal(savedResults.find(row=>row.parameterId===id(13)).result,36);checks.push('Calculated cascade, stale clearing and result submission');
+
+  await page.getByLabel('Print Synthetic CBC',{exact:true}).check();await page.getByRole('button',{name:'Print',exact:true}).click();await page.getByText('Settle outstanding dues before generating documents.',{exact:true}).waitFor();assert.equal(await page.getByRole('dialog').count(),0);checks.push('Report generation blocked by server eligibility despite saved results');
+  await go('/laboratory/test-result/lab-reprint');await page.getByText(bill.billNumber,{exact:true}).first().click();await page.getByRole('button',{name:'Submit',exact:true}).click();await page.getByText('Settle outstanding dues before generating documents.',{exact:true}).waitFor();assert.equal(await page.getByRole('dialog').count(),0);checks.push('Invoice generation blocked before preview');
+  // This changes only the in-memory browser fixture, never a backend bill.
+  bill.dueAmount=0;bill.paidAmount=100;
+  await go('/laboratory/test-result/parameter-based-test-results');await page.getByText(bill.billNumber,{exact:true}).first().click();await page.getByText(test.testName,{exact:true}).first().click();await page.getByLabel('Print Synthetic CBC',{exact:true}).check();await page.getByRole('button',{name:'Print',exact:true}).click();await page.getByRole('button',{name:'Generate report',exact:true}).click();await page.getByLabel('Selected report preview').waitFor();await page.screenshot({path:'tmp/lis-report-preview.png',fullPage:true});
+  const {validatePdf}=require('../backend/dist/modules/documents/pdf-integrity');const reportPdf=await page.pdf({format:'A4',preferCSSPageSize:true,printBackground:true});await validatePdf(reportPdf,'report');await fs.writeFile('tmp/lis-synthetic-report.pdf',reportPdf);checks.push('Settled synthetic report renders valid A4 portrait PDF with narrative/subtitle');
+  await go('/laboratory/test-result/lab-reprint');await page.getByText(bill.billNumber,{exact:true}).first().click();await page.getByRole('button',{name:'Submit',exact:true}).click();await page.getByLabel('Lab bill invoice preview').waitFor();const invoicePdf=await page.pdf({format:'A4',landscape:true,preferCSSPageSize:true,printBackground:true});await validatePdf(invoicePdf,'invoice');await fs.writeFile('tmp/lis-synthetic-invoice.pdf',invoicePdf);checks.push('Settled synthetic invoice renders valid A4 landscape PDF');
+
+  assert.deepEqual(errors,[]);assert.deepEqual(unexpected,[]);checks.push('No browser errors or unhandled mutations');await fs.writeFile('tmp/lis-browser-verification.json',JSON.stringify({checks,errors,unexpected,syntheticWrites:writes.length},null,2));console.log(JSON.stringify({passed:checks.length,checks}));
+ }finally{await browser.close();}
+})().catch(error=>{console.error(error);process.exitCode=1});

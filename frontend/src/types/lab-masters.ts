@@ -217,6 +217,8 @@ export interface ParameterRow {
   departmentName?: string;
   testName?: string;
   parameterName: string;
+  itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
+  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
   subtitle?: string;
   displayOrder: number;
   resultType: ParameterResultType;
@@ -291,6 +293,8 @@ export interface ReferenceMappingsResponse {
 export interface ParameterPayload {
   testId: string;
   parameterName: string;
+  itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
+  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
   subtitle?: string;
   displayOrder?: number;
   resultType: ParameterResultType;

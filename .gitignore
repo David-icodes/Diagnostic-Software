@@ -33,3 +33,5 @@ Thumbs.db
 
 # Misc
 *.pem
+# Local verification output (existing tracked history remains intact)
+tmp/

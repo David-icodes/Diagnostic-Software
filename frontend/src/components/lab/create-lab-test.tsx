@@ -21,6 +21,8 @@ import { Select } from "@/components/ui/select";
 import { fetchDepartments } from "@/services/billing";
 import {
   createLabMasterTest,
+  createSpecimenOption,
+  fetchSpecimenOptions,
   fetchLabMasterTests,
   updateLabMasterTest,
 } from "@/services/lab-masters";
@@ -64,7 +66,7 @@ interface TestFormState {
 
 const EMPTY_FORM: TestFormState = {
   departmentId: "",
-  testCode: "",
+  testCode: "INVG202",
   testName: "",
   shortName: "",
   testType: "",
@@ -117,6 +119,14 @@ export function CreateLabTestContent() {
       ),
   });
 
+  const [optionKind, setOptionKind] = useState<"sample" | "tube" | null>(null);
+  const [optionName, setOptionName] = useState("");
+  const specimenQuery = useQuery({ queryKey: ["lab-tests", "specimen-options"], queryFn: fetchSpecimenOptions });
+  const optionMutation = useMutation({ mutationFn: () => createSpecimenOption(optionKind!, optionName), onSuccess: async (option) => {
+    update(option.kind === "sample" ? { sampleType: option.name } : { containerType: option.name });
+    await queryClient.invalidateQueries({ queryKey: ["lab-tests", "specimen-options"] });
+    setOptionKind(null); setOptionName("");
+  } });
   const listQuery = useQuery({
     queryKey: [
       "lab-tests",
@@ -201,6 +211,7 @@ export function CreateLabTestContent() {
       form.testName.trim().length < 3 ||
       form.shortName.trim().length < 1
     ) {
+      setFeedback("Select a department and enter a valid unique test code, name and short name.");
       return;
     }
     saveMutation.mutate();
@@ -542,16 +553,16 @@ export function CreateLabTestContent() {
                 />
               </FormField>
               <FormField id="test-sample" label="Sample Name">
-                <Select id="test-sample" value={form.sampleType} disabled={saveMutation.isPending} onChange={(event) => update({ sampleType: event.target.value })}>
+                <div className="flex items-center gap-1"><Select id="test-sample" value={form.sampleType} disabled={saveMutation.isPending} onChange={(event) => update({ sampleType: event.target.value })}>
                   <option value="">--Select--</option>
-                  {Array.from(new Set(["EDTA", "PLASMA", "SERUM", "Stool", "URINE", ...(form.sampleType ? [form.sampleType] : [])])).map((value) => <option key={value} value={value}>{value}</option>)}
-                </Select>
+                  {Array.from(new Set(["EDTA", "PLASMA", "SERUM", "Stool", "URINE", ...(specimenQuery.data?.sampleTypes ?? []), ...(form.sampleType ? [form.sampleType] : [])])).map((value) => <option key={value} value={value}>{value}</option>)}
+                </Select><Button type="button" variant="outline" size="sm" onClick={() => { setOptionKind("sample"); optionMutation.reset(); }}>+ Add Sample</Button></div>
               </FormField>
               <FormField id="test-container" label="Tube Container">
-                <Select id="test-container" value={form.containerType} disabled={saveMutation.isPending} onChange={(event) => update({ containerType: event.target.value })}>
+                <div className="flex items-center gap-1"><Select id="test-container" value={form.containerType} disabled={saveMutation.isPending} onChange={(event) => update({ containerType: event.target.value })}>
                   <option value="">--Select--</option>
-                  {Array.from(new Set(["Lavander", "Red", ...(form.containerType ? [form.containerType] : [])])).map((value) => <option key={value} value={value}>{value}</option>)}
-                </Select>
+                  {Array.from(new Set(["Lavander", "Red", ...(specimenQuery.data?.containerTypes ?? []), ...(form.containerType ? [form.containerType] : [])])).map((value) => <option key={value} value={value}>{value}</option>)}
+                </Select><Button type="button" variant="outline" size="sm" onClick={() => { setOptionKind("tube"); optionMutation.reset(); }}>+ Add Tube</Button></div>
               </FormField>
               <FormField id="test-result-mode" label="Result Type">
                 <Select
@@ -652,6 +663,11 @@ export function CreateLabTestContent() {
 
 
 
+      <Dialog open={optionKind !== null} onOpenChange={open => { if (!open && !optionMutation.isPending) setOptionKind(null); }} title={optionKind === "sample" ? "Add Sample" : "Add Tube"}>
+        <Input aria-label="Option name" value={optionName} maxLength={50} onChange={event => setOptionName(event.target.value)} />
+        {optionMutation.isError && <p role="alert">{optionMutation.error.message}</p>}
+        <Button disabled={!optionName.trim() || optionMutation.isPending} onClick={() => optionMutation.mutate()}>Save</Button>
+      </Dialog>
       <Dialog
         open={viewTarget !== null}
         onOpenChange={(open) => {

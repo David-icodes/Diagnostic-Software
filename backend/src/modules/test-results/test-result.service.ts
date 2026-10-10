@@ -1,3 +1,4 @@
+import { recalculateConfigured } from "../../utils/configured-calculations";
 import { Types } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { LabBill } from "../../models/lab-bill.model";
@@ -28,6 +29,7 @@ function assertParameterTypeMatches(
   parameter: ILabTestParameter,
   value: ResultValue,
 ): void {
+  if (parameter.itemType === "SUBTITLE") throw new ApiError(422,"Subtitles are headings, not result fields");
   switch (parameter.resultType) {
     case "NUMBER":
     case "RANGE":
@@ -119,6 +121,8 @@ export interface BillTestEntry {
   parameters: Array<{
     parameterId: string;
     parameterName: string;
+    itemType?: ILabTestParameter["itemType"];
+    calculation?: ILabTestParameter["calculation"];
     subtitle?: string;
     displayOrder: number;
     resultType: ILabTestParameter["resultType"];
@@ -214,6 +218,8 @@ export async function getBillResultEntry(
       parameters: (byTest.get(testId) ?? []).map((parameter) => ({
         parameterId: String(parameter._id),
         parameterName: parameter.parameterName,
+        itemType: parameter.itemType ?? "PARAMETER",
+        calculation: parameter.calculation,
         ...(parameter.subtitle !== undefined ? { subtitle: parameter.subtitle } : {}),
         displayOrder: parameter.displayOrder,
         resultType: parameter.resultType,
@@ -373,7 +379,10 @@ export async function submitTestResults(
     );
   }
 
-  for (const entry of input.entries) {
+  const calculation = recalculateConfigured(parameters.map(parameter=>({parameterId:String(parameter._id),parameterName:parameter.parameterName,unit:parameter.unit,itemType:parameter.itemType,calculation:parameter.calculation})),Object.fromEntries(input.entries.map(entry=>[entry.parameterId,entry.result])));
+  if(Object.keys(calculation.errors).length)throw new ApiError(422,Object.values(calculation.errors)[0]);
+  const entries=[...input.entries.filter(entry=>!parameterMap.get(entry.parameterId)?.calculation),...parameters.filter(parameter=>parameter.calculation).map(parameter=>({parameterId:String(parameter._id),result:calculation.values[String(parameter._id)] as ResultValue}))];
+  for (const entry of entries) {
     const parameter = parameterMap.get(entry.parameterId)!;
     assertParameterTypeMatches(parameter, entry.result);
   }
@@ -396,7 +405,7 @@ export async function submitTestResults(
   // A durable confirmation uses the existing audit model. It is deliberately
   // strict (not best-effort): a partial multi-row save must never unlock Print.
   // Save its anchor first, so any later partial save remains linked to this log.
-  const first = input.entries[0];
+  const first = entries[0];
   const anchor = await LabTestResult.findOne({ billId: bill._id, testId: input.testId, parameterId: first.parameterId }).exec();
   const anchorId = anchor?._id ?? new Types.ObjectId();
   const confirmation = await AuditLog.create({ user: enteredBy, action: SUBMISSION_PENDING,
@@ -457,7 +466,7 @@ export async function submitTestResults(
       await existing.save();
   };
   await saveEntry(first);
-  const writes = await Promise.allSettled(input.entries.slice(1).map(saveEntry));
+  const writes = await Promise.allSettled(entries.slice(1).map(saveEntry));
   const failed = writes.find((write): write is PromiseRejectedResult => write.status === "rejected");
   if (failed) throw failed.reason;
   confirmation.action = SUBMISSION_CONFIRMED;

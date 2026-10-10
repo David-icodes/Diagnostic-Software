@@ -72,3 +72,9 @@
   .lis-report-paper table { break-after: auto; }
   .lis-report-paper tbody tr:nth-last-child(-n+3) { break-after: auto; }
 }
+
+/* The preview chrome must not create an unnamed portrait page before an invoice. */
+@media print {
+  .lis-print-dialog > header { display: none !important; }
+  body:has(.lis-invoice-paper) { page: lab-invoice; }
+}

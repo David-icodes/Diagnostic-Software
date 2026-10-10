@@ -1,5 +1,6 @@
 "use client";
 
+import { businessDateInput } from "@/lib/business-date";
 import { useMemo, useState } from "react";
 import {
   useMutation,
@@ -25,6 +26,7 @@ import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { SampleCollectionControl } from "@/components/test-result/sample-collection-control";
 import { SampleOutsideControl } from "@/components/test-result/sample-outside-control";
 import { ResultPrintDialog } from "@/components/test-result/result-print-dialog";
+import { recalculateConfigured } from "@/lib/configured-calculations";
 import { ResultReportUpload } from "@/components/test-result/result-report-upload";
 import { LisSendDialog } from "@/components/whatsapp/lis-send-dialog";
 import { allResultBillPages, initialResultBillParams, resultBillParams } from "@/lib/result-bill-list";
@@ -61,12 +63,7 @@ import type {
 
 type BillMode = "today" | "criteria";
 
-function todayInput(): string {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${now.getFullYear()}-${month}-${day}`;
-}
+const todayInput = businessDateInput;
 
 /**
  * One line the technician can act on. The backend already knows why a range did
@@ -421,7 +418,8 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
         <Card className="border-border shadow-sm xl:col-span-3">
           <CardContent className="p-0">
             <div className="lis-result-bill-list overflow-x-auto">
-              <table className="min-w-full text-xs">
+              <table className="lis-bill-summary w-full min-w-[610px] table-fixed text-xs">
+                <colgroup>{[22,20,26,15,17].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
                 <thead>
                   <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                     <th className="px-3 py-1.5">Bill No</th>
@@ -705,7 +703,8 @@ function ResultEntryTable({
       text[parameter.parameterId] =
         typeof value === "string" || typeof value === "number" ? String(value) : "";
     }
-    return text;
+    const calculated=recalculateConfigured(parameters,text);
+    return Object.fromEntries(Object.entries(calculated.values).map(([id,value])=>[id,value===undefined||value===null?"":String(value)]));
   });
 
   const [boolValues, setBoolValues] = useState<Record<string, boolean>>(() => {
@@ -744,7 +743,7 @@ function ResultEntryTable({
   const calculations = useMemo(() => {
     const map = new Map<string, ResolvedCalculation>();
     for (const calc of resolveCalculations(
-      parameters.map((parameter) => ({
+      parameters.filter(parameter => !parameter.calculation && parameter.itemType !== "SUBTITLE" && parameter.itemType !== "TEXT_AREA").map((parameter) => ({
         parameterId: parameter.parameterId,
         parameterName: parameter.parameterName,
       })),
@@ -768,15 +767,19 @@ function ResultEntryTable({
     // The calculated value is written into the same state the input is bound to,
     // so the live reference check re-runs and the abnormal styling follows
     // immediately. Nothing is saved until the user submits.
-    setTextValues((current) => ({
-      ...current,
-      [calc.parameterId]: String(result.value),
-    }));
+    updateTextValue(calc.parameterId, String(result.value));
   };
 
+  const updateTextValue=(parameterId:string,value:string)=>setTextValues(current=>{
+    const calculated=recalculateConfigured(parameters,{...current,[parameterId]:value});
+    return Object.fromEntries(Object.entries(calculated.values).map(([id,result])=>[id,result===undefined||result===null?"":String(result)]));
+  });
+  const calculationErrors=recalculateConfigured(parameters,textValues).errors;
   const handleSubmit = () => {
+    if(Object.keys(calculationErrors).length){setFieldError(Object.values(calculationErrors)[0]);return;}
     const entries: Array<{ parameterId: string; result: ResultValue }> = [];
     for (const parameter of parameters) {
+      if (parameter.itemType === "SUBTITLE") continue;
       if (parameter.resultType === "BOOLEAN") {
         entries.push({ parameterId: parameter.parameterId, result: Boolean(boolValues[parameter.parameterId]) });
         continue;
@@ -815,7 +818,7 @@ function ResultEntryTable({
   };
 
   const renderResultInput = (parameter: BillTestParameter, abnormal: boolean) => {
-    const disabled = submitting;
+    const disabled = Boolean(parameter.calculation) || submitting;
     const flagClasses = abnormal
       ? "border-red-400 bg-red-50/50 text-xs font-bold text-red-600"
       : "";
@@ -847,10 +850,7 @@ function ResultEntryTable({
             aria-label={`Result for ${parameter.parameterName}`}
             value={textValues[parameter.parameterId] ?? ""}
             onChange={(event) =>
-              setTextValues((current) => ({
-                ...current,
-                [parameter.parameterId]: event.target.value,
-              }))
+              updateTextValue(parameter.parameterId,event.target.value)
             }
             disabled={disabled}
             className={cn("h-7 w-40 text-xs", flagClasses)}
@@ -875,10 +875,7 @@ function ResultEntryTable({
             aria-invalid={abnormal || undefined}
             value={textValues[parameter.parameterId] ?? ""}
             onChange={(event) =>
-              setTextValues((current) => ({
-                ...current,
-                [parameter.parameterId]: event.target.value,
-              }))
+              updateTextValue(parameter.parameterId,event.target.value)
             }
             disabled={disabled}
             className={cn("h-7 w-32 text-xs", flagClasses)}
@@ -892,10 +889,7 @@ function ResultEntryTable({
             aria-invalid={abnormal || undefined}
             value={textValues[parameter.parameterId] ?? ""}
             onChange={(event) =>
-              setTextValues((current) => ({
-                ...current,
-                [parameter.parameterId]: event.target.value,
-              }))
+              updateTextValue(parameter.parameterId,event.target.value)
             }
             disabled={disabled}
             className={cn(
@@ -912,10 +906,7 @@ function ResultEntryTable({
             aria-invalid={abnormal || undefined}
             value={textValues[parameter.parameterId] ?? ""}
             onChange={(event) =>
-              setTextValues((current) => ({
-                ...current,
-                [parameter.parameterId]: event.target.value,
-              }))
+              updateTextValue(parameter.parameterId,event.target.value)
             }
             disabled={disabled}
             className={cn("h-7 w-48 text-xs", flagClasses)}
@@ -990,6 +981,7 @@ function ResultEntryTable({
                   </tr>
                 ) : (
                   parameters.map((parameter) => {
+                    if(parameter.itemType === "SUBTITLE")return <tr key={parameter.parameterId}><th colSpan={showMethod?6:5} className="px-2 py-2 text-left">{parameter.parameterName}</th></tr>;
                     const status = classificationFor(parameter);
                     const abnormal = status === "out-of-range";
                     const message = referenceMessage(parameter.reference);
@@ -1012,7 +1004,8 @@ function ResultEntryTable({
                         <td className="px-2 py-1">
                           <div className="flex flex-wrap items-center gap-1.5">
                             {renderResultInput(parameter, abnormal)}
-                            {calculations.has(parameter.parameterId) ? (
+                            {calculationErrors[parameter.parameterId]&&<span role="status" className="text-xs text-amber-700">{calculationErrors[parameter.parameterId]}</span>}
+                            {!parameter.calculation && calculations.has(parameter.parameterId) ? (
                               <Button
                                 type="button"
                                 variant="outline"

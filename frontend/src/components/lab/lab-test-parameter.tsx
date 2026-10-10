@@ -32,7 +32,7 @@ import { getDatabaseOptions } from "@/services/database";
 import {
   createLabParameter,
   deleteLabParameter,
-  fetchLabMasterTests,
+  fetchAllLabMasterTests,
   fetchLabParameterSubtitles,
   fetchLabParameters,
   updateLabParameter,
@@ -46,6 +46,7 @@ import {
   type ParameterReferenceScope,
   type ParameterRow,
 } from "@/types/lab-masters";
+import { CALCULATION_FORMULAS } from "@/lib/configured-calculations";
 import { cn } from "@/lib/utils";
 
 const PAGE_LIMIT = 20;
@@ -103,6 +104,9 @@ interface RangeCell {
 type GenderRangeCells = Record<GenderRangeGender, RangeCell>;
 
 interface ParameterFormState {
+  itemType: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
+  formulaId: string;
+  dependencyIds: string[];
   parameterName: string;
   subtitle: string;
   displayOrder: string;
@@ -138,6 +142,9 @@ function emptyGenderRanges(): GenderRangeCells {
 }
 
 const EMPTY_FORM: ParameterFormState = {
+  itemType: "PARAMETER",
+  formulaId: "",
+  dependencyIds: [],
   parameterName: "",
   subtitle: "",
   displayOrder: "0",
@@ -283,7 +290,7 @@ export function LabTestParameterContent() {
   const testsQuery = useQuery({
     queryKey: ["lab-tests", "master", "options", { departmentId }],
     queryFn: () =>
-      fetchLabMasterTests({
+      fetchAllLabMasterTests({
         status: "active",
         departmentId: departmentId || undefined,
         limit: 100,
@@ -304,6 +311,7 @@ export function LabTestParameterContent() {
     placeholderData: (previous) => previous,
   });
 
+  const calculationSources = useQuery({ queryKey:["lab-test-parameters","calculation-sources",testId],enabled:!!testId,queryFn:async()=>{const first=await fetchLabParameters({testId,limit:100});const pages=await Promise.all(Array.from({length:Math.max(0,first.pagination.totalPages-1)},(_,index)=>fetchLabParameters({testId,limit:100,page:index+2})));return [...first.data,...pages.flatMap(page=>page.data)];} });
   const subtitlesQuery = useQuery({
     queryKey: ["lab-test-parameters", "subtitles", testId],
     queryFn: () => fetchLabParameterSubtitles(testId),
@@ -336,6 +344,8 @@ export function LabTestParameterContent() {
       const payload = {
         testId,
         parameterName: form.parameterName.trim(),
+        itemType:form.itemType,
+        calculation:form.itemType === "PARAMETER" && form.formulaId ? {formulaId:form.formulaId,dependencyIds:form.dependencyIds}:null,
         subtitle: form.subtitle.trim() || undefined,
         displayOrder: Number(form.displayOrder) || 0,
         resultType: form.resultType as ParameterRow["resultType"],
@@ -503,6 +513,9 @@ export function LabTestParameterContent() {
     }
     setForm({
       parameterName: parameter.parameterName,
+      itemType:parameter.itemType ?? "PARAMETER",
+      formulaId:parameter.calculation?.formulaId ?? "",
+      dependencyIds:parameter.calculation?.dependencyIds ?? [],
       subtitle: parameter.subtitle ?? "",
       displayOrder: String(parameter.displayOrder ?? 0),
       resultType: parameter.resultType,
@@ -816,7 +829,8 @@ export function LabTestParameterContent() {
                 </Select>
               </CompactField>
 
-              <CompactField id="param-subtitle" label="Parameter/Subtitle">
+              <CompactField id="param-item-type" label="Parameter/Subtitle"><Select id="param-item-type" value={form.itemType} onChange={event=>update({itemType:event.target.value as ParameterFormState["itemType"],formulaId:"",dependencyIds:[],...(event.target.value === "TEXT_AREA"?{resultType:"TEXTAREA"}:event.target.value === "SUBTITLE"?{resultType:"TEXT"}:{})})}><option value="PARAMETER">Parameter</option><option value="SUBTITLE">Subtitle</option><option value="TEXT_AREA">Text Area</option></Select></CompactField>
+              <CompactField id="param-subtitle" label="Group Subtitle">
                 <AddableDatalist
                   id="param-subtitle"
                   value={form.subtitle}
@@ -851,6 +865,8 @@ export function LabTestParameterContent() {
                 </Select>
               </CompactField>
 
+              {form.itemType === "PARAMETER" && <CompactField id="param-formula" label="Automatic calculation"><Select id="param-formula" value={form.formulaId} onChange={event=>update({formulaId:event.target.value,dependencyIds:[],...(event.target.value?{resultType:"NUMBER"}:{})})}><option value="">Measured / manual</option>{CALCULATION_FORMULAS.map(formula=><option key={formula.id} value={formula.id}>{formula.label}</option>)}</Select></CompactField>}
+              {CALCULATION_FORMULAS.find(formula=>formula.id===form.formulaId)?.sources.map((source,index)=><CompactField key={source} id={"param-source-"+index} label={source}><Select id={"param-source-"+index} value={form.dependencyIds[index]??""} onChange={event=>{const ids=[...form.dependencyIds];ids[index]=event.target.value;update({dependencyIds:ids});}}><option value="">Select source parameter</option>{(calculationSources.data??[]).filter(parameter=>parameter.id!==editingId&&parameter.itemType!=="SUBTITLE"&&parameter.itemType!=="TEXT_AREA").map(parameter=><option key={parameter.id} value={parameter.id}>{parameter.parameterName} ({parameter.unit??"unit required"})</option>)}</Select></CompactField>)}
               <CompactField id="param-order" label="OrderNo">
                 <Input
                   id="param-order"

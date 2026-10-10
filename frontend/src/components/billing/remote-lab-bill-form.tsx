@@ -631,6 +631,7 @@ const createSeparatePatient = async () => {
           </Button>
         </div>
       </header>
+      <div id="osp-patient-results" />
 
       {patientNotice && <p role="status" className="text-sm text-emerald-700">{patientNotice}</p>}
       {formError && (

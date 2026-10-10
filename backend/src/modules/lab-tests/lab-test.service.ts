@@ -1,3 +1,5 @@
+import { SpecimenOption } from "../../models/specimen-option.model";
+import { recordAudit } from "../audit/audit.service";
 import { Types, type FilterQuery } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { isValidObjectId } from "../../utils/object-id";
@@ -166,7 +168,9 @@ export async function listTestSpecimenOptions(): Promise<{
   sampleTypes: string[];
   containerTypes: string[];
 }> {
-  const rows = await LabTest.find().select("sampleType containerType").exec();
+  const tests = await LabTest.find().select("sampleType containerType").exec();
+  const configured = await SpecimenOption.find().lean().exec();
+  const rows = [...tests, ...configured.map(option => ({ sampleType: option.kind === "sample" ? option.name : undefined, containerType: option.kind === "tube" ? option.name : undefined }))];
   const sampleTypes = [
     ...new Set(
       rows
@@ -190,6 +194,20 @@ export async function listTestSpecimenOptions(): Promise<{
  * A test that is part of an active package cannot be deactivated until the
  * package is handled first, otherwise the package composition silently breaks.
  */
+export async function createSpecimenOption(userId: string, input: { kind: "sample" | "tube"; name: string }) {
+  const name = input.name.trim();
+  if (!name || name.length > 50) throw new ApiError(422, "Enter a specimen option name of 1 to 50 characters");
+  const options = await listTestSpecimenOptions();
+  const existing = (input.kind === "sample" ? options.sampleTypes : options.containerTypes).find(value => value.toLowerCase() === name.toLowerCase());
+  if (existing) return { kind: input.kind, name: existing };
+  let option;
+  try { option = await SpecimenOption.findOneAndUpdate({ kind: input.kind, normalizedName: name.toLowerCase() }, { $setOnInsert: { kind: input.kind, name, normalizedName: name.toLowerCase(), createdBy: userId } }, { upsert: true, new: true, runValidators: true }).exec(); }
+  catch(error) { if((error as {code?:number}).code !== 11000) throw error; option = await SpecimenOption.findOne({kind:input.kind,normalizedName:name.toLowerCase()}).exec(); }
+  if (!option) throw new ApiError(409, "The option changed; reload and retry");
+  await recordAudit({ user: userId, action: "lab.specimen_option_created", entityType: "SpecimenOption", entity: option._id });
+  return { kind: input.kind, name: option.name };
+}
+
 export async function setTestActive(
   id: string,
   userId: string,

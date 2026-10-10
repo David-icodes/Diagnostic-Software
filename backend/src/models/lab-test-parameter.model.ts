@@ -109,6 +109,8 @@ export interface IReferenceMapping {
 export interface ILabTestParameter {
   testId: Types.ObjectId;
   parameterName: string;
+  itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
+  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
   /** Optional grouped heading / sub-title the parameter belongs under. */
   subtitle?: string;
   displayOrder: number;
@@ -326,6 +328,8 @@ const labTestParameterSchema = new Schema<ILabTestParameter>(
       index: true,
     },
     parameterName: { type: String, required: true, trim: true, maxlength: 150 },
+    itemType: { type: String, enum: ["PARAMETER", "SUBTITLE", "TEXT_AREA"], default: "PARAMETER" },
+    calculation: { type: new Schema({ formulaId: { type: String, required: true }, dependencyIds: [String] }, { _id: false }), default: undefined },
     subtitle: { type: String, trim: true, maxlength: 150 },
     displayOrder: { type: Number, required: true, min: 0, default: 0 },
     resultType: {
@@ -334,7 +338,7 @@ const labTestParameterSchema = new Schema<ILabTestParameter>(
       default: "TEXT",
     },
     parameterType: { type: String, trim: true, maxlength: 50 },
-    defaultValue: { type: String, trim: true, maxlength: 120 },
+    defaultValue: { type: String, trim: true, maxlength: 2000 },
     unit: { type: String, trim: true, maxlength: 50 },
     referenceRange: { type: String, trim: true, maxlength: 200 },
     referenceType: {

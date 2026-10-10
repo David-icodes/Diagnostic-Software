@@ -1,3 +1,6 @@
+import { businessDateInput, businessDayStart } from "../../utils/business-date";
+import { localDayRange } from "../../utils/date-range";
+import { isSampleTransitionAllowed } from "../../utils/sample-lifecycle";
 import { Types, type AnyBulkWriteOperation, type FilterQuery } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { generateSampleId } from "../../utils/id-generator";
@@ -80,33 +83,13 @@ export interface PaginatedSamples {
  * stage up to processing). A rejected sample may be re-collected fresh.
  * There is no auto-jumping: every step must be explicitly saved.
  */
-const ALLOWED_SAMPLE_TRANSITIONS: Record<
-  SampleStatus,
-  SampleStatus[]
-> = {
-  SELECT: ["COLLECTED", "REJECTED"],
-  COLLECTED: ["RECEIVED", "RECOLLECTED", "REJECTED"],
-  RECEIVED: ["PROCESSED", "RECOLLECTED", "REJECTED"],
-  PROCESSED: ["RECOLLECTED"],
-  RECOLLECTED: ["RECEIVED", "REJECTED"],
-  REJECTED: ["COLLECTED"],
-};
-
-export function canTransitionSample(
-  current: SampleStatus,
-  next: SampleStatus,
-): boolean {
-  if (current === next) return false;
-  return (ALLOWED_SAMPLE_TRANSITIONS[current] ?? []).includes(next);
-}
+export const canTransitionSample = isSampleTransitionAllowed;
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function startOfLocalDay(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
+function startOfLocalDay(date: Date): Date { return businessDayStart(businessDateInput(date))!; }
 
 /**
  * Creates one sample row per ordered test on each bill that does not have one yet.
@@ -227,26 +210,11 @@ export async function listLabSamples({
   if (mode === "today") {
     const start = startOfLocalDay(new Date());
     const end = new Date(start);
-    end.setDate(end.getDate() + 1);
+    end.setTime(end.getTime() + 24 * 60 * 60 * 1000);
     billFilter.createdAt = { $gte: start, $lt: end };
   } else {
-    const parseDay = (value?: string): Date | undefined => {
-      if (!value || !value.trim()) return undefined;
-      const [y, m, d] = value.trim().split("-").map(Number);
-      if (!y || !m || !d) return undefined;
-      return new Date(y, m - 1, d);
-    };
-    const from = parseDay(fromDate);
-    const to = parseDay(toDate);
-    if (from || to) {
-      billFilter.createdAt = {};
-      if (from) billFilter.createdAt = { $gte: from };
-      if (to) {
-        const end = new Date(to);
-        end.setDate(end.getDate() + 1);
-        billFilter.createdAt = { ...(billFilter.createdAt as object), $lt: end };
-      }
-    }
+    const range = localDayRange(fromDate, toDate);
+    if (range) billFilter.createdAt = range;
   }
 
   const billNumberKeyword = billNumber?.trim();
@@ -439,9 +407,8 @@ const billCreatedAt = new Map<string, number>(
 
 function resolvedTimestamp(time?: string): Date {
   if (!time) return new Date();
-  const [hours, minutes] = time.split(":").map(Number);
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+  if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time)) throw new ApiError(422, "Invalid collection time");
+  return new Date(`${businessDateInput()}T${time}:00+05:30`);
 }
 
 async function getSampleBillContext(
@@ -511,41 +478,20 @@ export async function updateLabSampleStatus(
     );
   }
 
+  const previousStatus = sample.sampleStatus;
   const changedAt = resolvedTimestamp(input.time);
   const changedBy = new Types.ObjectId(userId);
   const comments = input.comments ?? sample.comments;
 
-  sample.sampleStatus = input.status;
-  sample.comments = comments;
-  sample.updatedBy = changedBy;
-
-  switch (input.status) {
-    case "COLLECTED":
-      sample.collectedAt = changedAt;
-      break;
-    case "RECEIVED":
-      sample.receivedAt = changedAt;
-      break;
-    case "PROCESSED":
-      sample.processedAt = changedAt;
-      break;
-    case "RECOLLECTED":
-      sample.recollectedAt = changedAt;
-      break;
-    case "REJECTED":
-      sample.rejectedAt = changedAt;
-      break;
-    default:
-      break;
-  }
-
-  sample.history.push({
-    status: input.status,
-    changedAt,
-    changedBy,
-    comments,
-  });
-  await sample.save();
+  const timestamps: Record<string, Date | undefined> = {};
+  const timestampField = ({ COLLECTED: "collectedAt", RECEIVED: "receivedAt", PROCESSED: "processedAt", RECOLLECTED: "recollectedAt", REJECTED: "rejectedAt" } as Record<string,string>)[input.status];
+  if (timestampField) timestamps[timestampField] = changedAt;
+  const saved = await LabSample.findOneAndUpdate(
+    { _id: sample._id, sampleStatus: previousStatus === "SELECT" ? { $in: ["SELECT", null] } : previousStatus, ...(sample.updatedAt ? {updatedAt:sample.updatedAt} : {}) },
+    { $set: {sampleStatus:input.status,comments,updatedBy:changedBy,...timestamps}, $push: {history:{status:input.status,changedAt,changedBy,comments}} },
+    { new: true, runValidators: true },
+  ).exec();
+  if (!saved) throw new ApiError(409, "This sample changed while you were editing. Reload and select its next status.");
 
   await recordAudit({
     user: userId,
@@ -554,7 +500,7 @@ export async function updateLabSampleStatus(
     entity: sample._id,
   });
 
-  return getSampleBillContext(sample);
+  return getSampleBillContext(saved);
 }
 /** Updates only the existing bill-item outside snapshot; collection/results/money are untouched. */
 export async function updateLabSampleOutside(userId: string, sampleId: string, input: UpdateSampleOutsideInput): Promise<SampleRow> {

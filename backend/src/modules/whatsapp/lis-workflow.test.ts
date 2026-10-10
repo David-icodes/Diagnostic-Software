@@ -167,6 +167,8 @@ test("Meta under-review rejection returns an actual error, logs failure, and nev
 });
 
 test("renderer failure deletes its job; retry prepares one attachment without sending", async (t) => {
+  const originalDue=bill.dueAmount,originalPaid=bill.paidAmount;bill.dueAmount=0;bill.paidAmount=bill.netAmount;
+  t.after(()=>{bill.dueAmount=originalDue;bill.paidAmount=originalPaid;});
   const { reviewLisMessage, findLisReview } = await workflow;
   const { chromium } = await import("playwright");
   const fixture = await PDFDocument.create();
@@ -227,6 +229,13 @@ test("renderer failure deletes its job; retry prepares one attachment without se
   const reviewed = await reviewLisMessage(invoice, req);
   assert.equal(reviewed.attachment?.mimeType, "application/pdf");
   assert.equal(findLisReview(reviewed.reviewId, "review-owner").state, "review");
+  const activeJob = findLisReview(reviewed.reviewId, "review-owner");
+  activeJob.rendering = true;
+  const { lisDocumentData } = await workflow;
+  assert.equal((await lisDocumentData(reviewed.reviewId,"review-owner")).templateName,"lab_invoice_ready");
+  bill.dueAmount = 25;
+  await assert.rejects(lisDocumentData(reviewed.reviewId,"review-owner"), /outstanding due/);
+  bill.dueAmount = 0; activeJob.rendering = false;
   assert.equal(providerCalls, 0);
   const { pdfStorage } = await import("../documents/pdf-storage.service.js");
   t.mock.method(AuditLog, "create", async () => ({}));

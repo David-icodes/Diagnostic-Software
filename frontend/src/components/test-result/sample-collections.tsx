@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import {
   useMutation,
@@ -27,7 +27,9 @@ import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { fetchLabSamples, updateSampleStatus } from "@/services/test-results";
-import { cn, formatDate } from "@/lib/utils";
+import { businessDateInput, businessTimeInput } from "@/lib/business-date";
+import { isSampleTransitionAllowed } from "../../../../backend/src/utils/sample-lifecycle.ts";
+import { formatDate } from "@/lib/utils";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { matchesSampleContext, resultContextHref, type SampleContext } from "@/lib/lab-workflows";
 import {
@@ -48,19 +50,9 @@ interface RowDraft {
   comments: string;
 }
 
-function todayInput(): string {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${now.getFullYear()}-${month}-${day}`;
-}
+const todayInput = businessDateInput;
 
-function currentTimeInput(): string {
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
-}
+const currentTimeInput = businessTimeInput;
 
 const STATUS_STYLES: Record<SampleStatus, { chip: string; row: string; label: string }> = {
   // Strong, dark, saturated status colours so each state is unmistakable at a
@@ -85,7 +77,9 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
   const [fromDate, setFromDate] = useState(todayInput);
   const [toDate, setToDate] = useState(todayInput);
   const [params, setParams] = useState<SampleListParams>(context ? { mode: "criteria", billNumber: context.billNumber, limit: 100 } : { mode: "today" });
+  const saveInFlight = useRef(false);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [resetVersion, setResetVersion] = useState(0);
   const [actionError, setActionError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -103,6 +97,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
         comments: draft.comments.trim() || undefined,
       }),
     onSuccess: (updated) => {
+      queryClient.setQueriesData<{ data: LabSampleRow[] }>({ queryKey: queryKeys.labSamples }, current => current?.data ? { ...current, data: current.data.map(row => row.id === updated.id ? updated : row) } : current);
       setSuccessMessage(
         `Sample ${updated.sampleId} (${updated.testName ?? "test"}) — ${statusLabel(updated.sampleStatus)}.`,
       );
@@ -116,15 +111,19 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
       );
     },
     onError: (error: Error) => {
+      setResetVersion(version => version + 1);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.labSamples });
       setActionError(error.message || "Failed to update the sample status.");
     },
   });
 
   const onSaveSample = (id: string, draft: RowDraft) => {
+    if (saveInFlight.current) return;
+    saveInFlight.current = true;
     setSavingId(id);
     setActionError(null);
     setSuccessMessage(null);
-    saveMutation.mutate({ id, draft }, { onSettled: () => setSavingId(null) });
+    saveMutation.mutate({ id, draft }, { onSettled: () => { saveInFlight.current = false; setSavingId(null); } });
   };
 
   const rows = (samplesQuery.data?.data ?? []).filter((row) => matchesSampleContext(row, activeContext));
@@ -207,7 +206,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
       {context && <div className="flex items-center justify-between border border-blue-200 bg-blue-50 px-3 py-2 text-sm">
         <span>{activeContext ? "Selected sample for bill" : "Opened from bill"} {context.billNumber}</span>
         <div className="flex gap-2">
-          <Link href={resultContextHref(context)} className="lis-sample-return inline-flex items-center gap-1 rounded border border-primary bg-primary px-3 py-1.5 font-semibold text-white"><RotateCcw className="size-4" />Return</Link>
+          <Link href={resultContextHref(context)} className="lis-sample-return inline-flex items-center gap-1 rounded border border-primary bg-primary px-2 py-1.5 font-semibold text-white"><RotateCcw className="size-4" />Return</Link>
           {activeContext && <Button variant="outline" size="sm" onClick={handleClear}>View all samples</Button>}
         </div>
       </div>}
@@ -363,7 +362,8 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
             )}
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full text-xs">
+            <table className="w-full min-w-[1600px] table-fixed text-xs [&_th]:whitespace-nowrap">
+              <colgroup>{[3,9,7,9,12,8,13,6,10,7,11,5].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
               <thead>
                 <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-3 py-1.5">S.No</th>
@@ -396,7 +396,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
                 ) : (
                   rows.map((row, index) => (
                     <SampleRow
-                      key={`${row.id}-${samplesQuery.dataUpdatedAt ?? 0}`}
+                      key={`${row.id}-${samplesQuery.dataUpdatedAt ?? 0}-${resetVersion}`}
                       row={row}
                       index={index}
                       isSaving={savingId !== null}
@@ -465,14 +465,14 @@ function SampleRow({
   const editDraft = (patch: Partial<RowDraft>) =>
     setDraft((current) => ({ ...current, ...patch }));
 
-  const statusStyle = STATUS_STYLES[draft.status];
+  const statusStyle = STATUS_STYLES[row.sampleStatus];
   const save = !draft || draft.status === "SELECT" || draft.status === row.sampleStatus || isSaving;
 
   return (
     <tr className={`border-t border-border ${statusStyle.row}`}>
       <td className="px-3 py-1.5 text-slate-500">{index + 1}</td>
-      <td className="px-3 py-1.5 font-mono font-medium text-slate-800">{row.billNumber}</td>
-      <td className="px-3 py-1.5 text-slate-600">
+      <td className="px-2 py-1.5 whitespace-nowrap font-mono font-medium text-slate-800">{row.billNumber}</td>
+      <td className="px-2 py-1.5 whitespace-nowrap text-slate-600">
         {row.billDate ? formatDate(row.billDate) : "—"}
       </td>
       <td className="px-3 py-1.5 font-mono text-slate-700">{row.patientCode ?? "—"}</td>
@@ -512,24 +512,16 @@ function SampleRow({
       </td>
       <td className="px-3 py-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={cn(
-              "shrink-0 rounded px-1.5 py-0.5 text-[13px] font-medium",
-              STATUS_STYLES[row.sampleStatus].chip,
-            )}
-          >
-            {STATUS_STYLES[row.sampleStatus].label}
-          </span>
           <Select
             aria-label={`Sample status for ${row.sampleId}`}
             value={draft.status}
             onChange={(event) => editDraft({ status: event.target.value as SampleStatus })}
             disabled={isSaving}
-            className="h-8 w-36"
+            className="h-8 w-full min-w-0"
           >
           <option value="SELECT">Not Updated</option>
           {EDITABLE_STATUSES.map((status) => (
-            <option key={status} value={status}>
+            <option key={status} value={status} disabled={status !== row.sampleStatus && !isSampleTransitionAllowed(row.sampleStatus, status)}>
               {STATUS_STYLES[status].label}
             </option>
           ))}
@@ -543,7 +535,7 @@ function SampleRow({
           value={draft.time}
           onChange={(event) => editDraft({ time: event.target.value })}
           disabled={isSaving}
-          className="h-8 w-28"
+          className="h-8 w-full min-w-0"
         />
       </td>
       <td className="px-3 py-1.5">

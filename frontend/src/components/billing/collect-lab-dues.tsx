@@ -1,5 +1,6 @@
 "use client";
 
+import { businessDateInput } from "@/lib/business-date";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -31,12 +32,7 @@ import type { BillPatient, LabBill } from "@/types/billing";
 
 type DuesMode = "days" | "criteria" | "bill";
 
-function todayInput(): string {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${now.getFullYear()}-${month}-${day}`;
-}
+const todayInput = businessDateInput;
 
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
