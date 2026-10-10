@@ -6,12 +6,15 @@ import { PrintPreview } from "@/components/test-result/lab-reprint";
 import { InvoiceDocument } from "@/components/test-result/invoice-print-dialog";
 import { reportStartsPage } from "@/lib/result-workflow";
 import { fetchLisWhatsAppDocument } from "@/services/whatsapp-lis";
+import { ApiError } from "@/lib/api";
 
 /** Authenticated, expiring server job; reused clinical/invoice print layouts. */
 export function LisDocument({ reviewId }: { reviewId: string }) {
   const query = useQuery({ queryKey: ["whatsapp-document", reviewId], queryFn: () => fetchLisWhatsAppDocument(reviewId),
     enabled: Boolean(reviewId), retry: false, gcTime: 0, refetchOnWindowFocus: false });
-  if (query.isError) return <p role="alert">{query.error.message}</p>;
+  if (!reviewId) return <p role="alert" data-whatsapp-document="error" data-http-status="400">Document review is missing.</p>;
+  if (query.isError) return <p role="alert" data-whatsapp-document="error"
+    data-http-status={query.error instanceof ApiError ? query.error.status : 0}>{query.error.message}</p>;
   if (!query.data) return <p role="status">Loading document…</p>;
   const data = query.data;
   return <main data-whatsapp-document="ready">

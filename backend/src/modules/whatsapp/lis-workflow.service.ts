@@ -17,7 +17,7 @@ import { normalizeLisRecipient } from "./lis-recipient";
 import { LIS_TEMPLATES, languageFor, templateComponents, templateVariables } from "./lis-template";
 import { maskedRecipient } from "./lis-delivery.service";
 import { uploadLisPdf } from "./lis-media.service";
-import { pdfFailure, rendererOrigin } from "./lis-pdf-diagnostics";
+import { pdfFailure, rendererOrigin, rendererTarget, rendererErrorKind } from "./lis-pdf-diagnostics";
 import type { ReviewLisMessageInput } from "../../validations/whatsapp-lis";
 
 const json = (value: unknown) => JSON.parse(JSON.stringify(value));
@@ -115,25 +115,89 @@ async function renderPdf(reviewId: string, req: Request): Promise<Buffer> {
   const apiOrigin = rendererOrigin(env.WHATSAPP_RENDER_API_ORIGIN);
   let browser;
   let stage = "browser startup";
+  const started = Date.now();
+  const origins = [frontendOrigin, apiOrigin];
+  const target = new URL(`/whatsapp/document?reviewId=${encodeURIComponent(reviewId)}`, frontendOrigin).href;
+  const events: Record<string, unknown>[] = [];
+  const diagnosticId = randomUUID(); // independent of patient, bill and review identifiers
+  const record = (event: string, details: Record<string, unknown>) => {
+    if (events.length < 40) events.push({ event, elapsedMs: Date.now() - started, ...details });
+  };
+  let page: import("playwright").Page | undefined;
+  let documentStatus: number | undefined;
+  let documentCookiePresent: boolean | undefined;
+  let frontendStatus: number | undefined;
+  let pageState = "not-loaded";
+  let failDocument: (error: Error) => void = () => {};
+  const documentFailure = new Promise<Error>((resolve) => { failDocument = resolve; });
+  const session = req.cookies?.[env.COOKIE_NAME];
   try {
+    stage = "authenticated session setup";
+    if (typeof session !== "string" || !session) throw new Error("Renderer session is missing");
+    stage = "browser startup";
     browser = await chromium.launch({ headless: true });
     stage = "browser context creation";
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     // Only the original API origin receives this session cookie; never send it
     // to arbitrary logos/remote resources or expose it in the frontend URL.
     stage = "authenticated session setup";
-    await context.addCookies([{ name: env.COOKIE_NAME, value: req.cookies[env.COOKIE_NAME], url: apiOrigin, httpOnly: true, secure: apiOrigin.startsWith("https:"), sameSite: env.COOKIE_SAMESITE === "none" ? "None" : env.COOKIE_SAMESITE === "strict" ? "Strict" : "Lax" }]);
+    await context.addCookies([{ name: env.COOKIE_NAME, value: session, url: `${apiOrigin}/`, httpOnly: true, secure: apiOrigin.startsWith("https:"), sameSite: env.COOKIE_SAMESITE === "none" ? "None" : env.COOKIE_SAMESITE === "strict" ? "Strict" : "Lax" }]);
+    const installedCookie = (await context.cookies(`${apiOrigin}/api/whatsapp/lis/document-data`)).find((cookie) => cookie.name === env.COOKIE_NAME);
+    record("session", { incomingCookiePresent: true, installed: Boolean(installedCookie),
+      domain: installedCookie?.domain, path: installedCookie?.path, secure: installedCookie?.secure,
+      sameSite: installedCookie?.sameSite, httpOnly: installedCookie?.httpOnly,
+      sessionCookie: installedCookie?.expires === -1 });
+    if (!installedCookie) throw new Error("Renderer session cookie was not installed");
     await context.route("**/*", async (route) => {
       const url = new URL(route.request().url());
+      if (url.origin === apiOrigin && url.pathname === "/api/whatsapp/lis/document-data") {
+        const headers = await route.request().allHeaders();
+        documentCookiePresent = (headers.cookie ?? "").split(";").some((part) => part.trim().startsWith(`${env.COOKIE_NAME}=`));
+        record("document-request", { ...rendererTarget(url.href, origins), method: route.request().method(), cookiePresent: documentCookiePresent });
+      }
       if ([frontendOrigin, apiOrigin].includes(url.origin) || ["data:", "blob:"].includes(url.protocol)) await route.continue();
-      else await route.abort();
+      else { record("blocked-request", rendererTarget(url.href, origins)); await route.abort(); }
     });
     stage = "document tab creation";
-    const page = await context.newPage();
+    page = await context.newPage();
+    page.on("response", (response) => {
+      const url = new URL(response.url());
+      const request = response.request();
+      const documentData = url.pathname === "/api/whatsapp/lis/document-data";
+      if (documentData && url.origin === apiOrigin && request.method() === "POST") {
+        documentStatus = response.status();
+        if (documentStatus >= 400) failDocument(new Error(`Authenticated document failed (HTTP ${documentStatus})`));
+      }
+      if (request.isNavigationRequest() || documentData || response.status() >= 400) {
+        const location = response.headers().location;
+        record("response", { ...rendererTarget(response.url(), origins), status: response.status(),
+          ...(location ? { redirect: rendererTarget(location, origins, response.url()) } : {}) });
+      }
+    });
+    page.on("requestfailed", (request) => record("request-failed", {
+      ...rendererTarget(request.url(), origins), method: request.method(),
+      kind: rendererErrorKind(request.failure()?.errorText ?? "") }));
+    page.on("console", (message) => {
+      if (["error", "warning"].includes(message.type())) record("console", { type: message.type(), kind: rendererErrorKind(message.text()) });
+    });
+    page.on("pageerror", (error) => record("page-error", { kind: rendererErrorKind(error.message) }));
     stage = "document page loading";
-    await page.goto(new URL(`/whatsapp/document?reviewId=${encodeURIComponent(reviewId)}`, frontendOrigin).href, { waitUntil: "domcontentloaded", timeout: 60000 });
+    const navigation = await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
+    record("navigation", { status: navigation?.status() ?? null, final: rendererTarget(page.url(), origins) });
+    if (!navigation?.ok()) throw new Error(`Document navigation failed (HTTP ${navigation?.status() ?? 0})`);
+    const finalUrl = new URL(page.url());
+    if (finalUrl.origin !== frontendOrigin || finalUrl.pathname !== "/whatsapp/document") throw new Error("Document navigation redirected away from the document route");
     stage = "authenticated document loading";
-    await page.locator('[data-whatsapp-document="ready"]').waitFor({ timeout: 60000 });
+    // New pages expose terminal errors too. Older deployed frontends still expose ready.
+    const state = page.locator('[data-whatsapp-document="ready"], [data-whatsapp-document="error"]');
+    const failure = await Promise.race([state.waitFor({ timeout: 60000 }).then(() => null), documentFailure]);
+    if (failure) { pageState = "api-error"; throw failure; }
+    pageState = await state.getAttribute("data-whatsapp-document") ?? "unknown";
+    if (pageState !== "ready") {
+      const status = Number(await state.getAttribute("data-http-status"));
+      frontendStatus = Number.isInteger(status) && status >= 0 && status <= 599 ? status : 0;
+      throw new Error(`Authenticated document failed (HTTP ${Number.isInteger(status) ? status : 0})`);
+    }
     stage = "document asset loading";
     await page.evaluate(`(async () => {
       await document.fonts.ready;
@@ -149,11 +213,18 @@ async function renderPdf(reviewId: string, req: Request): Promise<Buffer> {
     stage = "A4 PDF rendering";
     const pdf = await page.pdf({ format: "A4", preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false });
     if (pdf.length > 16 * 1024 * 1024 || !pdf.subarray(0, 5).equals(Buffer.from("%PDF-"))) throw new Error("Invalid generated PDF");
+    console.info("[WhatsApp PDF]", { diagnosticId, stage, outcome: "generated", bytes: pdf.length,
+      target: rendererTarget(target, origins), apiOrigin, pageState, documentStatus, documentCookiePresent,
+      elapsedMs: Date.now() - started, events });
     return pdf;
   } catch (error) {
     const diagnostic = pdfFailure(stage, error);
-    console.error("[WhatsApp PDF]", { stage, code: diagnostic.code, platform: process.platform,
-      browserPath: chromium.executablePath(), detail: diagnostic.detail });
+    console.error("[WhatsApp PDF]", { diagnosticId, stage, code: diagnostic.code, platform: process.platform,
+      target: rendererTarget(target, origins), apiOrigin, nodeEnv: env.NODE_ENV, sameSite: env.COOKIE_SAMESITE,
+      incomingCookiePresent: typeof session === "string" && Boolean(session), documentCookiePresent, documentStatus, frontendStatus,
+      pageState, final: page ? rendererTarget(page.url(), origins) : null,
+      timedOut: error instanceof Error && error.name === "TimeoutError", elapsedMs: Date.now() - started,
+      kind: rendererErrorKind(error instanceof Error ? error.message : ""), events });
     throw new ApiError(503, diagnostic.message);
   } finally {
     await browser?.close().catch(() => console.error("[WhatsApp PDF] Browser cleanup failed"));

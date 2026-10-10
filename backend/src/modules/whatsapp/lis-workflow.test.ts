@@ -176,20 +176,50 @@ test("renderer failure deletes its job; retry prepares one attachment without se
     if (String(url).includes("graph.facebook")) { providerCalls++; throw new Error("Must not send"); }
     return new Response(JSON.stringify({ name: "Configured centre" }), { headers: { "Content-Type": "application/json" } });
   });
-  let fail = true; let failedReviewId = "";
+  let fail = true; let failedReviewId = ""; let currentUrl = "about:blank";
+  let marker = "ready"; let httpStatus = "0"; let redirect = false; let pdfCalls = 0;
+  let apiFailure = 0;
+  type ResponseFixture = { url: () => string; status: () => number; headers: () => Record<string, string>;
+    request: () => { method: () => string; isNavigationRequest: () => boolean } };
+  const listeners: Record<string, (value: ResponseFixture) => void> = {};
+  const logs: unknown[] = [];
+  t.mock.method(console, "error", (...args: unknown[]) => { logs.push(args); });
   const page = {
-    goto: async (url: string) => { failedReviewId = new URL(url).searchParams.get("reviewId")!; if (fail) throw new Error("Simulated renderer network failure"); },
-    locator: () => ({ waitFor: async () => {} }), evaluate: async () => {}, emulateMedia: async () => {},
-    addStyleTag: async () => {}, pdf: async () => Buffer.from("%PDF-1.4\nunit fixture only"),
+    on: (event: string, handler: (value: ResponseFixture) => void) => { listeners[event] = handler; }, url: () => currentUrl,
+    goto: async (url: string) => {
+      currentUrl = redirect ? new URL("/login?token=private-query", url).href : url;
+      failedReviewId = new URL(url).searchParams.get("reviewId")!;
+      if (fail) throw new Error("Simulated renderer network failure");
+      if (apiFailure) listeners.response({ url: () => "http://localhost:5000/api/whatsapp/lis/document-data",
+        status: () => apiFailure, headers: () => ({}), request: () => ({ method: () => "POST", isNavigationRequest: () => false }) });
+      return { ok: () => true, status: () => 200 };
+    },
+    locator: () => ({ waitFor: async () => {}, getAttribute: async (name: string) => name === "data-http-status" ? httpStatus : marker }), evaluate: async () => {}, emulateMedia: async () => {},
+    addStyleTag: async () => {}, pdf: async () => { pdfCalls++; return Buffer.from("%PDF-1.4\nunit fixture only"); },
   };
   t.mock.method(chromium, "launch", async () => ({
-    newContext: async () => ({ addCookies: async () => {}, route: async () => {}, newPage: async () => page }), close: async () => {},
+    newContext: async () => ({ addCookies: async () => {}, cookies: async () => [{ name: "diagnostic_token", expires: -1 }], route: async () => {}, newPage: async () => page }), close: async () => {},
   }));
   const req = { user: { id: "review-owner", name: "Operator" }, cookies: { diagnostic_token: "test-only" } } as unknown as Request;
   const invoice = { ...input, templateName: "lab_invoice_ready" as const };
   await assert.rejects(reviewLisMessage(invoice, req), /document page loading/);
   assert.throws(() => findLisReview(failedReviewId, "review-owner"), /expired/);
   fail = false;
+  await assert.rejects(reviewLisMessage(invoice, { ...req, cookies: {} } as Request), /authenticated session setup/);
+  for (const status of [401, 403, 410]) {
+    marker = "error"; httpStatus = String(status);
+    await assert.rejects(reviewLisMessage(invoice, req), /authenticated document loading/);
+    assert.throws(() => findLisReview(failedReviewId, "review-owner"), /expired/);
+  }
+  marker = "ready"; apiFailure = 401;
+  await assert.rejects(reviewLisMessage(invoice, req), /authenticated document loading/);
+  assert.match(JSON.stringify(logs), /"documentStatus":401/);
+  apiFailure = 0;
+  marker = "ready"; redirect = true;
+  await assert.rejects(reviewLisMessage(invoice, req), /document page loading/);
+  assert.equal(pdfCalls, 0, "Authentication failures and login redirects must not produce PDFs");
+  assert.doesNotMatch(JSON.stringify(logs), /test-only|private-query|reviewId=|Selected Patient|SELECTED_BILL/);
+  redirect = false;
   const reviewed = await reviewLisMessage(invoice, req);
   assert.equal(reviewed.attachment?.mimeType, "application/pdf");
   assert.equal(findLisReview(reviewed.reviewId, "review-owner").state, "review");

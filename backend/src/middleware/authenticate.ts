@@ -42,6 +42,15 @@ export async function authenticate(
     req.user = user.toJSON() as unknown as AuthUser;
     return next();
   } catch (error) {
+    if (req.originalUrl.split("?")[0] === "/api/whatsapp/lis/document-data") {
+      // Attribute the renderer's own document request, rather than unrelated /me calls.
+      console.warn("[WhatsApp PDF auth]", {
+        route: "/api/whatsapp/lis/document-data", cookiePresent: Boolean(req.cookies?.[env.COOKIE_NAME]),
+        reason: error instanceof Error && error.name === "TokenExpiredError" ? "session-expired"
+          : error instanceof Error && error.name === "JsonWebTokenError" ? "invalid-session"
+          : error instanceof ApiError && error.statusCode === 403 ? "inactive-account" : "session-rejected",
+      });
+    }
     return next(error);
   }
 }
