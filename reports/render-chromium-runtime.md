@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Render Chromium runtime repair — 2026-10-10
 
 Status: configuration prepared locally; deployed verification is still required.
@@ -70,50 +69,17 @@ References: https://playwright.dev/docs/browsers (version-matched browsers, head
 - Verification runtime reported win32, PLAYWRIGHT_BROWSERS_PATH=0 and HOME=C:\Users\PRAVEEN. The earlier restricted shell reported HOME unset; neither tells us Render's HOME.
 - Changes this turn: corrected backend/.env.example and this deployment guide to retain npm start and set the service cache variable; enhanced the existing verification helper to optionally save a real PDF and log cache/HOME diagnostics. Browser install/build helper and WhatsApp renderer/validation architecture were retained.
 - Render settings were not applied remotely. Deployed Linux launch and actual lab report/invoice PDFs remain unverified.
-=======
-# Render Chromium runtime repair
 
-## Findings
-Playwright and playwright-core are both locked to 1.64.0; the bundled manifest requires Chromium and headless shell revision 1248. Both PDF renderers use `chromium.launch({ headless: true })` without channel or executablePath. The supplied Render error proves the required headless shell is absent from the runtime lookup location. Render build settings/logs are not available, so whether installation was skipped or the HOME cache was lost/mismatched is not confirmed.
+## Repair of committed merge conflicts
+The merge commit dd98f66 on backup-local and origin/main accidentally committed unresolved conflict markers in this script, backend/.env.example and this report. Render could not parse the script and failed before browser installation. Compared both reference commits (6fd8954 and 3e0ff8d); retained the shared install/launch/build failure handling and the newer optional PDF output and cache diagnostics. Resolved deployment documentation in favor of the existing npm start command and service-level PLAYWRIGHT_BROWSERS_PATH=0. Environment-variable examples and application code were preserved.
 
-## Render settings
-For the existing backend service, set Root Directory to `backend`.
+Checks rerun after resolution on 2026-10-10:
+- node --check backend/scripts/render-runtime.cjs: passed.
+- Project scan: no genuine conflict markers remain; long equals-sign report dividers are legitimate formatting.
+- npm run render:build: passed, using installed Playwright 1.64.0 and its matching cached Chromium; launched the browser, generated a real 16,949-byte PDF, then compiled TypeScript.
+- npm run typecheck: passed.
+- Deployment helper tests: 2 passed; relevant WhatsApp and table PDF export tests: 36 passed, including required attachment validation and renderer failure behavior. Provider calls were mocked; no live messages were sent.
+- git diff --check: passed. Only the three intended files changed; no real .env file or credentials added to the repair.
+- Remote main was fetched and confirmed at dd98f66 before committing. No history rewrite is required.
 
-Build Command:
-```
-npm ci --include=dev && npm run render:build
-```
-Start Command:
-```
-npm run render:start
-```
-If retaining repository root as the service Root Directory, use:
-```
-cd backend && npm ci --include=dev && npm run render:build
-```
-```
-cd backend && npm run render:start
-```
-
-Both commands set PLAYWRIGHT_BROWSERS_PATH=0 before loading Playwright, placing browsers in the installed package instead of HOME. No HOME change, version directory, executablePath, template, renderer URL or application PDF logic change is needed. The installed CLI runs the equivalent of `npx playwright install chromium`, but cannot fetch a different CLI version. Installation, headless launch, synthetic A4 PDF generation and compilation must all succeed; otherwise the build exits unsuccessfully. The browser stays within node_modules in the deployed artifact. Do not prune/reinstall dependencies after this build because that can remove the installed browser.
-
-## Deployed verification required
-After deploying, run `npm run render:verify` in Render Shell (from backend root). It must report the Linux platform and generated PDF byte count. This synthetic check writes no patient data and sends no message. Then use the existing authenticated application to prepare an actual report and invoice review, inspect the patient/bill details, and confirm attachment readiness without pressing Send. Do not use the local-only admin credentials on the deployed service.
-
-If the Linux check reports missing shared libraries, retain the diagnostic and use a deployment image with Playwright's documented system dependencies; do not hide it with a different executable or launch flags. The build check deliberately detects these failures before deployment.
-
-The public service URL does not grant access to Render settings, deploy logs or Shell. Deployed launch and actual report/invoice PDF generation have not been verified by this patch.
-
-References: https://playwright.dev/docs/browsers (version-matched browsers, headless shell and hermetic cache); https://render.com/docs/deploy-node-express-app (build/start configuration and failed builds).
-
-## Local validation (2026-10-09)
-- `npm run render:build`: passed. Installed both matching Chromium variants into the hermetic cache, launched headless shell and generated a valid 16,949-byte synthetic PDF, then compiled backend.
-- Backend automated tests: 77 passed; deployment configuration tests: 2 passed.
-- Backend TypeScript check and build: passed.
-- Frontend automated tests: 103 passed; frontend TypeScript check: passed.
-- No live messages or patient/financial changes were made.
-- These are Windows results, not proof of deployed Linux startup or actual patient-document generation.
-
-Files changed: backend/package.json adds Render commands; backend/scripts/render-runtime.cjs aligns cache/install/start and fails on install/launch/PDF/compilation errors; backend/scripts/render-runtime.test.cjs verifies configuration and unsuccessful invocation; this report documents deployment and remaining verification.
-- Frontend production build: passed (existing multiple-lockfile workspace-root warning).
->>>>>>> origin/main
+Render settings remain Root Directory backend; Build Command npm ci --include=dev && npm run render:build; Start Command npm start. Confirm PLAYWRIGHT_BROWSERS_PATH=0 at build and runtime, then redeploy the fix and follow the deployed verification steps above. These checks were performed locally on Windows; Render Linux launch and real patient report/invoice generation still require deployed verification.

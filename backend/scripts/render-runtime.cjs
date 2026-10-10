@@ -1,8 +1,5 @@
 const { spawnSync } = require('node:child_process');
-<<<<<<< HEAD
 const fs = require('node:fs');
-=======
->>>>>>> origin/main
 const path = require('node:path');
 
 // Keep installation and runtime independent of Render's HOME/build cache.
@@ -23,7 +20,6 @@ async function verify() {
     await page.setContent('<!doctype html><html><body><h1>LIS renderer deployment check</h1></body></html>');
     const pdf = await page.pdf({ format: 'A4', printBackground: true });
     if (pdf.length < 100 || pdf.subarray(0, 5).toString() !== '%PDF-') throw new Error('Invalid PDF output');
-<<<<<<< HEAD
     const output = process.argv[3];
     if (output) {
       fs.writeFileSync(path.resolve(output), pdf);
@@ -31,9 +27,6 @@ async function verify() {
     }
     console.log(`Renderer verified: Playwright ${require('playwright/package.json').version}, ${process.platform}, PDF ${pdf.length} bytes, package-local browser cache`);
     console.log(`PLAYWRIGHT_BROWSERS_PATH=${process.env.PLAYWRIGHT_BROWSERS_PATH}; HOME=${process.env.HOME ?? '(unset)'}; browser cache=${path.join(path.dirname(require.resolve('playwright-core/package.json')), '.local-browsers')}`);
-=======
-    console.log(`Renderer verified: Playwright ${require('playwright/package.json').version}, ${process.platform}, PDF ${pdf.length} bytes, package-local browser cache`);
->>>>>>> origin/main
   } finally { await browser?.close(); }
 }
 async function main() {
