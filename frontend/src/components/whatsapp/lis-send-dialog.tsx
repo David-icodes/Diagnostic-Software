@@ -43,6 +43,17 @@ export function LisSendDialog({ input, onClose, onLegacyReportReady }: { input: 
           <p className="text-xs text-muted-foreground">{review.patientCode} · {review.billNumber}</p>
           <p aria-label="WhatsApp recipient mobile number">{review.mobile || "+91"}</p>
         </section>
+        {attachmentReady && review.attachment && <Button variant="outline" onClick={() => {
+          const attachment = review.attachment;
+          if (!attachment) return;
+          const bytes = Uint8Array.from(atob(attachment.base64), (character) => character.charCodeAt(0));
+          const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = attachment.filename;
+          link.click();
+          setTimeout(() => URL.revokeObjectURL(url), 60000);
+        }}>Download prepared PDF</Button>}
         {review.configurationError && <p role="alert">{review.configurationError}</p>}
       </>}
       <div className="flex justify-end">
