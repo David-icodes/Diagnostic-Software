@@ -239,3 +239,50 @@
 @media screen {
  .lis-dashboard .lis-bills-panel table.lis-today-bills-table td:is(:nth-child(4),:nth-child(5)){white-space:normal;overflow-wrap:break-word;text-overflow:clip;}
 }
+
+@media screen {
+ .lis-dashboard .lis-bills-panel.lis-today-reference{height:506px;border-radius:0;gap:0;}
+ .lis-dashboard .lis-today-reference>div:first-child{height:64px;min-height:64px;padding:0 24px;}
+ .lis-dashboard .lis-today-reference>div:first-child>div{gap:18px;}
+ .lis-dashboard .lis-today-reference h2{font:24px/1.4 Arial,sans-serif;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table{font-family:"Times New Roman",serif;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table :is(th,td){font-size:18px;line-height:24px;padding:8px 6px;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table th{height:34px;padding-top:3px;padding-bottom:3px;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table td{height:56px;border-bottom:1px solid #ddd;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table :is(th,td):nth-child(1){width:4.5%;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table :is(th,td):nth-child(2){width:16.5%;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table :is(th,td):nth-child(3){width:20%;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table :is(th,td):nth-child(4){width:27%;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table :is(th,td):nth-child(5){width:20%;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table :is(th,td):nth-child(6){width:12%;}
+ .lis-dashboard .lis-today-reference tbody tr:not([data-completed]) a{color:inherit;font-weight:400;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table tbody tr[data-completed] :is(td,a){color:#2674b9;font-weight:700;border-left:0;}
+ .lis-dashboard .lis-today-reference>div:last-child>div{overflow-y:scroll;scrollbar-gutter:stable;padding:0 2px 2px;}
+ .lis-today-reference ::-webkit-scrollbar{width:15px;}
+ .lis-today-reference ::-webkit-scrollbar-track{background:#f5f5f5;}
+ .lis-today-reference ::-webkit-scrollbar-thumb{background:#909090;border:3px solid #f5f5f5;border-radius:8px;}
+ .lis-results .lis-parameter-result-grid col:nth-child(1){width:5%;}
+ .lis-results .lis-parameter-result-grid col:nth-child(2){width:26%;}
+ .lis-results .lis-parameter-result-grid col:nth-child(3){width:30%;}
+ .lis-results .lis-parameter-result-grid col:nth-child(4){width:10%;}
+ .lis-results .lis-parameter-result-grid col:nth-child(5){width:20%;}
+ .lis-results .lis-parameter-result-grid col:nth-child(6){width:9%;}
+ .lis-results .lis-parameter-result-grid :is(th,td){font-size:15px;padding:6px;}
+ .lis-results .lis-parameter-result-grid .lis-result-control-row>input{flex:1 1 100px;min-width:0;width:auto;height:36px;font-size:16px;}
+ .lis-results .lis-parameter-result-grid .lis-calculate-button{height:36px;font-size:14px;padding:0 8px;}
+ .lis-results .lis-result-control-row>span{flex-basis:100%;order:2;}
+ .lis-results .lis-parameter-result-grid .lis-reference-provenance{font-size:11px;line-height:15px;}
+ .lis-test-list header{align-items:center;}
+ .lis-test-search-toolbar{display:grid;grid-template-columns:200px 140px minmax(240px,340px);gap:10px;}
+ .lis-test-search-toolbar :is(input,select){height:38px;width:100%;}
+ .lis-test-search-toolbar .lis-test-search-input input{padding-left:36px;padding-right:32px;}
+ @media(max-width:1000px){.lis-test-search-toolbar{grid-template-columns:minmax(130px,1fr) minmax(110px,1fr);width:100%;}.lis-test-search-input{grid-column:1/-1;}}
+}
+
+@media screen {
+ .lis-content .lis-lab-test .lis-test-search-toolbar :is(input,select):not([type="checkbox"]):not([type="radio"]):not([size]){height:38px;min-height:38px;width:100%;}
+ .lis-content .lis-lab-test .lis-test-search-toolbar .lis-test-search-input input{padding-left:36px;padding-right:32px;}
+ .lis-content .lis-lab-test .lis-test-search-input button{height:24px;width:24px;padding:2px;}
+ .lis-dashboard .lis-today-reference .lis-today-bills-table tr[data-completed]{border-left:0;}
+ .lis-results .lis-parameter-result-grid .lis-calculator-icon{width:28px;height:36px;padding:2px;}
+}

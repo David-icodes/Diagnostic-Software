@@ -33,6 +33,7 @@ export interface LabTestMasterParams {
 
 export function fetchLabMasterTests(
   params: LabTestMasterParams = {},
+  signal?: AbortSignal,
 ): Promise<LabTestListResult> {
   const query = new URLSearchParams();
   if (params.departmentId) query.set("departmentId", params.departmentId);
@@ -41,7 +42,7 @@ export function fetchLabMasterTests(
   if (params.page) query.set("page", String(params.page));
   if (params.limit) query.set("limit", String(params.limit));
   const qs = query.toString();
-  return api.get<LabTestListResult>(`/lab-tests${qs ? `?${qs}` : ""}`);
+  return api.get<LabTestListResult>(`/lab-tests${qs ? `?${qs}` : ""}`, {signal});
 }
 
 export function createLabMasterTest(body: LabTestPayload): Promise<LabTestRow> {

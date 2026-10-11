@@ -39,6 +39,7 @@ type RequestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type RequestOptions = {
   method?: RequestMethod;
   body?: unknown;
+  signal?: AbortSignal;
 };
 
 async function requestEnvelope<T>(
@@ -52,11 +53,13 @@ async function requestEnvelope<T>(
     response = await fetch(`${baseUrl}${path}`, {
       method: options.method ?? "GET",
       credentials: "include",
+      signal: options.signal,
       headers: { "Content-Type": "application/json" },
       body:
         options.body !== undefined ? JSON.stringify(options.body) : undefined,
     });
-  } catch {
+  } catch (error) {
+    if (options.signal?.aborted) throw error;
     throw new ApiError(
       "Unable to reach the server. Please check your connection.",
       0,
@@ -77,8 +80,8 @@ async function requestEnvelope<T>(
 }
 
 export const api = {
-  get: <T>(path: string): Promise<T> =>
-    requestEnvelope<T>(path).then((envelope) => envelope.data as T),
+  get: <T>(path: string, options?: {signal?: AbortSignal}): Promise<T> =>
+    requestEnvelope<T>(path, options).then((envelope) => envelope.data as T),
   post: <T>(path: string, body?: unknown): Promise<T> =>
     requestEnvelope<T>(path, { method: "POST", body }).then(
       (envelope) => envelope.data as T,

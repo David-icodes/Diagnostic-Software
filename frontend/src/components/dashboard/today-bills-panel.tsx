@@ -9,11 +9,11 @@ import { fetchTodayBills } from "@/services/dashboard";
 import type { TodayBill } from "@/types/dashboard";
 
 const columns: ColumnDef<TodayBill>[] = [
- {key: "sno", width: "3%",label:"#",className:"w-[3%]",render:(_bill,index)=>index+1},
+ {key: "sno", width: "4.5%",label:"#",className:"w-[4.5%]",render:(_bill,index)=>index+1},
   {
-    key: "billNo", width: "21%",
+    key: "billNo", width: "16.5%",
     label: "Bill No",
-    className: "w-[21%] whitespace-nowrap",
+    className: "w-[16.5%] whitespace-nowrap",
     render: (bill) => (
       <Link
         href={`/billing/osp/${bill.id}`}
@@ -23,10 +23,10 @@ const columns: ColumnDef<TodayBill>[] = [
       </Link>
     ),
   },
-  { key: "patientId", width: "18%", label: "Pat Id", className: "w-[18%] whitespace-nowrap" },
-  { key: "patientName", width: "30%", label: "Pat Name", className: "w-[30%] whitespace-normal", render: (bill) => <span title={bill.patientName}>{bill.patientName}</span> },
-  { key: "age", width: "18%", label: "Age", className: "w-[18%] whitespace-normal" },
-  { key: "gender", width: "10%", label: "Gender", className: "w-[10%]" },
+  { key: "patientId", width: "20%", label: "Pat Id", className: "w-[20%] whitespace-nowrap" },
+  { key: "patientName", width: "27%", label: "Pat Name", className: "w-[27%] whitespace-normal", render: (bill) => <span title={bill.patientName}>{bill.patientName}</span> },
+  { key: "age", width: "20%", label: "Age", className: "w-[20%] whitespace-normal" },
+  { key: "gender", width: "12%", label: "Gender", className: "w-[12%]" },
 ];
 
 export function TodayBillsPanel() {
@@ -37,7 +37,8 @@ export function TodayBillsPanel() {
 
   return (
     <BillsPanel
-      title="Today's Bills"
+      title="Today Bills"
+      referenceLayout
       isLoading={isLoading}
       isFetching={isFetching}
       isError={isError}

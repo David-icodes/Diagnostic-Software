@@ -2,14 +2,13 @@
 
 import { invalidateMasterData } from "@/lib/master-data-cache";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Eye, FlaskConical, Pencil } from "lucide-react";
+import { Eye, FlaskConical, Pencil, Search, X } from "lucide-react";
 import { DataTable } from "@/components/database/data-table";
 import { FormField } from "@/components/database/form-field";
 import { FormSection } from "@/components/database/form-section";
 import { PageHeader } from "@/components/database/page-header";
-import { SearchInput } from "@/components/database/search-input";
 import { StatusBadge } from "@/components/database/status-badge";
 import { LabActions } from "@/components/lab/lab-actions";
 import { Button } from "@/components/ui/button";
@@ -102,9 +101,11 @@ export function CreateLabTestContent() {
   const [form, setForm] = useState<TestFormState>(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [searchDraft,setSearchDraft] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [page, setPage] = useState(1);
+  useEffect(()=>{const timer=setTimeout(()=>{setSearch(searchDraft.trim());setPage(1);},250);return ()=>clearTimeout(timer);},[searchDraft]);
 
   const [viewTarget, setViewTarget] = useState<LabTestRow | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -133,15 +134,16 @@ export function CreateLabTestContent() {
       "master",
       { page, search, statusFilter, departmentFilter },
     ],
-    queryFn: () =>
+    queryFn: ({signal}) =>
       fetchLabMasterTests({
         page,
         limit: PAGE_LIMIT,
         search: search || undefined,
         status: statusFilter === "all" ? undefined : statusFilter,
         departmentId: departmentFilter || undefined,
-      }),
-    placeholderData: (previous) => previous,
+      }, signal),
+    staleTime: 30_000,
+    retry: false,
   });
 
   const invalidate = () => {
@@ -594,9 +596,10 @@ export function CreateLabTestContent() {
 
       <FormSection
         title="List of Lab Tests"
+        className="lis-test-list"
         description="Configured tests with their prices"
         actions={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="lis-test-search-toolbar flex flex-wrap items-center gap-2" aria-label="Lab test search filters">
             <Select
               aria-label="Filter by department"
               className="h-8 w-44"
@@ -626,21 +629,15 @@ export function CreateLabTestContent() {
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </Select>
-            <SearchInput
-              value={search}
-              onChange={(value) => {
-                setSearch(value);
-                setPage(1);
-              }}
-              placeholder="Search tests..."
-            />
+            <div className="lis-test-search-input relative"><Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" /><Input aria-label="Search tests" type="search" value={searchDraft} placeholder="Search test name or code" className="pl-9 pr-9" onChange={event=>setSearchDraft(event.target.value)} />{searchDraft && <button type="button" aria-label="Clear test search" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={()=>{setSearchDraft("");setSearch("");setPage(1);}}><X className="size-4" /></button>}</div>
           </div>
         }
       >
+        {listQuery.isError && <div role="alert" className="flex items-center justify-between gap-2 p-2 text-destructive"><span>Could not load tests: {listQuery.error.message}</span><Button variant="outline" onClick={()=>void listQuery.refetch()}>Retry tests</Button></div>}
         <DataTable
-          data={rows}
+          data={listQuery.isError ? [] : rows}
           rowKey={(row) => row.id}
-          loading={listQuery.isLoading}
+          loading={listQuery.isFetching || searchDraft.trim() !== search}
           emptyMessage="No lab tests found"
           highlightId={editingId ?? undefined}
           pagination={

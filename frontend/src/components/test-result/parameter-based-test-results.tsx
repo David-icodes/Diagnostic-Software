@@ -724,9 +724,7 @@ function ResultEntryTable({
   const [calculatorTarget,setCalculatorTarget]=useState<BillTestParameter|null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
 
-  const showMethod = parameters.some((parameter) =>
-    Boolean(parameter.method?.trim()),
-  );
+  const showMethod = true;
 
   /**
    * Live preview only. The authoritative flag is computed and stored by the
@@ -744,6 +742,7 @@ function ResultEntryTable({
     return Object.fromEntries(Object.entries(calculated.values).map(([id,result])=>[id,result===undefined||result===null?"":String(result)]));
   });
   const calculationErrors=recalculateConfigured(parameters,textValues).errors;
+  const calculateParameter=(parameter:BillTestParameter)=>{const computed=recalculateConfigured(parameters,textValues);const error=computed.errors[parameter.parameterId];if(error){setFieldError(error);return;}const replaces=Object.keys(computed.values).some(id=>String(textValues[id]??'').trim() && String(textValues[id])!==String(computed.values[id]??''));if(replaces&&!window.confirm('Replace existing values in this draft? Results are not saved until Submit.'))return;setFieldError(null);setTextValues(Object.fromEntries(Object.entries(computed.values).map(([id,value])=>[id,String(value??'')])));};
   const handleSubmit = () => {
     if(Object.keys(calculationErrors).length){setFieldError(Object.values(calculationErrors)[0]);return;}
     const entries: Array<{ parameterId: string; result: ResultValue }> = [];
@@ -918,6 +917,7 @@ function ResultEntryTable({
               <span>{fieldError}</span>
             </div>
           )}
+          {parameters.length > 0 && !parameters.some(parameter=>parameter.calculation) && <p className="lis-calculation-setup-note text-xs text-slate-500 p-2" role="status">No approved calculation bindings are configured for this test. Configure formula, sources and units in Lab Test Parameter to enable Calculate; measured values remain editable.</p>}
           <div className="lis-parameter-result-grid overflow-x-auto">
             <table className="w-full min-w-[960px] table-fixed text-[13px]">
               <colgroup>
@@ -971,24 +971,23 @@ function ResultEntryTable({
                           {parameter.parameterName}
                         </td>
                         <td className="px-2 py-1">
-                          <div className="flex flex-wrap items-center gap-1.5">
+                          <div className="lis-result-control-row flex flex-wrap items-center gap-1.5">
                             {renderResultInput(parameter, abnormal)}
                             {parameter.calculation && <span className="text-[10px] text-slate-500">Calculated · draft</span>}
                             {calculationErrors[parameter.parameterId]&&<span role="status" className="text-xs text-amber-700">{calculationErrors[parameter.parameterId]}</span>}
                             {parameter.calculation && CALCULATION_FORMULAS.some(formula=>formula.id===parameter.calculation?.formulaId) ? (
-                              <Button
+                              <div className="flex shrink-0 items-center gap-1"><Button type="button" variant="ghost" size="icon-sm" className="lis-calculator-icon" aria-label={`Review calculation for ${parameter.parameterName}`} title="Review formula and source values" onClick={()=>setCalculatorTarget(parameter)} disabled={submitting}><Calculator aria-hidden className="size-5 text-[#228aa6]" /></Button><Button
                                 type="button"
                                 variant="outline"
-                                size="icon-sm"
+                                size="sm"
                                 className="lis-calculate-button shrink-0"
-                                title="Review configured calculation"
+                                title="Calculate from current source results"
                                 aria-label={`Calculate ${parameter.parameterName}`}
-                                onClick={() => setCalculatorTarget(parameter)}
+                                onClick={() => calculateParameter(parameter)}
                                 disabled={submitting}
                               >
-                                <Calculator className="size-3.5" />
                                 Calculate
-                              </Button>
+                              </Button></div>
                             ) : null}
                             {abnormal ? (
                               <span
@@ -1017,13 +1016,13 @@ function ResultEntryTable({
                                 {parameter.reference.displayValue || "—"}
                               </span>
                               <span
-                                className="mt-0.5 block text-[12px] text-slate-500"
+                                className="lis-reference-provenance mt-0.5 block text-[12px] text-slate-500"
                                 title={parameter.reference.reason}
                               >
                                 {message}
                               </span>
                               {parameter.reference.source === "LEGACY" ? (
-                                <span className="mt-0.5 block text-[12px] italic text-slate-400">
+                                <span className="lis-reference-provenance mt-0.5 block text-[12px] italic text-slate-400">
                                   Legacy reference — verify against the source report
                                 </span>
                               ) : null}

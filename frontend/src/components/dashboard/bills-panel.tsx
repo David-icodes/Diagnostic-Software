@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 
 interface BillsPanelProps {
   title: string;
+  referenceLayout?: boolean;
   isLoading: boolean;
   isFetching: boolean;
   isError: boolean;
@@ -24,6 +25,7 @@ interface BillsPanelProps {
  */
 export function BillsPanel({
   title,
+  referenceLayout = false,
   isLoading,
   isFetching,
   isError,
@@ -34,7 +36,7 @@ export function BillsPanel({
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <Card className="lis-bills-panel flex h-[clamp(320px,44vh,520px)] flex-col p-0 shadow-sm">
+    <Card className={cn("lis-bills-panel flex h-[clamp(320px,44vh,520px)] flex-col p-0 shadow-sm",referenceLayout && "lis-today-reference")} >
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <h2 className="truncate text-[15px] font-semibold text-slate-800">
           {title}
@@ -63,9 +65,9 @@ export function BillsPanel({
             title={expanded ? "Collapse" : "Expand"}
           >
             {expanded ? (
-              <ChevronUp className="size-4" />
+              referenceLayout ? <ChevronDown className="size-4" /> : <ChevronUp className="size-4" />
             ) : (
-              <ChevronDown className="size-4" />
+              referenceLayout ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />
             )}
           </Button>
         </div>
