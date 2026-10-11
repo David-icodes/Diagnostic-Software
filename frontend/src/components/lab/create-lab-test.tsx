@@ -277,7 +277,7 @@ export function CreateLabTestContent() {
       {
         key: "testCode",
         header: "Test Code",
-        render: (row: LabTestRow) => row.testCode,
+        render: (row: LabTestRow) => row.testCode === "INVG2044" ? "—" : row.testCode,
       },
       {
         key: "price",
@@ -680,7 +680,7 @@ export function CreateLabTestContent() {
         {viewTarget && (
           <div className="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
             <DetailRow label="Department" value={viewTarget.departmentName} />
-            <DetailRow label="Test Code" value={viewTarget.testCode} />
+            <DetailRow label="Test Code" value={viewTarget.testCode === "INVG2044" ? "—" : viewTarget.testCode} />
             <DetailRow label="Short Name" value={viewTarget.shortName ?? "—"} />
             <DetailRow label="Test Type" value={viewTarget.testType ?? "—"} />
             <DetailRow label="OP Price" value={formatMoney(viewTarget.price)} />

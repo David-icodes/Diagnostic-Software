@@ -1,4 +1,4 @@
-import { CALCULATION_FORMULAS, normalizeCalculationUnit } from "../../utils/configured-calculations";
+import { CALCULATION_FORMULAS, calculationUnitsMatch, normalizeCalculationUnit } from "../../utils/configured-calculations";
 import { Types, type FilterQuery, type HydratedDocument } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { isValidObjectId } from "../../utils/object-id";
@@ -50,7 +50,7 @@ export interface ParameterRow extends ReferenceMappingSummary {
   testName?: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
+  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
   subtitle?: string;
   displayOrder: number;
   resultType: ILabTestParameter["resultType"];
@@ -211,7 +211,7 @@ export function toParameterMapping(doc: IReferenceMapping): ParameterMapping {
 
 export function normalizeParameterItem(input: Partial<ILabTestParameter>) {
  if (input.calculation && (!input.itemType || input.itemType === "PARAMETER")) input.resultType = "NUMBER";
- if(input.itemType === "SUBTITLE" || input.itemType === "TEXT_AREA") Object.assign(input,{resultType:input.itemType === "SUBTITLE"?"TEXT":"TEXTAREA",calculation:null,unit:undefined,rangeFrom:undefined,rangeTo:undefined,rangeText:undefined,referenceRange:undefined,referenceMappings:[],mappingTypes:[],genderRanges:[],onlyReferenceRange:false});
+ if(input.itemType === "SUBTITLE" || input.itemType === "TEXT_AREA") Object.assign(input,{resultType:input.itemType === "SUBTITLE"?"TEXT":"TEXTAREA",calculation:null,method:undefined,options:[],parameterType:undefined,...(input.itemType === "SUBTITLE" ? {defaultValue:undefined}:{}),unit:undefined,rangeFrom:undefined,rangeTo:undefined,rangeText:undefined,referenceRange:undefined,referenceMappings:[],mappingTypes:[],genderRanges:[],onlyReferenceRange:false});
  return input;
 }
 function row(doc: ILabTestParameter): ParameterRow {
@@ -377,14 +377,16 @@ async function validateCalculationBinding(testId: string, calculation: ILabTestP
  const formula = CALCULATION_FORMULAS.find(row => row.id === calculation.formulaId);
  if (!formula) throw new ApiError(422, "Select a supported calculation formula");
  // Legacy configurations without bindings use the engine's controlled exact-alias fallback.
- if (!calculation.dependencyIds) return;
+ if (!calculation.dependencyIds) { if(!formula.aliases.length)throw new ApiError(422,"Bind each source parameter explicitly for this formula");return; }
  if (calculation.dependencyIds.length !== formula.sources.length || calculation.dependencyIds.includes(id ?? "")) throw new ApiError(422, "Select each source parameter; a calculation cannot depend on itself");
  const sources = await LabTestParameter.find({_id:{$in:calculation.dependencyIds},testId,active:true}).exec();
  const ordered = calculation.dependencyIds.map(sourceId => sources.find(row => String(row._id) === sourceId));
  if (ordered.some(row => !row || row.itemType === "SUBTITLE" || row.itemType === "TEXT_AREA" || !["NUMBER","RANGE"].includes(row.resultType))) throw new ApiError(422, "Calculation sources must be numeric parameters in this test");
+ const all = await LabTestParameter.find({testId,active:true}).exec();
+ const edges=new Map(all.map(row=>[String(row._id),row.calculation?.dependencyIds??[]]));if(id)edges.set(id,calculation.dependencyIds);
+ const visiting=new Set<string>(),done=new Set<string>();const visit=(key:string)=>{if(visiting.has(key))throw new ApiError(422,"Circular calculation dependency is not allowed");if(done.has(key))return;visiting.add(key);for(const next of edges.get(key)??[])visit(next);visiting.delete(key);done.add(key);};for(const key of edges.keys())visit(key);
  const units = ordered.map(row => normalizeCalculationUnit(row!.unit));
- const countUnits = ["cells/ul","thousand/ul"];
- if (!formula.units.every((required,index) => required === "count" ? countUnits.includes(units[index]) : required === units[index]) || (formula.outputUnit === "count" ? normalizeCalculationUnit(unit) !== units[0] : normalizeCalculationUnit(unit) !== formula.outputUnit)) throw new ApiError(422, "Configure compatible source and output units");
+ if (!calculationUnitsMatch(formula, units, unit ?? "")) throw new ApiError(422, "Configure compatible source and output units");
 }
 
 export async function createParameter(
@@ -396,11 +398,13 @@ export async function createParameter(
   const referenceRange = composeReferenceRange(input);
   try {
     normalizeParameterItem(input);
-    return await LabTestParameter.create({
+    const created = await LabTestParameter.create({
       ...input,
       referenceRange: input.itemType === "SUBTITLE" || input.itemType === "TEXT_AREA" ? undefined : referenceRange,
       createdBy: userId,
     });
+    if(input.calculation)await recordAudit({user:userId,action:"lab.calculation_configured",entityType:"LabTestParameter",entity:String(created._id),details:{calculation:input.calculation,unit:input.unit}});
+    return created;
   } catch (error) {
     if (isDuplicateKeyError(error)) {
       throw new ApiError(
@@ -424,6 +428,7 @@ export async function updateParameter(
   if (!parameter) {
     throw new ApiError(404, "Lab test parameter not found");
   }
+  if(input.itemType && input.itemType !== (parameter.itemType ?? "PARAMETER") && await LabTestResult.countDocuments({parameterId:parameter._id}))throw new ApiError(409,"An item with recorded results cannot change between Parameter, Subtitle and Text Area. Create a separate new item to preserve historical reports.");
   if (input.testId !== undefined) {
     await ensureTestExists(String(input.testId));
   }
@@ -459,7 +464,9 @@ export async function updateParameter(
     }
   }
   try {
-    return await parameter.save();
+    const saved = await parameter.save();
+    if(input.calculation !== undefined)await recordAudit({user:userId,action:"lab.calculation_updated",entityType:"LabTestParameter",entity:id,details:{calculation:input.calculation,unit:parameter.unit}});
+    return saved;
   } catch (error) {
     if (isDuplicateKeyError(error)) {
       throw new ApiError(

@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { Types } from "mongoose";
 import { Department } from "../../models/department.model";
+import { LabTestResult } from "../../models/lab-test-result.model";
 import { LabTest } from "../../models/lab-test.model";
 import { LabTestParameter } from "../../models/lab-test-parameter.model";
 import { createParameter, getParameter, updateParameter } from "./lab-test-parameter.service";
@@ -22,3 +23,5 @@ test("parameter, subtitle and narrative configurations persist against the exact
  }
  const heading=rows[1];await updateParameter(String(heading._id),user,{parameterName:"Renamed heading"});assert.equal(heading.parameterName,"Renamed heading");assert.equal(heading.resultType,"TEXT");assert.equal(heading.referenceRange,undefined);
 });
+
+test("recorded numeric results cannot be hidden by converting their master into a subtitle",async t=>{const id=new Types.ObjectId();t.mock.method(LabTestParameter,"findById",()=>query({_id:id,itemType:"PARAMETER"}));t.mock.method(LabTestResult,"countDocuments",async()=>1);await assert.rejects(updateParameter(String(id),String(new Types.ObjectId()),{itemType:"SUBTITLE"}),/recorded results/);});

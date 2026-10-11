@@ -5,6 +5,7 @@ import { Patient } from "../../models/patient.model";
 import { LabBill } from "../../models/lab-bill.model";
 import { LabTest } from "../../models/lab-test.model";
 import { Department } from "../../models/department.model";
+import { LabClientTariff } from "../../models/lab-client-tariff.model";
 import { LabClient } from "../../models/lab-client.model";
 import { LabSample } from "../../models/lab-sample.model";
 import { Counter } from "../../models/counter.model";
@@ -31,6 +32,7 @@ test("OSP and Vendor bill creation remain available with outstanding patient bal
   t.mock.method(LabBill, "find", () => { throw new Error("New bills must not query previous balances"); });
   t.mock.method(LabTest, "find", () => q([{ _id: testId, departmentId, active: true, price: 100, testName: "Test", testCode: "TEST" }]));
   t.mock.method(Department, "find", () => q([{ _id: departmentId, name: "Department" }]));
+  t.mock.method(LabClientTariff,"find",()=>q([{testId,departmentId,price:73,active:true}]));
   t.mock.method(LabClient, "findById", () => q({ active: true, name: "Existing client" }));
   t.mock.method(Counter, "findOneAndUpdate", async () => ({ seq: 1 }));
   t.mock.method(AuditLog, "create", async () => ({}));
@@ -39,7 +41,7 @@ test("OSP and Vendor bill creation remain available with outstanding patient bal
     const bill = await createLabBill(String(userId), { patientId: String(patientId), billType,
       ...(billType === "vendor" ? { clientId: String(new Types.ObjectId()) } : {}),
       items: [{ testId: String(testId), quantity: 1 }], paidAmount: 0, status: "generated" });
-    assert.equal(bill.billType, billType); assert.equal(bill.dueAmount, 100);
+    assert.equal(bill.billType, billType); assert.equal(bill.dueAmount, billType === "vendor" ? 73 : 100);assert.equal(bill.items[0].unitPrice,billType === "vendor" ? 73 : 100);
   }
 });
 

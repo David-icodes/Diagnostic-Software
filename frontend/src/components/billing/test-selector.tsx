@@ -258,7 +258,7 @@ export function TestSelector({
           </span>
         </div>
         <div className="min-h-0 flex-1 overflow-auto">
-          <table className="w-full min-w-[560px] table-fixed text-xs">
+          <table className="w-full min-w-0 table-fixed text-xs">
             <colgroup>{[10,18,29,12,19,12].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
             <thead className="sticky top-0 z-10">
               <tr className="bg-slate-100 text-left text-xs font-semibold text-slate-500 [&>th]:whitespace-nowrap">
@@ -311,7 +311,7 @@ export function TestSelector({
                         {item.testName}
                       </p>
                       <p className="font-mono text-[11px] text-muted-foreground">
-                        {item.testCode}
+                        {item.testCode === "INVG2044" ? "" : item.testCode}
                       </p>
                     </td>
                     <td className="px-2 py-1 text-right text-slate-700">

@@ -1,7 +1,7 @@
 "use client";
 
 import { businessDateInput } from "@/lib/business-date";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import {
   useMutation,
   useQuery,
@@ -26,7 +26,7 @@ import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { SampleCollectionControl } from "@/components/test-result/sample-collection-control";
 import { SampleOutsideControl } from "@/components/test-result/sample-outside-control";
 import { ResultPrintDialog } from "@/components/test-result/result-print-dialog";
-import { recalculateConfigured } from "@/lib/configured-calculations";
+import { CALCULATION_FORMULAS, recalculateConfigured } from "@/lib/configured-calculations";
 import { ResultReportUpload } from "@/components/test-result/result-report-upload";
 import { LisSendDialog } from "@/components/whatsapp/lis-send-dialog";
 import { allResultBillPages, initialResultBillParams, resultBillParams } from "@/lib/result-bill-list";
@@ -43,10 +43,7 @@ import {
 } from "@/services/test-results";
 import { formatDate, formatGender, cn } from "@/lib/utils";
 import { enteredNumber, previewFlag } from "@/lib/result-preview";
-import {
-  resolveCalculations,
-  type ResolvedCalculation,
-} from "@/lib/parameter-calculator";
+import { CalculationDialog } from "@/components/test-result/calculation-dialog";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { submittedForTest, requireReportEligibility, type ResultPrintMode } from "@/lib/result-workflow";
 import { REFERENCE_MAPPING_LABELS } from "@/types/lab-masters";
@@ -676,6 +673,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
 function ResultEntryTable({
   parameters,
   existingResults,
+  testName,
   testLinked,
   loading,
   submitting,
@@ -704,7 +702,7 @@ function ResultEntryTable({
         typeof value === "string" || typeof value === "number" ? String(value) : "";
     }
     const calculated=recalculateConfigured(parameters,text);
-    return Object.fromEntries(Object.entries(calculated.values).map(([id,value])=>[id,value===undefined||value===null?"":String(value)]));
+    return Object.fromEntries(Object.entries(calculated.values).map(([id,value])=>[id,text[id]?.trim()?text[id]:value===undefined||value===null?"":String(value)]));
   });
 
   const [boolValues, setBoolValues] = useState<Record<string, boolean>>(() => {
@@ -722,6 +720,8 @@ function ResultEntryTable({
     return bool;
   });
 
+  const acceptedCalculationReplacements=useRef(new Set<string>());
+  const [calculatorTarget,setCalculatorTarget]=useState<BillTestParameter|null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
 
   const showMethod = parameters.some((parameter) =>
@@ -736,42 +736,11 @@ function ResultEntryTable({
   const classificationFor = (parameter: BillTestParameter) =>
     previewFlag(enteredNumber(textValues[parameter.parameterId]), parameter.reference);
 
-  /**
-   * Calculators offered for uniquely identified result parameters. Missing or
-   * ambiguous dependencies are explained when the technician clicks the button.
-   */
-  const calculations = useMemo(() => {
-    const map = new Map<string, ResolvedCalculation>();
-    for (const calc of resolveCalculations(
-      parameters.filter(parameter => !parameter.calculation && parameter.itemType !== "SUBTITLE" && parameter.itemType !== "TEXT_AREA").map((parameter) => ({
-        parameterId: parameter.parameterId,
-        parameterName: parameter.parameterName,
-      })),
-    )) {
-      map.set(calc.parameterId, calc);
-    }
-    return map;
-  }, [parameters]);
-
-  const handleCalculate = (calc: ResolvedCalculation) => {
-    const values: Record<string, string | number | boolean | undefined> = {};
-    for (const parameter of parameters) {
-      values[parameter.parameterId] = textValues[parameter.parameterId];
-    }
-    const result = calc.run(values);
-    if (!result.ok) {
-      setFieldError(result.error);
-      return;
-    }
-    setFieldError(null);
-    // The calculated value is written into the same state the input is bound to,
-    // so the live reference check re-runs and the abnormal styling follows
-    // immediately. Nothing is saved until the user submits.
-    updateTextValue(calc.parameterId, String(result.value));
-  };
-
   const updateTextValue=(parameterId:string,value:string)=>setTextValues(current=>{
     const calculated=recalculateConfigured(parameters,{...current,[parameterId]:value});
+    const replacing=parameters.filter(parameter=>parameter.calculation && existingResults.some(result=>result.parameterId===parameter.parameterId) && !acceptedCalculationReplacements.current.has(parameter.parameterId) && current[parameter.parameterId]?.trim() && String(calculated.values[parameter.parameterId])!==current[parameter.parameterId]);
+    if(replacing.length && !window.confirm("Recalculate and replace existing calculated values in this draft? Stored results remain unchanged until Submit."))return current;
+    for(const parameter of replacing)acceptedCalculationReplacements.current.add(parameter.parameterId);
     return Object.fromEntries(Object.entries(calculated.values).map(([id,result])=>[id,result===undefined||result===null?"":String(result)]));
   });
   const calculationErrors=recalculateConfigured(parameters,textValues).errors;
@@ -1004,18 +973,17 @@ function ResultEntryTable({
                         <td className="px-2 py-1">
                           <div className="flex flex-wrap items-center gap-1.5">
                             {renderResultInput(parameter, abnormal)}
+                            {parameter.calculation && <span className="text-[10px] text-slate-500">Calculated · draft</span>}
                             {calculationErrors[parameter.parameterId]&&<span role="status" className="text-xs text-amber-700">{calculationErrors[parameter.parameterId]}</span>}
-                            {!parameter.calculation && calculations.has(parameter.parameterId) ? (
+                            {parameter.calculation && CALCULATION_FORMULAS.some(formula=>formula.id===parameter.calculation?.formulaId) ? (
                               <Button
                                 type="button"
                                 variant="outline"
                                 size="icon-sm"
                                 className="lis-calculate-button shrink-0"
-                                title={calculations.get(parameter.parameterId)!.formulaLabel}
+                                title="Review configured calculation"
                                 aria-label={`Calculate ${parameter.parameterName}`}
-                                onClick={() =>
-                                  handleCalculate(calculations.get(parameter.parameterId)!)
-                                }
+                                onClick={() => setCalculatorTarget(parameter)}
                                 disabled={submitting}
                               >
                                 <Calculator className="size-3.5" />
@@ -1086,6 +1054,7 @@ function ResultEntryTable({
         onSubmit={handleSubmit}
         onClear={handleClear}
       />
+      {calculatorTarget && <CalculationDialog target={calculatorTarget} parameters={parameters} values={textValues} testName={testName} onClose={()=>setCalculatorTarget(null)} onApply={values=>setTextValues(Object.fromEntries(Object.entries(values).map(([id,value])=>[id,String(value??"")])))} />}
     </>
   );
 }

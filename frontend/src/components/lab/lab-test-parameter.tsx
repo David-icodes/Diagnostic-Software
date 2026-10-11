@@ -106,6 +106,7 @@ type GenderRangeCells = Record<GenderRangeGender, RangeCell>;
 interface ParameterFormState {
   itemType: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
   formulaId: string;
+  precision: string;
   dependencyIds: string[];
   parameterName: string;
   subtitle: string;
@@ -144,6 +145,7 @@ function emptyGenderRanges(): GenderRangeCells {
 const EMPTY_FORM: ParameterFormState = {
   itemType: "PARAMETER",
   formulaId: "",
+  precision:"2",
   dependencyIds: [],
   parameterName: "",
   subtitle: "",
@@ -345,7 +347,7 @@ export function LabTestParameterContent() {
         testId,
         parameterName: form.parameterName.trim(),
         itemType:form.itemType,
-        calculation:form.itemType === "PARAMETER" && form.formulaId ? {formulaId:form.formulaId,dependencyIds:form.dependencyIds}:null,
+        calculation:form.itemType === "PARAMETER" && form.formulaId ? {formulaId:form.formulaId,dependencyIds:form.dependencyIds,precision:Number(form.precision)}:null,
         subtitle: form.subtitle.trim() || undefined,
         displayOrder: Number(form.displayOrder) || 0,
         resultType: form.resultType as ParameterRow["resultType"],
@@ -383,6 +385,7 @@ export function LabTestParameterContent() {
                 genderRanges: [],
               }),
       };
+      if(form.itemType !== "PARAMETER")Object.assign(payload,{calculation:null,resultType:form.itemType === "SUBTITLE"?"TEXT":"TEXTAREA",unit:undefined,method:undefined,options:undefined,rangeFrom:undefined,rangeTo:undefined,rangeText:undefined,referenceType:"GENERAL",referenceScope:"GENERIC",onlyReferenceRange:false,genderRanges:[],...(form.itemType === "SUBTITLE"?{defaultValue:undefined}:{})});
       return editingId
         ? updateLabParameter(editingId, payload)
         : createLabParameter(payload);
@@ -515,6 +518,7 @@ export function LabTestParameterContent() {
       parameterName: parameter.parameterName,
       itemType:parameter.itemType ?? "PARAMETER",
       formulaId:parameter.calculation?.formulaId ?? "",
+      precision:String(parameter.calculation?.precision??2),
       dependencyIds:parameter.calculation?.dependencyIds ?? [],
       subtitle: parameter.subtitle ?? "",
       displayOrder: String(parameter.displayOrder ?? 0),
@@ -840,7 +844,7 @@ export function LabTestParameterContent() {
                 />
               </CompactField>
 
-              <CompactField id="param-name" label="Parameter Name" required>
+              <CompactField id="param-name" label={form.itemType === "SUBTITLE" ? "Subtitle Name" : "Parameter Name"} required>
                 <Input
                   id="param-name"
                   value={form.parameterName}
@@ -850,7 +854,7 @@ export function LabTestParameterContent() {
                 />
               </CompactField>
 
-              <CompactField id="param-result-type" label="Parameter Type" required>
+              {form.itemType !== "SUBTITLE" && (<CompactField id="param-result-type" label="Parameter Type" required>
                 <Select
                   id="param-result-type"
                   value={form.resultType}
@@ -863,9 +867,10 @@ export function LabTestParameterContent() {
                     </option>
                   ))}
                 </Select>
-              </CompactField>
+              </CompactField>)}
 
               {form.itemType === "PARAMETER" && <CompactField id="param-formula" label="Automatic calculation"><Select id="param-formula" value={form.formulaId} onChange={event=>update({formulaId:event.target.value,dependencyIds:[],...(event.target.value?{resultType:"NUMBER"}:{})})}><option value="">Measured / manual</option>{CALCULATION_FORMULAS.map(formula=><option key={formula.id} value={formula.id}>{formula.label}</option>)}</Select></CompactField>}
+              {form.itemType === "PARAMETER" && form.formulaId && <CompactField id="param-precision" label="Decimal precision"><Input id="param-precision" type="number" min={0} max={6} value={form.precision} onChange={event=>update({precision:event.target.value})}/></CompactField>}
               {CALCULATION_FORMULAS.find(formula=>formula.id===form.formulaId)?.sources.map((source,index)=><CompactField key={source} id={"param-source-"+index} label={source}><Select id={"param-source-"+index} value={form.dependencyIds[index]??""} onChange={event=>{const ids=[...form.dependencyIds];ids[index]=event.target.value;update({dependencyIds:ids});}}><option value="">Select source parameter</option>{(calculationSources.data??[]).filter(parameter=>parameter.id!==editingId&&parameter.itemType!=="SUBTITLE"&&parameter.itemType!=="TEXT_AREA").map(parameter=><option key={parameter.id} value={parameter.id}>{parameter.parameterName} ({parameter.unit??"unit required"})</option>)}</Select></CompactField>)}
               <CompactField id="param-order" label="OrderNo">
                 <Input
@@ -879,7 +884,7 @@ export function LabTestParameterContent() {
                 />
               </CompactField>
 
-              <CompactField id="param-default" label="Default Value">
+              {form.itemType !== "SUBTITLE" && (<CompactField id="param-default" label="Default Value">
                 <Textarea
                   id="param-default"
                   rows={2}
@@ -888,9 +893,9 @@ export function LabTestParameterContent() {
                   onChange={(event) => update({ defaultValue: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
-              </CompactField>
+              </CompactField>)}
 
-              <CompactField id="param-unit" label="Units">
+              {form.itemType === "PARAMETER" && (<CompactField id="param-unit" label="Units">
                 <Input
                   id="param-unit"
                   value={form.unit}
@@ -898,7 +903,7 @@ export function LabTestParameterContent() {
                   onChange={(event) => update({ unit: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
-              </CompactField>
+              </CompactField>)}
 
               <CompactField id="param-active" label="Active Status">
                 <Select
@@ -912,7 +917,7 @@ export function LabTestParameterContent() {
                 </Select>
               </CompactField>
 
-              <CompactField id="param-method" label="Method Name">
+              {form.itemType === "PARAMETER" && (<CompactField id="param-method" label="Method Name">
                 <Input
                   id="param-method"
                   value={form.method}
@@ -920,7 +925,7 @@ export function LabTestParameterContent() {
                   onChange={(event) => update({ method: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
-              </CompactField>
+              </CompactField>)}
 
               {form.resultType === "SELECT" ? (
                 <CompactField
@@ -940,7 +945,7 @@ export function LabTestParameterContent() {
             </div>
 
             {/* SECTION 1 — range mode, reference type, only-range flag */}
-            <div className="lis-reference-config rounded-lg border border-border/70 bg-slate-50/70 p-2.5">
+            {form.itemType === "PARAMETER" && <div className="lis-reference-config rounded-lg border border-border/70 bg-slate-50/70 p-2.5">
               <div className="lis-reference-controls grid grid-cols-1 gap-x-4 gap-y-2.5 md:grid-cols-[auto_auto_1fr] md:items-end">
                 <fieldset className="flex flex-wrap items-center gap-4 pb-1.5 md:pb-0">
                   <legend className="sr-only">Reference range mode</legend>
@@ -1151,6 +1156,7 @@ export function LabTestParameterContent() {
               ) : null}
             </div>
 
+            }
             {/* BUTTONS — SUBMIT / UPDATE / HOME / CLEAR */}
             <div className="flex flex-wrap items-center justify-center gap-2 border-t border-border pt-3">
               <Button

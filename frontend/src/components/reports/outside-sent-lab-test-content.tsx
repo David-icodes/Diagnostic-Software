@@ -1,4 +1,5 @@
 "use client";
+import { selectionSummary } from "@/lib/criteria-summary";
 
 import { OutsideLabManager } from "./outside-lab-manager";
 import { ReportPreview } from "@/components/reports/report-preview";
@@ -233,9 +234,7 @@ export function OutsideSentLabTestContent() {
     );
     if (applied.outsideLabIds.length) {
       parts.push(
-        `Lab Center : ${applied.outsideLabIds
-          .map((id) => labs.find((lab) => lab.id === id)?.name ?? id)
-          .join(", ")}`,
+        `Lab Center : ${selectionSummary(applied.outsideLabIds, labs.map(lab=>({value:lab.id,label:lab.name})))}`,
       );
     }
     return parts.join("  |  ");

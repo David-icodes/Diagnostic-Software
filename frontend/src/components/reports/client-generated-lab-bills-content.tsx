@@ -1,4 +1,5 @@
 "use client";
+import { selectionSummary } from "@/lib/criteria-summary";
 
 import { localToday } from "@/lib/report-filter-state";
 import { ReportPreview } from "@/components/reports/report-preview";
@@ -318,9 +319,7 @@ export function ClientGeneratedLabBillsContent() {
     );
     if (applied.clientIds.length) {
       parts.push(
-        `Client : ${applied.clientIds
-          .map((id) => clients.find((c) => c.value === id)?.label ?? id)
-          .join(", ")}`,
+        `Client : ${selectionSummary(applied.clientIds, clients)}`,
       );
     }
     if (applied.referringDoctorId) {

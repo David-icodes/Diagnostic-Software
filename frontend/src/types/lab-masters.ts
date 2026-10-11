@@ -218,7 +218,7 @@ export interface ParameterRow {
   testName?: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
+  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
   subtitle?: string;
   displayOrder: number;
   resultType: ParameterResultType;
@@ -294,7 +294,7 @@ export interface ParameterPayload {
   testId: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
+  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
   subtitle?: string;
   displayOrder?: number;
   resultType: ParameterResultType;

@@ -12,6 +12,7 @@ import { LabTest, type ILabTest } from "../../models/lab-test.model";
 import { Department } from "../../models/department.model";
 import { Patient, type IPatient } from "../../models/patient.model";
 import { Doctor } from "../../models/doctor.model";
+import { LabClientTariff } from "../../models/lab-client-tariff.model";
 import { LabClient } from "../../models/lab-client.model";
 import { OutsideLab } from "../../models/outside-lab.model";
 import { LabSample } from "../../models/lab-sample.model";
@@ -107,6 +108,7 @@ export async function buildSnapshotItems(
   items: NonNullable<CreateLabBillInput["items"]>,
   patientType: ILabBill["patientType"],
   previous: IBillItem[] = [],
+  clientId?: string,
 ): Promise<IBillItem[]> {
   const testIds = items.map((item) => new Types.ObjectId(item.testId));
   const [tests, departments] = await Promise.all([
@@ -114,6 +116,9 @@ export async function buildSnapshotItems(
     Department.find().select("name").exec(),
   ]);
 
+  const clientTariffs = clientId ? await LabClientTariff.find({clientId, testId:{$in:testIds},active:true}).exec() : [];
+  const tariffMap = new Map(clientTariffs.map(row=>[String(row.testId),row]));
+  if(clientId && items.some(item=>!tariffMap.has(item.testId))) throw new ApiError(422,"No active client-specific tariff exists for one or more selected tests");
   const testMap = new Map(tests.map((test) => [String(test._id), test]));
   const departmentNameMap = new Map(
     departments.map((department) => [String(department._id), department.name]),
@@ -143,7 +148,9 @@ export async function buildSnapshotItems(
   const assignedAt = new Date();
   return items.map((item) => {
     const test = testMap.get(item.testId)!;
-    const unitPrice = resolveBillPrice(test, patientType);
+    const tariff = tariffMap.get(item.testId);
+    if(tariff && String(tariff.departmentId)!==String(test.departmentId))throw new ApiError(422,"Client tariff department does not match the selected test");
+    const unitPrice = tariff ? tariff.price : resolveBillPrice(test, patientType);
     const quantity = item.quantity;
     const old = previousMap.get(item.testId);
     const explicit = item.out !== undefined || item.outsideLabId !== undefined;
@@ -227,7 +234,7 @@ export async function createLabBill(
   }
 
   const patientType = (input.patientType ?? "osp") as ILabBill["patientType"];
-  const snapshotItems = await buildSnapshotItems(input.items, patientType);
+  const snapshotItems = await buildSnapshotItems(input.items, patientType, [], billType === "vendor" ? input.clientId : undefined);
   const totals = computeTotals(
     snapshotItems,
     input.discountPercent ?? 0,
@@ -323,7 +330,7 @@ export async function modifyLabBill(
   }
 
   await hydrateOutsideAssignments([bill]);
-  const snapshotItems = await buildSnapshotItems(input.items, bill.patientType, bill.items);
+  const snapshotItems = await buildSnapshotItems(input.items, bill.patientType, bill.items, bill.billType === "vendor" ? String(bill.clientId) : undefined);
 
   // A test that already produced a sample or a result stays on the bill:
   // dropping it would orphan those records and silently rewrite history.

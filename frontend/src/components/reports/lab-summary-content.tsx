@@ -1,4 +1,5 @@
 "use client";
+import { selectionSummary } from "@/lib/criteria-summary";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { localToday } from "@/lib/report-filter-state";
@@ -473,16 +474,12 @@ export function LabSummaryContent() {
     parts.push(`Apply Date : ${from || "—"} To ${to || "—"}`);
     if (applied.departmentIds.length) {
       parts.push(
-        `Department : ${applied.departmentIds
-          .map((id) => departments.find((d) => d.value === id)?.label ?? id)
-          .join(", ")}`,
+        `Department : ${selectionSummary(applied.departmentIds, departments)}`,
       );
     }
     if (applied.testIds.length) {
       parts.push(
-        `Test : ${applied.testIds
-          .map((id) => tests.find((t) => t.value === id)?.label ?? id)
-          .join(", ")}`,
+        `Test : ${selectionSummary(applied.testIds, tests)}`,
       );
     }
     if (applied.patientTypes.length) {

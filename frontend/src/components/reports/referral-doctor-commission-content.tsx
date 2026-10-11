@@ -1,4 +1,5 @@
 "use client";
+import { selectionSummary } from "@/lib/criteria-summary";
 
 
 
@@ -538,11 +539,7 @@ export function ReferralDoctorCommissionContent() {
 
       parts.push(
 
-        `Doctor : ${applied.doctorIds
-
-          .map((id) => doctors.find((d) => d.value === id)?.label ?? "Unavailable doctor")
-
-          .join(", ")}`,
+        `Doctor : ${selectionSummary(applied.doctorIds, doctors)}`,
 
       );
 
@@ -550,11 +547,11 @@ export function ReferralDoctorCommissionContent() {
 
     if (applied.departmentIds.length) {
 
-      parts.push(`Department : ${applied.departmentIds.map((id) => departments.find((item) => item.value === id)?.label ?? "Unavailable department").join(", ")}`);
+      parts.push(`Department : ${selectionSummary(applied.departmentIds, departments)}`);
 
     }
 
-    if (applied.testIds.length) parts.push(`Test : ${applied.testIds.map((id) => tests.find((item) => item.value === id)?.label ?? "Unavailable test").join(", ")}`);
+    if (applied.testIds.length) parts.push(`Test : ${selectionSummary(applied.testIds, tests)}`);
 
     if (applied.patientId) parts.push(`Patient ID : ${applied.patientId}`);
 

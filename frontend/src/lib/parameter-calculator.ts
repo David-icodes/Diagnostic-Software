@@ -1,3 +1,5 @@
+import { CALCULATION_FORMULAS } from "./configured-calculations.ts";
+const registryCompute=(id:string,values:number[])=>CALCULATION_FORMULAS.find(formula=>formula.id===id)!.compute(values);
 /**
  * Calculated-parameter support for the Parameter Based Test Results screen.
  *
@@ -85,7 +87,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["hematocrit pcv", "haematocrit pcv", "packed cell volume", "packed cell volume pcv", "pcv", "hematocrit", "haematocrit"],
     deps: [DEP.rbc, DEP.mcv],
     denominatorKeys: [],
-    compute: (v) => (v.rbc * v.mcv) / 10,
+    compute: (v) => registryCompute("pcv",[v.rbc,v.mcv]),
   },
   {
     id: "mcv",
@@ -93,7 +95,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["mcv", "mean corpuscular volume", "mean corpuscular volume mcv", "mean cell volume"],
     deps: [DEP.pcv, DEP.rbc],
     denominatorKeys: ["rbc"],
-    compute: (v) => (v.pcv * 10) / v.rbc,
+    compute: (v) => registryCompute("mcv",[v.pcv,v.rbc]),
   },
   {
     id: "mch",
@@ -101,7 +103,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["mch", "mean corpuscular hemoglobin", "mean corpuscular haemoglobin", "mean corpuscular hemoglobin mch", "mean corpuscular haemoglobin mch"],
     deps: [DEP.hb, DEP.rbc],
     denominatorKeys: ["rbc"],
-    compute: (v) => (v.hb * 10) / v.rbc,
+    compute: (v) => registryCompute("mch",[v.hb,v.rbc]),
   },
   {
     id: "mchc",
@@ -109,7 +111,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["mchc", "mean corpuscular hemoglobin concentration", "mean corpuscular haemoglobin concentration", "mean corpuscular hemoglobin concentration mchc", "mean corpuscular haemoglobin concentration mchc"],
     deps: [DEP.hb, DEP.pcv],
     denominatorKeys: ["pcv"],
-    compute: (v) => (v.hb * 100) / v.pcv,
+    compute: (v) => registryCompute("mchc",[v.hb,v.pcv]),
   },
   {
     id: "rdw",
@@ -117,7 +119,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["rdw cv", "rdw", "red cell distribution width", "red cell distribution width rdw cv", "red cell distribution width rdw"],
     deps: [DEP.sd, DEP.mcv],
     denominatorKeys: ["mcv"],
-    compute: (v) => (v.sd * 100) / v.mcv,
+    compute: (v) => registryCompute("rdw",[v.sd,v.mcv]),
   },
   {
     id: "anc",
@@ -125,7 +127,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["absolute neutrophil count", "absolute neutrophil count anc", "anc"],
     deps: [DEP.wbc, DEP.neut],
     denominatorKeys: [],
-    compute: (v) => (v.wbc * v.neut) / 100,
+    compute: (v) => registryCompute("absolute-neutrophil",[v.wbc,v.neut]),
   },
   {
     id: "alc",
@@ -133,7 +135,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["absolute lymphocyte count", "absolute lymphocyte count alc", "alc"],
     deps: [DEP.wbc, DEP.lymph],
     denominatorKeys: [],
-    compute: (v) => (v.wbc * v.lymph) / 100,
+    compute: (v) => registryCompute("absolute-lymphocyte",[v.wbc,v.lymph]),
   },
   {
     id: "amc",
@@ -141,7 +143,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["absolute monocyte count", "absolute monocyte count amc", "amc"],
     deps: [DEP.wbc, DEP.mono],
     denominatorKeys: [],
-    compute: (v) => (v.wbc * v.mono) / 100,
+    compute: (v) => registryCompute("absolute-monocyte",[v.wbc,v.mono]),
   },
   {
     id: "aec",
@@ -149,7 +151,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["absolute eosinophil count", "absolute eosinophil count aec", "aec"],
     deps: [DEP.wbc, DEP.eos],
     denominatorKeys: [],
-    compute: (v) => (v.wbc * v.eos) / 100,
+    compute: (v) => registryCompute("absolute-eosinophil",[v.wbc,v.eos]),
   },
   {
     id: "abc",
@@ -157,7 +159,7 @@ const FORMULAS: FormulaSpec[] = [
     targets: ["absolute basophil count", "absolute basophil count abc", "abc"],
     deps: [DEP.wbc, DEP.baso],
     denominatorKeys: [],
-    compute: (v) => (v.wbc * v.baso) / 100,
+    compute: (v) => registryCompute("absolute-basophil",[v.wbc,v.baso]),
   },
 ];
 

@@ -2,7 +2,9 @@ import { model, Schema, type Types } from "mongoose";
 
 export type ResultValue = string | number | boolean;
 
+export interface CalculationSnapshot {formulaId:string;version:string;precision:number;inputs:Array<{parameterId:string;value:number|string;unit?:string}>}
 export interface IResultRevision {
+  calculationSnapshot?: CalculationSnapshot;
   result: ResultValue;
   enteredBy: Types.ObjectId;
   enteredAt: Date;
@@ -45,6 +47,7 @@ export interface ILabTestResult {
   parameterId: Types.ObjectId;
   parameterName: string;
   resultType: string;
+  calculationSnapshot?: CalculationSnapshot;
   unit?: string;
   referenceRange?: string;
   /** Structured snapshot of the reference range applied at entry time. */
@@ -86,6 +89,7 @@ const referenceSnapshotSchema = new Schema<IReferenceSnapshot>(
 
 const resultRevisionSchema = new Schema<IResultRevision>(
   {
+    calculationSnapshot:{type:Schema.Types.Mixed,default:undefined},
     result: { type: Schema.Types.Mixed, required: true },
     enteredBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     enteredAt: { type: Date, required: true },
@@ -102,6 +106,7 @@ const labTestResultSchema = new Schema<ILabTestResult>(
     parameterId: { type: Schema.Types.ObjectId, ref: "LabTestParameter", required: true },
     parameterName: { type: String, required: true, trim: true, maxlength: 150 },
     resultType: { type: String, required: true, maxlength: 20 },
+    calculationSnapshot:{type:Schema.Types.Mixed,default:undefined},
     unit: { type: String, trim: true, maxlength: 50 },
     // Snapshot of the master parameter's display range. Kept at 200 (same as
     // LabTestParameter.referenceRange) so long, multi-line reference texts

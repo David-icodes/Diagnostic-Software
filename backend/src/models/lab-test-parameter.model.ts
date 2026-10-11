@@ -110,7 +110,7 @@ export interface ILabTestParameter {
   testId: Types.ObjectId;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
+  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
   /** Optional grouped heading / sub-title the parameter belongs under. */
   subtitle?: string;
   displayOrder: number;
@@ -329,7 +329,7 @@ const labTestParameterSchema = new Schema<ILabTestParameter>(
     },
     parameterName: { type: String, required: true, trim: true, maxlength: 150 },
     itemType: { type: String, enum: ["PARAMETER", "SUBTITLE", "TEXT_AREA"], default: "PARAMETER" },
-    calculation: { type: new Schema({ formulaId: { type: String, required: true }, dependencyIds: [String] }, { _id: false }), default: undefined },
+    calculation: { type: new Schema({ formulaId: { type: String, required: true }, dependencyIds: [String], precision: {type:Number,min:0,max:6} }, { _id: false }), default: undefined },
     subtitle: { type: String, trim: true, maxlength: 150 },
     displayOrder: { type: Number, required: true, min: 0, default: 0 },
     resultType: {

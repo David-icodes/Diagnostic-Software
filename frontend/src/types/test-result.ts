@@ -112,7 +112,7 @@ export interface LabTestParameter {
   testId: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
+  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
   /**
    * Optional grouped heading the parameter is printed under on the report
    * (e.g. "DIFFERENTIAL COUNT", "PERIPHERAL SMEAR"). Returned by the API; it
@@ -186,7 +186,7 @@ export interface BillTestParameter {
   parameterId: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
+  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
   subtitle?: string;
   displayOrder: number;
   resultType: ParameterResultType;
@@ -255,7 +255,7 @@ export interface LabTestResult {
   parameterId: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[] } | null;
+  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
   resultType: string;
   unit?: string;
   referenceRange?: string;

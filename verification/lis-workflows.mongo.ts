@@ -3,6 +3,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import mongoose from "../backend/node_modules/mongoose";
+import { LabClient } from "../backend/src/models/lab-client.model";
+import { LabClientTariff } from "../backend/src/models/lab-client-tariff.model";
+import { Counter } from "../backend/src/models/counter.model";
+import { createClient } from "../backend/src/modules/lab-clients/lab-client.service";
+import { applyClientTariffs,listClientTariffs } from "../backend/src/modules/client-tariffs/client-tariff.service";
+import { buildSnapshotItems } from "../backend/src/modules/lab-bills/lab-bill.service";
 import { Department } from "../backend/src/models/department.model";
 import { LabTest } from "../backend/src/models/lab-test.model";
 import { LabTestParameter } from "../backend/src/models/lab-test-parameter.model";
@@ -13,7 +19,7 @@ import { LabTestResult } from "../backend/src/models/lab-test-result.model";
 import { SpecimenOption } from "../backend/src/models/specimen-option.model";
 import { AuditLog } from "../backend/src/models/audit-log.model";
 import { createSpecimenOption, listTestSpecimenOptions, createTest, listTests } from "../backend/src/modules/lab-tests/lab-test.service";
-import { createParameter, getParameter } from "../backend/src/modules/lab-test-parameters/lab-test-parameter.service";
+import { createParameter, getParameter, updateParameter } from "../backend/src/modules/lab-test-parameters/lab-test-parameter.service";
 import { updateLabSampleStatus, listLabSamples } from "../backend/src/modules/lab-samples/lab-sample.service";
 import { submitTestResults, getBillResultEntry } from "../backend/src/modules/test-results/test-result.service";
 import { assertBillDocumentAllowed, assertResultReportAllowed } from "../backend/src/modules/test-results/result-workflow.service";
@@ -24,7 +30,7 @@ test("real MongoDB LIS creation, configuration, collection, formula revisions an
  await mongoose.connect("mongodb://127.0.0.1:27017/"+database,{serverSelectionTimeoutMS:5000,autoCreate:false,autoIndex:false});
  try {
   assert.equal(mongoose.connection.name,database);assert.equal((await mongoose.connection.db!.listCollections().toArray()).length,0);
-  const models=[Department,LabTest,LabTestParameter,Patient,LabBill,LabSample,LabTestResult,SpecimenOption,AuditLog];
+  const models=[Department,LabTest,LabTestParameter,Patient,LabBill,LabSample,LabTestResult,SpecimenOption,AuditLog,LabClient,LabClientTariff,Counter];
   for(const model of models){await model.createCollection();await model.createIndexes();}
   const userId=new mongoose.Types.ObjectId();const user=String(userId);
   const department=await Department.create({name:"Synthetic Department",code:"SYNTHETIC",createdBy:userId});
@@ -33,6 +39,12 @@ test("real MongoDB LIS creation, configuration, collection, formula revisions an
   const labTest=await createTest(user,{testCode:"INVG202",testName:"Synthetic CBC",shortName:"CBC",departmentId:department._id,sampleType:"Synthetic EDTA",containerType:"Synthetic Tube",price:100,active:true,resultMode:"PARAMETER_BASED"});
   const testId=String((labTest as any)._id);assert.equal((await listTests({departmentId:String(department._id),page:1,limit:100})).items[0].id,testId);
   await assert.rejects(createTest(user,{...labTest.toObject(),testName:"Synthetic Duplicate",_id:undefined} as never),/already exists/);
+  const client=await createClient(user,{name:"Synthetic Client",city:"Synthetic City",active:true});
+  await assert.rejects(createClient(user,{name:"Synthetic Client",active:true}),/already exists/);
+  await assert.rejects(buildSnapshotItems([{testId,quantity:1}],"osp",[],String(client._id)),/client-specific tariff/);
+  await applyClientTariffs(user,{clientId:String(client._id),departmentId:String(department._id),rows:[{testId,price:73}],overwrite:false});
+  assert.equal((await listClientTariffs(String(client._id),String(department._id))).data[0].clientPrice,73);
+  const priced=await buildSnapshotItems([{testId,quantity:2}],"osp",[],String(client._id));assert.equal(priced[0].unitPrice,73);assert.equal(priced[0].total,146);assert.equal((await buildSnapshotItems([{testId,quantity:1}],"osp"))[0].unitPrice,100);
   const base={testId:labTest._id,active:true,referenceType:"GENERAL",referenceMappings:[],mappingTypes:[],genderRanges:[],resultType:"NUMBER"};
   const heading=await createParameter(user,{...base,itemType:"SUBTITLE",parameterName:"Synthetic Indices",displayOrder:1} as never);
   const rbc=await createParameter(user,{...base,parameterName:"Synthetic RBC",unit:"million/µL",displayOrder:2} as never);
@@ -48,7 +60,8 @@ test("real MongoDB LIS creation, configuration, collection, formula revisions an
   const listed=await listLabSamples({mode:"criteria",billNumber:"SYNTHETIC-B001",page:1,limit:100,userId:user});assert.equal(listed.data[0].sampleStatus,"PROCESSED");assert.equal(await LabSample.countDocuments(),1);
   const input={billId,testId,entries:[{parameterId:String(rbc._id),result:4},{parameterId:String(mcv._id),result:90},{parameterId:String(pcv._id),result:999},{parameterId:String(narrative._id),result:"Synthetic report\nSecond line"}]};
   await submitTestResults(user,input);assert.equal((await LabTestResult.findOne({parameterId:pcv._id}))?.result,36);
-  input.entries[0].result=5;await submitTestResults(user,input);const revised=await LabTestResult.findOne({parameterId:pcv._id});assert.equal(revised?.result,45);assert.equal(revised?.revisions[0].result,36);assert.equal(revised?.version,2);
+  input.entries[0].result=5;await submitTestResults(user,input);const revised=await LabTestResult.findOne({parameterId:pcv._id});assert.equal(revised?.result,45);assert.equal(revised?.revisions[0].result,36);assert.equal(revised?.version,2);assert.equal(revised?.calculationSnapshot?.formulaId,"pcv");assert.equal(revised?.calculationSnapshot?.inputs[0].value,5);assert.equal(revised?.revisions[0].calculationSnapshot?.inputs[0].value,4);assert.equal(await AuditLog.countDocuments({action:"lab.calculation_configured"}),1);
+  await assert.rejects(updateParameter(String(pcv._id),user,{itemType:"SUBTITLE"}),/recorded results/);
   const entry=await getBillResultEntry(billId);assert.equal(entry.tests[0].parameters[0].itemType,"SUBTITLE");assert.equal(entry.tests[0].parameters[4].itemType,"TEXT_AREA");
   await assert.rejects(assertBillDocumentAllowed(billId),/outstanding due/);await assert.rejects(assertResultReportAllowed(billId,[testId],false),/outstanding due/);
   assert.equal((await LabBill.findById(bill._id))?.paidAmount,0);assert.equal((await LabBill.findById(bill._id))?.dueAmount,100);

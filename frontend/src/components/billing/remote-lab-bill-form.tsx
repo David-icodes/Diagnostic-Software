@@ -37,6 +37,7 @@ import {
 } from "@/components/billing/test-selector";
 import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { BillingPaymentSection } from "@/components/billing/billing-payment-section";
+import { fetchClientTariffs } from "@/services/lab-masters";
 import { createLabBill } from "@/services/billing";
 import {
   createPatient,
@@ -200,6 +201,7 @@ export function RemoteLabBillForm({
     emptyPatientDetails(),
   );
   const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const clientSelectionRef=useRef<string|null>(null);
   const [client, setClient] = useState<LabClient | null>(null);
   const [patientType, setPatientType] = useState<PatientType>("osp");
   const [items, setItems] = useState<SelectedTestItem[]>([]);
@@ -439,7 +441,10 @@ export function RemoteLabBillForm({
     onError: (error) => { setPatientNotice(null); setFormError(error.message); },
   });
 
-  const handleAddTest = (test: LabTest, departmentName: string, outside: OutsideChoice = {}) => {
+  const handleAddTest = async (test: LabTest, departmentName: string, outside: OutsideChoice = {}) => {
+    let unitPrice=test.price;
+    if(isVendor){if(!client){setFormError("Select Client before adding tests.");return;}try{const rows=await fetchClientTariffs(client.id,test.departmentId);const tariff=rows.find(row=>row.testId===test.id);if(tariff?.clientPrice===undefined){setFormError("No applicable client tariff for this test. Configure it in Client Wise Lab Tariffs.");return;}if(clientSelectionRef.current!==client.id)return;unitPrice=tariff.clientPrice;}catch(error){setFormError(error instanceof Error?error.message:"Could not load client tariff");return;}}
+
     setItems((current) => {
       if (current.some((item) => item.testId === test.id)) return current;
       return [
@@ -449,7 +454,7 @@ export function RemoteLabBillForm({
           testCode: test.testCode,
           testName: test.testName,
           departmentName,
-          unitPrice: test.price,
+          unitPrice,
           quantity: 1,
           containerType: test.containerType,
           ...outside,
@@ -485,6 +490,7 @@ export function RemoteLabBillForm({
     setDetails(emptyPatientDetails());
     setDoctor(null);
     setClient(null);
+    clientSelectionRef.current=null;
     setPatientType("osp");
     setItems([]);
     setDiscountPercentInput("0");
@@ -575,7 +581,7 @@ const createSeparatePatient = async () => {
 
   const leftSecondary = isVendor ? (
     <div className="space-y-1.5">
-      <ClientPicker selected={client} onSelect={setClient} />
+      <ClientPicker selected={client} onSelect={next=>{if(items.length && client?.id!==next.id){setFormError("Remove selected tests before changing the billing client; their prices belong to the current client.");return;}clientSelectionRef.current=next.id;setClient(next);setFormError(null);}} />
     </div>
   ) : (
     <div className="space-y-1.5">

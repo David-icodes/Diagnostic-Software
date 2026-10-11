@@ -1,5 +1,6 @@
 "use client";
 
+import { ClientCreateDialog } from "@/components/billing/client-create-dialog";
 import { selectTariffScope, selectedTariffRows } from "@/lib/tariff-selection";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -235,6 +236,7 @@ export function ClientLabTariffsContent() {
         <div className="grid gap-3 sm:grid-cols-2 lg:max-w-3xl">
           <FormField id="client-tariff-client" label="Select Client Name" required>
             <div className="lis-master-listbox">
+            <ClientCreateDialog onCreated={client=>{setClientId(client.id);setClientSearch("");setDrafts({});setSelected({});setOverwrite(false);}} />
             <Input aria-label="Search clients" placeholder="Search Client..." value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} />
             <Select
               id="client-tariff-client"

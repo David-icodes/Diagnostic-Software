@@ -175,3 +175,50 @@
   .lis-content .lis-test-selector th { white-space: nowrap; overflow-wrap: normal; font-size: 10px; }
   .lis-content .lis-test-selector td p.font-mono { white-space: nowrap; overflow-wrap: normal; }
 }
+
+@media screen {
+ .lis-today-bills-table tbody tr:nth-child(odd){background:#f8f9fb;}
+ .lis-today-bills-table :is(th,td){padding:7px 6px;font-size:12px;}
+ .lis-today-bills-table td:nth-child(4),.lis-today-bills-table td:nth-child(5){white-space:normal;overflow-wrap:anywhere;}
+ .lis-reference-config{width:100%;min-width:0;}
+ .lis-reference-config input{min-width:0;width:100%;}
+ .lis-reference-config textarea{min-height:90px;}
+ .lis-samples table{min-width:0;}
+ .lis-samples table :is(th,td){padding:4px;font-size:11px;}
+ .lis-samples table td{overflow-wrap:anywhere;white-space:normal;}
+ .lis-samples table :is(input,select){padding-left:3px;padding-right:3px;font-size:11px;min-width:0;}
+}
+.lis-clinical-info{padding:2mm!important;column-gap:4mm;}
+.lis-clinical-info > div > div{grid-template-columns:80pt minmax(0,1fr);font-size:10pt;line-height:13pt;overflow-wrap:anywhere;}
+.lis-clinical-info > div:first-child > div:first-child{font-size:11pt;font-weight:bold;}
+.lis-report-paper tbody td:nth-child(2){font-size:11pt;font-weight:600;}
+.lis-report-paper .lis-abnormal-result{font-size:12pt;font-weight:700;}
+.lis-invoice-paper{font-size:11pt;line-height:14pt;}
+.lis-invoice-paper :is(th,td){font-size:11pt;padding:.6mm;}
+
+@media screen {
+ .lis-samples table th{font-size:10px;letter-spacing:0;}
+ .lis-content .lis-test-selector table{min-width:0;width:100%;}
+ .lis-test-selector table :is(th,td){padding:4px 3px;}
+ .lis-test-selector table th{font-size:10px;}
+ .lis-content .lis-bill-summary{min-width:0;}
+ .lis-content .lis-bill-summary :is(th,td){padding:4px;font-size:11px;}
+}
+
+@media print { html,body {height:auto!important;min-height:0!important;background:white!important;} .lis-print-dialog {margin:0!important;display:block!important;border:0!important;box-shadow:none!important;} .lis-print-dialog>div:last-child {padding:0!important;} body:has(.lis-report-paper):not(:has(.lis-invoice-paper)){page:lab-report;} .lis-invoice-paper footer {margin-top:8mm;} }
+
+.lis-clinical-info > div > div{grid-template-columns:95pt minmax(0,1fr);}
+.lis-clinical-info [data-patient-name]{font-size:11pt;}
+.lis-clinical-info [data-patient-name] > span:last-child{font-weight:700;}
+
+@media screen {
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td){font-size:12px;padding:7px 6px;}
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td):nth-child(1){width:5%;}
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td):nth-child(2){width:22%;white-space:nowrap;overflow-wrap:normal;}
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td):nth-child(3){width:18%;white-space:nowrap;overflow-wrap:normal;}
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td):nth-child(4){width:27%;}
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td):nth-child(5){width:18%;}
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td):nth-child(6){width:10%;}
+ .lis-dashboard .lis-today-bills-table th{white-space:nowrap;}
+}
+.lis-report-paper tbody td.lis-abnormal-result{font-size:12pt;font-weight:700;}

@@ -244,7 +244,7 @@ export async function createTest(userId: string, input: CreateLabTestInput): Pro
     return await LabTest.create({ ...input, createdBy: userId });
   } catch (error) {
     if (isDuplicateKeyError(error)) {
-      throw new ApiError(409, "A test with this code or name already exists");
+      throw new ApiError(409, ((error as {keyPattern?:Record<string,number>}).keyPattern?.testCode ? "A test with this code already exists. Select or edit it, or enter a different unique code." : (error as {keyPattern?:Record<string,number>}).keyPattern?.testName ? "A test with this name already exists. Select or edit the existing test." : "A test with this code or name already exists. Select or edit the existing test, or use a unique code and name."));
     }
     throw error;
   }

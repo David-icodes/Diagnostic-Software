@@ -242,7 +242,7 @@ export function OspBillView({ billId }: OspBillViewProps) {
                         {item.testName}
                       </p>
                       <p className="font-mono text-[11px] text-muted-foreground">
-                        {item.testCode}
+                        {item.testCode === "INVG2044" ? "" : item.testCode}
                       </p>
                     </td>
                     <td className="px-3 py-1.5 text-slate-700">

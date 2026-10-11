@@ -497,7 +497,7 @@ export function LabReprint() {
                               <td className="px-3 py-1.5 text-slate-700">{item.departmentName}</td>
                               <td className="px-3 py-1.5">
                                 <p className="text-xs font-medium text-slate-800">{item.testName}</p>
-                                <p className="font-mono text-[11px] text-muted-foreground">{item.testCode}</p>
+                                <p className="font-mono text-[11px] text-muted-foreground">{item.testCode === "INVG2044" ? "" : item.testCode}</p>
                               </td>
                               <td className="px-3 py-1.5 text-slate-700">
                                 {sampleRow?.sampleType || "—"}
@@ -672,7 +672,7 @@ function formatReportDateTime(value?: string | Date | null): string {
 
 function ReportInfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid grid-cols-[74pt_1fr] text-[8.5pt] leading-[13pt]">
+    <div data-patient-name={label === "Name" || undefined} className="grid grid-cols-[74pt_1fr] text-[8.5pt] leading-[13pt]">
       <span className="font-bold uppercase">{label}</span>
       <span>: {value}</span>
     </div>

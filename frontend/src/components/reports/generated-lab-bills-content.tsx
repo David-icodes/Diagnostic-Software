@@ -1,4 +1,5 @@
 "use client";
+import { selectionSummary } from "@/lib/criteria-summary";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { localToday } from "@/lib/report-filter-state";
@@ -400,21 +401,15 @@ export function GeneratedLabBillsContent() {
       parts.push(`Department : ${label}`);
     }
     if (applied.doctorIds.length > 0) {
-      const labels = applied.doctorIds
-        .map((value) => doctors.find((row) => row.value === value)?.label ?? value)
-        .join(", ");
+      const labels = selectionSummary(applied.doctorIds, doctors);
       parts.push(`Doctor : ${labels}`);
     }
     if (applied.paymentModes.length > 0) {
-      const labels = applied.paymentModes
-        .map((value) => payModes.find((row) => row.value === value)?.label ?? value)
-        .join(", ");
+      const labels = selectionSummary(applied.paymentModes, payModes);
       parts.push(`Pay Mode : ${labels}`);
     }
     if (applied.collectedByIds.length > 0) {
-      const labels = applied.collectedByIds
-        .map((value) => collectors.find((row) => row.value === value)?.label ?? value)
-        .join(", ");
+      const labels = selectionSummary(applied.collectedByIds, collectors);
       parts.push(`Collected By : ${labels}`);
     }
     if (applied.paymentStatus) {

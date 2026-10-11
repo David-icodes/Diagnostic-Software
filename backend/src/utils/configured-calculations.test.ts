@@ -54,5 +54,13 @@ test("absolute counts preserve configured WBC units and reject invalid different
 test("measured/manual results and narrative content remain unchanged without explicit configuration",()=>{
  const params=[source("hb","Hemoglobin","g/dL"),source("rbc","RBC","million/µL"),source("platelets","Platelet count","cells/µL"),source("mcv","MCV","fL")];
  const entered={hb:12,rbc:4,platelets:250000,mcv:90,narrative:"Synthetic text\nSecond line"};
- assert.deepEqual(recalculateConfigured(params,entered),{values:entered,errors:{}}); assert.equal(CALCULATION_FORMULAS.length,10);
+ assert.deepEqual(recalculateConfigured(params,entered),{values:entered,errors:{}}); assert.equal(CALCULATION_FORMULAS.length,21);
 });
+
+const crossCategoryCases: Array<[string,string[],number[],string,number]>=[
+ ['indirect-bilirubin',['mg/dl','mg/dl'],[1.2,.3],'mg/dl',.9],['globulin',['g/dl','g/dl'],[7,4],'g/dl',3],['ag-ratio',['g/dl','g/dl'],[4,3],'ratio',1.33],['non-hdl',['mg/dl','mg/dl'],[200,50],'mg/dl',150],['bun-from-urea',['mg/dl'],[30],'mg/dl',14],['urea-from-bun',['mg/dl'],[14],'mg/dl',30],['eag',['%'],[7],'mg/dl',154.2],['anion-gap',['mmol/l','mmol/l','mmol/l'],[140,104,24],'mmol/l',12],['urine-acr',['mg/dl','mg/dl'],[3,100],'mg/g',30],['configured-difference',['u/l','u/l'],[100,20],'u/l',80],['configured-ratio',['ng/ml','ng/ml'],[10,4],'ratio',2.5]
+ ];
+for(const [formulaId,units,inputs,unit,expected]of crossCategoryCases)test('universal '+formulaId+' uses explicit bindings and units',()=>{const params=units.map((unit,index)=>source(String(index),'Source '+index,unit));params.push({...source('out','Output',unit),calculation:{formulaId,dependencyIds:units.map((_,index)=>String(index))}});const entered=Object.fromEntries(inputs.map((value,index)=>[String(index),value]));const result=recalculateConfigured(params,entered);assert.deepEqual(result.errors,{});assert.equal(result.values.out,expected);});
+test('universal differences reject negative output, wrong units and absent bindings',()=>{const params=[source('a','A','g/dl'),source('b','B','g/dl'),{...source('out','Globulin','g/dl'),calculation:{formulaId:'globulin',dependencyIds:['a','b']}}];assert.match(recalculateConfigured(params,{a:3,b:4}).errors.out,/nonnegative/);params[1].unit='mg/dl';assert.match(recalculateConfigured(params,{a:7,b:4}).errors.out,/units/);params[2].calculation={formulaId:'globulin'};assert.match(recalculateConfigured(params,{a:7,b:4}).errors.out,/missing/);});
+
+test('configured precision is applied centrally without changing sources',()=>{const parameters=[source('a','Albumin','g/dl'),source('b','Globulin','g/dl'),{...source('out','A/G','ratio'),calculation:{formulaId:'ag-ratio',dependencyIds:['a','b'],precision:3}}];const result=recalculateConfigured(parameters,{a:4,b:3});assert.equal(result.values.out,1.333);assert.equal(result.values.a,4);});

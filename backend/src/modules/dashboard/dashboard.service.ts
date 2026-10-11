@@ -11,6 +11,7 @@
  * (`YYYY-MM-DD`) as an inclusive local calendar day range.
  */
 
+import { patientAgeLabel } from "../../utils/patient-age";
 import { billCompletion } from "./bill-completion";
 import type { FilterQuery, Types } from "mongoose";
 import { LabBill, type ILabBill } from "../../models/lab-bill.model";
@@ -63,22 +64,7 @@ export function formatDashboardDate(date: Date = new Date()): string {
   return formatLocalDisplayDate(date);
 }
 
-function ageLabel(patient: Pick<IPatient, "age" | "dateOfBirth">): string {
-  if (patient.dateOfBirth) {
-    const now = new Date();
-    const dob = new Date(patient.dateOfBirth);
-    let years = now.getFullYear() - dob.getFullYear();
-    const monthDiff = now.getMonth() - dob.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < dob.getDate())) {
-      years -= 1;
-    }
-    if (years >= 0) return `${years} years`;
-  }
-  if (typeof patient.age === "number" && Number.isFinite(patient.age)) {
-    return `${patient.age} years`;
-  }
-  return "—";
-}
+const ageLabel = patientAgeLabel;
 
 function genderLabel(gender: string | undefined): string {
   if (gender === "male") return "Male";

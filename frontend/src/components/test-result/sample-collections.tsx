@@ -362,8 +362,8 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
             )}
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1600px] table-fixed text-xs [&_th]:whitespace-nowrap">
-              <colgroup>{[3,9,7,9,12,8,13,6,10,7,11,5].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
+            <table className="w-full min-w-0 table-fixed text-xs [&_th]:whitespace-nowrap">
+              <colgroup>{[4,10,7,9,11,7,12,8,10,7,9,6].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
               <thead>
                 <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-3 py-1.5">S.No</th>
@@ -490,7 +490,7 @@ function SampleRow({
               {row.testName}
             </p>
             {row.testCode && (
-              <p className="font-mono text-[11px] text-muted-foreground">{row.testCode}</p>
+              <p className="font-mono text-[11px] text-muted-foreground">{row.testCode === "INVG2044" ? "" : row.testCode}</p>
             )}
             {row.testNameFromBillItem === false && (
               <p className="text-[11px] text-muted-foreground">From test master</p>

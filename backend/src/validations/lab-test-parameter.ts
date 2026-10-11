@@ -215,7 +215,7 @@ const baseFields = {
     .min(1, "Parameter name is required")
     .max(150, "Parameter name is too long"),
   itemType: z.enum(["PARAMETER", "SUBTITLE", "TEXT_AREA"]).optional(),
-  calculation: z.object({ formulaId: z.enum(CALCULATION_FORMULAS.map(f => f.id) as [string, ...string[]]), dependencyIds: z.array(z.string().regex(/^[a-f0-9]{24}$/i)).length(2).optional() }).strict().nullable().optional(),
+  calculation: z.object({ formulaId: z.enum(CALCULATION_FORMULAS.map(f => f.id) as [string, ...string[]]), precision:z.number().int().min(0).max(6).optional(), dependencyIds: z.array(z.string().regex(/^[a-f0-9]{24}$/i)).min(1).max(8).optional() }).strict().nullable().optional(),
   subtitle: optionalText(150, "Subtitle is too long"),
   displayOrder: z.number().int().min(0, "Order number cannot be negative").max(9999, "Order number is too large").default(0),
   resultType: z

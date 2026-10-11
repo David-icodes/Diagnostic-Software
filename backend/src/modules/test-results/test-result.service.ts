@@ -1,4 +1,4 @@
-import { recalculateConfigured } from "../../utils/configured-calculations";
+import { recalculateConfigured, resolveCalculationDependencyIds } from "../../utils/configured-calculations";
 import { Types } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { LabBill } from "../../models/lab-bill.model";
@@ -379,7 +379,8 @@ export async function submitTestResults(
     );
   }
 
-  const calculation = recalculateConfigured(parameters.map(parameter=>({parameterId:String(parameter._id),parameterName:parameter.parameterName,unit:parameter.unit,itemType:parameter.itemType,calculation:parameter.calculation})),Object.fromEntries(input.entries.map(entry=>[entry.parameterId,entry.result])));
+  const calculationParameters=parameters.map(parameter=>({parameterId:String(parameter._id),parameterName:parameter.parameterName,unit:parameter.unit,itemType:parameter.itemType,calculation:parameter.calculation}));
+  const calculation = recalculateConfigured(calculationParameters,Object.fromEntries(input.entries.map(entry=>[entry.parameterId,entry.result])));
   if(Object.keys(calculation.errors).length)throw new ApiError(422,Object.values(calculation.errors)[0]);
   const entries=[...input.entries.filter(entry=>!parameterMap.get(entry.parameterId)?.calculation),...parameters.filter(parameter=>parameter.calculation).map(parameter=>({parameterId:String(parameter._id),result:calculation.values[String(parameter._id)] as ResultValue}))];
   for (const entry of entries) {
@@ -412,6 +413,7 @@ export async function submitTestResults(
     entityType: "LabTestResult", entity: anchorId, timestamp: now });
   const saveEntry = async (entry: typeof first) => {
       const parameter = parameterMap.get(entry.parameterId)!;
+      const calculationSnapshot = parameter.calculation ? {formulaId:parameter.calculation.formulaId,version:"1",precision:parameter.calculation.precision??2,inputs:resolveCalculationDependencyIds(calculationParameters,calculationParameters.find(row=>row.parameterId===entry.parameterId)!).map(id=>({parameterId:id,value:calculation.values[id] as string|number,unit:parameterMap.get(id)?.unit}))} : undefined;
       const existing = await LabTestResult.findOne({
         billId: bill._id,
         testId: input.testId,
@@ -427,6 +429,7 @@ export async function submitTestResults(
           parameterId: parameter._id,
           parameterName: parameter.parameterName,
           resultType: parameter.resultType,
+          calculationSnapshot,
           unit: parameter.unit,
           referenceRange: parameter.referenceRange,
           referenceSnapshot: buildReferenceSnapshot(
@@ -447,11 +450,13 @@ export async function submitTestResults(
 
       existing.revisions.push({
         result: existing.result,
+        calculationSnapshot:existing.calculationSnapshot,
         enteredBy: existing.enteredBy,
         enteredAt: existing.enteredAt,
         version: existing.version,
       });
       existing.result = entry.result;
+      existing.calculationSnapshot = calculationSnapshot;
       existing.enteredBy = enteredBy;
       existing.enteredAt = now;
       existing.version += 1;

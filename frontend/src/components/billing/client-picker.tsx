@@ -1,5 +1,6 @@
 "use client";
 
+import { ClientCreateDialog } from "@/components/billing/client-create-dialog";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
@@ -42,7 +43,7 @@ export function ClientPicker({ selected, onSelect }: ClientPickerProps) {
     placeholderData: (previous) => previous,
   });
 
-  const rows = searchQuery.data ?? [];
+  const rows = (searchQuery.data ?? []).filter(client=>client.active!==false);
 
   return (
     <>
@@ -92,7 +93,7 @@ export function ClientPicker({ selected, onSelect }: ClientPickerProps) {
         description="Search registered vendors and clients"
         size="lg"
       >
-        <div className="space-y-3">
+        <div className="space-y-3"><ClientCreateDialog onCreated={client=>{onSelect(client);setOpen(false);}} />
           <Input
             type="search"
             placeholder="Search by name, code or city..."
