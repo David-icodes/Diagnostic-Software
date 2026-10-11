@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { businessDateInput } from "@/lib/business-date";
 import { useMemo, useState, useRef } from "react";
 import {
@@ -917,7 +918,7 @@ function ResultEntryTable({
               <span>{fieldError}</span>
             </div>
           )}
-          {parameters.length > 0 && !parameters.some(parameter=>parameter.calculation) && <p className="lis-calculation-setup-note text-xs text-slate-500 p-2" role="status">No approved calculation bindings are configured for this test. Configure formula, sources and units in Lab Test Parameter to enable Calculate; measured values remain editable.</p>}
+          {parameters.length > 0 && !parameters.some(parameter=>parameter.calculation) && <p className="lis-calculation-setup-note text-sm text-slate-600 p-2" role="status">No approved calculation bindings are configured for this test. An authorized laboratory administrator must select this test in <Link className="text-primary underline" href="/laboratory/master/lab-test-parameter">Lab Test Parameter</Link>, choose the target and numeric source IDs, review units and approve the binding to enable Calculate. Measured values remain editable.</p>}
           <div className="lis-parameter-result-grid overflow-x-auto">
             <table className="w-full min-w-[960px] table-fixed text-[13px]">
               <colgroup>

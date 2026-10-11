@@ -208,6 +208,7 @@ export const updateReferenceMappingSchema = referenceMappingBase
   .superRefine(validateMappingRules);
 
 const baseFields = {
+  calculationApproved: z.boolean().optional(),
   testId: z.string().min(1, "Test ID is required"),
   parameterName: z
     .string()

@@ -291,6 +291,7 @@ export interface ReferenceMappingsResponse {
 }
 
 export interface ParameterPayload {
+  calculationApproved?: boolean;
   testId: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";

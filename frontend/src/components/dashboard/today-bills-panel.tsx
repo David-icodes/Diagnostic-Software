@@ -9,9 +9,9 @@ import { fetchTodayBills } from "@/services/dashboard";
 import type { TodayBill } from "@/types/dashboard";
 
 const columns: ColumnDef<TodayBill>[] = [
- {key: "sno", width: "4.5%",label:"#",className:"w-[4.5%]",render:(_bill,index)=>index+1},
+ {key: "sno", width: "44px",label:"#",className:"w-[4.5%]",render:(_bill,index)=>index+1},
   {
-    key: "billNo", width: "16.5%",
+    key: "billNo", width: "180px",
     label: "Bill No",
     className: "w-[16.5%] whitespace-nowrap",
     render: (bill) => (
@@ -23,10 +23,10 @@ const columns: ColumnDef<TodayBill>[] = [
       </Link>
     ),
   },
-  { key: "patientId", width: "20%", label: "Pat Id", className: "w-[20%] whitespace-nowrap" },
-  { key: "patientName", width: "27%", label: "Pat Name", className: "w-[27%] whitespace-normal", render: (bill) => <span title={bill.patientName}>{bill.patientName}</span> },
-  { key: "age", width: "20%", label: "Age", className: "w-[20%] whitespace-normal" },
-  { key: "gender", width: "12%", label: "Gender", className: "w-[12%]" },
+  { key: "patientId", width: "180px", label: "Pat Id", className: "w-[20%] whitespace-nowrap" },
+  { key: "patientName", width: "auto", label: "Pat Name", className: "w-[27%] whitespace-normal", render: (bill) => <span title={bill.patientName}>{bill.patientName}</span> },
+  { key: "age", width: "260px", label: "Age", className: "w-[20%] whitespace-normal" },
+  { key: "gender", width: "140px", label: "Gender", className: "w-[12%]" },
 ];
 
 export function TodayBillsPanel() {

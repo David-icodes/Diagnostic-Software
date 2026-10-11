@@ -78,14 +78,14 @@ export function DashboardContent() {
             <StatisticCard
               title="Completed Bills"
               value={summary.data?.completedTests ?? 0}
-
+              hint={summary.data?.date || undefined}
               icon={SquareCheck}
               iconClassName="text-[#337ab7]"
             />
             <StatisticCard
               title="Pending Tests"
               value={summary.data?.pendingTestCount ?? 0}
-
+              hint={summary.data?.date || undefined}
               icon={SquareMinus}
               iconClassName="text-[#c9302c]"
             />
@@ -95,7 +95,7 @@ export function DashboardContent() {
 
       <section
         aria-label="Daily bills"
-        className="lis-dashboard-bills grid grid-cols-1 gap-2 2xl:grid-cols-2"
+        className="lis-dashboard-bills grid grid-cols-1 gap-6"
       >
         <TodayBillsPanel />
         <DueBillsPanel />

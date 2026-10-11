@@ -61,3 +61,43 @@ export function recalculateConfigured(parameters: CalculationParameter[], entere
  }
  visiting.delete(id);done.add(id);};for(const p of parameters)if(p.calculation)visit(p.parameterId);return {values,errors};
 }
+
+export interface BindingReviewParameter {
+  id: string;
+  unit?: string;
+  active?: boolean;
+  resultType: string;
+  itemType?: string;
+  calculation?: CalculationConfig | null;
+}
+
+/** Review explicit IDs, never guess a source from its display name. */
+export function reviewCalculationBinding(parameters: BindingReviewParameter[], target: BindingReviewParameter): string[] {
+  if (!target.calculation) return [];
+  const formula = CALCULATION_FORMULAS.find(row => row.id === target.calculation!.formulaId);
+  if (!formula) return ["Select a supported formula."];
+  const ids = target.calculation.dependencyIds ?? [];
+  if (ids.length !== formula.sources.length || ids.some(id => !id)) return ["Select every source parameter explicitly."];
+  if (ids.includes(target.id)) return ["A parameter cannot depend on itself."];
+  const sources = ids.map(id => parameters.find(row => row.id === id));
+  if (sources.some(row => !row || row.active === false || (row.itemType && row.itemType !== "PARAMETER") || !["NUMBER", "RANGE"].includes(row.resultType))) return ["Sources must be active numeric parameters in this test. Review legacy text parameters individually before using them."];
+  const issues: string[] = [];
+  if (!calculationUnitsMatch(formula, sources.map(row => row!.unit ?? ""), target.unit ?? "")) issues.push("Configure compatible source and output units.");
+  const edges = new Map(parameters.map(row => [row.id, row.calculation?.dependencyIds ?? []]));
+  edges.set(target.id, ids);
+  const visiting = new Set<string>(), done = new Set<string>();
+  const visit = (id: string): boolean => {
+    if (visiting.has(id)) return true;
+    if (done.has(id)) return false;
+    visiting.add(id);
+    if ((edges.get(id) ?? []).some(visit)) return true;
+    visiting.delete(id); done.add(id); return false;
+  };
+  if ([...edges.keys()].some(visit)) issues.push("Circular calculation dependency is not allowed. PCV and MCV cannot calculate each other in the same configuration.");
+  return issues;
+}
+
+export function calculationBindingChanged(next: CalculationConfig | null | undefined, previous: CalculationConfig | null | undefined, unit?: string, previousUnit?: string): boolean {
+  if (!next) return false;
+  return JSON.stringify([next.formulaId, next.dependencyIds ?? [], next.precision ?? 2, normalizeCalculationUnit(unit)]) !== JSON.stringify([previous?.formulaId, previous?.dependencyIds ?? [], previous?.precision ?? 2, normalizeCalculationUnit(previousUnit)]);
+}

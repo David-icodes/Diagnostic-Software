@@ -46,7 +46,7 @@ import {
   type ParameterReferenceScope,
   type ParameterRow,
 } from "@/types/lab-masters";
-import { CALCULATION_FORMULAS } from "@/lib/configured-calculations";
+import { CALCULATION_FORMULAS, reviewCalculationBinding, calculationBindingChanged, recalculateConfigured } from "@/lib/configured-calculations";
 import { cn } from "@/lib/utils";
 
 const PAGE_LIMIT = 20;
@@ -263,6 +263,8 @@ export function LabTestParameterContent() {
   const [testId, setTestId] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [calculationApproved, setCalculationApproved] = useState(false);
+  const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
   const [form, setForm] = useState<ParameterFormState>(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingRow, setEditingRow] = useState<ParameterRow | null>(null);
@@ -322,6 +324,8 @@ export function LabTestParameterContent() {
 
   const invalidate = () => {
     void queryClient.invalidateQueries({ queryKey: ["lab-test-parameters"] });
+    // Result entry has its own 30-second cache of parameter bindings and ranges.
+    void queryClient.invalidateQueries({ queryKey: ["test-results", "bill-entry"] });
   };
 
   const refreshAll = useCallback(() => {
@@ -345,6 +349,7 @@ export function LabTestParameterContent() {
 
       const payload = {
         testId,
+        calculationApproved,
         parameterName: form.parameterName.trim(),
         itemType:form.itemType,
         calculation:form.itemType === "PARAMETER" && form.formulaId ? {formulaId:form.formulaId,dependencyIds:form.dependencyIds,precision:Number(form.precision)}:null,
@@ -392,6 +397,8 @@ export function LabTestParameterContent() {
     },
     onSuccess: () => {
       invalidate();
+      setCalculationApproved(false);
+      setPreviewValues({});
       setEditingId(null);
       setEditingRow(null);
       setForm(EMPTY_FORM);
@@ -450,6 +457,7 @@ export function LabTestParameterContent() {
   }, [optionsQuery.data]);
 
   const update = (patch: Partial<ParameterFormState>) => {
+    setCalculationApproved(false);
     setForm((current) => ({ ...current, ...patch }));
   };
 
@@ -464,14 +472,25 @@ export function LabTestParameterContent() {
   };
 
   const clearForm = () => {
+    setCalculationApproved(false);
+    setPreviewValues({});
     setEditingId(null);
     setEditingRow(null);
     setForm(EMPTY_FORM);
     setFeedback(null);
   };
 
+  const selectedFormula = CALCULATION_FORMULAS.find(row => row.id === form.formulaId);
+  const draftCalculation = form.itemType === "PARAMETER" && form.formulaId ? {formulaId:form.formulaId,dependencyIds:form.dependencyIds,precision:Number(form.precision)} : null;
+  const bindingTarget = {id:editingId ?? "draft-target",unit:form.unit,resultType:form.resultType,itemType:form.itemType,calculation:draftCalculation};
+  const bindingIssues = reviewCalculationBinding(calculationSources.data ?? [], bindingTarget);
+  if (draftCalculation && (!Number.isInteger(Number(form.precision)) || Number(form.precision)<0 || Number(form.precision)>6)) bindingIssues.push("Precision must be an integer from 0 to 6.");
+  const approvalRequired = calculationBindingChanged(draftCalculation, editingRow?.calculation, form.unit, editingRow?.unit);
+  const calculationBlocked = !!draftCalculation && (calculationSources.isPending || calculationSources.isError || bindingIssues.length>0 || (approvalRequired && !calculationApproved));
+  const previewParameters = (calculationSources.data ?? []).map(row => ({parameterId:row.id,parameterName:row.parameterName,unit:row.unit}));
+  const preview = draftCalculation ? recalculateConfigured([...previewParameters,{...bindingTarget,parameterId:bindingTarget.id,parameterName:form.parameterName}],previewValues) : null;
   const handleSave = () => {
-    if (!testId || form.parameterName.trim().length < 1) return;
+    if (!testId || form.parameterName.trim().length < 1 || calculationBlocked) return;
     saveMutation.mutate();
   };
 
@@ -502,6 +521,8 @@ export function LabTestParameterContent() {
   };
 
   const handleEdit = useCallback((parameter: ParameterRow) => {
+    setCalculationApproved(false);
+    setPreviewValues({});
     setEditingId(parameter.id);
     setEditingRow(parameter);
     setTestId(parameter.testId);
@@ -786,12 +807,12 @@ export function LabTestParameterContent() {
                 {feedback}
               </p>
             )}
+
             {saveError && (
               <p className="rounded-md bg-destructive/5 px-3 py-1.5 text-xs font-medium text-destructive ring-1 ring-destructive/20">
                 {saveError}
               </p>
             )}
-
             {/* ROWS 2-6 — identity, type, default, units, status/method */}
             <div className="lis-parameter-fields grid grid-cols-1 gap-x-4 gap-y-2.5 md:grid-cols-2">
               <CompactField id="param-dept" label="Department Name">
@@ -871,7 +892,18 @@ export function LabTestParameterContent() {
 
               {form.itemType === "PARAMETER" && <CompactField id="param-formula" label="Automatic calculation"><Select id="param-formula" value={form.formulaId} onChange={event=>update({formulaId:event.target.value,dependencyIds:[],...(event.target.value?{resultType:"NUMBER"}:{})})}><option value="">Measured / manual</option>{CALCULATION_FORMULAS.map(formula=><option key={formula.id} value={formula.id}>{formula.label}</option>)}</Select></CompactField>}
               {form.itemType === "PARAMETER" && form.formulaId && <CompactField id="param-precision" label="Decimal precision"><Input id="param-precision" type="number" min={0} max={6} value={form.precision} onChange={event=>update({precision:event.target.value})}/></CompactField>}
-              {CALCULATION_FORMULAS.find(formula=>formula.id===form.formulaId)?.sources.map((source,index)=><CompactField key={source} id={"param-source-"+index} label={source}><Select id={"param-source-"+index} value={form.dependencyIds[index]??""} onChange={event=>{const ids=[...form.dependencyIds];ids[index]=event.target.value;update({dependencyIds:ids});}}><option value="">Select source parameter</option>{(calculationSources.data??[]).filter(parameter=>parameter.id!==editingId&&parameter.itemType!=="SUBTITLE"&&parameter.itemType!=="TEXT_AREA").map(parameter=><option key={parameter.id} value={parameter.id}>{parameter.parameterName} ({parameter.unit??"unit required"})</option>)}</Select></CompactField>)}
+              {CALCULATION_FORMULAS.find(formula=>formula.id===form.formulaId)?.sources.map((source,index)=><CompactField key={source} id={"param-source-"+index} label={source}><Select id={"param-source-"+index} value={form.dependencyIds[index]??""} onChange={event=>{const ids=[...form.dependencyIds];ids[index]=event.target.value;update({dependencyIds:ids});}}><option value="">Select source parameter</option>{(calculationSources.data??[]).filter(parameter=>parameter.id!==editingId&&parameter.itemType!=="SUBTITLE"&&parameter.itemType!=="TEXT_AREA"&&parameter.active&&["NUMBER","RANGE"].includes(parameter.resultType)).map(parameter=><option key={parameter.id} value={parameter.id}>{parameter.parameterName} ({parameter.unit??"unit required"}; ID {parameter.id.slice(-6)})</option>)}</Select></CompactField>)}
+              {selectedFormula && <section className="col-span-full border border-border bg-slate-50 p-3 space-y-2" aria-label="Calculation binding review">
+                <h3 className="font-semibold">Review and approve calculation</h3>
+                <p>{selectedFormula.label}. Expected output unit: {selectedFormula.outputUnit}. Formula version: {selectedFormula.version}.</p>
+                <p className="text-sm">Select active numeric sources by their IDs. Review legacy text sources and units individually; no automatic conversion or name-based binding is performed. PCV and MCV must not calculate each other.</p>
+                {calculationSources.isPending && <p role="status">Loading source parameters…</p>}
+                {calculationSources.isError && <p role="alert">Source parameters could not be loaded. <Button onClick={()=>void calculationSources.refetch()} type="button" variant="outline">Retry</Button></p>}
+                {bindingIssues.length>0 ? <ul role="alert" className="text-red-700">{bindingIssues.map(issue=><li key={issue}>{issue}</li>)}</ul> : <p role="status">Source IDs, numeric types, units and dependencies validated. Saving changes only this parameter; historical results and reference ranges are preserved.</p>}
+                <div className="flex flex-wrap gap-3">{selectedFormula.sources.map((source,index)=><label key={source} className="text-sm">Illustrative {source} ({selectedFormula.units[index]})<Input aria-label={"Illustrative "+source} value={previewValues[form.dependencyIds[index]]??""} onChange={event=>setPreviewValues(current=>({...current,[form.dependencyIds[index]]:event.target.value}))} disabled={!form.dependencyIds[index]} /></label>)}</div>
+                <p role="status">Illustrative result: {preview?.errors[bindingTarget.id] ?? (typeof preview?.values[bindingTarget.id] === "number" ? Number(preview.values[bindingTarget.id]).toFixed(Math.min(6,Math.max(0,Number(form.precision)||0)))+" "+form.unit : "Enter source values")}. This check does not save patient results.</p>
+                {approvalRequired && <label className="flex items-start gap-2"><Checkbox aria-label="Laboratory approves formula, source IDs and units" checked={calculationApproved} disabled={bindingIssues.length>0 || calculationSources.isError || calculationSources.isPending} onChange={event=>setCalculationApproved(event.target.checked)} />I am authorized by the laboratory to approve this formula, source IDs, output unit and precision for this test. Approval is recorded with my account in the audit history.</label>}
+              </section>}
               <CompactField id="param-order" label="OrderNo">
                 <Input
                   id="param-order"
@@ -1164,7 +1196,7 @@ export function LabTestParameterContent() {
                 variant="default"
                 size="sm"
                 onClick={handleSave}
-                disabled={editingId !== null || saveMutation.isPending}
+                disabled={editingId !== null || saveMutation.isPending || calculationBlocked}
               >
                 {saveMutation.isPending ? "Saving..." : "Submit"}
               </Button>
@@ -1173,7 +1205,7 @@ export function LabTestParameterContent() {
                 variant="default"
                 size="sm"
                 onClick={handleSave}
-                disabled={editingId === null || saveMutation.isPending}
+                disabled={editingId === null || saveMutation.isPending || calculationBlocked}
               >
                 {saveMutation.isPending ? "Saving..." : "Update"}
               </Button>

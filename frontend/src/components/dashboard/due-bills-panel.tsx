@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { BillsPanel } from "@/components/dashboard/bills-panel";
 import { BillsTable, type ColumnDef } from "@/components/dashboard/bills-table";
-import { TableCell, TableRow } from "@/components/ui/table";
 import { queryKeys } from "@/lib/query-keys";
 import { fetchDueBills } from "@/services/dashboard";
 import { formatMoney } from "@/lib/utils";
@@ -61,7 +60,8 @@ export function DueBillsPanel() {
 
   return (
     <BillsPanel
-      title="Today's Due Bills"
+      title="Today Due Bills"
+      referenceLayout
       isLoading={isLoading}
       isFetching={isFetching}
       isError={isError}
@@ -69,26 +69,14 @@ export function DueBillsPanel() {
       onRefresh={() => void refetch()}
     >
       <BillsTable
+        tableClassName="lis-due-bills-table"
         columns={columns}
         rows={rows}
         rowKey={(bill) => bill.id}
         maxHeightClass="min-h-0 flex-1"
-        footer={
-          <TableRow className="border-t border-border bg-slate-50 hover:bg-slate-50">
-            <TableCell
-              colSpan={columns.length - 1}
-              className="border-t border-border px-3 py-2 text-right text-sm font-semibold text-slate-800"
-            >
-              Total
-            </TableCell>
-            <TableCell
-              className="w-[100px] border-t border-border px-3 py-2 text-right text-sm font-semibold text-slate-800"
-            >
-              {formatMoney(totalDue)}
-            </TableCell>
-          </TableRow>
-        }
+
       />
+      <div className="lis-due-total flex justify-end items-center gap-6 border-t border-border bg-slate-50 px-3 py-2 text-lg" aria-label="Outstanding due total"><span>Total</span><output className="w-[140px] text-right">{formatMoney(totalDue)}</output></div>
     </BillsPanel>
   );
 }

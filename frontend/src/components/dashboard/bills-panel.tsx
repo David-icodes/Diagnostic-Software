@@ -36,7 +36,7 @@ export function BillsPanel({
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <Card className={cn("lis-bills-panel flex h-[clamp(320px,44vh,520px)] flex-col p-0 shadow-sm",referenceLayout && "lis-today-reference")} >
+    <Card className={cn("lis-bills-panel flex h-[clamp(320px,44vh,520px)] flex-col p-0 shadow-sm",referenceLayout && "lis-today-reference", !expanded && "lis-bills-collapsed")} >
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <h2 className="truncate text-[15px] font-semibold text-slate-800">
           {title}

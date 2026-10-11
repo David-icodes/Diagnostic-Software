@@ -49,7 +49,17 @@ test("real MongoDB LIS creation, configuration, collection, formula revisions an
   const heading=await createParameter(user,{...base,itemType:"SUBTITLE",parameterName:"Synthetic Indices",displayOrder:1} as never);
   const rbc=await createParameter(user,{...base,parameterName:"Synthetic RBC",unit:"million/µL",displayOrder:2} as never);
   const mcv=await createParameter(user,{...base,parameterName:"Synthetic MCV",unit:"fL",displayOrder:3} as never);
-  const pcv=await createParameter(user,{...base,parameterName:"Synthetic PCV",unit:"%",displayOrder:4,calculation:{formulaId:"pcv",dependencyIds:[String(rbc._id),String(mcv._id)]}} as never);
+  const pcv=await createParameter(user,{...base,parameterName:"Synthetic PCV",unit:"%",displayOrder:4,calculationApproved:true,calculation:{formulaId:"pcv",dependencyIds:[String(rbc._id),String(mcv._id)]}} as never);
+  await assert.rejects(createParameter(user,{...base,parameterName:"Unapproved MCH",unit:"pg",calculation:{formulaId:"mch",dependencyIds:[String(rbc._id),String(mcv._id)]}} as never),/Laboratory approval/);
+  assert.equal(await LabTestParameter.countDocuments({parameterName:"Unapproved MCH"}),0);
+  const hb=await createParameter(user,{...base,parameterName:"Synthetic Hb",displayOrder:6,unit:"g/dL"} as never);
+  const mch=await createParameter(user,{...base,parameterName:"Synthetic MCH",displayOrder:7,unit:"pg",calculationApproved:true,calculation:{formulaId:"mch",dependencyIds:[String(hb._id),String(rbc._id)],precision:2}} as never);
+  const calculatedMcv=await createParameter(user,{...base,parameterName:"Synthetic Calculated MCV",displayOrder:8,unit:"fL",calculationApproved:true,calculation:{formulaId:"mcv",dependencyIds:[String(pcv._id),String(rbc._id)],precision:2}} as never);
+  await updateParameter(String(mch._id),user,{calculation:{formulaId:"mch",dependencyIds:[String(hb._id),String(rbc._id)],precision:2}});
+  assert.equal(await LabTestParameter.countDocuments({parameterName:"Synthetic MCH"}),1);
+  await assert.rejects(updateParameter(String(mch._id),user,{calculation:{formulaId:"mch",dependencyIds:[String(hb._id),String(rbc._id)],precision:3}}),/Laboratory approval/);
+  await assert.rejects(updateParameter(String(mcv._id),user,{calculationApproved:true,calculation:{formulaId:"mcv",dependencyIds:[String(pcv._id),String(rbc._id)]}}),/Circular/);
+  assert.ok((await getParameter(String(calculatedMcv._id))).calculation);
   const narrative=await createParameter(user,{...base,itemType:"TEXT_AREA",parameterName:"Synthetic Comment",displayOrder:5,defaultValue:"Configured text\nSecond line"} as never);
   assert.equal((await getParameter(String(heading._id))).itemType,"SUBTITLE");assert.equal((await getParameter(String(narrative._id))).defaultValue,"Configured text\nSecond line");assert.deepEqual((await getParameter(String(pcv._id))).calculation?.dependencyIds,[String(rbc._id),String(mcv._id)]);
   const patient=await Patient.create({patientId:"SYNTHETIC-P001",firstName:"Synthetic",fullName:"Synthetic Patient",gender:"male",age:30,mobile:"0000000000",createdBy:userId});
@@ -58,9 +68,11 @@ test("real MongoDB LIS creation, configuration, collection, formula revisions an
   for(const status of ["COLLECTED","REJECTED","RECOLLECTED","COLLECTED","RECEIVED","PROCESSED"] as const){const updated=await updateLabSampleStatus(user,String(sample._id),{status,time:"10:30",comments:"Synthetic "+status});assert.equal(updated.sampleStatus,status);assert.equal((await LabSample.findById(sample._id))?.sampleStatus,status);}
   assert.equal((await LabSample.findById(sample._id))?.history[1].comments,"Synthetic REJECTED");assert.equal((await LabSample.findById(sample._id))?.history.length,6);
   const listed=await listLabSamples({mode:"criteria",billNumber:"SYNTHETIC-B001",page:1,limit:100,userId:user});assert.equal(listed.data[0].sampleStatus,"PROCESSED");assert.equal(await LabSample.countDocuments(),1);
-  const input={billId,testId,entries:[{parameterId:String(rbc._id),result:4},{parameterId:String(mcv._id),result:90},{parameterId:String(pcv._id),result:999},{parameterId:String(narrative._id),result:"Synthetic report\nSecond line"}]};
+  const input={billId,testId,entries:[{parameterId:String(rbc._id),result:4},{parameterId:String(mcv._id),result:90},{parameterId:String(pcv._id),result:999},{parameterId:String(hb._id),result:12},{parameterId:String(narrative._id),result:"Synthetic report\nSecond line"}]};
   await submitTestResults(user,input);assert.equal((await LabTestResult.findOne({parameterId:pcv._id}))?.result,36);
-  input.entries[0].result=5;await submitTestResults(user,input);const revised=await LabTestResult.findOne({parameterId:pcv._id});assert.equal(revised?.result,45);assert.equal(revised?.revisions[0].result,36);assert.equal(revised?.version,2);assert.equal(revised?.calculationSnapshot?.formulaId,"pcv");assert.equal(revised?.calculationSnapshot?.inputs[0].value,5);assert.equal(revised?.revisions[0].calculationSnapshot?.inputs[0].value,4);assert.equal(await AuditLog.countDocuments({action:"lab.calculation_configured"}),1);
+  assert.equal((await LabTestResult.findOne({parameterId:mch._id}))?.result,30);
+  assert.equal((await LabTestResult.findOne({parameterId:calculatedMcv._id}))?.result,90);
+  input.entries[0].result=5;await submitTestResults(user,input);const revised=await LabTestResult.findOne({parameterId:pcv._id});assert.equal(revised?.result,45);assert.equal(revised?.revisions[0].result,36);assert.equal(revised?.version,2);assert.equal(revised?.calculationSnapshot?.formulaId,"pcv");assert.equal(revised?.calculationSnapshot?.inputs[0].value,5);assert.equal(revised?.revisions[0].calculationSnapshot?.inputs[0].value,4);assert.equal(await AuditLog.countDocuments({action:"lab.calculation_configured"}),3);
   await assert.rejects(updateParameter(String(pcv._id),user,{itemType:"SUBTITLE"}),/recorded results/);
   const entry=await getBillResultEntry(billId);assert.equal(entry.tests[0].parameters[0].itemType,"SUBTITLE");assert.equal(entry.tests[0].parameters[4].itemType,"TEXT_AREA");
   await assert.rejects(assertBillDocumentAllowed(billId),/outstanding due/);await assert.rejects(assertResultReportAllowed(billId,[testId],false),/outstanding due/);

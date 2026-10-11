@@ -1,4 +1,4 @@
-import { CALCULATION_FORMULAS, calculationUnitsMatch, normalizeCalculationUnit } from "../../utils/configured-calculations";
+import { CALCULATION_FORMULAS, calculationUnitsMatch, normalizeCalculationUnit, calculationBindingChanged } from "../../utils/configured-calculations";
 import { Types, type FilterQuery, type HydratedDocument } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { isValidObjectId } from "../../utils/object-id";
@@ -92,10 +92,10 @@ export interface PaginatedParameters {
 export type CreateParameterInput = Omit<
   ILabTestParameter,
   "createdBy" | "createdAt" | "updatedAt"
->;
+> & { calculationApproved?: boolean };
 export type UpdateParameterInput = Partial<
   Omit<ILabTestParameter, "createdBy" | "createdAt" | "updatedAt">
->;
+> & { calculationApproved?: boolean };
 
 /** A persisted parameter document (mongoose docs expose `_id`). */
 export type ParameterDoc = ILabTestParameter & { _id: Types.ObjectId };
@@ -263,7 +263,7 @@ export async function listParameters({
   page: number;
   limit: number;
 }): Promise<PaginatedParameters> {
-  let ledgerFilter: FilterQuery<ILabTestParameter> = {};
+  const ledgerFilter: FilterQuery<ILabTestParameter> = {};
 
   if (testId) {
     ledgerFilter.testId = isValidObjectId(testId)
@@ -394,6 +394,8 @@ export async function createParameter(
   input: CreateParameterInput,
 ): Promise<ParameterDoc> {
   await ensureTestExists(String(input.testId));
+  if (input.calculation && (input.calculationApproved !== true || !input.calculation.dependencyIds?.length)) throw new ApiError(422, "Laboratory approval of the formula, explicit source IDs and units is required");
+  delete input.calculationApproved;
   await validateCalculationBinding(String(input.testId), input.calculation, input.unit, input.itemType);
   const referenceRange = composeReferenceRange(input);
   try {
@@ -403,7 +405,7 @@ export async function createParameter(
       referenceRange: input.itemType === "SUBTITLE" || input.itemType === "TEXT_AREA" ? undefined : referenceRange,
       createdBy: userId,
     });
-    if(input.calculation)await recordAudit({user:userId,action:"lab.calculation_configured",entityType:"LabTestParameter",entity:String(created._id),details:{calculation:input.calculation,unit:input.unit}});
+    if(input.calculation)await recordAudit({user:userId,action:"lab.calculation_configured",entityType:"LabTestParameter",entity:String(created._id),details:{calculation:input.calculation,unit:input.unit,laboratoryApproved:true}});
     return created;
   } catch (error) {
     if (isDuplicateKeyError(error)) {
@@ -428,6 +430,10 @@ export async function updateParameter(
   if (!parameter) {
     throw new ApiError(404, "Lab test parameter not found");
   }
+  const nextCalculation = input.calculation === undefined ? parameter.calculation : input.calculation;
+  const approvalRequired = calculationBindingChanged(nextCalculation, parameter.calculation, input.unit ?? parameter.unit, parameter.unit);
+  if (approvalRequired && (input.calculationApproved !== true || !nextCalculation?.dependencyIds?.length)) throw new ApiError(422, "Laboratory approval of the formula, explicit source IDs and units is required");
+  delete input.calculationApproved;
   if(input.itemType && input.itemType !== (parameter.itemType ?? "PARAMETER") && await LabTestResult.countDocuments({parameterId:parameter._id}))throw new ApiError(409,"An item with recorded results cannot change between Parameter, Subtitle and Text Area. Create a separate new item to preserve historical reports.");
   if (input.testId !== undefined) {
     await ensureTestExists(String(input.testId));
@@ -465,7 +471,7 @@ export async function updateParameter(
   }
   try {
     const saved = await parameter.save();
-    if(input.calculation !== undefined)await recordAudit({user:userId,action:"lab.calculation_updated",entityType:"LabTestParameter",entity:id,details:{calculation:input.calculation,unit:parameter.unit}});
+    if(input.calculation !== undefined || approvalRequired)await recordAudit({user:userId,action:"lab.calculation_updated",entityType:"LabTestParameter",entity:id,details:{calculation:nextCalculation,unit:parameter.unit,approvalRequired,...(approvalRequired?{laboratoryApproved:true}:{})}});
     return saved;
   } catch (error) {
     if (isDuplicateKeyError(error)) {
