@@ -12,7 +12,7 @@
  */
 
 import { patientAgeLabel } from "../../utils/patient-age";
-import { billCompletion } from "./bill-completion";
+import { billCompletion, pendingTestCount } from "./bill-completion";
 import type { FilterQuery, Types } from "mongoose";
 import { LabBill, type ILabBill } from "../../models/lab-bill.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
@@ -26,6 +26,7 @@ export interface DashboardSummary {
   labBills: number;
   completedTests: number;
   pendingTests: number;
+  pendingTestCount: number;
   date: string;
 }
 
@@ -131,10 +132,13 @@ export async function getSummary({
   const states = await completionByBill(bills);
   const completed = [...states.values()].filter(Boolean).length;
 
+  const results = await LabTestResult.find({billId:{$in:bills.map(bill=>bill._id)}}).select("billId patientId testId parameterId result").lean().exec();
+  const pending = pendingTestCount(bills.map(bill=>({id:String(bill._id),patientId:String(bill.patientId?._id??""),testIds:bill.items.map(item=>String(item.testId))})), results.map(result=>({...result,billId:String(result.billId),patientId:String(result.patientId),testId:String(result.testId),parameterId:String(result.parameterId)})));
   return {
     labBills: bills.length,
     completedTests: completed,
     pendingTests: Math.max(0, bills.length - completed),
+    pendingTestCount: pending,
     date: formatDashboardDate(),
   };
 }

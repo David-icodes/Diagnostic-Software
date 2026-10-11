@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 export interface ColumnDef<T> {
   key: string;
+  width?: string;
   label: React.ReactNode;
   align?: "left" | "right" | "center";
   className?: string;
@@ -43,6 +44,7 @@ export function BillsTable<T>({
   return (
     <div className={cn("overflow-auto", maxHeightClass)}>
       <table className={cn("min-w-full table-fixed border-collapse text-sm", tableClassName)}>
+        {columns.some(column => column.width) && <colgroup>{columns.map(column => <col key={column.key} style={{width:column.width}} />)}</colgroup>}
         <TableHeader className="sticky top-0 z-10">
           <TableRow className="border-b border-border bg-muted hover:bg-muted">
             {columns.map((column) => (

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { billCompletion } from "./bill-completion";
+import { billCompletion, pendingTestCount } from "./bill-completion";
 
 test("one bill is one completion unit; partial multi-test bills stay pending", () => {
   const bills = [1, 3, 3, 5].map((count, index) => ({ id: String(index), patientId: "patient", testIds: Array.from({ length: count }, (_, i) => `t${i}`) }));
@@ -24,3 +24,5 @@ test("completion preserves CLOSED result state, exact bill/patient/test and safe
   const states = billCompletion(bills, [row, row]);
   assert.deepEqual([...states.values()], [true, false, false]);
 });
+
+test("pending tests differ from pending bills and ignore duplicate items and unrelated patients",()=>{const bills=[{id:"b",patientId:"p",testIds:["a","b","b","c"]}];const result={billId:"b",patientId:"p",testId:"a",parameterId:"x",result:0};assert.equal(pendingTestCount(bills,[result,{...result,testId:"b",patientId:"other"}]),2);assert.equal(pendingTestCount([],[]),0);});

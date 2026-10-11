@@ -222,3 +222,20 @@
  .lis-dashboard .lis-today-bills-table th{white-space:nowrap;}
 }
 .lis-report-paper tbody td.lis-abnormal-result{font-size:12pt;font-weight:700;}
+
+@media screen {
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td){font-size:16px;line-height:1.4;padding:8px 6px;}
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td):nth-child(1){width:3%;padding-left:5px;padding-right:3px;}
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td):nth-child(2){width:21%;}
+ .lis-dashboard .lis-bills-panel .lis-today-bills-table :is(th,td):nth-child(4){width:30%;}
+ .lis-dashboard .lis-today-bills-table th{text-transform:none;letter-spacing:normal;font-weight:700;color:#505050;}
+ .lis-dashboard .lis-today-bills-table tr[data-completed] td{color:#2674b9;font-weight:700;}
+ .lis-dashboard .lis-metric-label{font-size:16px;text-transform:none;letter-spacing:normal;font-weight:400;}
+ .lis-dashboard .lis-metric-date{font-size:16px;border-top-width:3px;padding-top:10px;}
+ .lis-dashboard .lis-metric-divider{border-top-width:3px;}
+ .lis-dashboard .lis-bills-panel:has(.lis-today-bills-table) h2{font-size:22px;font-weight:400;}
+}
+
+@media screen {
+ .lis-dashboard .lis-bills-panel table.lis-today-bills-table td:is(:nth-child(4),:nth-child(5)){white-space:normal;overflow-wrap:break-word;text-overflow:clip;}
+}

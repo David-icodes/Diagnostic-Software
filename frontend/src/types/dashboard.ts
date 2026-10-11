@@ -2,6 +2,7 @@ export interface DashboardSummary {
   labBills: number;
   completedTests: number;
   pendingTests: number;
+  pendingTestCount: number;
   date: string;
 }
 

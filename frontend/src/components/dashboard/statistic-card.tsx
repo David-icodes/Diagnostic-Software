@@ -49,7 +49,7 @@ export function StatisticCard({
           <div className="lis-metric-date mt-auto border-t border-border pt-2 text-[11px] text-slate-500">
             {hint}
           </div>
-        ) : null}
+        ) : <div aria-hidden className="lis-metric-divider mt-auto border-t border-border" />}
       </div>
     </Card>
   );

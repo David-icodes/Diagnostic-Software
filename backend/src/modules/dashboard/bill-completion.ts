@@ -20,3 +20,10 @@ export function billCompletion(
       return Boolean(entered?.size);
     })]));
 }
+
+/** Count unique ordered tests still OPEN, independently of bill completion. */
+export function pendingTestCount(bills: Parameters<typeof billCompletion>[0], results: Parameters<typeof billCompletion>[1]): number {
+ const tests = bills.flatMap(bill => [...new Set(bill.testIds)].map(testId => ({id:`${bill.id}|${testId}`,patientId:bill.patientId,testIds:[testId]})));
+ const states = billCompletion(tests, results.map(result => ({...result,billId:`${result.billId}|${result.testId}`})));
+ return [...states.values()].filter(value => !value).length;
+}
