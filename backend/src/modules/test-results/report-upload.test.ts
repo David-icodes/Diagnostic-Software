@@ -1,13 +1,22 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { validateReportPdf, MAX_REPORT_BYTES, saveReportUpload, listReportUploads, readReportUpload } from "./report-upload.service";
 import { Types } from "mongoose";
 import { LabBill } from "../../models/lab-bill.model";
 import { LabReportUpload } from "../../models/lab-report-upload.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
 import { AuditLog } from "../../models/audit-log.model";
+import { PDFDocument } from "pdf-lib";
+process.env.MONGODB_URI = "mongodb://127.0.0.1/report_upload_tests_no_connection";
+process.env.JWT_SECRET = "test-only-report-upload-validation-secret";
+for (const key of ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"]) process.env[key] = "";
+const modules = Promise.all([import("./report-upload.service.js"), import("../documents/pdf-storage.service.js")]);
+async function syntheticPdf() {
+  const pdf = await PDFDocument.create(); pdf.addPage([612, 792]).drawText("Synthetic attachment");
+  return Buffer.from(await pdf.save());
+}
 
-test("report upload validates bounded PDF bytes and safe PDF filename", () => {
+test("report upload validates bounded PDF bytes and safe PDF filename", async () => {
+  const [{ validateReportPdf, MAX_REPORT_BYTES }] = await modules;
   const pdf = Buffer.from("%PDF-1.4\nunit test fixture\n%%EOF\n");
   assert.equal(validateReportPdf(pdf, "C:\\reports\\test.pdf").fileName, "test.pdf");
   assert.throws(() => validateReportPdf(Buffer.from("not PDF"), "test.pdf"));
@@ -18,10 +27,12 @@ test("report upload validates bounded PDF bytes and safe PDF filename", () => {
 });
 
 test("uploaded report retrieval rechecks submission, dues and exact patient/bill/test binding", async (t) => {
+  const [{ readReportUpload }] = await modules;
   const billId = new Types.ObjectId(); const testId = new Types.ObjectId(); const patientId = new Types.ObjectId();
   const uploadId = new Types.ObjectId(); const resultId = new Types.ObjectId();
   const bill = { _id: billId, patientId, status: "generated", items: [{ testId }], dueAmount: 0 };
-  const report = { _id: uploadId, fileName: "report.pdf", content: Buffer.from("PDF") };
+  const report = { _id: uploadId, fileName: "report.pdf", content: Buffer.from("PDF"),
+    uploadedBy: new Types.ObjectId(), storageKey: undefined as string | undefined };
   let submitted = true; let missing = false; let reads = 0;
   const q = (value: unknown) => { const chain = { exec: async () => value, select: () => chain, lean: () => chain, sort: () => chain }; return chain; };
   t.mock.method(LabBill, "findById", () => q(bill));
@@ -33,17 +44,28 @@ test("uploaded report retrieval rechecks submission, dues and exact patient/bill
     assert.equal(filter.patientId, patientId); assert.equal(filter.testId, String(testId)); return q(missing ? null : report);
   });
   assert.equal(await readReportUpload(String(billId), String(testId), String(uploadId)), report);
+  const legacy = Buffer.from(report.content);
+  report.storageKey = "b".repeat(64);
+  const [, { pdfStorage }] = await modules;
+  t.mock.method(pdfStorage, "retrieve", async (key: string, scope: import("../documents/pdf-storage.service").PdfScope) => {
+    assert.equal(key, report.storageKey); assert.deepEqual(scope, { owner: String(report.uploadedBy), billId: String(billId),
+      patientId: String(patientId), testId: String(testId), kind: "attachment" }); return legacy;
+  });
+  assert.deepEqual((await readReportUpload(String(billId), String(testId), String(uploadId))).content, legacy);
+  report.storageKey = undefined;
   bill.dueAmount = 25; await assert.rejects(readReportUpload(String(billId), String(testId), String(uploadId)), /outstanding due/);
-  assert.equal(reads, 1);
+  assert.equal(reads, 2);
   bill.dueAmount = 0; submitted = false; await assert.rejects(readReportUpload(String(billId), String(testId), String(uploadId)), /Submit/);
-  assert.equal(reads, 1);
+  assert.equal(reads, 2);
   submitted = true; missing = true; await assert.rejects(readReportUpload(String(billId), String(testId), String(uploadId)), /not found/);
 });
 
 test("uploads bind the actual bill patient and ordered test without completing results", async (t) => {
+  const [{ saveReportUpload, listReportUploads }, { pdfStorage }] = await modules;
+  t.mock.method(pdfStorage, "store", async () => undefined);
   const billId = new Types.ObjectId(); const testId = new Types.ObjectId(); const patientId = new Types.ObjectId();
   const userId = new Types.ObjectId(); const uploadId = new Types.ObjectId();
-  const pdf = Buffer.from("%PDF-1.4\nmock report\n%%EOF\n");
+  const pdf = await syntheticPdf();
   let saved: Record<string, unknown> | undefined;
   t.mock.method(LabBill, "findById", () => ({ exec: async () => ({ _id: billId, patientId, status: "generated", items: [{ testId }] }) }));
   t.mock.method(LabReportUpload, "create", async (input: Record<string, unknown>) => { saved = input; return { ...input, _id: uploadId, createdAt: new Date() }; });
@@ -61,4 +83,27 @@ test("uploads bind the actual bill patient and ordered test without completing r
   assert.equal(metadata.length, 1); assert.equal("content" in metadata[0], false);
   t.mock.method(LabReportUpload, "create", async () => { throw new Error("storage unavailable"); });
   await assert.rejects(saveReportUpload(String(userId), String(billId), String(testId), "report.pdf", pdf), /storage unavailable/);
+  await assert.rejects(saveReportUpload(String(userId), String(billId), String(testId), "report.pdf",
+    Buffer.from("%PDF-1.4\nnot a parseable document\n%%EOF")), /invalid/);
+});
+
+test("configured attachment upload persists only a restricted key; failures never create a successful attachment", async (t) => {
+  const [{ saveReportUpload }, { pdfStorage }] = await modules;
+  const billId = new Types.ObjectId(); const testId = new Types.ObjectId(); const patientId = new Types.ObjectId();
+  const userId = new Types.ObjectId(); const key = "a".repeat(64);
+  const pdf = await syntheticPdf();
+  t.mock.method(LabBill, "findById", () => ({ exec: async () => ({ _id: billId, patientId, status: "generated", items: [{ testId }] }) }));
+  let creates = 0;
+  t.mock.method(pdfStorage, "store", async (bytes: Buffer, scope: import("../documents/pdf-storage.service").PdfScope) => {
+    assert.deepEqual(bytes, pdf); assert.deepEqual(scope, { owner: String(userId), billId: String(billId),
+      patientId: String(patientId), testId: String(testId), kind: "attachment" }); return key;
+  });
+  t.mock.method(LabReportUpload, "create", async (data: any) => {
+    creates++; assert.equal(data.storageKey, key); assert.equal("content" in data, false);
+    return { ...data, _id: new Types.ObjectId(), createdAt: new Date() };
+  });
+  await saveReportUpload(String(userId), String(billId), String(testId), "synthetic.pdf", pdf);
+  t.mock.method(pdfStorage, "store", async () => { throw new Error("restricted storage unavailable"); });
+  await assert.rejects(saveReportUpload(String(userId), String(billId), String(testId), "synthetic.pdf", pdf), /unavailable/);
+  assert.equal(creates, 1);
 });

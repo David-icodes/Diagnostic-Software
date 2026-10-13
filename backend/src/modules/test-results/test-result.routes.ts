@@ -1,4 +1,5 @@
 import { Router, raw } from "express";
+import { performance } from "node:perf_hooks";
 import { uploadReport, listUploads, downloadUpload } from "./report-upload.controller";
 import { ApiError } from "../../utils/api-error";
 import { authenticate } from "../../middleware/authenticate";
@@ -16,6 +17,10 @@ import {
 
 const router = Router();
 
+router.use((req, res, next) => {
+  if (req.method === "GET" && /^\/report-uploads\/[^/]+$/.test(req.path)) res.locals.reportAuthStarted = performance.now();
+  next();
+});
 router.use(authenticate);
 router.get("/report-uploads", requirePermission("test_results.view"), listUploads);
 const parseReport = raw({ type: "application/pdf", limit: "5mb" });

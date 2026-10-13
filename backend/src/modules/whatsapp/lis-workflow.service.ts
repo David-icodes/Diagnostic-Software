@@ -21,6 +21,8 @@ import { pdfFailure, rendererOrigin, rendererTarget, rendererErrorKind } from ".
 import type { ReviewLisMessageInput } from "../../validations/whatsapp-lis";
 import { pdfStorage, type PdfScope } from "../documents/pdf-storage.service";
 import { validatePdf } from "../documents/pdf-integrity";
+import { timedPipeline } from "./pipeline-timing";
+import { pdfBrowserPool } from "./pdf-browser-pool";
 
 const json = (value: unknown) => JSON.parse(JSON.stringify(value));
 const fingerprint = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -117,10 +119,10 @@ export function lisConfigurationError(input: ReviewLisMessageInput, mobile?: str
 }
 
 async function renderPdf(reviewId: string, req: Request): Promise<Buffer> {
-  const { chromium } = await import("playwright");
   const frontendOrigin = rendererOrigin(env.FRONTEND_URL);
   const apiOrigin = rendererOrigin(env.WHATSAPP_RENDER_API_ORIGIN);
-  let browser;
+  let lease: Awaited<ReturnType<typeof pdfBrowserPool.acquire>> | undefined;
+  let context: import("playwright").BrowserContext | undefined;
   let stage = "browser startup";
   const started = Date.now();
   const origins = [frontendOrigin, apiOrigin];
@@ -142,9 +144,9 @@ async function renderPdf(reviewId: string, req: Request): Promise<Buffer> {
     stage = "authenticated session setup";
     if (typeof session !== "string" || !session) throw new Error("Renderer session is missing");
     stage = "browser startup";
-    browser = await chromium.launch({ headless: true });
+    lease = await timedPipeline("browser startup", () => pdfBrowserPool.acquire());
     stage = "browser context creation";
-    const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    context = await timedPipeline("context creation", () => lease!.browser.newContext({ viewport: { width: 1280, height: 900 } }));
     // Only the original API origin receives this session cookie; never send it
     // to arbitrary logos/remote resources or expose it in the frontend URL.
     stage = "authenticated session setup";
@@ -189,7 +191,7 @@ async function renderPdf(reviewId: string, req: Request): Promise<Buffer> {
     });
     page.on("pageerror", (error) => record("page-error", { kind: rendererErrorKind(error.message) }));
     stage = "document page loading";
-    const navigation = await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
+    const navigation = await timedPipeline("document navigation", () => page!.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 }));
     record("navigation", { status: navigation?.status() ?? null, final: rendererTarget(page.url(), origins) });
     if (!navigation?.ok()) throw new Error(`Document navigation failed (HTTP ${navigation?.status() ?? 0})`);
     const finalUrl = new URL(page.url());
@@ -197,7 +199,7 @@ async function renderPdf(reviewId: string, req: Request): Promise<Buffer> {
     stage = "authenticated document loading";
     // New pages expose terminal errors too. Older deployed frontends still expose ready.
     const state = page.locator('[data-whatsapp-document="ready"], [data-whatsapp-document="error"]');
-    const failure = await Promise.race([state.waitFor({ timeout: 60000 }).then(() => null), documentFailure]);
+    const failure = await timedPipeline("document readiness", () => Promise.race([state.waitFor({ timeout: 60000 }).then(() => null), documentFailure]));
     if (failure) { pageState = "api-error"; throw failure; }
     pageState = await state.getAttribute("data-whatsapp-document") ?? "unknown";
     if (pageState !== "ready") {
@@ -206,19 +208,19 @@ async function renderPdf(reviewId: string, req: Request): Promise<Buffer> {
       throw new Error(`Authenticated document failed (HTTP ${Number.isInteger(status) ? status : 0})`);
     }
     stage = "document asset loading";
-    await page.evaluate(`(async () => {
+    await timedPipeline("fonts and images", () => page!.evaluate(`(async () => {
       await document.fonts.ready;
       await Promise.all(Array.from(document.querySelectorAll(".lis-print-document img"), async (image) => {
         await image.decode();
         if (!image.naturalWidth) throw new Error("Document image unavailable");
       }));
-    })()`);
+    })()`));
     await page.emulateMedia({ media: "print" });
     // The document-only route has no print dialog to mask the application body
     // background. Keep the PDF page white and omit development overlays.
     await page.addStyleTag({ content: "@media print { html, body { background: white !important; height: auto !important; min-height: 0 !important; } nextjs-portal { display: none !important; } }" });
     stage = "A4 PDF rendering";
-    const pdf = await page.pdf({ format: "A4", preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false });
+    const pdf = await timedPipeline("PDF rendering", () => page!.pdf({ format: "A4", preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false }));
     if (pdf.length > 16 * 1024 * 1024 || !pdf.subarray(0, 5).equals(Buffer.from("%PDF-"))) throw new Error("Invalid generated PDF");
     console.info("[WhatsApp PDF]", { diagnosticId, stage, outcome: "generated", bytes: pdf.length,
       target: rendererTarget(target, origins), apiOrigin, pageState, documentStatus, documentCookiePresent,
@@ -234,14 +236,19 @@ async function renderPdf(reviewId: string, req: Request): Promise<Buffer> {
       kind: rendererErrorKind(error instanceof Error ? error.message : ""), events });
     throw new ApiError(503, diagnostic.message);
   } finally {
-    await browser?.close().catch(() => console.error("[WhatsApp PDF] Browser cleanup failed"));
+    try { await context?.close(); }
+    catch {
+      console.error("[WhatsApp PDF] Context cleanup failed; discarding the browser process");
+      await lease?.discard().catch(() => console.error("[WhatsApp PDF] Browser cleanup failed"));
+    }
+    finally { lease?.release(); }
   }
 }
 
 export async function reviewLisMessage(input: ReviewLisMessageInput, req: Request) {
   pruneReviews();
   if (reviews.size >= 30) throw new ApiError(429, "Too many document reviews are open. Wait for an existing review to expire.");
-  const context = await loadLisContext(input, req.user!.name);
+  const context = await timedPipeline("report lookup", () => loadLisContext(input, req.user!.name));
   const needsPdf = LIS_TEMPLATES[input.templateName].document;
   if (needsPdf && activeRenderers >= 2) throw new ApiError(429, "Documents are being prepared. Please retry shortly.");
   const id = randomUUID();
@@ -255,9 +262,9 @@ export async function reviewLisMessage(input: ReviewLisMessageInput, req: Reques
       try { pdf = await renderPdf(id, req); }
       finally { activeRenderers--; }
       const scope = pdfScope(review);
-      await validatePdf(pdf, scope.kind);
-      review.storedPdfKey = await pdfStorage.store(pdf, scope);
-      if (review.storedPdfKey) pdf = await pdfStorage.retrieve(review.storedPdfKey, scope);
+      await timedPipeline("PDF validation", () => validatePdf(pdf, scope.kind));
+      review.storedPdfKey = await timedPipeline("restricted storage", () => pdfStorage.store(pdf, scope));
+      if (review.storedPdfKey) pdf = await timedPipeline("restricted retrieval", () => pdfStorage.retrieve(review.storedPdfKey!, scope));
       const retainedBytes = [...reviews.values()].reduce((sum, row) => sum + (row.pdf?.length ?? 0), 0);
       if (retainedBytes + pdf.length > 64 * 1024 * 1024) throw new ApiError(429, "Document review capacity reached. Wait for an existing review to expire.");
       review.pdf = pdf;
@@ -303,15 +310,15 @@ export async function sendLisReview(reviewId: string, req: Request) {
     if (pdf && !review.storedPdfKey) {
       review.storedPdfKey = await pdfStorage.store(pdf, pdfScope(review));
     }
-    const attachment = review.storedPdfKey ? await pdfStorage.retrieve(review.storedPdfKey, pdfScope(review)) : pdf;
+    const attachment = review.storedPdfKey ? await timedPipeline("restricted retrieval", () => pdfStorage.retrieve(review.storedPdfKey!, pdfScope(review))) : pdf;
     if (attachment) await validatePdf(attachment, pdfScope(review).kind);
-    const mediaId = attachment ? await uploadLisPdf(attachment, review.filename!) : undefined;
+    const mediaId = attachment ? await timedPipeline("Meta media upload", () => uploadLisPdf(attachment, review.filename!)) : undefined;
     // Recheck report availability and dues after PDF upload as well.
     if (review.input.templateName === "lab_report_ready") await assertResultReportAllowed(review.input.billId, review.input.testIds, review.input.workflow !== "lab-reprint");
     attempted = true;
-    const result = await sendWhatsAppTemplateMessage({ to: latest.mobile, templateName: review.input.templateName,
+    const result = await timedPipeline("Meta template request", () => sendWhatsAppTemplateMessage({ to: latest.mobile, templateName: review.input.templateName,
       languageCode: languageFor(review.input.templateName, env),
-      components: templateComponents(review.input.templateName, latest.variables, mediaId, review.filename) });
+      components: templateComponents(review.input.templateName, latest.variables, mediaId, review.filename) }));
     review.result = result; review.state = "sent";
     console.log("[WhatsApp Outgoing]", { templateName: review.input.templateName, metaMessageId: result.metaMessageId, workflow: review.input.workflow ?? "parameter-results", recipient: maskedRecipient(latest.mobile), status: "accepted" });
     // Never downgrade a delivery/read status already received by the webhook.

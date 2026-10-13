@@ -7,7 +7,8 @@ interface ILabReportUpload {
   uploadedBy: Types.ObjectId;
   fileName: string;
   size: number;
-  content: Buffer;
+  content?: Buffer;
+  storageKey?: string;
   createdAt: Date;
 }
 
@@ -19,7 +20,8 @@ const schema = new Schema<ILabReportUpload>({
   uploadedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   fileName: { type: String, required: true, maxlength: 160 },
   size: { type: Number, required: true },
-  content: { type: Buffer, required: true, select: false },
+  content: { type: Buffer, required: function () { return !this.storageKey; }, select: false },
+  storageKey: { type: String, match: /^[a-f0-9]{64}$/ },
 }, { timestamps: { createdAt: true, updatedAt: false } });
 schema.index({ billId: 1, testId: 1, createdAt: -1 });
 export const LabReportUpload = model<ILabReportUpload>("LabReportUpload", schema);

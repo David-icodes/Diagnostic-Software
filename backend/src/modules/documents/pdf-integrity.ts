@@ -1,7 +1,7 @@
 import { PDFDocument } from "pdf-lib";
 import { ApiError } from "../../utils/api-error";
 
-export type PdfKind = "report" | "invoice";
+export type PdfKind = "report" | "invoice" | "attachment";
 export const MAX_PDF_BYTES = 16 * 1024 * 1024;
 
 /** Parse and check every page without modifying the original clinical PDF bytes. */
@@ -15,6 +15,11 @@ export async function validatePdf(pdf: Buffer, kind: PdfKind): Promise<void> {
     for (const page of pages) {
       let { width, height } = page.getSize();
       if (Math.abs(page.getRotation().angle % 180) === 90) [width, height] = [height, width];
+      // External attachments may have legitimate non-A4 page sizes. Preserve their bytes.
+      if (kind === "attachment") {
+        if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) throw new Error();
+        continue;
+      }
       const expected = kind === "report" ? [595.28, 841.89] : [841.89, 595.28];
       if (Math.abs(width - expected[0]) > 2 || Math.abs(height - expected[1]) > 2) throw new Error();
     }

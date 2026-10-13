@@ -3,6 +3,9 @@ import { LabBill } from "../../models/lab-bill.model";
 import { LabReportUpload } from "../../models/lab-report-upload.model";
 import { ApiError } from "../../utils/api-error";
 import { assertResultReportAllowed } from "./result-workflow.service";
+import { pdfStorage } from "../documents/pdf-storage.service";
+import { validatePdf } from "../documents/pdf-integrity";
+import { timedPipeline } from "../whatsapp/pipeline-timing";
 
 export const MAX_REPORT_BYTES = 5 * 1024 * 1024;
 export function validateReportPdf(content: unknown, name: string): { content: Buffer; fileName: string } {
@@ -26,8 +29,12 @@ async function orderedBill(billId: string, testId: string) {
 export async function saveReportUpload(userId: string, billId: string, testId: string, name: string, body: unknown) {
   const file = validateReportPdf(body, name);
   const bill = await orderedBill(billId, testId);
+  await validatePdf(file.content, "attachment");
+  const storageKey = await pdfStorage.store(file.content, { owner: userId, billId,
+    patientId: String(bill.patientId), testId, kind: "attachment" });
   const saved = await LabReportUpload.create({ billId: bill._id, patientId: bill.patientId, testId,
-    uploadedBy: userId, fileName: file.fileName, size: file.content.length, content: file.content });
+    uploadedBy: userId, fileName: file.fileName, size: file.content.length,
+    ...(storageKey ? { storageKey } : { content: file.content }) });
   return { id: String(saved._id), fileName: saved.fileName, size: saved.size, createdAt: saved.createdAt };
 }
 
@@ -39,10 +46,18 @@ export async function listReportUploads(billId: string, testId: string) {
 
 export async function readReportUpload(billId: string, testId: string, id: string) {
   if (!Types.ObjectId.isValid(id)) throw new ApiError(400, "Invalid uploaded report.");
-  const bill = await orderedBill(billId, testId);
-  // Retrieving printable attachments obeys the same fresh due/submission check.
-  await assertResultReportAllowed(billId, [testId]);
-  const row = await LabReportUpload.findOne({ _id: id, billId: bill._id, patientId: bill.patientId, testId }).select("+content").exec();
+  const bill = await timedPipeline("application authorization", async () => {
+    const ordered = await orderedBill(billId, testId);
+    // Retrieving printable attachments obeys the same fresh due/submission check.
+    await assertResultReportAllowed(billId, [testId]);
+    return ordered;
+  });
+  const row = await timedPipeline("attachment metadata lookup", () => LabReportUpload.findOne({ _id: id, billId: bill._id, patientId: bill.patientId, testId }).select("+content").exec());
   if (!row) throw new ApiError(404, "Uploaded report not found.");
+  if (row.storageKey) {
+    row.content = await pdfStorage.retrieve(row.storageKey, { owner: String(row.uploadedBy), billId,
+      patientId: String(bill.patientId), testId, kind: "attachment" });
+  }
+  if (!row.content?.length) throw new ApiError(502, "Uploaded report content is unavailable.");
   return row;
 }

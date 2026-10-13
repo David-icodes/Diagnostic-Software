@@ -10,6 +10,29 @@ import { WhatsAppMessage } from "../../models/whatsapp-message.model";
 import type { Request } from "express";
 import { PDFDocument, PageSizes } from "pdf-lib";
 
+test("lost Meta response remains unconfirmed and the same review cannot send again", async (t) => {
+  const { reviewLisMessage, sendLisReview } = await workflow;
+  const { env } = await import("../../config/env.js");
+  const original = { language: env.WHATSAPP_PATIENT_THANK_YOU_LANGUAGE, token: env.WHATSAPP_ACCESS_TOKEN, phone: env.WHATSAPP_PHONE_NUMBER_ID };
+  Object.assign(env, { WHATSAPP_PATIENT_THANK_YOU_LANGUAGE: "fixture-locale", WHATSAPP_ACCESS_TOKEN: "fixture-token", WHATSAPP_PHONE_NUMBER_ID: "fixture-phone" });
+  t.after(() => Object.assign(env, { WHATSAPP_PATIENT_THANK_YOU_LANGUAGE: original.language, WHATSAPP_ACCESS_TOKEN: original.token, WHATSAPP_PHONE_NUMBER_ID: original.phone }));
+  t.mock.method(LabBill, "findById", () => query(bill));
+  t.mock.method(Patient, "findById", () => query(patient));
+  t.mock.method(LabSample, "find", () => query([]));
+  let auditStatus: unknown; let requests = 0;
+  t.mock.method(AuditLog, "create", async (entry: any) => { auditStatus = entry.details?.status; return {}; });
+  t.mock.method(globalThis, "fetch", async (url: string | URL) => {
+    if (String(url).includes("graph.facebook.com")) { requests++; throw new Error("Response lost after request transmission"); }
+    return new Response(JSON.stringify({ name: "Synthetic Centre" }));
+  });
+  const req = { user: { id: String(new Types.ObjectId()), name: "Synthetic Operator" }, cookies: {} } as unknown as Request;
+  const review = await reviewLisMessage(input, req);
+  await assert.rejects(sendLisReview(review.reviewId, req));
+  assert.equal(auditStatus, "failed_or_unconfirmed");
+  await assert.rejects(sendLisReview(review.reviewId, req), /already in progress or has been attempted/);
+  assert.equal(requests, 1);
+});
+
 // Test-only configuration. No database connection or actual Meta call is made.
 process.env.MONGODB_URI = "mongodb://127.0.0.1/test_whatsapp_no_connection";
 process.env.JWT_SECRET = "unit-test-only-not-a-deployment-secret";
@@ -203,9 +226,17 @@ test("renderer failure deletes its job; retry prepares one attachment without se
     locator: () => ({ waitFor: async () => {}, getAttribute: async (name: string) => name === "data-http-status" ? httpStatus : marker }), evaluate: async () => {}, emulateMedia: async () => {},
     addStyleTag: async () => {}, pdf: async () => { pdfCalls++; return fixturePdf; },
   };
+  const openContexts = new Set<object>(); let contextCreations = 0;
   t.mock.method(chromium, "launch", async () => ({
-    newContext: async () => ({ addCookies: async () => {}, cookies: async () => [{ name: "diagnostic_token", expires: -1 }], route: async () => {}, newPage: async () => page }), close: async () => {},
+    isConnected: () => true,
+    newContext: async () => {
+      const context = { addCookies: async () => {}, cookies: async () => [{ name: "diagnostic_token", expires: -1 }], route: async () => {}, newPage: async () => page,
+        close: async () => { openContexts.delete(context); } };
+      contextCreations++; openContexts.add(context); return context;
+    }, close: async () => {},
   }));
+  const { pdfBrowserPool } = await import("./pdf-browser-pool.js");
+  t.after(() => pdfBrowserPool.shutdown());
   const req = { user: { id: "review-owner", name: "Operator" }, cookies: { diagnostic_token: "test-only" } } as unknown as Request;
   const invoice = { ...input, templateName: "lab_invoice_ready" as const };
   await assert.rejects(reviewLisMessage(invoice, req), /document page loading/);
@@ -290,6 +321,8 @@ test("renderer failure deletes its job; retry prepares one attachment without se
   assert.equal((await sendLisReview(storedReview.reviewId, req)).metaMessageId, "wamid.stored-fixture");
   await sendLisReview(storedReview.reviewId, req);
   assert.equal(mediaUploads, 1); assert.equal(acceptedMessages, 1);
+  assert.ok(contextCreations > 1, "Each rendering operation creates its own context");
+  assert.equal(openContexts.size, 0, "Both failed and successful rendering close every context");
 });
 
 test("explicit Meta 131049 rejection is failed, keeps the code/exact text, and cannot be resubmitted", async (t) => {

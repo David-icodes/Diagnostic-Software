@@ -15,6 +15,21 @@ test("131049 is explained as failed delivery without retry, and success states r
   assert.equal(maskedRecipient("919876543210"), "***3210");
 });
 
+test("accepted, sent, delivered and read remain distinct; late webhook status cannot downgrade or resend", async (t) => {
+  const { handleWebhookPayload } = await webhook;
+  const row: Record<string,any> = {metaMessageId:"wamid.synthetic-performance",status:"accepted"};
+  t.mock.method(globalThis,"fetch",()=>{throw new Error("Delivery webhook must never send");});
+  t.mock.method(WhatsAppMessage,"findOneAndUpdate",async (filter:any,update:any)=>{
+    if(filter.status.$nin.includes(row.status))throw Object.assign(new Error("duplicate"),{code:11000});
+    Object.assign(row,update.$set);return row;
+  });
+  for(const status of ["sent","delivered","read","sent"]){
+    await handleWebhookPayload({entry:[{changes:[{value:{statuses:[{id:row.metaMessageId,status,recipient_id:"919876543210",timestamp:"1791528000"}]}}]}]});
+    if(status!=="sent" || !row.readAt)assert.equal(row.status,status);
+  }
+  assert.equal(row.status,"read");assert.ok(row.deliveredAt);assert.ok(row.readAt);
+});
+
 test("webhook records failed status and 131049; duplicate/late successes cannot overwrite it or resend", async (t) => {
   const { handleWebhookPayload } = await webhook;
   let row: Record<string, any> = { metaMessageId: "wamid.test", templateName: "patient_thank_you", workflow: "lab-reprint", status: "accepted" };

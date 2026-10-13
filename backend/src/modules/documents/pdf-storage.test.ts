@@ -5,8 +5,28 @@ import { Writable } from "node:stream";
 import type { StoredPdfAsset } from "../../models/pdf-asset.model";
 process.env.MONGODB_URI = "mongodb://127.0.0.1/storage_tests_no_connection";
 process.env.JWT_SECRET = "test-only-storage-validation-secret";
+for (const key of ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"]) process.env[key] = "";
 const modules = Promise.all([import("./pdf-storage.service.js"), import("../../config/cloudinary.js"), import("./pdf-integrity.js")]);
 const scope = { owner: "owner", patientId: "patient", billId: "bill", kind: "report" as const };
+test("storage failures identify the failed stage without exposing secrets; retry remains possible", async () => {
+  const [{ createPdfStorage }] = await modules;
+  const events: unknown[] = [];
+  const pdf = await fixture();
+  for (const failure of ["metadata lookup", "provider upload", "metadata persistence", "metadata verification"]) {
+    let failing = true;
+    const reject = () => { throw { http_code: 401, message: "secret-url-token-patient" }; };
+    const store = createPdfStorage({ cloudName: () => "fixture", diagnose: event => events.push(event),
+      find: async () => { if (failing && failure === "metadata lookup") reject(); return null; },
+      upload: async () => { if (failing && failure === "provider upload") reject(); return { assetId: "fixture" }; },
+      save: async asset => { if (failing && failure === "metadata persistence") reject(); return failing && failure === "metadata verification" ? { ...asset, bytes: 0 } : asset; },
+      download: async () => pdf });
+    await assert.rejects(store.store(pdf, scope), (error: any) => error.statusCode === 502 && error.message.includes(failure));
+    failing = false;
+    assert.match((await store.store(pdf, scope))!, /^[a-f0-9]{64}$/);
+  }
+  assert.deepEqual(events.map((event: any) => event.stage), ["metadata lookup", "provider upload", "metadata persistence", "metadata verification"]);
+  assert.doesNotMatch(JSON.stringify(events), /secret-url-token-patient/);
+});
 async function fixture(landscape = false) {
   const document = await PDFDocument.create();
   document.addPage(landscape ? [PageSizes.A4[1], PageSizes.A4[0]] : PageSizes.A4).drawText("Synthetic validation document");
@@ -127,4 +147,28 @@ test("SDK adapter uploads authenticated raw assets and retrieves through expirin
     assert.equal(result.status, "rejected");
     if (result.status === "rejected") { assert.equal(result.reason.statusCode, 502); assert.doesNotMatch(result.reason.message, /invalid-credential/); }
   }
+});
+
+test("multi-page attachments preserve exact bytes and test identity across service restarts", async () => {
+  const [{ createPdfStorage }, , { validatePdf }] = await modules;
+  const document = await PDFDocument.create();
+  document.addPage([612, 792]).drawText("Synthetic attachment page one");
+  document.addPage([700, 900]).drawText("Synthetic attachment page two");
+  const pdf = Buffer.from(await document.save()); await validatePdf(pdf, "attachment");
+  const records: StoredPdfAsset[] = []; const files = new Map<string, Buffer>(); let uploads = 0;
+  const deps = { cloudName: () => "synthetic", find: async (filter: Partial<StoredPdfAsset>) => records.find(row =>
+    Object.entries(filter).every(([key, value]) => row[key as keyof StoredPdfAsset] === value)) ?? null,
+    save: async (asset: StoredPdfAsset) => { records.push(asset); return asset; },
+    upload: async (bytes: Buffer, id: string) => { uploads++; files.set(id, Buffer.from(bytes)); return { assetId: id }; },
+    download: async (id: string) => files.get(id)! };
+  const first = createPdfStorage(deps); const attachmentScope = { ...scope, kind: "attachment" as const, testId: "test-one" };
+  const key = await first.store(pdf, attachmentScope);
+  const restarted = createPdfStorage(deps);
+  assert.deepEqual(await restarted.retrieve(key!, attachmentScope), pdf);
+  assert.equal(await restarted.store(pdf, attachmentScope), key); assert.equal(uploads, 1);
+  await assert.rejects(restarted.retrieve(key!, { ...attachmentScope, testId: "test-two" }), /authorized review/);
+  const different = await restarted.store(pdf, { ...attachmentScope, testId: "test-two" });
+  assert.notEqual(different, key); assert.equal(records[0].resourceType, "raw");
+  const inconsistent = createPdfStorage({ ...deps, save: async (asset) => ({ ...asset, patientId: "wrong" }) });
+  await assert.rejects(inconsistent.store(pdf, { ...attachmentScope, billId: "different" }), /storage failed/);
 });
