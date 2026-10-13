@@ -68,46 +68,11 @@ function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export interface CreatePatientOptions {
-  /**
-   * Set by a caller that has explicitly confirmed, with the operator, that the
-   * new registration is a different person who happens to share a mobile
-   * number. Repeat bills never need this: reusing the existing patient keeps one
-   * identity per person.
-   */
-  duplicateMobileAcknowledged?: boolean;
-}
-
 export async function createPatient(
   userId: string,
   input: CreatePatientInput,
-  options: CreatePatientOptions = {},
 ): Promise<PatientDoc> {
-  // A mobile number is a contact detail, not the patient's identity: several
-  // people can share one, and one person has many bills against a single patient
-  // master. When the mobile is already on file the caller is told about the
-  // match so it can reuse that record; only an explicit confirmation creates a
-  // separate person. `patientId` (GP...) remains the permanent identity.
-  const mobile = typeof input.mobile === "string" ? input.mobile.trim() : "";
-  if (mobile && !options.duplicateMobileAcknowledged) {
-    const existing = await Patient.findOne({ mobile }).sort({ createdAt: 1 }).exec();
-    if (existing) {
-      throw new ApiError(
-        409,
-        `A patient with mobile ${mobile} is already registered (${existing.patientId}, ${existing.fullName}). Use the existing record instead of creating a duplicate.`,
-        {
-          existingPatient: {
-            id: String(existing._id),
-            patientId: existing.patientId,
-            fullName: existing.fullName,
-            mobile: existing.mobile,
-            gender: existing.gender,
-          },
-        },
-      );
-    }
-  }
-
+  // Contact numbers may be shared. Only patientId identifies a registration.
   const patientId = await generatePatientId();
 
   const patient = await Patient.create({

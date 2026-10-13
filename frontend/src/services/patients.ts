@@ -33,27 +33,8 @@ export function fetchPatient(idOrPatientId: string): Promise<Patient> {
     .then((response) => response.patient);
 }
 
-export interface CreatePatientOptions {
-  /**
-   * Confirms with the backend that the operator deliberately registered a
-   * different person who happens to share an already-registered mobile number.
-   * Without it the backend answers with the matching record so the caller can
-   * reuse it instead of storing the same person twice.
-   */
-  allowDuplicateMobile?: boolean;
-}
-
-export function createPatient(
-  body: PatientFormValues,
-  options: CreatePatientOptions = {},
-): Promise<Patient> {
-  return api
-    .post<PatientResponse>("/patients", {
-      ...body,
-      ...(options.allowDuplicateMobile
-        ? { duplicateMobileAcknowledged: true }
-        : {}),
-    })
+export function createPatient(body: PatientFormValues): Promise<Patient> {
+  return api.post<PatientResponse>("/patients", body)
     .then((response) => response.patient);
 }
 

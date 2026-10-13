@@ -95,7 +95,7 @@ export function DashboardContent() {
 
       <section
         aria-label="Daily bills"
-        className="lis-dashboard-bills grid grid-cols-1 gap-6"
+        className="lis-dashboard-bills grid grid-cols-1 gap-6 2xl:grid-cols-2"
       >
         <TodayBillsPanel />
         <DueBillsPanel />

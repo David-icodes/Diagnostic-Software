@@ -279,7 +279,9 @@ export function CreateLabTestContent() {
       {
         key: "testCode",
         header: "Test Code",
-        render: (row: LabTestRow) => row.testCode === "INVG2044" ? "—" : row.testCode,
+        render: (row: LabTestRow) => row.sourceTestCode
+          ? <span title={row.sourceTestCode === row.testCode ? undefined : `Wilco code: ${row.sourceTestCode}; unique internal code: ${row.testCode}`}>{row.sourceTestCode}</span>
+          : row.testCode === "INVG2044" ? "—" : row.testCode,
       },
       {
         key: "price",

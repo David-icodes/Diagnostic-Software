@@ -29,7 +29,6 @@ import {
 } from "@/lib/patient-title";
 import { OspPatientSearch } from "@/components/billing/osp-patient-search";
 import { ClientPicker } from "@/components/billing/client-picker";
-import { ConfirmDialog } from "@/components/database/confirm-dialog";
 import { Dialog } from "@/components/ui/dialog";
 import {
   TestSelector,
@@ -41,7 +40,6 @@ import { fetchClientTariffs } from "@/services/lab-masters";
 import { createLabBill } from "@/services/billing";
 import {
   createPatient,
-  fetchPatient,
   updatePatient,
 } from "@/services/patients";
 import { toDateInputValue } from "@/lib/utils";
@@ -193,7 +191,6 @@ export function RemoteLabBillForm({
   const router = useRouter();
   const queryClient = useQueryClient();
   const submittingRef = useRef(false);
-  const reusingPatientRef = useRef(false);
   const [successDialog, setSuccessDialog] = useState(false);
   const [patientNotice, setPatientNotice] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -217,17 +214,6 @@ export function RemoteLabBillForm({
   const [patientExpanded, setPatientExpanded] = useState(true);
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  // Set when the server refuses a second registration for the same mobile, so
-  // the operator can reuse the existing patient instead of duplicating it.
-  const [duplicatePatient, setDuplicatePatient] = useState<{
-    id: string;
-    patientId: string;
-    fullName: string;
-  } | null>(null);
-  const [pendingStatus, setPendingStatus] = useState<"draft" | "generated" | null>(
-    null,
-  );
-
   const totalAmount = round2(
     items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
   );
@@ -290,11 +276,9 @@ export function RemoteLabBillForm({
   const createMutation = useMutation({
     mutationFn: async ({
       status,
-      allowDuplicateMobile = false,
       patientOverride,
     }: {
       status: "draft" | "generated";
-      allowDuplicateMobile?: boolean;
       patientOverride?: Patient;
     }) => {
       const billClientId = (() => {
@@ -326,7 +310,7 @@ export function RemoteLabBillForm({
 
       const existingPatient = patientOverride ?? selectedPatient;
       let patientForBill = existingPatient;
-      if (!existingPatient || !detailsEqualToPatient(details, existingPatient)) {
+      if (!existingPatient || (!patientOverride && !detailsEqualToPatient(details, existingPatient))) {
         const values = detailsToPatientValues(details, existingPatient);
         const parsed = patientFormSchema.safeParse(values);
         if (!parsed.success) {
@@ -341,38 +325,7 @@ export function RemoteLabBillForm({
               ...parsed.data,
               ...patientNameForUpdate(parsed.data, existingPatient, details.name.trim() === patientToDetails(existingPatient).name),
             })
-          : await createPatient(parsed.data, { allowDuplicateMobile }).catch(
-              (error) => {
-                // The backend asks for a decision when the mobile is already on
-                // file. Show the matching record so the operator can reuse it,
-                // or confirm that this is a different person.
-                if (
-                  error instanceof ApiError &&
-                  error.status === 409 &&
-                  error.details &&
-                  typeof error.details === "object" &&
-                  "existingPatient" in error.details
-                ) {
-                  const existing = (
-                    error.details as {
-                      existingPatient?: {
-                        id: string;
-                        patientId: string;
-                        fullName: string;
-                      };
-                    }
-                  ).existingPatient;
-                  if (existing) {
-                    setDuplicatePatient(existing);
-                    throw new ApiError(
-                      "This mobile number is already registered.",
-                      409,
-                    );
-                  }
-                }
-                throw error;
-              },
-            );
+          : await createPatient(parsed.data);
         setSelectedPatient(patientForBill);
       }
 
@@ -415,16 +368,6 @@ export function RemoteLabBillForm({
       else { clearAll(); setSuccessDialog(true); }
     },
     onError: (error) => {
-      // The duplicate-patient prompt replaces the inline error for this case.
-      if (
-        error instanceof ApiError &&
-        error.status === 409 &&
-        typeof error.message === "string" &&
-        error.message.includes("already registered")
-      ) {
-        setFormError(null);
-        return;
-      }
       setFormError(error.message || "Failed to save the bill.");
     },
     onSettled: () => { submittingRef.current = false; },
@@ -504,8 +447,6 @@ export function RemoteLabBillForm({
     setFieldErrors({});
     setPatientExpanded(true);
     setPatientNotice(null);
-    setDuplicatePatient(null);
-    setPendingStatus(null);
   };
 
 const submitGenerated = () => {
@@ -514,7 +455,6 @@ const submitGenerated = () => {
     if (submittingRef.current || createMutation.isPending || updateMutation.isPending) return;
     submittingRef.current = true;
     setFormError(null);
-    setPendingStatus("generated");
     createMutation.mutate({ status: "generated" });
 };
 
@@ -522,62 +462,8 @@ const saveDraft = () => {
     if (submittingRef.current || createMutation.isPending || updateMutation.isPending) return;
     submittingRef.current = true;
     setFormError(null);
-    setPendingStatus("draft");
     createMutation.mutate({ status: "draft" });
 };
-
-// Reuses the already-registered patient and resumes the bill that the duplicate
-// check interrupted. The identity comes from the existing record; any contact
-// detail the operator corrected in the meantime is written back to it.
-const reuseExistingPatient = async () => {
-    if (!duplicatePatient || createMutation.isPending || reusingPatientRef.current) return;
-    reusingPatientRef.current = true;
-    const status = pendingStatus;
-    try {
-      const patient = await fetchPatient(duplicatePatient.id);
-      let resolved = patient;
-      if (!detailsEqualToPatient(details, patient)) {
-        const parsed = patientFormSchema.safeParse(
-          detailsToPatientValues(details, patient),
-        );
-        if (parsed.success) {
-          resolved = await updatePatient(patient.id, {
-            ...parsed.data,
-            ...patientNameForUpdate(parsed.data, patient, details.name.trim() === patientToDetails(patient).name),
-          });
-        }
-      }
-      handlePatientSelect(resolved);
-      setDuplicatePatient(null);
-      setPendingStatus(null);
-      if (status) {
-        createMutation.mutate({ status, patientOverride: resolved });
-      }
-    } catch (error) {
-      setDuplicatePatient(null);
-      setPendingStatus(null);
-      setFormError(
-        error instanceof Error ? error.message : "Failed to load the patient.",
-      );
-    } finally {
-      reusingPatientRef.current = false;
-    }
-  };
-
-// The operator confirmed this is a different person who shares the mobile
-// number, so the registration continues as a new patient instead of failing.
-const createSeparatePatient = async () => {
-    if (!duplicatePatient || createMutation.isPending) return;
-    const status = pendingStatus;
-    setDuplicatePatient(null);
-    setPendingStatus(null);
-    if (status) {
-      await createMutation.mutateAsync({
-        status,
-        allowDuplicateMobile: true,
-      });
-    }
-  };
 
   const leftSecondary = isVendor ? (
     <div className="space-y-1.5">
@@ -750,27 +636,6 @@ const createSeparatePatient = async () => {
       </BillActionBar>
 
       <Dialog open={successDialog} centered title="OSP lab bill registered successfully." onOpenChange={setSuccessDialog}><div className="flex justify-center"><Button onClick={() => setSuccessDialog(false)}>Close</Button></div></Dialog>
-      <ConfirmDialog
-        open={duplicatePatient !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setDuplicatePatient(null);
-            setPendingStatus(null);
-          }
-        }}
-        title="Patient already registered"
-        description={
-          duplicatePatient
-            ? `${duplicatePatient.fullName} (${duplicatePatient.patientId}) is already registered with this mobile number. Reuse that record so the patient keeps one identity across bills, or register this as a separate person.`
-            : undefined
-        }
-        confirmLabel="Use Existing Patient"
-        secondaryLabel="Create Separate Patient"
-        onSecondary={() => void createSeparatePatient()}
-        cancelLabel="Cancel"
-        loading={createMutation.isPending}
-        onConfirm={() => void reuseExistingPatient()}
-      />
     </div>
   );
 }

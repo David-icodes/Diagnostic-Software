@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
+import {getOutstandingBills as getOutstandingBillsService} from './outstanding-bills.service';
 import {
   getDueBills as getDueBillsService,
   getRecentPatients as getRecentPatientsService,
@@ -40,6 +41,7 @@ export const getTodayBills = asyncHandler(async (req: Request, res: Response) =>
 export const getDueBills = asyncHandler(async (req: Request, res: Response) => {
   return sendSuccess(res, await getDueBillsService({ limit: queryLimit(req, 10) }));
 });
+export const getOutstandingBills = asyncHandler(async(req:Request,res:Response)=>sendSuccess(res,await getOutstandingBillsService(Number(req.query.page)||1,queryLimit(req,20))));
 
 export const getRecentPatients = asyncHandler(async (req: Request, res: Response) => {
   return sendSuccess(

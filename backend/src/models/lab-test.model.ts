@@ -7,6 +7,7 @@ export type LabTestResultMode =
   | "CALCULATED";
 
 export interface ILabTest {
+  catalogueImport?: { sourceKey: string; sourceRow: number; sourceDepartment: string; sourceCode: string; fingerprint: string };
   testCode: string;
   testName: string;
   shortName: string;
@@ -52,7 +53,10 @@ export const LAB_TEST_RESULT_MODES: LabTestResultMode[] = [
 const labTestSchema = new Schema<ILabTest>(
   {
     testCode: { type: String, required: true, unique: true, trim: true, uppercase: true, maxlength: 20 },
-    testName: { type: String, required: true, unique: true, trim: true, maxlength: 150 },
+    testName: { type: String, required: true, trim: true, maxlength: 150 },
+    catalogueImport: {
+      sourceKey: String, sourceRow: Number, sourceDepartment: String, sourceCode: String, fingerprint: String,
+    },
     shortName: { type: String, required: true, trim: true, maxlength: 50 },
     departmentId: { type: Schema.Types.ObjectId, ref: "Department", required: true, index: true },
     description: { type: String, trim: true, maxlength: 1000 },
@@ -92,5 +96,7 @@ const labTestSchema = new Schema<ILabTest>(
 
 labTestSchema.index({ departmentId: 1, active: 1 });
 labTestSchema.index({ active: 1, testName: 1 });
+// Distinct source rows may have the same display name; identity is ID/code/source key.
+labTestSchema.index({ "catalogueImport.sourceKey": 1 }, { unique: true, sparse: true });
 
 export const LabTest = model<ILabTest>("LabTest", labTestSchema);

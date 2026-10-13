@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { businessDateInput } from "@/lib/business-date";
 import { useMemo, useState, useRef } from "react";
 import {
@@ -27,7 +26,8 @@ import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { SampleCollectionControl } from "@/components/test-result/sample-collection-control";
 import { SampleOutsideControl } from "@/components/test-result/sample-outside-control";
 import { ResultPrintDialog } from "@/components/test-result/result-print-dialog";
-import { CALCULATION_FORMULAS, recalculateConfigured } from "@/lib/configured-calculations";
+import { recalculateConfigured, calculatorControlState, type CalculationParameter } from "@/lib/configured-calculations";
+import calculatorStyles from "./calculator-section.module.css";
 import { ResultReportUpload } from "@/components/test-result/result-report-upload";
 import { LisSendDialog } from "@/components/whatsapp/lis-send-dialog";
 import { allResultBillPages, initialResultBillParams, resultBillParams } from "@/lib/result-bill-list";
@@ -44,7 +44,9 @@ import {
 } from "@/services/test-results";
 import { formatDate, formatGender, cn } from "@/lib/utils";
 import { enteredNumber, previewFlag } from "@/lib/result-preview";
-import { CalculationDialog } from "@/components/test-result/calculation-dialog";
+import { usesClinicalReference } from "@/lib/parameter-reference-eligibility";
+import { applyCalculationProposals, type CalculationProposal } from "@/lib/calculation-proposal";
+import { calculateImmediately } from "@/lib/immediate-calculation";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { submittedForTest, requireReportEligibility, type ResultPrintMode } from "@/lib/result-workflow";
 import { REFERENCE_MAPPING_LABELS } from "@/types/lab-masters";
@@ -576,7 +578,6 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
       <div className="flex justify-end">
         <Button type="button" variant="outline" disabled={!selectedBill || !toPatientBill(selectedBill)?.mobile?.trim() || submitMutation.isPending} onClick={() => setWhatsAppOpen(true)}>Send WhatsApp</Button>
       </div>
-      {selectedBill && workflowQuery.data?.hasOutstandingDue && !actionError?.includes("outstanding due") && <p role="alert" className="lis-result-due-message">This patient has an outstanding due. Report generation is not allowed. Results can still be entered and submitted.</p>}
 
       {(
         <div className="lis-result-print-settings flex flex-wrap items-center gap-3">
@@ -647,12 +648,15 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
           testLinked={selectedTestEntry?.testLinked ?? false}
           loading={billEntryQuery.isLoading || existingResultsQuery.isLoading}
           submitting={submitMutation.isPending}
-          onSubmit={(entries) => {
+          onSubmit={(entries, acceptedCalculationIds, calculationProposals) => {
             if (!selectedBill || !selectedTestId) return;
             submitMutation.mutate({
               billId: selectedBill.id,
               testId: selectedTestId,
               entries,
+              acceptedCalculationIds,
+              calculationProposals,
+              acceptedCalculationRevisions:Object.fromEntries(selectedEntryParameters.filter(parameter=>acceptedCalculationIds.includes(parameter.parameterId)).map(parameter=>[parameter.parameterId,parameter.calculationApproval?.revision??0])),
             });
           }}
         />
@@ -674,7 +678,6 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
 function ResultEntryTable({
   parameters,
   existingResults,
-  testName,
   testLinked,
   loading,
   submitting,
@@ -689,7 +692,7 @@ function ResultEntryTable({
   testLinked: boolean;
   loading: boolean;
   submitting: boolean;
-  onSubmit: (entries: Array<{ parameterId: string; result: ResultValue }>) => void;
+  onSubmit: (entries: Array<{ parameterId: string; result: ResultValue }>, acceptedCalculationIds: string[], calculationProposals:CalculationProposal[]) => void;
 }) {
   const [textValues, setTextValues] = useState<Record<string, string>>(() => {
     const existing = new Map(
@@ -702,8 +705,7 @@ function ResultEntryTable({
       text[parameter.parameterId] =
         typeof value === "string" || typeof value === "number" ? String(value) : "";
     }
-    const calculated=recalculateConfigured(parameters,text);
-    return Object.fromEntries(Object.entries(calculated.values).map(([id,value])=>[id,text[id]?.trim()?text[id]:value===undefined||value===null?"":String(value)]));
+    return text;
   });
 
   const [boolValues, setBoolValues] = useState<Record<string, boolean>>(() => {
@@ -721,8 +723,9 @@ function ResultEntryTable({
     return bool;
   });
 
-  const acceptedCalculationReplacements=useRef(new Set<string>());
-  const [calculatorTarget,setCalculatorTarget]=useState<BillTestParameter|null>(null);
+  const [proposals,setProposals]=useState<Record<string,CalculationProposal>>(()=>Object.fromEntries(existingResults.filter(result=>result.calculationSnapshot?.definitionKind==="DEVELOPMENT_ONE_TIME").map(result=>[result.parameterId,{parameterId:result.parameterId,formulaId:result.calculationSnapshot!.formulaId,expression:result.calculationSnapshot!.expression!,dependencyIds:result.calculationSnapshot!.dependencyIds!}])));
+  const acceptedCalculationIds=useRef(new Set<string>());
+
   const [fieldError, setFieldError] = useState<string | null>(null);
 
   const showMethod = true;
@@ -733,18 +736,28 @@ function ResultEntryTable({
    * result is abnormal for good.
    */
   const classificationFor = (parameter: BillTestParameter) =>
-    previewFlag(enteredNumber(textValues[parameter.parameterId]), parameter.reference);
+    usesClinicalReference(parameter) ? previewFlag(enteredNumber(textValues[parameter.parameterId]), parameter.reference) : "not-comparable";
 
-  const updateTextValue=(parameterId:string,value:string)=>setTextValues(current=>{
-    const calculated=recalculateConfigured(parameters,{...current,[parameterId]:value});
-    const replacing=parameters.filter(parameter=>parameter.calculation && existingResults.some(result=>result.parameterId===parameter.parameterId) && !acceptedCalculationReplacements.current.has(parameter.parameterId) && current[parameter.parameterId]?.trim() && String(calculated.values[parameter.parameterId])!==current[parameter.parameterId]);
-    if(replacing.length && !window.confirm("Recalculate and replace existing calculated values in this draft? Stored results remain unchanged until Submit."))return current;
-    for(const parameter of replacing)acceptedCalculationReplacements.current.add(parameter.parameterId);
-    return Object.fromEntries(Object.entries(calculated.values).map(([id,result])=>[id,result===undefined||result===null?"":String(result)]));
-  });
-  const calculationErrors=recalculateConfigured(parameters,textValues).errors;
-  const calculateParameter=(parameter:BillTestParameter)=>{const computed=recalculateConfigured(parameters,textValues);const error=computed.errors[parameter.parameterId];if(error){setFieldError(error);return;}const replaces=Object.keys(computed.values).some(id=>String(textValues[id]??'').trim() && String(textValues[id])!==String(computed.values[id]??''));if(replaces&&!window.confirm('Replace existing values in this draft? Results are not saved until Submit.'))return;setFieldError(null);setTextValues(Object.fromEntries(Object.entries(computed.values).map(([id,value])=>[id,String(value??'')])));};
+  const updateTextValue=(parameterId:string,value:string)=>{
+    // A source edit changes only that source; the user reviews each target again.
+    acceptedCalculationIds.current.clear();
+    setTextValues(current=>({...current,[parameterId]:value}));
+  };
+  // Only executable calculations gate submission; a mapping still pending approval
+  // behaves as a normal manual parameter and must not block the form.
+  let effectiveParameters:CalculationParameter[]=parameters;
+  let proposalError:string|undefined;
+  if(!loading){try{effectiveParameters=applyCalculationProposals(parameters,Object.values(proposals));}catch(error){proposalError=error instanceof Error?error.message:"Invalid saved development proposal.";}}
+  const calculationErrors=recalculateConfigured(effectiveParameters.map(parameter=>parameter.calculationStatus==="PENDING"?{...parameter,calculation:undefined}:parameter),textValues).errors;
+  const calculateParameter=(parameter:BillTestParameter)=>{
+    setFieldError(null);
+    const result=calculateImmediately(effectiveParameters,textValues,parameter.parameterId);
+    if(result.error){setFieldError(result.error);return;}
+    for(const id of result.changed)acceptedCalculationIds.current.add(id);
+    setTextValues(Object.fromEntries(Object.entries(result.values).map(([id,value])=>[id,String(value??"")])));
+  };
   const handleSubmit = () => {
+    if(proposalError){setFieldError(proposalError);return;}
     if(Object.keys(calculationErrors).length){setFieldError(Object.values(calculationErrors)[0]);return;}
     const entries: Array<{ parameterId: string; result: ResultValue }> = [];
     for (const parameter of parameters) {
@@ -765,7 +778,15 @@ function ResultEntryTable({
         }
         entries.push({ parameterId: parameter.parameterId, result: numeric });
       } else {
-        entries.push({ parameterId: parameter.parameterId, result: raw });
+        // TEXT and other string types: submit as number when the value is
+        // numeric and the parameter participates in a configured calculation
+        // (source or target) so the server can verify formula arithmetic.
+        const participatesInCalc = effectiveParameters.some(p => p.calculation && p.calculation.enabled !== false && p.calculationStatus !== "PENDING" && (p.parameterId === parameter.parameterId || (p.calculation.dependencyIds ?? []).includes(parameter.parameterId)));
+        if (participatesInCalc && Number.isFinite(Number(raw))) {
+          entries.push({ parameterId: parameter.parameterId, result: Number(raw) });
+        } else {
+          entries.push({ parameterId: parameter.parameterId, result: raw });
+        }
       }
     }
     if (entries.length === 0) {
@@ -773,10 +794,12 @@ function ResultEntryTable({
       return;
     }
     setFieldError(null);
-    onSubmit(entries);
+    onSubmit(entries, [...acceptedCalculationIds.current], Object.values(proposals).filter(proposal=>acceptedCalculationIds.current.has(proposal.parameterId)));
   };
 
   const handleClear = () => {
+    acceptedCalculationIds.current.clear();
+    setProposals({});
     setTextValues({});
     setFieldError(null);
     const bool: Record<string, boolean> = {};
@@ -787,7 +810,9 @@ function ResultEntryTable({
   };
 
   const renderResultInput = (parameter: BillTestParameter, abnormal: boolean) => {
-    const disabled = Boolean(parameter.calculation) || submitting;
+    // Only an executable calculated target is read-only. A registry mapping that is
+    // still pending approval stays a normal editable parameter.
+    const disabled = (Boolean(parameter.calculation) && parameter.calculation?.enabled !== false && parameter.calculationStatus !== "PENDING") || submitting;
     const flagClasses = abnormal
       ? "border-red-400 bg-red-50/50 text-xs font-bold text-red-600"
       : "";
@@ -918,8 +943,7 @@ function ResultEntryTable({
               <span>{fieldError}</span>
             </div>
           )}
-          {parameters.length > 0 && !parameters.some(parameter=>parameter.calculation) && <p className="lis-calculation-setup-note text-sm text-slate-600 p-2" role="status">No approved calculation bindings are configured for this test. An authorized laboratory administrator must select this test in <Link className="text-primary underline" href="/laboratory/master/lab-test-parameter">Lab Test Parameter</Link>, choose the target and numeric source IDs, review units and approve the binding to enable Calculate. Measured values remain editable.</p>}
-          <div className="lis-parameter-result-grid overflow-x-auto">
+          <div className={cn("lis-parameter-result-grid overflow-x-auto", calculatorStyles.section)}>
             <table className="w-full min-w-[960px] table-fixed text-[13px]">
               <colgroup>
                 <col className="w-10" />
@@ -951,15 +975,20 @@ function ResultEntryTable({
                   </tr>
                 ) : (
                   parameters.map((parameter) => {
-                    if(parameter.itemType === "SUBTITLE")return <tr key={parameter.parameterId}><th colSpan={showMethod?6:5} className="px-2 py-2 text-left">{parameter.parameterName}</th></tr>;
+                    if(parameter.itemType === "SUBTITLE")return <tr key={parameter.parameterId} data-parameter-id={parameter.parameterId} className="border-t border-border bg-slate-50"><th colSpan={showMethod?6:5} className="px-2 py-2 text-left font-bold text-slate-800">{parameter.parameterName}</th></tr>;
                     const status = classificationFor(parameter);
                     const abnormal = status === "out-of-range";
+                    const control = calculatorControlState(parameter);
                     const message = referenceMessage(parameter.reference);
-                    const unresolved =
+                    const clinicalReference = usesClinicalReference(parameter);
+                    const unresolved = clinicalReference &&
                       parameter.reference.status !== "MATCHED";
                     return (
                       <tr
                         key={parameter.parameterId}
+                        data-parameter-id={parameter.parameterId}
+                        data-formula-id={parameter.calculation?.formulaId}
+                        data-calculator-state={control.status}
                         className={cn(
                           "border-t border-border align-top",
                           abnormal && "bg-red-50/40",
@@ -972,22 +1001,20 @@ function ResultEntryTable({
                           {parameter.parameterName}
                         </td>
                         <td className="px-2 py-1">
-                          <div className="lis-result-control-row flex flex-wrap items-center gap-1.5">
+                          <div className={cn("lis-result-control-row flex flex-wrap items-center gap-1.5", calculatorStyles.controls)}>
                             {renderResultInput(parameter, abnormal)}
-                            {parameter.calculation && <span className="text-[10px] text-slate-500">Calculated · draft</span>}
-                            {calculationErrors[parameter.parameterId]&&<span role="status" className="text-xs text-amber-700">{calculationErrors[parameter.parameterId]}</span>}
-                            {parameter.calculation && CALCULATION_FORMULAS.some(formula=>formula.id===parameter.calculation?.formulaId) ? (
-                              <div className="flex shrink-0 items-center gap-1"><Button type="button" variant="ghost" size="icon-sm" className="lis-calculator-icon" aria-label={`Review calculation for ${parameter.parameterName}`} title="Review formula and source values" onClick={()=>setCalculatorTarget(parameter)} disabled={submitting}><Calculator aria-hidden className="size-5 text-[#228aa6]" /></Button><Button
+                            {control.status === "configured" ? (
+                              <div className={cn("flex shrink-0 items-center", calculatorStyles.actions)}><span className={cn("lis-calculator-icon", calculatorStyles.icon)} aria-hidden="true"><Calculator className="size-4 text-[#228aa6]" /></span><Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                className="lis-calculate-button shrink-0"
+                                className={cn("lis-calculate-button shrink-0", calculatorStyles.calculate)}
                                 title="Calculate from current source results"
                                 aria-label={`Calculate ${parameter.parameterName}`}
-                                onClick={() => calculateParameter(parameter)}
+                                onClick={(event) => { event.stopPropagation(); if (event.detail > 1) return; calculateParameter(parameter); }}
                                 disabled={submitting}
                               >
-                                Calculate
+                                 Calculate
                               </Button></div>
                             ) : null}
                             {abnormal ? (
@@ -999,12 +1026,13 @@ function ResultEntryTable({
                               </span>
                             ) : null}
                           </div>
+                          {calculationErrors[parameter.parameterId] && <p role="status" className={calculatorStyles.validation}>{calculationErrors[parameter.parameterId]}</p>}
                         </td>
                         <td className="px-2 py-1 text-slate-600">
                           {sampleLabel(parameter.unit)}
                         </td>
-                        <td className="px-2 py-1">
-                          {unresolved ? (
+                        <td className="px-2 py-1 break-words">
+                          {!clinicalReference ? <span>—</span> : unresolved ? (
                             <span
                               className="block rounded bg-amber-100 px-1 text-[13px] font-semibold text-amber-800"
                               title={parameter.reference.reason}
@@ -1013,20 +1041,10 @@ function ResultEntryTable({
                             </span>
                           ) : (
                             <>
-                              <span className="whitespace-pre-line text-slate-700">
+                              {(parameter.reference.sex === "MALE" || parameter.reference.sex === "FEMALE") && <span className="block text-[12px] font-medium text-slate-600">{parameter.reference.sex === "MALE" ? "Male" : "Female"} reference range</span>}
+                              <span className="whitespace-pre-line break-words text-slate-700">
                                 {parameter.reference.displayValue || "—"}
                               </span>
-                              <span
-                                className="lis-reference-provenance mt-0.5 block text-[12px] text-slate-500"
-                                title={parameter.reference.reason}
-                              >
-                                {message}
-                              </span>
-                              {parameter.reference.source === "LEGACY" ? (
-                                <span className="lis-reference-provenance mt-0.5 block text-[12px] italic text-slate-400">
-                                  Legacy reference — verify against the source report
-                                </span>
-                              ) : null}
                             </>
                           )}
                         </td>
@@ -1054,7 +1072,7 @@ function ResultEntryTable({
         onSubmit={handleSubmit}
         onClear={handleClear}
       />
-      {calculatorTarget && <CalculationDialog target={calculatorTarget} parameters={parameters} values={textValues} testName={testName} onClose={()=>setCalculatorTarget(null)} onApply={values=>setTextValues(Object.fromEntries(Object.entries(values).map(([id,value])=>[id,String(value??"")])))} />}
+
     </>
   );
 }

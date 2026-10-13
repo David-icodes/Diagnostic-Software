@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { Calendar } from "lucide-react";
+import { compactOspDob, parseOspDob, ospBirthAge } from "@/lib/osp-dob";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -53,26 +53,7 @@ export interface BirthAge {
 }
 
 export function birthAgeFromDob(value: string | Date): BirthAge {
-  const dob = typeof value === "string" ? new Date(value) : value;
-  if (Number.isNaN(dob.getTime())) return { years: 0, months: 0, days: 0 };
-  const now = new Date();
-  let years = now.getFullYear() - dob.getFullYear();
-  let months = now.getMonth() - dob.getMonth();
-  let days = now.getDate() - dob.getDate();
-  if (days < 0) {
-    months -= 1;
-    days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
-  }
-  if (months < 0) {
-    years -= 1;
-    months += 12;
-  }
-  if (years < 0) {
-    years = 0;
-    months = 0;
-    days = 0;
-  }
-  return { years, months, days };
+  return ospBirthAge(value);
 }
 
 const labelClass =
@@ -149,7 +130,7 @@ export function OspPatientDetails({
   dobError,
   updateAction,
 }: OspPatientDetailsProps) {
-  const dobRef = useRef<HTMLInputElement>(null);
+  const parsedDob = parseOspDob(compactOspDob(value.dateOfBirth));
   /**
    * The gender currently shown because a title implied it. Anything the
    * operator typed by hand is left alone when the title stops implying one, but
@@ -178,9 +159,10 @@ export function OspPatientDetails({
   };
 
   const handleDobChange = (dateOfBirth: string) => {
-    let next: PatientDetails = { ...value, dateOfBirth };
-    if (dateOfBirth) {
-      const { years, months, days } = birthAgeFromDob(dateOfBirth);
+    const parsed = parseOspDob(dateOfBirth);
+    let next: PatientDetails = { ...value, dateOfBirth: parsed.date || dateOfBirth };
+    if (parsed.date) {
+      const { years, months, days } = birthAgeFromDob(parsed.date);
       next = {
         ...next,
         ageYears: String(years),
@@ -191,16 +173,6 @@ export function OspPatientDetails({
       next = { ...next, ageYears: "", ageMonths: "", ageDays: "" };
     }
     onChange(next);
-  };
-
-  const openDobPicker = () => {
-    const input = dobRef.current;
-    if (!input) return;
-    try {
-      input.showPicker();
-    } catch {
-      input.focus();
-    }
   };
 
   const leftColumnClass = "lg:border-r lg:border-border/60";
@@ -234,25 +206,17 @@ export function OspPatientDetails({
           </Cell>
         }
         right={
-          <Cell label="DOB" error={dobError} align="top">
+          <Cell label="DOB" error={parsedDob.error || dobError} align="top">
             <Input
-              ref={dobRef}
               aria-label="Date of birth"
-              type="date"
-              value={value.dateOfBirth}
-              onChange={(event) => handleDobChange(event.target.value)}
-              aria-invalid={Boolean(dobError)}
+              type="text"
+              inputMode="numeric"
+              maxLength={8}
+              value={compactOspDob(value.dateOfBirth)}
+              onChange={(event) => handleDobChange(event.target.value.replace(/[^0-9]/g, "").slice(0,8))}
+              aria-invalid={Boolean(parsedDob.error || dobError)}
               className={cn(inputHeight, "min-w-0 flex-1")}
             />
-            <button
-              type="button"
-              onClick={openDobPicker}
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border text-slate-500 transition-colors hover:bg-muted"
-              title="Open calendar"
-              aria-label="Open calendar"
-            >
-              <Calendar className="size-3.5" />
-            </button>
             {updateAction}
           </Cell>
         }
@@ -279,6 +243,7 @@ export function OspPatientDetails({
           <Cell label="Age">
             <Input
               aria-label="Age years"
+              readOnly={Boolean(parsedDob.date)}
               type="number"
               inputMode="numeric"
               min={0}
@@ -292,6 +257,7 @@ export function OspPatientDetails({
             <span className="text-xs font-medium text-slate-600">Y</span>
             <Input
               aria-label="Age months"
+              readOnly={Boolean(parsedDob.date)}
               type="number"
               inputMode="numeric"
               min={0}
@@ -305,6 +271,7 @@ export function OspPatientDetails({
             <span className="text-xs font-medium text-slate-600">M</span>
             <Input
               aria-label="Age days"
+              readOnly={Boolean(parsedDob.date)}
               type="number"
               inputMode="numeric"
               min={0}

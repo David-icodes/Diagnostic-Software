@@ -112,7 +112,7 @@ export interface LabTestParameter {
   testId: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
+  calculation?: { enabled?: boolean; expression?: string; formulaId: string; dependencyIds?: string[]; precision?: number; overwrite?: string; sourceVerification?:string } | null;
   /**
    * Optional grouped heading the parameter is printed under on the report
    * (e.g. "DIFFERENTIAL COUNT", "PERIPHERAL SMEAR"). Returned by the API; it
@@ -183,10 +183,14 @@ export interface ReferenceResolution {
 
 /** One ordered test of a bill, with the reference resolved for its patient. */
 export interface BillTestParameter {
+  calculationEditingAllowed?:boolean;
   parameterId: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
+  calculation?: { enabled?: boolean; expression?: string; formulaId: string; dependencyIds?: string[]; precision?: number; overwrite?: string; sourceVerification?:string } | null;
+  /** Registry approval of the resolved calculation; PENDING is shown but not executable. */
+  calculationStatus?: "APPROVED" | "PENDING" | "DEVELOPMENT";
+  calculationApproval?: {revision:number;formulaVersion:string;rounding:string;approvedBy:string;approvedAt:string};
   subtitle?: string;
   displayOrder: number;
   resultType: ParameterResultType;
@@ -248,6 +252,7 @@ export interface ReferenceSnapshot {
 }
 
 export interface LabTestResult {
+  calculationSnapshot?:{definitionKind?:"DEVELOPMENT_ONE_TIME"|"DEVELOPMENT_CONFIGURED";expression?:string;dependencyIds?:string[];formulaId:string};
   id: string;
   billId: string;
   patientId: string;
@@ -255,7 +260,7 @@ export interface LabTestResult {
   parameterId: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
+  calculation?: { enabled?: boolean; expression?: string; formulaId: string; dependencyIds?: string[]; precision?: number; overwrite?: string; sourceVerification?:string } | null;
   resultType: string;
   unit?: string;
   referenceRange?: string;
@@ -275,6 +280,9 @@ export interface ResultsResponse {
 }
 
 export interface SubmitResultsRequest {
+  calculationProposals?: import("@/lib/calculation-proposal").CalculationProposal[];
+  acceptedCalculationIds?: string[];
+  acceptedCalculationRevisions?: Record<string,number>;
   billId: string;
   testId: string;
   entries: Array<{

@@ -5,6 +5,8 @@ import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 interface SearchInputProps {
+  id?: string;
+  hideIcon?: boolean;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -12,6 +14,8 @@ interface SearchInputProps {
 }
 
 export function SearchInput({
+  id,
+  hideIcon = false,
   value,
   onChange,
   placeholder = "Search...",
@@ -30,12 +34,13 @@ export function SearchInput({
 
   return (
     <div className="relative w-full sm:w-72">
-      <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+      {!hideIcon && <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />}
       <Input
+        id={id}
         type="search"
         value={value}
         placeholder={placeholder}
-        className="pl-8 pr-8"
+        className={hideIcon ? "pl-3 pr-8" : "pl-8 pr-8"}
         onChange={(event) => handleChange(event.target.value)}
       />
       {value && (

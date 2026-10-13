@@ -33,15 +33,11 @@ export const listPatients = asyncHandler(async (req: Request, res: Response) => 
 
 export const createPatient = asyncHandler(async (req: Request, res: Response) => {
   const userId = requireUserId(req);
-  const { duplicateMobileAcknowledged, ...patientInput } =
-    req.body as CreatePatientInput & { duplicateMobileAcknowledged?: boolean };
-  const patient = await createPatientService(userId, patientInput, {
-    duplicateMobileAcknowledged: duplicateMobileAcknowledged === true,
-  });
+  const patient = await createPatientService(userId, req.body as CreatePatientInput);
 
   return res.status(201).json({
     success: true,
-    message: "Patient created successfully",
+    message: "Patient registered successfully",
     data: { patient },
   });
 });

@@ -1,4 +1,4 @@
-import { CALCULATION_FORMULAS } from "../utils/configured-calculations";
+import { CALCULATION_FORMULAS, CALCULATION_OVERWRITE_POLICIES } from "../utils/configured-calculations";
 import { z } from "zod";
 import {
   GENDER_RANGE_GENDERS,
@@ -216,7 +216,7 @@ const baseFields = {
     .min(1, "Parameter name is required")
     .max(150, "Parameter name is too long"),
   itemType: z.enum(["PARAMETER", "SUBTITLE", "TEXT_AREA"]).optional(),
-  calculation: z.object({ formulaId: z.enum(CALCULATION_FORMULAS.map(f => f.id) as [string, ...string[]]), precision:z.number().int().min(0).max(6).optional(), dependencyIds: z.array(z.string().regex(/^[a-f0-9]{24}$/i)).min(1).max(8).optional() }).strict().nullable().optional(),
+  calculation: z.object({ enabled:z.boolean().optional(), expression:z.string().trim().min(1).max(240).optional(), formulaId: z.enum(CALCULATION_FORMULAS.map(f => f.id) as [string, ...string[]]), precision:z.number().int().min(0).max(6).optional(), dependencyIds: z.array(z.string().regex(/^[a-f0-9]{24}$/i)).min(1).max(8).optional(), sourceVerification:z.string().trim().min(10).max(1000).optional(), overwrite: z.enum(CALCULATION_OVERWRITE_POLICIES as [string, ...string[]]).optional() }).strict().nullable().optional(),
   subtitle: optionalText(150, "Subtitle is too long"),
   displayOrder: z.number().int().min(0, "Order number cannot be negative").max(9999, "Order number is too large").default(0),
   resultType: z
@@ -232,7 +232,8 @@ const baseFields = {
   onlyReferenceRange: z.boolean().default(false).optional(),
   rangeFrom: optionalRangeNumber,
   rangeTo: optionalRangeNumber,
-  rangeText: optionalText(200, "Range text is too long"),
+  // Blank reference text is distinct from an omitted text field (numeric composition).
+  rangeText: z.string().max(200, "Range text is too long").optional(),
   genderRanges: z
     .array(genderRangeSchema)
     .max(GENDER_RANGE_GENDERS.length, "At most three gender ranges")

@@ -1,5 +1,10 @@
-import { recalculateConfigured, resolveCalculationDependencyIds } from "../../utils/configured-calculations";
+import {cbpSyntheticExecution} from "../lab-test-parameters/cbp-synthetic-execution.service";
+import { formulaEditorContextAllowed } from "../../utils/formula-editor-context";
+import { applyCalculationProposals, type CalculationProposal } from "../../utils/configured-calculations";
+import { recalculateConfigured, resolveCalculationDependencyIds, normalizeCalculationOverwrite, reviewCalculationBinding, resolveTestCalculations } from "../../utils/configured-calculations";
 import { Types } from "mongoose";
+import {ParameterVersion} from "../../models/parameter-version.model";
+import { routeParameterVersions, recordedParameterProjection } from "../../utils/parameter-version-routing";
 import { ApiError } from "../../utils/api-error";
 import { LabBill } from "../../models/lab-bill.model";
 import {
@@ -24,6 +29,19 @@ import { SUBMISSION_PENDING, SUBMISSION_CONFIRMED } from "./result-workflow.serv
 
 /** Upper bound for free-text results (e.g. microscopy notes). */
 const RESULT_TEXT_MAX = 2000;
+
+function developmentEditorAvailable(billNumber?:string,patientCode?:string):boolean {
+  return formulaEditorContextAllowed({environment:process.env.NODE_ENV,uri:process.env.MONGODB_URI,database:LabTestResult.db.name,host:LabTestResult.db.host,billNumber,patientCode});
+}
+/** Direct development configuration or clinical approval both make a binding executable. */
+function hasExecutableCalculation(parameter: ILabTestParameter): boolean {
+  return Boolean(parameter.calculation && parameter.calculation.enabled !== false);
+}
+function bindingIssues(parameters: ILabTestParameter[], target: ILabTestParameter): string[] {
+  if (target.itemType && target.itemType !== "PARAMETER") return ['Calculated targets must be result parameters, not subtitles or text areas'];
+  const rows=parameters.map(p=>({id:String((p as ILabTestParameter & {_id:Types.ObjectId})._id),unit:p.unit,resultType:p.resultType,itemType:p.itemType,active:p.active,calculation:p.calculation}));
+  return reviewCalculationBinding(rows,rows.find(p=>p.id===String((target as ILabTestParameter & {_id:Types.ObjectId})._id))!);
+}
 
 function assertParameterTypeMatches(
   parameter: ILabTestParameter,
@@ -76,22 +94,33 @@ function assertParameterTypeMatches(
     }
     case "TEXT":
     default:
-      if (typeof value !== "string") {
+      // TEXT is the catch-all result type: accept strings and numbers.
+      // Historical parameters (e.g. CBP) remain TEXT when recorded results
+      // exist; numeric entries are stored as-is and participate in formulas.
+      if (typeof value === "string") {
+        if (value.length === 0) {
+          throw new ApiError(
+            422,
+            `Result for "${parameter.parameterName}" cannot be blank`,
+          );
+        }
+        if (value.length > RESULT_TEXT_MAX) {
+          throw new ApiError(
+            422,
+            `Result for "${parameter.parameterName}" is too long (max ${RESULT_TEXT_MAX} characters)`,
+          );
+        }
+      } else if (typeof value === "number") {
+        if (!Number.isFinite(value)) {
+          throw new ApiError(
+            422,
+            `Result for "${parameter.parameterName}" must be a finite number`,
+          );
+        }
+      } else {
         throw new ApiError(
           422,
           `Result for "${parameter.parameterName}" must be text`,
-        );
-      }
-      if (value.length === 0) {
-        throw new ApiError(
-          422,
-          `Result for "${parameter.parameterName}" cannot be blank`,
-        );
-      }
-      if (value.length > RESULT_TEXT_MAX) {
-        throw new ApiError(
-          422,
-          `Result for "${parameter.parameterName}" is too long (max ${RESULT_TEXT_MAX} characters)`,
         );
       }
       break;
@@ -104,9 +133,10 @@ export async function listTestParameters(
   if (!Types.ObjectId.isValid(testId)) {
     throw new ApiError(400, "Invalid test ID");
   }
-  return LabTestParameter.find({ testId, active: true })
+  const catalogue = await LabTestParameter.find({ testId, active: true })
     .sort({ displayOrder: 1, parameterName: 1 })
     .exec();
+  return routeParameterVersions(catalogue,undefined);
 }
 
 /** One ordered test of a bill, with its parameters and applicable references. */
@@ -123,6 +153,7 @@ export interface BillTestEntry {
     parameterName: string;
     itemType?: ILabTestParameter["itemType"];
     calculation?: ILabTestParameter["calculation"];
+    calculationApproval?: ILabTestParameter["calculationApproval"];
     subtitle?: string;
     displayOrder: number;
     resultType: ILabTestParameter["resultType"];
@@ -188,11 +219,13 @@ export async function getBillResultEntry(
   const parameters = bill.items.length
     ? await LabTestParameter.find({
         testId: { $in: bill.items.map((item) => item.testId) },
-        active: true,
       })
         .sort({ displayOrder: 1, parameterName: 1 })
         .exec()
     : [];
+  const savedRows = await LabTestResult.find({billId:bill._id}).exec();
+  const pinnedIds=bill.items.flatMap(item=>item.parameterVersionIds??[]);
+  if(pinnedIds.some(id=>!parameters.some(p=>String(p._id)===id)))parameters.push(...await ParameterVersion.find({_id:{$in:pinnedIds},testId:{$in:bill.items.map(item=>item.testId)}}).exec());
   const byTest = new Map<string, typeof parameters>();
   for (const parameter of parameters) {
     const key = String(parameter.testId);
@@ -203,10 +236,12 @@ export async function getBillResultEntry(
 
   const tests: BillTestEntry[] = [];
   const seen = new Set<string>();
-  bill.items.forEach((item, index) => {
+  for (const [index,item] of bill.items.entries()) {
     const testId = String(item.testId);
-    if (seen.has(testId)) return;
+    if (seen.has(testId)) continue;
     seen.add(testId);
+    const development = await cbpSyntheticExecution(bill,patient?.patientId,testId);
+    const routed = routeParameterVersions(byTest.get(testId) ?? [],item.parameterVersionIds,savedRows.filter(row=>String(row.testId)===testId));
     tests.push({
       testId,
       testCode: item.testCode,
@@ -215,11 +250,36 @@ export async function getBillResultEntry(
       // The ordered item carries the test identity; it is linked whenever the
       // item itself resolved, which is what the technician collects against.
       testLinked: Boolean(item.testId && item.testName),
-      parameters: (byTest.get(testId) ?? []).map((parameter) => ({
+      parameters: (() => {
+        const rows = routed.map((master) => {
+          const saved=savedRows.find(row=>String(row.testId)===testId&&String(row.parameterId)===String(master._id));
+          const projection=recordedParameterProjection(master.toObject ? master.toObject() : master,saved);
+          const parameter=development && development.bindings.some(b=>b.targetId===String(master._id)||b.calculation.dependencyIds?.includes(String(master._id))) ? {...projection,resultType:"NUMBER" as const} : projection;
+          const persisted = parameter.calculation && hasExecutableCalculation(parameter) && !bindingIssues(routed,parameter).length ? parameter.calculation : undefined;
+          return { parameter, persisted, saved };
+        });
+        // Central discovery: a persisted approved binding wins, otherwise the
+        // predefined registry mapping is used. No per-test binding is required.
+        const resolutions = resolveTestCalculations(rows.map(({parameter,persisted}) => ({
+          parameterId: String(parameter._id),
+          parameterName: parameter.parameterName,
+          unit: parameter.unit,
+          itemType: parameter.itemType ?? "PARAMETER",
+          active: parameter.active,
+          resultType: parameter.resultType,
+          calculation: parameter.calculation?.enabled === false ? parameter.calculation : persisted,
+        })));
+        if(development)for(const binding of development.bindings)resolutions.set(binding.targetId,{config:binding.calculation,status:"DEVELOPMENT"});
+        return rows.map(({parameter, saved}) => {
+        const resolution = resolutions.get(String(parameter._id));
+        return ({
         parameterId: String(parameter._id),
         parameterName: parameter.parameterName,
         itemType: parameter.itemType ?? "PARAMETER",
-        calculation: parameter.calculation,
+        calculation: (resolution?.config ?? (parameter.calculation?.enabled === false ? parameter.calculation : undefined)) as ILabTestParameter["calculation"] | undefined,
+        ...(resolution ? { calculationStatus: resolution.status } : {}),
+        calculationEditingAllowed: developmentEditorAvailable(bill.billNumber,patient?.patientId),
+        calculationApproval: parameter.calculationApproval,
         ...(parameter.subtitle !== undefined ? { subtitle: parameter.subtitle } : {}),
         displayOrder: parameter.displayOrder,
         resultType: parameter.resultType,
@@ -238,18 +298,21 @@ export async function getBillResultEntry(
         hasReferenceMappings: (parameter.referenceMappings ?? []).length > 0,
         reference: resolveReferenceRange(
           {
-            referenceMappings: parameter.referenceMappings as never,
-            mappingTypes: parameter.mappingTypes,
-            referenceRange: parameter.referenceRange,
-            referenceType: parameter.referenceType,
-            genderRanges: parameter.genderRanges,
+            itemType: parameter.itemType,
+            resultType: parameter.resultType,
+            referenceMappings: saved ? [] : parameter.referenceMappings as never,
+            mappingTypes: saved ? [] : parameter.mappingTypes,
+            referenceRange: saved ? saved.referenceSnapshot?.displayValue ?? saved.referenceRange : parameter.referenceRange,
+            referenceType: saved ? "GENERAL" : parameter.referenceType,
+            genderRanges: saved ? [] : parameter.genderRanges,
           },
           patientContext,
           now,
         ),
-      })),
+      });});
+      })(),
     });
-  });
+  }
 
   return {
     billId: String(bill._id),
@@ -274,6 +337,8 @@ function buildReferenceSnapshot(
 ): IReferenceSnapshot {
   const resolution = resolveReferenceRange(
     {
+      itemType: parameter.itemType,
+      resultType: parameter.resultType,
       referenceMappings: parameter.referenceMappings as never,
       mappingTypes: parameter.mappingTypes,
       referenceRange: parameter.referenceRange,
@@ -327,7 +392,7 @@ export async function listTestResults(
  */
 export async function submitTestResults(
   userId: string,
-  input: { billId: string; testId: string; entries: Array<{ parameterId: string; result: ResultValue }> },
+  input: { billId: string; testId: string; calculationProposals?:CalculationProposal[]; acceptedCalculationIds?:string[]; acceptedCalculationRevisions?:Record<string,number>; entries: Array<{ parameterId: string; result: ResultValue }> },
 ): Promise<{ results: ILabTestResult[]; testId: string }> {
   if (!Types.ObjectId.isValid(input.billId) || !Types.ObjectId.isValid(input.testId)) {
     throw new ApiError(400, "Invalid bill or test ID");
@@ -351,10 +416,14 @@ export async function submitTestResults(
     throw new ApiError(422, "The selected test is not part of this bill");
   }
 
-  const parameters = await LabTestParameter.find({
+  const catalogue = await LabTestParameter.find({
     testId: input.testId,
-    active: true,
   }).exec();
+  const savedRows = await LabTestResult.find({billId:bill._id,testId:input.testId}).exec();
+  if(item.parameterVersionIds?.some(id=>!catalogue.some(p=>String(p._id)===id)))catalogue.push(...await ParameterVersion.find({_id:{$in:item.parameterVersionIds},testId:input.testId}).exec());
+  const developmentPatient=await Patient.findById(bill.patientId).exec();
+  const development=await cbpSyntheticExecution(bill,developmentPatient?.patientId,input.testId);
+  const parameters = routeParameterVersions(catalogue,item.parameterVersionIds,savedRows).map(p=>development && development.bindings.some(b=>b.targetId===String(p._id)||b.calculation.dependencyIds?.includes(String(p._id))) ? LabTestParameter.hydrate({...p.toObject(),resultType:"NUMBER"}) : p);
   if (parameters.length === 0) {
     throw new ApiError(
       422,
@@ -379,10 +448,55 @@ export async function submitTestResults(
     );
   }
 
-  const calculationParameters=parameters.map(parameter=>({parameterId:String(parameter._id),parameterName:parameter.parameterName,unit:parameter.unit,itemType:parameter.itemType,calculation:parameter.calculation}));
-  const calculation = recalculateConfigured(calculationParameters,Object.fromEntries(input.entries.map(entry=>[entry.parameterId,entry.result])));
+  // Validate binding issues only for ACTIVE calculations. Inactive calculations
+  // (enabled === false) are not executed and do not block submission of manual
+  // results; resolveTestCalculations below skips them entirely.
+  for (const parameter of parameters.filter(row=>row.calculation && hasExecutableCalculation(row))) {
+    const issues=bindingIssues(parameters,parameter);
+    if (issues.length) throw new ApiError(422,issues[0]);
+  }
+  // Central discovery at submission: a configured binding (direct or approved)
+  // or an approved registry mapping is executable; a registry mapping that is
+  // still PENDING is not, and is treated as a manual parameter.
+  const resolutions = resolveTestCalculations(parameters.map(parameter=>({parameterId:String(parameter._id),parameterName:parameter.parameterName,unit:parameter.unit,itemType:parameter.itemType,active:parameter.active,resultType:parameter.resultType,calculation:parameter.calculation?.enabled === false ? parameter.calculation : parameter.calculation && hasExecutableCalculation(parameter) && !bindingIssues(parameters,parameter).length ? parameter.calculation : undefined})));
+  if(development)for(const binding of development.bindings)resolutions.set(binding.targetId,{config:binding.calculation,status:"DEVELOPMENT"});
+  const proposals=input.calculationProposals??[];
+  const proposalPatient=proposals.length?await Patient.findById(bill.patientId).exec():undefined;
+  if(proposals.length&&!developmentEditorAvailable(bill.billNumber,proposalPatient?.patientId))throw new ApiError(422,"One-time formula edits are restricted to the isolated development database");
+  let proposedParameters;
+  try {proposedParameters=applyCalculationProposals(parameters.map(parameter=>({parameterId:String(parameter._id),parameterName:parameter.parameterName,unit:parameter.unit,resultType:parameter.resultType,itemType:parameter.itemType,active:parameter.active,calculation:(["APPROVED","DEVELOPMENT"].includes(resolutions.get(String(parameter._id))?.status??""))?resolutions.get(String(parameter._id))?.config:undefined})),proposals);}catch(error){throw new ApiError(422,error instanceof Error?error.message:"Invalid formula proposal");}
+  const executable = (parameter: { _id: unknown } | undefined) => {
+    if (!parameter) return undefined;
+    const resolution = resolutions.get(String(parameter._id));
+    return resolution && ["APPROVED","DEVELOPMENT"].includes(resolution.status) ? proposedParameters.find(row=>row.parameterId===String(parameter._id))?.calculation??undefined : undefined;
+  };
+  const calculationParameters=parameters.map(parameter=>({parameterId:String(parameter._id),parameterName:parameter.parameterName,unit:parameter.unit,itemType:parameter.itemType,active:parameter.active,resultType:parameter.resultType,calculation:executable(parameter)}));
+  const accepted = new Set(input.acceptedCalculationIds ?? []);
+  if (accepted.size !== (input.acceptedCalculationIds ?? []).length || [...accepted].some(id=>!executable(parameterMap.get(id)))) throw new ApiError(422,"Accept only configured calculations in this test");
+  if(proposals.some(p=>!accepted.has(p.parameterId)))throw new ApiError(422,"Preview and accept each proposed calculation before submitting");
+  const submitted = Object.fromEntries(input.entries.map(entry=>[entry.parameterId,entry.result]));
+  const kept = new Set<string>();
+  for (const parameter of parameters.filter(row=>executable(row))) {
+    const id = String(parameter._id);
+    const revision=parameter.calculationApproval?.revision??0;
+    if (accepted.has(id) && (input.acceptedCalculationRevisions?.[id]??0)!==revision) throw new ApiError(409,"The approved binding changed after preview. Reload and accept the current calculation");
+    const previous = await LabTestResult.findOne({billId:bill._id,testId:input.testId,parameterId:parameter._id}).exec();
+    const unchanged = previous && previous.result === submitted[id] && (previous.calculationSnapshot?.bindingRevision??0)===revision;
+    if(unchanged&&!accepted.has(id)&&previous?.calculationSnapshot?.definitionKind==="DEVELOPMENT_ONE_TIME"){kept.add(id);continue;}
+    if (previous && normalizeCalculationOverwrite(executable(parameter)?.overwrite)==="NEVER") {
+      if (!unchanged) throw new ApiError(422,"The approved calculation policy keeps the existing result");
+      kept.add(id);
+    }
+  }
+  const calculation = recalculateConfigured(calculationParameters.map(row=>kept.has(row.parameterId)?{...row,calculation:undefined}:row),submitted);
   if(Object.keys(calculation.errors).length)throw new ApiError(422,Object.values(calculation.errors)[0]);
-  const entries=[...input.entries.filter(entry=>!parameterMap.get(entry.parameterId)?.calculation),...parameters.filter(parameter=>parameter.calculation).map(parameter=>({parameterId:String(parameter._id),result:calculation.values[String(parameter._id)] as ResultValue}))];
+  for (const parameter of parameters.filter(row=>executable(row))) {
+    const id = String(parameter._id);
+    if (!kept.has(id) && submitted[id] !== undefined && (typeof submitted[id]!=="number" || submitted[id]!==calculation.values[id])) throw new ApiError(422,`Calculation for "${parameter.parameterName}" is missing or stale; preview and accept it again`);
+  }
+  // Never invent a result the user did not accept, or revise a kept result.
+  const entries=input.entries.filter(entry=>!kept.has(entry.parameterId));
+  if (!entries.length) return {results:await LabTestResult.find({billId:bill._id,testId:input.testId}).exec(),testId:input.testId};
   for (const entry of entries) {
     const parameter = parameterMap.get(entry.parameterId)!;
     assertParameterTypeMatches(parameter, entry.result);
@@ -410,10 +524,13 @@ export async function submitTestResults(
   const anchor = await LabTestResult.findOne({ billId: bill._id, testId: input.testId, parameterId: first.parameterId }).exec();
   const anchorId = anchor?._id ?? new Types.ObjectId();
   const confirmation = await AuditLog.create({ user: enteredBy, action: SUBMISSION_PENDING,
-    entityType: "LabTestResult", entity: anchorId, timestamp: now });
+    entityType: "LabTestResult", entity: anchorId, timestamp: now,
+    details:{acceptedCalculationIds:[...accepted],keptCalculationIds:[...kept],calculationAcceptance:"USER_ACCEPTED_AND_SERVER_VERIFIED"} });
   const saveEntry = async (entry: typeof first) => {
       const parameter = parameterMap.get(entry.parameterId)!;
-      const calculationSnapshot = parameter.calculation ? {formulaId:parameter.calculation.formulaId,version:"1",precision:parameter.calculation.precision??2,inputs:resolveCalculationDependencyIds(calculationParameters,calculationParameters.find(row=>row.parameterId===entry.parameterId)!).map(id=>({parameterId:id,value:calculation.values[id] as string|number,unit:parameterMap.get(id)?.unit}))} : undefined;
+      const effective = executable(parameter);
+      const proposal=proposals.find(p=>p.parameterId===entry.parameterId);
+      const calculationSnapshot = effective ? {expression:effective.expression,...(development?{definitionKind:"DEVELOPMENT_CONFIGURED" as const,developmentAuthorizedBy:development.authorizedBy,clinicalApproval:false}:{}),...(proposal?{definitionKind:"DEVELOPMENT_ONE_TIME" as const,expression:proposal.expression,dependencyIds:proposal.dependencyIds}:{}),formulaId:effective.formulaId,version:parameter.calculationApproval?.formulaVersion??"1",bindingRevision:parameter.calculationApproval?.revision??0,rounding:parameter.calculationApproval?.rounding??"HALF_UP",approvedBy:proposal||development?undefined:parameter.calculationApproval?.approvedBy??"registry",approvedAt:proposal||development?undefined:parameter.calculationApproval?.approvedAt??now,acceptedBy:userId,acceptedAt:now,precision:effective.precision??2,inputs:resolveCalculationDependencyIds(calculationParameters,calculationParameters.find(row=>row.parameterId===entry.parameterId)!).map(id=>({parameterId:id,value:calculation.values[id] as string|number,unit:parameterMap.get(id)?.unit}))} : undefined;
       const existing = await LabTestResult.findOne({
         billId: bill._id,
         testId: input.testId,
@@ -427,6 +544,7 @@ export async function submitTestResults(
           patientId: bill.patientId,
           testId: input.testId,
           parameterId: parameter._id,
+          parameterSource: parameter instanceof ParameterVersion ? "ParameterVersion" : undefined,
           parameterName: parameter.parameterName,
           resultType: parameter.resultType,
           calculationSnapshot,

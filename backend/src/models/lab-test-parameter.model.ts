@@ -1,4 +1,5 @@
 import { model, Schema, type Types } from "mongoose";
+import type { CalculationOverwrite } from "../utils/configured-calculations";
 
 export type ParameterResultType =
   | "TEXT"
@@ -107,10 +108,15 @@ export interface IReferenceMapping {
 }
 
 export interface ILabTestParameter {
+  /** Immutable original import evidence; never a clinical approval. */
+  catalogueImport?: { sourceSystem: string; sourceParameterId: string; sourceTestId: string; sourceDepartment: string; sourceRow: number; fingerprint: string; originalSource: unknown; originalUpload: string };
+  lineage?: import("../utils/parameter-version-routing").ParameterLineage;
   testId: Types.ObjectId;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
+  calculation?: { enabled?: boolean; expression?: string; formulaId: string; dependencyIds?: string[]; precision?: number; overwrite?: CalculationOverwrite; sourceVerification?:string } | null;
+  calculationApproval?: { revision:number; formulaVersion:string; rounding:string; approvedBy:string; approvedAt:Date };
+  pendingCalculation?: { requestId:string; baseRevision:number; calculation:NonNullable<ILabTestParameter["calculation"]>; unit:string; requestedBy:string; requestedAt:Date };
   /** Optional grouped heading / sub-title the parameter belongs under. */
   subtitle?: string;
   displayOrder: number;
@@ -321,15 +327,19 @@ referenceMappingSchema.pre("validate", function (next) {
 
 const labTestParameterSchema = new Schema<ILabTestParameter>(
   {
+    catalogueImport: { type: Schema.Types.Mixed, default: undefined, immutable: true },
     testId: {
       type: Schema.Types.ObjectId,
       ref: "LabTest",
       required: true,
       index: true,
     },
+    lineage: {type:new Schema({originalId:{type:String,required:true},predecessorId:{type:String,required:true},version:{type:Number,required:true,min:2},manifestReference:{type:String,required:true}},{_id:false}),default:undefined,immutable:true},
     parameterName: { type: String, required: true, trim: true, maxlength: 150 },
     itemType: { type: String, enum: ["PARAMETER", "SUBTITLE", "TEXT_AREA"], default: "PARAMETER" },
-    calculation: { type: new Schema({ formulaId: { type: String, required: true }, dependencyIds: [String], precision: {type:Number,min:0,max:6} }, { _id: false }), default: undefined },
+    calculation: { type: new Schema({ enabled: {type:Boolean,default:true}, expression: {type:String,maxlength:240}, formulaId: { type: String, required: true }, dependencyIds: [String], precision: {type:Number,min:0,max:6}, overwrite: { type: String, enum: ["CONFIRM","CALCULATED","NEVER"] },sourceVerification:{type:String,maxlength:1000} }, { _id: false }), default: undefined },
+    calculationApproval: {type:Schema.Types.Mixed,default:undefined},
+    pendingCalculation: {type:Schema.Types.Mixed,default:undefined},
     subtitle: { type: String, trim: true, maxlength: 150 },
     displayOrder: { type: Number, required: true, min: 0, default: 0 },
     resultType: {
@@ -340,7 +350,7 @@ const labTestParameterSchema = new Schema<ILabTestParameter>(
     parameterType: { type: String, trim: true, maxlength: 50 },
     defaultValue: { type: String, trim: true, maxlength: 2000 },
     unit: { type: String, trim: true, maxlength: 50 },
-    referenceRange: { type: String, trim: true, maxlength: 200 },
+    referenceRange: { type: String, maxlength: 200 },
     referenceType: {
       type: String,
       enum: PARAMETER_REFERENCE_TYPES,
@@ -354,7 +364,7 @@ const labTestParameterSchema = new Schema<ILabTestParameter>(
     onlyReferenceRange: { type: Boolean, default: false },
     rangeFrom: { type: Number },
     rangeTo: { type: Number },
-    rangeText: { type: String, trim: true, maxlength: 200 },
+    rangeText: { type: String, maxlength: 200 },
     genderRanges: {
       type: [
         {

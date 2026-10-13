@@ -1,0 +1,85 @@
+.page {font-family:Roboto,"Open Sans",Verdana,sans-serif;color:#515151;font-size:13px;}
+.page :global(.lis-page-header h1) {font-family:"Roboto Slab","Open Sans",Arial,sans-serif;font-size:19px;font-weight:300;line-height:50px;}
+.page :global(.lis-parameter-fields) {column-gap:0;row-gap:0;}
+.page :global(.lis-parameter-form) {max-width:none;padding:4px;border-radius:0;box-shadow:none;}
+.page :global(.lis-compact-field) {padding:4px;border-bottom:1px solid #ddd;min-height:40px;}
+.page :global(.lis-compact-field label) {font-size:13px;font-weight:400;color:#515151;white-space:normal;margin-bottom:0;}
+.page :global(.lis-compact-field input),.page :global(.lis-compact-field select) {height:30px;min-height:30px;border-radius:4px;border:1px solid #ccc;background-color:white;font-size:14px;font-weight:400;color:#555;padding:4px 12px;}
+.page :global(.lis-compact-field select) {padding-right:34px;}
+.page :global(.lis-compact-field :is(input,select,textarea)) {width:100%;min-width:0;}
+.page :global(.lis-compact-field textarea) {min-height:56px;font-size:14px;border:1px solid #ccc;border-radius:4px;}
+.page :global(.lis-data-grid) {border-radius:0;}
+.page :global(.lis-data-grid table) {table-layout:fixed;width:100%;min-width:0;font-family:Roboto,"Open Sans",Verdana,sans-serif;}
+.page :global(.lis-data-grid th),.page :global(.lis-data-grid td) {padding:4px;font-size:13px;line-height:18.57px;height:28px;border-bottom:1px solid #ddd;}
+.page :global(.lis-data-grid th) {background:#f5f5f5;color:#515151;font-weight:700;white-space:normal;}
+.page :global(.lis-data-grid tbody tr:nth-child(odd)) {background:#f8f8f8;}
+.page :global(.lis-data-grid > div:first-child) {max-height:480px;overflow:auto;}
+.page :global(.lis-data-grid :is(th,td):nth-child(1)) {width:5%;}
+.page :global(.lis-data-grid :is(th,td):nth-child(2)) {width:12%;}
+.page :global(.lis-data-grid :is(th,td):nth-child(3)),.page :global(.lis-data-grid :is(th,td):nth-child(4)) {width:17%;}
+.page :global(.lis-data-grid :is(th,td):nth-child(5)),.page :global(.lis-data-grid :is(th,td):nth-child(7)) {width:8%;}
+.page :global(.lis-data-grid :is(th,td):nth-child(6)) {width:14%;}
+.page :global(.lis-data-grid :is(th,td):nth-child(n+8)) {width:4%;}
+.page :global(.lis-data-grid :is(th,td):nth-child(10)) {width:7%;}
+.page :global(.lis-data-grid :is(th,td)) {overflow-wrap:anywhere;}
+.page :global(.lis-data-grid td > *) {min-width:0;max-width:100%;white-space:normal;}
+.page :global(.lis-data-grid button) {padding:4px;min-width:0;}
+@media(min-width:768px){.page :global(.lis-compact-field){display:grid;grid-template-columns:40% minmax(0,40%);align-items:center;}}
+@media(min-width:768px){
+ .page :global(.lis-compact-field:has(#param-dept,#param-item-type,#param-result-type,#param-default,#param-unit,#param-active,#param-subtitle)){grid-column:1;}
+ .page :global(.lis-compact-field:has(#param-test,#param-name,#param-order,#param-method,#param-options)){grid-column:2;}
+}
+
+/* Higher specificity than shared master styles, without changing other pages. */
+:global(.lis-content) .page :global(.lis-compact-field label) {font:400 13px/18.5714px Roboto,"Open Sans",Verdana,sans-serif;white-space:nowrap;}
+:global(.lis-content) .page :global(.lis-compact-field :is(input,select):not([type=checkbox]):not([type=radio])) {height:30px;min-height:30px;font:400 14px/20px Roboto,"Open Sans",Verdana,sans-serif;}
+:global(.lis-content) .page :global(.lis-reference-config) {background:white;padding:4px;border:0;border-radius:0;}
+:global(.lis-content) .page :global(.lis-reference-controls) {display:grid;grid-template-columns:minmax(0,35fr) minmax(0,40fr) minmax(0,25fr);gap:4px;align-items:center;}
+:global(.lis-content) .page :global(.lis-reference-controls label) {white-space:nowrap;font-weight:400;}
+:global(.lis-content) .page :global(.lis-reference-controls fieldset) {display:flex;flex-wrap:wrap;gap:12px;}
+:global(.lis-content) .page :global(.lis-reference-controls label:has(#param-only-range)) {justify-content:flex-start;gap:8px;}
+:global(.lis-content) .page :global(input[type=checkbox]) {width:16px;min-width:16px;height:16px;}
+:global(.lis-content) .page :global(input[type=radio]) {width:14px;min-width:14px;height:14px;}
+@media(max-width:767px){:global(.lis-content) .page :global(.lis-reference-controls){grid-template-columns:1fr;} :global(.lis-content) .page :global(.lis-compact-field label){white-space:normal;}}
+@media(max-width:1100px){
+ :global(.lis-content) .page :global(.lis-reference-controls){grid-template-columns:1fr;}
+ :global(.lis-content) .page :global(.lis-compact-field label){white-space:normal;}
+ :global(.lis-content) .page :global(.lis-parameter-fields > .lis-compact-field){grid-template-columns:40% minmax(0,60%);}
+}
+@media(max-width:767px){
+ :global(.lis-content) .page :global(.lis-parameter-fields > .lis-compact-field){display:block;}
+}
+@media(max-width:1000px){
+ :global(.lis-content) .page :global(.lis-parameter-fields){grid-template-columns:minmax(0,1fr);}
+ :global(.lis-content) .page :global(.lis-parameter-fields > .lis-compact-field){grid-column:1;grid-row:auto;}
+ :global(.lis-content) .page :global(.lis-compact-field label){overflow:visible;text-overflow:clip;max-width:100%;}
+}
+@media(max-width:640px){
+ :global(.lis-content) .page > :global(.lis-page-header){height:auto;min-height:50px;padding:8px;}
+ :global(.lis-content) .page :global(.lis-page-header h1){line-height:28px;}
+ .page :global(.lis-data-grid table),.page :global(.lis-data-grid tbody){display:block;}
+ .page :global(.lis-data-grid thead){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);}
+ .page :global(.lis-data-grid tbody tr){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-bottom:1px solid #ccc;}
+ .page :global(.lis-data-grid tbody tr td){display:block;width:auto!important;height:auto;min-width:0;border-bottom:0;}
+ .page :global(.lis-data-grid td:nth-child(6)){grid-column:1/-1;white-space:pre-wrap;}
+ .page :global(.lis-data-grid td:nth-child(-n+7)::before){display:block;font-weight:700;}
+ .page :global(.lis-data-grid td:nth-child(1)::before){content:"S.No";}
+ .page :global(.lis-data-grid td:nth-child(2)::before){content:"Lab Dept";}
+ .page :global(.lis-data-grid td:nth-child(3)::before){content:"Lab Test";}
+ .page :global(.lis-data-grid td:nth-child(4)::before){content:"Parameter Name";}
+ .page :global(.lis-data-grid td:nth-child(5)::before){content:"Units";}
+ .page :global(.lis-data-grid td:nth-child(6)::before){content:"Reference Range";}
+ .page :global(.lis-data-grid td:nth-child(7)::before){content:"Order No";}
+ .page :global(.lis-data-grid td:nth-child(n+8)){min-height:32px;}
+}
+
+@media(min-width:768px){
+ :global(.lis-content) .page :global(.lis-parameter-fields > .lis-compact-field){display:grid;grid-template-columns:36% minmax(0,36%);align-items:center;}
+ .page :global(.lis-compact-field:has(#param-dept,#param-test)){grid-row:1;}
+ .page :global(.lis-compact-field:has(#param-item-type,#param-name)){grid-row:2;}
+ .page :global(.lis-compact-field:has(#param-result-type,#param-order)){grid-row:3;}
+ .page :global(.lis-compact-field:has(#param-default)){grid-row:4;}
+ .page :global(.lis-compact-field:has(#param-unit)){grid-row:5;}
+ .page :global(.lis-compact-field:has(#param-active,#param-method)){grid-row:6;}
+ .page :global(.lis-compact-field:has(#param-subtitle,#param-options)){grid-row:7;}
+}

@@ -2,6 +2,23 @@ import { it } from "node:test";
 import assert from "node:assert/strict";
 import { resolveReferenceRange, evaluateValue } from "./reference-resolver";
 
+it("legacy sex display and abnormal comparison use one interval; undefined child boundaries block selection", () => {
+  const referenceRange = "Male :13-17Grams %\nFemale :12-15Grams %";
+  const male = resolveReferenceRange({ referenceRange }, { gender: "male", age: 30 });
+  assert.equal(male.displayValue, "13-17Grams %");
+  assert.equal(male.sex, "MALE");
+  assert.equal(evaluateValue(12.1, male), "OUT_OF_RANGE");
+  assert.equal(evaluateValue(18, male), "OUT_OF_RANGE");
+  assert.equal(evaluateValue(14, male), "IN_RANGE");
+  const female = resolveReferenceRange({ referenceRange }, { gender: "female", age: 30 });
+  assert.equal(female.displayValue, "12-15Grams %");
+  assert.equal(evaluateValue(12.1, female), "IN_RANGE");
+  assert.equal(resolveReferenceRange({ referenceRange }, { gender: "other" }).status, "NO_MAPPING_FOR_PATIENT");
+  const ambiguousAge = resolveReferenceRange({ referenceRange: `${referenceRange}\nChild :11-15.5Grams %` }, { gender: "male", age: 30 });
+  assert.equal(ambiguousAge.displayValue, "");
+  assert.equal(evaluateValue(12.1, ambiguousAge), "NOT_COMPARABLE");
+});
+
 it("configured legacy gender rows display and compare the same single applicable row", () => {
   const parameter = { referenceType: "GENDER_WISE", referenceRange: "old combined male and female text", genderRanges: [
     { gender: "M" as const, from: 5, to: 8, text: "5-8 configured male" },

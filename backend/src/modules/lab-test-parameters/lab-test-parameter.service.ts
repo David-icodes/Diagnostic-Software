@@ -1,4 +1,4 @@
-import { CALCULATION_FORMULAS, calculationUnitsMatch, normalizeCalculationUnit, calculationBindingChanged } from "../../utils/configured-calculations";
+import { CALCULATION_FORMULAS, isNumericOnlyCalculation, evaluateFormulaExpression, evaluateProposedExpression, calculationUnitsMatch, normalizeCalculationUnit, hasDuplicateCalculationSources } from "../../utils/configured-calculations";
 import { Types, type FilterQuery, type HydratedDocument } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { isValidObjectId } from "../../utils/object-id";
@@ -17,6 +17,7 @@ import { LabTestResult } from "../../models/lab-test-result.model";
 import { recordAudit } from "../audit/audit.service";
 import { validateMappingSet } from "../../validations/lab-test-parameter";
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
 
 /** A reference mapping as returned by the API. */
 export interface ParameterMapping {
@@ -50,7 +51,9 @@ export interface ParameterRow extends ReferenceMappingSummary {
   testName?: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
+  calculation?: ILabTestParameter["calculation"];
+  calculationApproval?: ILabTestParameter["calculationApproval"];
+  pendingCalculation?: ILabTestParameter["pendingCalculation"];
   subtitle?: string;
   displayOrder: number;
   resultType: ILabTestParameter["resultType"];
@@ -119,8 +122,9 @@ export function composeReferenceRange(
   // the source catalogue and the old LIS show. It is never re-derived from the
   // numeric bounds, so editing a parameter cannot rewrite source text such as
   // "<200" or "40-440Cells/Cumm" into a normalised "40–440".
-  const storedText = value.rangeText?.trim();
-  if (storedText) return storedText;
+  // An explicitly stored blank is also source data. Only an omitted text field
+  // requests numeric composition; zero bounds must not fabricate a display.
+  if (value.rangeText !== undefined) return value.rangeText;
 
   const formatSingle = (
     range: { from?: number; to?: number; text?: string },
@@ -210,7 +214,6 @@ export function toParameterMapping(doc: IReferenceMapping): ParameterMapping {
 }
 
 export function normalizeParameterItem(input: Partial<ILabTestParameter>) {
- if (input.calculation && (!input.itemType || input.itemType === "PARAMETER")) input.resultType = "NUMBER";
  if(input.itemType === "SUBTITLE" || input.itemType === "TEXT_AREA") Object.assign(input,{resultType:input.itemType === "SUBTITLE"?"TEXT":"TEXTAREA",calculation:null,method:undefined,options:[],parameterType:undefined,...(input.itemType === "SUBTITLE" ? {defaultValue:undefined}:{}),unit:undefined,rangeFrom:undefined,rangeTo:undefined,rangeText:undefined,referenceRange:undefined,referenceMappings:[],mappingTypes:[],genderRanges:[],onlyReferenceRange:false});
  return input;
 }
@@ -222,6 +225,8 @@ function row(doc: ILabTestParameter): ParameterRow {
     parameterName: doc.parameterName,
     itemType: doc.itemType ?? "PARAMETER",
     calculation: doc.calculation,
+    calculationApproval: doc.calculationApproval,
+    pendingCalculation: doc.pendingCalculation,
     subtitle: doc.subtitle,
     displayOrder: doc.displayOrder,
     resultType: doc.resultType,
@@ -376,17 +381,22 @@ async function validateCalculationBinding(testId: string, calculation: ILabTestP
  if (!calculation || itemType === "SUBTITLE" || itemType === "TEXT_AREA") return;
  const formula = CALCULATION_FORMULAS.find(row => row.id === calculation.formulaId);
  if (!formula) throw new ApiError(422, "Select a supported calculation formula");
- // Legacy configurations without bindings use the engine's controlled exact-alias fallback.
- if (!calculation.dependencyIds) { if(!formula.aliases.length)throw new ApiError(422,"Bind each source parameter explicitly for this formula");return; }
+ if (formula.id==="rdw" && !calculation.sourceVerification?.trim()) throw new ApiError(422,"RDW-CV requires verified RBC volume-distribution SD source and analyzer method documentation");
+ if (!calculation.dependencyIds?.length) throw new ApiError(422,"Bind each source parameter explicitly for this formula");
  if (calculation.dependencyIds.length !== formula.sources.length || calculation.dependencyIds.includes(id ?? "")) throw new ApiError(422, "Select each source parameter; a calculation cannot depend on itself");
+ if (hasDuplicateCalculationSources(calculation.dependencyIds)) throw new ApiError(422, "Each source parameter must be selected exactly once");
  const sources = await LabTestParameter.find({_id:{$in:calculation.dependencyIds},testId,active:true}).exec();
  const ordered = calculation.dependencyIds.map(sourceId => sources.find(row => String(row._id) === sourceId));
- if (ordered.some(row => !row || row.itemType === "SUBTITLE" || row.itemType === "TEXT_AREA" || !["NUMBER","RANGE"].includes(row.resultType))) throw new ApiError(422, "Calculation sources must be numeric parameters in this test");
+ if (ordered.some(row => !row || row.itemType === "SUBTITLE" || row.itemType === "TEXT_AREA")) throw new ApiError(422, "Calculation sources must be active parameters in this test. Subtitles and text areas cannot be used as numeric sources.");
  const all = await LabTestParameter.find({testId,active:true}).exec();
  const edges=new Map(all.map(row=>[String(row._id),row.calculation?.dependencyIds??[]]));if(id)edges.set(id,calculation.dependencyIds);
  const visiting=new Set<string>(),done=new Set<string>();const visit=(key:string)=>{if(visiting.has(key))throw new ApiError(422,"Circular calculation dependency is not allowed");if(done.has(key))return;visiting.add(key);for(const next of edges.get(key)??[])visit(next);visiting.delete(key);done.add(key);};for(const key of edges.keys())visit(key);
+ if (calculation.expression) {
+  if (!formula.expression) throw new ApiError(422,"This registered formula does not support expression editing");
+  try { if(isNumericOnlyCalculation(formula.id)) evaluateFormulaExpression(calculation.expression,ordered.map(()=>1),[],true); else evaluateProposedExpression(calculation.expression,formula.expression,ordered.map(()=>1),ordered.map(row=>row!.unit??"")); } catch(error) { throw new ApiError(422,error instanceof Error?error.message:"Invalid formula expression"); }
+ }
  const units = ordered.map(row => normalizeCalculationUnit(row!.unit));
- if (!calculationUnitsMatch(formula, units, unit ?? "")) throw new ApiError(422, "Configure compatible source and output units");
+ if (!isNumericOnlyCalculation(formula.id) && !calculationUnitsMatch(formula, units, unit ?? "")) throw new ApiError(422, "Configure compatible source and output units");
 }
 
 export async function createParameter(
@@ -394,7 +404,6 @@ export async function createParameter(
   input: CreateParameterInput,
 ): Promise<ParameterDoc> {
   await ensureTestExists(String(input.testId));
-  if (input.calculation && (input.calculationApproved !== true || !input.calculation.dependencyIds?.length)) throw new ApiError(422, "Laboratory approval of the formula, explicit source IDs and units is required");
   delete input.calculationApproved;
   await validateCalculationBinding(String(input.testId), input.calculation, input.unit, input.itemType);
   const referenceRange = composeReferenceRange(input);
@@ -405,7 +414,7 @@ export async function createParameter(
       referenceRange: input.itemType === "SUBTITLE" || input.itemType === "TEXT_AREA" ? undefined : referenceRange,
       createdBy: userId,
     });
-    if(input.calculation)await recordAudit({user:userId,action:"lab.calculation_configured",entityType:"LabTestParameter",entity:String(created._id),details:{calculation:input.calculation,unit:input.unit,laboratoryApproved:true}});
+    if(input.calculation)await recordAudit({user:userId,action:"lab.calculation_configured",entityType:"LabTestParameter",entity:String(created._id),details:{calculation:input.calculation,unit:input.unit,direct:true}});
     return created;
   } catch (error) {
     if (isDuplicateKeyError(error)) {
@@ -416,6 +425,51 @@ export async function createParameter(
     }
     throw error;
   }
+}
+
+/** Requests are stored separately and never exposed as executable bindings. */
+export async function requestCalculationReview(id:string,userId:string,calculation:NonNullable<ILabTestParameter["calculation"]>,unit:string) {
+ const parameter=await LabTestParameter.findById(id).exec();
+ if (!parameter) throw new ApiError(404,"Lab test parameter not found");
+ if (parameter.itemType && parameter.itemType!=="PARAMETER") throw new ApiError(422,"Only a result parameter can request a calculation");
+ await validateCalculationBinding(String(parameter.testId),calculation,unit,parameter.itemType,id);
+ const pendingCalculation={requestId:randomUUID(),baseRevision:parameter.calculationApproval?.revision??0,calculation,unit,requestedBy:userId,requestedAt:new Date()};
+ await LabTestParameter.updateOne({_id:parameter._id},{$set:{pendingCalculation}}).exec();
+ await recordAudit({user:userId,action:"lab.calculation_review_requested",entityType:"LabTestParameter",entity:id,details:{requestId:pendingCalculation.requestId,calculation,unit}});
+ return getParameter(id);
+}
+
+/**
+ * Direct development configuration: saves the calculation on the parameter
+ * immediately without the clinical review queue. Auth, audit and binding
+ * validation are preserved; no approval is fabricated.
+ */
+export async function configureCalculation(id:string,userId:string,calculation:NonNullable<ILabTestParameter["calculation"]>,unit:string) {
+ const parameter=await LabTestParameter.findById(id).exec();
+ if (!parameter) throw new ApiError(404,"Lab test parameter not found");
+ if (parameter.itemType && parameter.itemType!=="PARAMETER") throw new ApiError(422,"Only a result parameter can configure a calculation");
+ await validateCalculationBinding(String(parameter.testId),calculation,unit,parameter.itemType,id);
+ const normalized={...calculation,enabled:calculation.enabled!==false,precision:calculation.precision??CALCULATION_FORMULAS.find(f=>f.id===calculation.formulaId)?.precision??2,overwrite:calculation.overwrite??"CONFIRM"};
+ const result=await LabTestParameter.updateOne({_id:parameter._id},{$set:{calculation:normalized,updatedBy:new Types.ObjectId(userId)},$unset:{pendingCalculation:1}}).exec();
+ if (result.modifiedCount!==1) throw new ApiError(409,"The parameter changed during save. Reload and try again");
+ await recordAudit({user:userId,action:"lab.calculation_configured",entityType:"LabTestParameter",entity:id,details:{calculation:normalized,unit,direct:true}});
+ return getParameter(id);
+}
+
+export async function approveCalculationReview(id:string,userId:string,requestId:string) {
+  const parameter=await LabTestParameter.findById(id).exec();
+  if (!parameter) throw new ApiError(404,"Lab test parameter not found");
+  const pending=parameter.pendingCalculation;
+  if (!pending || pending.requestId!==requestId) throw new ApiError(409,"This calculation review has changed. Reload it before approval");
+  if (pending.baseRevision!==(parameter.calculationApproval?.revision??0)) throw new ApiError(409,"The approved binding changed since this request. Submit a fresh review");
+  await validateCalculationBinding(String(parameter.testId),pending.calculation,pending.unit,parameter.itemType,id);
+  if (parameter.resultType!=="NUMBER" && parameter.resultType!=="RANGE") throw new ApiError(422,"Review the target numeric type migration before approval");
+  if ((parameter.unit??"")!==pending.unit) throw new ApiError(422,"Review the target unit migration before approval");
+  const approval={revision:(parameter.calculationApproval?.revision??0)+1,formulaVersion:"1",rounding:"HALF_UP",approvedBy:userId,approvedAt:new Date()};
+  const result=await LabTestParameter.updateOne({_id:parameter._id,"pendingCalculation.requestId":requestId,updatedAt:parameter.updatedAt},{$set:{calculation:pending.calculation,calculationApproval:approval,updatedBy:new Types.ObjectId(userId)},$unset:{pendingCalculation:1}}).exec();
+  if (result.modifiedCount!==1) throw new ApiError(409,"The parameter changed during approval. Reload and review again");
+  await recordAudit({user:userId,action:"lab.calculation_approved",entityType:"LabTestParameter",entity:id,details:{requestId,calculation:pending.calculation,unit:pending.unit,approval}});
+  return getParameter(id);
 }
 
 export async function updateParameter(
@@ -431,10 +485,15 @@ export async function updateParameter(
     throw new ApiError(404, "Lab test parameter not found");
   }
   const nextCalculation = input.calculation === undefined ? parameter.calculation : input.calculation;
-  const approvalRequired = calculationBindingChanged(nextCalculation, parameter.calculation, input.unit ?? parameter.unit, parameter.unit);
-  if (approvalRequired && (input.calculationApproved !== true || !nextCalculation?.dependencyIds?.length)) throw new ApiError(422, "Laboratory approval of the formula, explicit source IDs and units is required");
   delete input.calculationApproved;
   if(input.itemType && input.itemType !== (parameter.itemType ?? "PARAMETER") && await LabTestResult.countDocuments({parameterId:parameter._id}))throw new ApiError(409,"An item with recorded results cannot change between Parameter, Subtitle and Text Area. Create a separate new item to preserve historical reports.");
+  const effectiveType=input.resultType??parameter.resultType;
+  if (effectiveType!==parameter.resultType && await LabTestResult.countDocuments({parameterId:parameter._id})) throw new ApiError(409,"A parameter with recorded results cannot change result type. Review a separate numeric parameter migration to preserve historical results.");
+  // Source edits cannot invalidate an already-dependent binding.
+  if (input.unit!==undefined || input.resultType!==undefined || input.testId!==undefined || input.active===false || input.itemType!==undefined) {
+    const dependents=await LabTestParameter.find({"calculation.dependencyIds":id,active:true}).exec();
+    if (dependents.length && (input.unit!==undefined && normalizeCalculationUnit(input.unit)!==normalizeCalculationUnit(parameter.unit) || effectiveType!==parameter.resultType || input.testId!==undefined && String(input.testId)!==String(parameter.testId) || input.active===false || input.itemType!==undefined && input.itemType!=="PARAMETER")) throw new ApiError(409,"Review dependent calculation bindings before changing this source type, unit, profile or active state");
+  }
   if (input.testId !== undefined) {
     await ensureTestExists(String(input.testId));
   }
@@ -443,6 +502,7 @@ export async function updateParameter(
   Object.assign(parameter, input, {
     updatedBy: new Types.ObjectId(userId),
   });
+  if (input.calculation === null) parameter.calculationApproval=undefined;
   const hasRangeKey = (
     ["referenceType", "rangeFrom", "rangeTo", "rangeText", "genderRanges"] as const
   ).some((key) => Object.prototype.hasOwnProperty.call(input, key));
@@ -471,7 +531,7 @@ export async function updateParameter(
   }
   try {
     const saved = await parameter.save();
-    if(input.calculation !== undefined || approvalRequired)await recordAudit({user:userId,action:"lab.calculation_updated",entityType:"LabTestParameter",entity:id,details:{calculation:nextCalculation,unit:parameter.unit,approvalRequired,...(approvalRequired?{laboratoryApproved:true}:{})}});
+    if(input.calculation !== undefined)await recordAudit({user:userId,action:"lab.calculation_updated",entityType:"LabTestParameter",entity:id,details:{calculation:nextCalculation,unit:parameter.unit,direct:true}});
     return saved;
   } catch (error) {
     if (isDuplicateKeyError(error)) {
@@ -795,6 +855,7 @@ export async function setParameterActive(
   if (!parameter) {
     throw new ApiError(404, "Lab test parameter not found");
   }
+    if (!active && await LabTestParameter.countDocuments({active:true,"calculation.dependencyIds":id})) throw new ApiError(409,"Review dependent calculation bindings before deactivating this source");
   parameter.active = active;
   parameter.updatedBy = new Types.ObjectId(userId);
   await parameter.save();

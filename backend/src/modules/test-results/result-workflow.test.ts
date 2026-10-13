@@ -89,20 +89,28 @@ test("patient dues and successful/failed/partial submissions are verified from s
   assert.equal(rows[0].referenceSnapshot.flag, "OUT_OF_RANGE");
 });
 
-test("configured CBC results are recalculated by the server, audited and preserved across revisions despite dues", async t => {
+ test("configured CBC results are recalculated by the server, audited and preserved across revisions despite dues", async t => {
  const billId=new Types.ObjectId(), patientId=new Types.ObjectId(), testId=new Types.ObjectId(), userId=new Types.ObjectId();
  const rbcId=new Types.ObjectId(), mcvId=new Types.ObjectId(), pcvId=new Types.ObjectId();
  const bill={_id:billId,patientId,status:"generated",items:[{testId}],netAmount:100,paidAmount:0,dueAmount:100};
- const parameters=[{_id:rbcId,testId,active:true,parameterName:"Custom RBC",resultType:"NUMBER",unit:"million/µL"},{_id:mcvId,testId,active:true,parameterName:"Custom MCV",resultType:"NUMBER",unit:"fL"},{_id:pcvId,testId,active:true,parameterName:"Custom PCV",resultType:"NUMBER",unit:"%",calculation:{formulaId:"pcv",dependencyIds:[String(rbcId),String(mcvId)]}}];
+ const parameters=[{_id:rbcId,testId,active:true,parameterName:"Custom RBC",resultType:"NUMBER",unit:"million/µL"},{_id:mcvId,testId,active:true,parameterName:"Custom MCV",resultType:"NUMBER",unit:"fL"},{_id:pcvId,testId,active:true,parameterName:"Custom PCV",resultType:"NUMBER",unit:"%",calculationApproval:{revision:1,formulaVersion:"1",rounding:"HALF_UP",approvedBy:String(userId),approvedAt:new Date()},calculation:{formulaId:"pcv",dependencyIds:[String(rbcId),String(mcvId)]}}];
  const rows:any[]=[];const audits:any[]=[];const query=(value:unknown)=>{const q={exec:async()=>value,sort:()=>q,select:()=>q,lean:()=>q};return q;};
  t.mock.method(LabBill,"findById",()=>query(bill));t.mock.method(Patient,"findById",()=>query({gender:"male",age:30}));t.mock.method(LabTestParameter,"find",()=>query(parameters));
  t.mock.method(LabTestResult,"findOne",(filter:any)=>query(rows.find(row=>String(row.parameterId)===String(filter.parameterId))??null));
  t.mock.method(LabTestResult,"find",()=>query(rows));
  t.mock.method(LabTestResult,"create",async (data:any)=>{const row={...data,_id:data._id??new Types.ObjectId(),save:async()=>row};rows.push(row);return row;});
  t.mock.method(AuditLog,"create",async (data:any)=>{const row={...data,_id:new Types.ObjectId(),save:async()=>row};audits.push(row);return row;});
- const input={billId:String(billId),testId:String(testId),entries:[{parameterId:String(rbcId),result:4},{parameterId:String(mcvId),result:90},{parameterId:String(pcvId),result:999}]};
+ const input={billId:String(billId),testId:String(testId),acceptedCalculationIds:[String(pcvId)],acceptedCalculationRevisions:{[String(pcvId)]:1},entries:[{parameterId:String(rbcId),result:4},{parameterId:String(mcvId),result:90},{parameterId:String(pcvId),result:36}]};
+  const sourceUnit=parameters[0].unit;parameters[0].unit="cells/µL";
+  await assert.rejects(submitTestResults(String(userId),input),/compatible source/);
+  parameters[0].unit=sourceUnit;
+  // Submitting a matching value without accepting the calculation is allowed (manual entry)
+  await submitTestResults(String(userId),{...input,acceptedCalculationIds:[]});
+  rows.length=0;
+  // Submitting a stale/wrong value without accepting still fails
+  await assert.rejects(submitTestResults(String(userId),{...input,acceptedCalculationIds:[],entries:input.entries.map(entry=>entry.parameterId===String(pcvId)?{...entry,result:999}:entry)}),/missing or stale/);
  await submitTestResults(String(userId),input);const pcv=rows.find(row=>String(row.parameterId)===String(pcvId));assert.equal(pcv.result,36);assert.equal(pcv.version,1);assert.equal(audits[0].action,SUBMISSION_CONFIRMED);
- input.entries[0].result=5;await submitTestResults(String(userId),input);assert.equal(pcv.result,45);assert.equal(pcv.version,2);assert.equal(pcv.revisions[0].result,36);
+ input.entries[0].result=5;input.entries[2].result=45;await submitTestResults(String(userId),input);assert.equal(pcv.result,45);assert.equal(pcv.version,2);assert.equal(pcv.revisions[0].result,36);
  await assert.rejects(submitTestResults(String(userId),{...input,entries:input.entries.filter(entry=>entry.parameterId!==String(rbcId))}),/source values/);assert.equal(pcv.result,45);assert.equal(pcv.version,2);
  assert.equal(bill.dueAmount,100);assert.equal(bill.paidAmount,0);
 });

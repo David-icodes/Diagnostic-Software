@@ -11,7 +11,7 @@ const cases: Array<[string, string[], number[], string, number]> = [
 ];
 for (const [formulaId, units, inputs, outputUnit, expected] of cases) {
  test(`configured ${formulaId}: correct value, saved dependencies and reload`,()=>{
-  const params=[source("a","Custom source A",units[0]),source("b","Custom source B",units[1]),{...source("c","Custom output",outputUnit),calculation:{formulaId,dependencyIds:["a","b"]}}];
+  const params=[source("a","Custom source A",units[0]),source("b","Custom source B",units[1]),{...source("c","Custom output",outputUnit),calculation:{formulaId,dependencyIds:["a","b"],sourceVerification:formulaId==="rdw"?"Synthetic RBC volume-distribution SD fixture":undefined}}];
   const configured=JSON.parse(JSON.stringify(params));
   const result=recalculateConfigured(configured,{a:inputs[0],b:inputs[1],c:999});
   assert.deepEqual(result.errors,{}); assert.equal(result.values.c,expected); assert.equal(result.values.a,inputs[0]);
@@ -32,10 +32,13 @@ test("bidirectional PCV/MCV configuration fails on a cycle without stale results
  const result=recalculateConfigured(params,{rbc:4,pcv:36,mcv:90}); assert.equal(result.values.pcv,"");assert.equal(result.values.mcv,"");assert.equal(Object.keys(result.errors).length,2);
 });
 test("missing, ambiguous, narrative and incompatible dependencies fail closed",()=>{
- const target={...source("c","MCV","fL"),calculation:{formulaId:"mcv"}};
+ // Sources resolve only from the binding's explicit IDs; a name-only binding fails closed.
+ assert.equal(recalculateConfigured([source("a","PCV","%"),source("b","RBC count","million/µL"),{...source("c","MCV","fL"),calculation:{formulaId:"mcv"}}],{a:36,b:4}).values.c,"");
+ const target={...source("c","MCV","fL"),calculation:{formulaId:"mcv",dependencyIds:["a","b"]}};
  const valid=[source("a","PCV","%"),source("b","RBC count","million/µL"),target];
  assert.equal(recalculateConfigured(valid,{a:36,b:4}).values.c,90);
- for(const params of [valid.slice(1),[...valid,source("duplicate","RBC","million/µL")],valid.map(p=>p.parameterId==="b"?{...p,unit:"cells/µL"}:p),valid.map(p=>p.parameterId==="a"?{...p,itemType:"TEXT_AREA"}:p),valid.map(p=>p.parameterId==="c"?{...p,calculation:{formulaId:"mcv",dependencyIds:["missing","b"]}}:p)]) {
+ assert.equal(recalculateConfigured(valid.map(p=>({...p,unit:"display only"})),{a:36,b:4}).values.c,90);
+ for(const params of [valid.slice(1),[source("a","Protein","g/dl"),source("b","Albumin","mg/dl"),{...source("c","Globulin","g/dl"),calculation:{formulaId:"globulin",dependencyIds:["a","b"]}}],valid.map(p=>p.parameterId==="a"?{...p,itemType:"TEXT_AREA"}:p),valid.map(p=>p.parameterId==="c"?{...p,calculation:{formulaId:"mcv",dependencyIds:["missing","b"]}}:p)]) {
   const result=recalculateConfigured(params,{a:36,b:4,c:123});assert.equal(result.values.c,""); assert.ok(result.errors.c);
  }
 });
@@ -54,7 +57,8 @@ test("absolute counts preserve configured WBC units and reject invalid different
 test("measured/manual results and narrative content remain unchanged without explicit configuration",()=>{
  const params=[source("hb","Hemoglobin","g/dL"),source("rbc","RBC","million/µL"),source("platelets","Platelet count","cells/µL"),source("mcv","MCV","fL")];
  const entered={hb:12,rbc:4,platelets:250000,mcv:90,narrative:"Synthetic text\nSecond line"};
- assert.deepEqual(recalculateConfigured(params,entered),{values:entered,errors:{}}); assert.equal(CALCULATION_FORMULAS.length,21);
+ assert.deepEqual(recalculateConfigured(params,entered),{values:entered,errors:{}}); assert.equal(CALCULATION_FORMULAS.length,22);
+ assert.deepEqual(CALCULATION_FORMULAS.find(formula=>formula.id==='pcv-hb-approx')?.targets,[]);
 });
 
 const crossCategoryCases: Array<[string,string[],number[],string,number]>=[

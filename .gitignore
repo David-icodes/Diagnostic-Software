@@ -35,3 +35,34 @@ Thumbs.db
 *.pem
 # Local verification output (existing tracked history remains intact)
 tmp/
+
+# Local generated documents, private audit exports, and unrelated checkout
+output/
+backend/verification/*.png
+untitled-project/
+reports/*-2026-*.json
+reports/*-2026-*.md
+!reports/github-publication-review-2026-10-13.md
+# Previously tracked reference captures and runtime records are kept locally.
+reference-research/**/screenshots/
+reports/whatsapp-review.png
+
+# Private reference/runtime documents retained on disk
+/reference-research/parameter-based-results/reference-workflow.md
+/reference-research/ui-replication/consistency/measurements.json
+/reference-research/ui-replication/lab-phase-1/audit.json
+/reference-research/ui-replication/outside-compact/viewport-checks.json
+/reference-research/ui-replication/structure/structure-audit.json
+/reference-research/ui-replication/tmis-phase/audit.json
+/reports/client-refinement-bill-completion.md
+/reports/dashboard-lab-refinement.md
+/reports/final-client-verification.md
+/reports/modify-paid-bill-verification.md
+/reports/parameter-result-grid-today-verification.md
+/reports/parameter-result-submit-print-verification.md
+/reports/whatsapp-lab-reprint-verification.md
+/reports/whatsapp-pdf-fix.md
+/reports/whatsapp-recipient-131049-refinement.md
+/backend/check-admin.ts
+/backend/check-results.ts
+/verification/cbp-parameter-ui.browser.cjs

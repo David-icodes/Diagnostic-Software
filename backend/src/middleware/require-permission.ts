@@ -55,6 +55,9 @@ const ROLE_PERMISSIONS: Record<AuthUser["role"], readonly string[]> = {
     "lab.test.write",
     "lab.parameter.read",
     "lab.parameter.write",
+    // Clinical approval of a calculation formula is deliberately separate from
+    // parameter write access: an ordinary lab write does not grant approval.
+    "lab.calculation.approve",
     "lab.tariff.read",
     "lab.tariff.write",
     "lab.commission.read",
@@ -115,6 +118,15 @@ const ROLE_PERMISSIONS: Record<AuthUser["role"], readonly string[]> = {
   operator: ["billing.view", "billing.create", "sample.view", "test_results.view"],
 };
 
+/** Clinical approval of a calculation binding; held by authorized roles only. */
+export const CALCULATION_APPROVE_PERMISSION = "lab.calculation.approve";
+
+/** Single source of truth for role permissions, reused by route middleware and
+ * by handler-level checks such as calculation approval. */
+export function roleHasPermission(role: AuthUser["role"], permission: string): boolean {
+  return (ROLE_PERMISSIONS[role] ?? []).includes(permission);
+}
+
 export function requirePermission(permission: string) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     const user = req.user;
@@ -122,8 +134,7 @@ export function requirePermission(permission: string) {
       return next(new ApiError(401, "Authentication required"));
     }
 
-    const granted = ROLE_PERMISSIONS[user.role] ?? [];
-    if (!granted.includes(permission)) {
+    if (!roleHasPermission(user.role, permission)) {
       return next(
         new ApiError(403, `Permission denied: ${permission} is not allowed for your role`),
       );

@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {calculateImmediately} from './immediate-calculation.ts';
+import type {CalculationParameter} from './configured-calculations.ts';
+const rows:CalculationParameter[]=[{parameterId:'h',parameterName:'Hb',resultType:'NUMBER'},{parameterId:'r',parameterName:'RBC',resultType:'NUMBER'},{parameterId:'p',parameterName:'PCV',resultType:'NUMBER',calculationStatus:'DEVELOPMENT',calculation:{formulaId:'pcv-hb-approx',sourceVerification:'User specified synthetic development approximation',dependencyIds:['h'],precision:1}},{parameterId:'m',parameterName:'MCV',resultType:'NUMBER',calculationStatus:'DEVELOPMENT',calculation:{formulaId:'mcv',dependencyIds:['p','r']}},{parameterId:'c',parameterName:'MCHC',resultType:'NUMBER',calculationStatus:'DEVELOPMENT',calculation:{formulaId:'mchc',dependencyIds:['h','p']}}];
+test('one click applies only the selected target without touching descendants or manual values',()=>{const result=calculateImmediately(rows,{h:'12.1',r:'5.3',m:50,c:30,manual:'7777'},'p');assert.equal(result.error,undefined);assert.equal(result.values.p,36.3);assert.equal(result.values.m,50);assert.equal(result.values.c,30);assert.deepEqual(result.changed,['p']);assert.equal(result.values.manual,'7777');assert.equal(result.values.h,'12.1');});
+test('missing inputs and zero denominators preserve every original value',()=>{for(const r of ['', '0','invalid']){const values={h:'12.1',r,p:40,m:50,c:30};const result=calculateImmediately(rows,values,'m');assert.ok(result.error);assert.deepEqual(result.values,values);assert.deepEqual(result.changed,[]);}});
+test('unconfigured, disabled and overwrite NEVER remain blocked',()=>{assert.ok(calculateImmediately(rows,{},'h').error);const blocked=rows.map(p=>p.parameterId==='p'?{...p,calculation:{...p.calculation!,enabled:false}}:p);assert.ok(calculateImmediately(blocked,{h:12.1,r:5.3},'p').error);const never=rows.map(p=>p.parameterId==='p'?{...p,calculation:{...p.calculation!,overwrite:'NEVER'}}:p);assert.ok(calculateImmediately(never,{h:12.1,r:5.3,p:40},'p').error);});
+
+
+test('PCV uses only Hb and does not require downstream RBC',()=>{const result=calculateImmediately(rows,{h:'12.1',r:'',m:50,c:30},'p');assert.equal(result.error,undefined);assert.equal(result.values.p,36.3);assert.equal(result.values.m,50);});

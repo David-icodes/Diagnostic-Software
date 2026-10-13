@@ -107,6 +107,8 @@ export interface PatientContext {
 }
 
 interface ReferenceInput {
+  itemType?: string | null;
+  resultType?: string | null;
   referenceMappings?: IReferenceMapping[] | null;
   mappingTypes?: ReferenceMappingType[] | null;
   /** Legacy free-text range. */
@@ -172,7 +174,7 @@ function ageInUnit(age: PatientAge, unit: ReferenceAgeUnit): number {
     case "DAY":
       return age.days;
     case "MONTH":
-      return age.months;
+      return age.months < 0 ? -1 : age.years * 12 + age.months;
     case "YEAR":
       return age.years;
     default:
@@ -193,6 +195,8 @@ export function ageMatches(
   if (mapping.ageUnit === undefined) return true;
   if (!age) return false;
   const value = ageInUnit(age, mapping.ageUnit);
+  // A year-only record cannot establish completed months/days without a DOB.
+  if (value < 0) return false;
   if (mapping.ageFrom !== undefined && value < mapping.ageFrom) return false;
   if (mapping.ageTo !== undefined && value > mapping.ageTo) return false;
   return true;
@@ -397,6 +401,11 @@ export function resolveReferenceRange(
     ...(ageFromRecord !== undefined ? { ageYearsFromRecord: ageFromRecord } : {}),
   };
 
+  if (parameter.itemType === "SUBTITLE" || parameter.itemType === "TEXT_AREA" || parameter.resultType === "TEXTAREA") {
+    return { status: "MATCHED", source: "NONE", valueType: "NARRATIVE", displayValue: "", patient: patientInfo,
+      reason: "Headings and narrative fields do not have a numeric reference range." };
+  }
+
   const legacy = {
     ...(parameter.referenceRange ? { referenceRange: parameter.referenceRange } : {}),
     ...(parameter.referenceType ? { referenceType: parameter.referenceType } : {}),
@@ -427,7 +436,7 @@ export function resolveReferenceRange(
         reason: "Showing the configured gender-wise reference for this patient." };
     }
     const text = parameter.referenceRange?.trim() ?? "";
-    if (!text && !parameter.genderRanges?.length) {
+    if (!text && (parameter.referenceType !== "GENDER_WISE" || !parameter.genderRanges?.length)) {
       return {
         status: "NOT_CONFIGURED",
         source: "NONE",
@@ -443,6 +452,21 @@ export function resolveReferenceRange(
     // narrative, age- or sex-specific-with-no-sex range keeps no bounds and is
     // never compared.
     const bounds = parseLegacyBounds(parameter, sex);
+    const segments = splitLegacySegments(text);
+    const sexSpecific = segments.some((segment) => segment.sex);
+    if (sexSpecific) {
+      const candidates = segments.filter((segment) => segment.sex === sex);
+      // An unbounded child/age label cannot establish an adult interval.
+      // Preserve the original text in legacy evidence, not the patient display.
+      if (segments.some((segment) => LEGACY_CONTEXT.test(segment.text)) || candidates.length !== 1) {
+        return { status: candidates.length > 1 ? "AMBIGUOUS" : "NO_MAPPING_FOR_PATIENT", source: "NONE", valueType: "NARRATIVE", displayValue: "", patient: patientInfo, legacy,
+          reason: "The stored sex/age reference requires an unambiguous patient-specific mapping." };
+      }
+      return { status: "MATCHED", source: "LEGACY", valueType: bounds ? "NUMERIC" : "NARRATIVE", displayValue: candidates[0].text,
+        sex: sex === "MALE" ? "MALE" : "FEMALE",
+        ...(bounds?.from !== undefined ? { valueFrom: bounds.from } : {}), ...(bounds?.to !== undefined ? { valueTo: bounds.to } : {}), patient: patientInfo, legacy,
+        reason: "Showing only the stored reference for this patient's recorded sex." };
+    }
     return {
       status: "MATCHED",
       source: "LEGACY",

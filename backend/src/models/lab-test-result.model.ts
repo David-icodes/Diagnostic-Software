@@ -2,7 +2,7 @@ import { model, Schema, type Types } from "mongoose";
 
 export type ResultValue = string | number | boolean;
 
-export interface CalculationSnapshot {formulaId:string;version:string;precision:number;inputs:Array<{parameterId:string;value:number|string;unit?:string}>}
+export interface CalculationSnapshot {definitionKind?:"DEVELOPMENT_ONE_TIME"|"DEVELOPMENT_CONFIGURED";expression?:string;dependencyIds?:string[];formulaId:string;version:string;precision:number;bindingRevision?:number;rounding?:string;sourceVerification?:string;approvedBy?:string;approvedAt?:Date;acceptedBy?:string;acceptedAt?:Date;inputs:Array<{parameterId:string;value:number|string;unit?:string}>}
 export interface IResultRevision {
   calculationSnapshot?: CalculationSnapshot;
   result: ResultValue;
@@ -45,6 +45,8 @@ export interface ILabTestResult {
   patientId: Types.ObjectId;
   testId: Types.ObjectId;
   parameterId: Types.ObjectId;
+  /** Absent on legacy rows; those continue resolving the original catalogue. */
+  parameterSource?: "LabTestParameter" | "ParameterVersion";
   parameterName: string;
   resultType: string;
   calculationSnapshot?: CalculationSnapshot;
@@ -103,7 +105,8 @@ const labTestResultSchema = new Schema<ILabTestResult>(
     billId: { type: Schema.Types.ObjectId, ref: "LabBill", required: true, index: true },
     patientId: { type: Schema.Types.ObjectId, ref: "Patient", required: true, index: true },
     testId: { type: Schema.Types.ObjectId, ref: "LabTest", required: true },
-    parameterId: { type: Schema.Types.ObjectId, ref: "LabTestParameter", required: true },
+    parameterSource: {type:String,enum:["LabTestParameter","ParameterVersion"],default:undefined,immutable:true},
+    parameterId: { type: Schema.Types.ObjectId, ref: function(this:ILabTestResult){return this.parameterSource ?? "LabTestParameter";}, required: true },
     parameterName: { type: String, required: true, trim: true, maxlength: 150 },
     resultType: { type: String, required: true, maxlength: 20 },
     calculationSnapshot:{type:Schema.Types.Mixed,default:undefined},

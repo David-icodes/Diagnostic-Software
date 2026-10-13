@@ -12,3 +12,4 @@ export function fetchTodayBills() {
 export function fetchDueBills() {
   return api.get<DueBill[]>("/dashboard/due-bills");
 }
+export function fetchOutstandingBills(page=1){return api.get<{items:(DueBill & {billDate:string})[];totalDue:number;pagination:{page:number;limit:number;total:number;totalPages:number}}>(`/dashboard/outstanding-bills?page=${page}&limit=20`);}

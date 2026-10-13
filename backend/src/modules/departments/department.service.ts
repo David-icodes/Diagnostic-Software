@@ -46,7 +46,8 @@ export async function listDepartments({
 }: { status?: string; search?: string } = {}): Promise<DepartmentListItem[]> {
   const filter: FilterQuery<IDepartment> = {};
   if (status === "active" || status === "inactive") {
-    filter.active = status === "active";
+    // Missing legacy status has the same active default as the model and form.
+    filter.active = status === "active" ? { $ne: false } : false;
   }
   const keyword = search?.trim();
   if (keyword) {
@@ -126,12 +127,7 @@ export async function setDepartmentActive(
   active: boolean,
 ): Promise<DepartmentDoc> {
   const department = await getDepartment(id);
-  if (!active && (await isDepartmentReferenced(id))) {
-    throw new ApiError(
-      409,
-      "Cannot deactivate: this department has lab tests assigned to it",
-    );
-  }
+  // Status changes retain every relationship; reference checks apply to deletion.
   department.active = active;
   Object.assign(department, { updatedBy: new Types.ObjectId(userId) });
   await department.save();

@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
 import type { z } from "zod";
 import { asyncHandler } from "../../utils/async-handler";
+import { ApiError } from "../../utils/api-error";
 import { sendSuccess } from "../../utils/http";
 import { requireUserId } from "../../utils/require-user-id";
+import { roleHasPermission, CALCULATION_APPROVE_PERMISSION } from "../../middleware/require-permission";
 import { recordAudit } from "../audit/audit.service";
 import {
   createParameter as createParameterService,
@@ -61,11 +63,29 @@ export const getParameter = asyncHandler(async (req: Request, res: Response) => 
   return sendSuccess(res, { parameter });
 });
 
+/**
+ * Clinical approval is a distinct permission from parameter write access. A user
+ * who may configure a parameter is not automatically allowed to approve a
+ * formula, so approving through the API requires lab.calculation.approve.
+ */
+function assertCalculationApprovalAllowed(req: Request, approved: unknown): void {
+  if (approved !== true) return;
+  const role = req.user?.role;
+  if (!role || !roleHasPermission(role, CALCULATION_APPROVE_PERMISSION)) {
+    throw new ApiError(
+      403,
+      "Clinical approval of a calculation requires the lab.calculation.approve permission",
+    );
+  }
+}
+
 export const createParameter = asyncHandler(async (req: Request, res: Response) => {
   const userId = requireUserId(req);
+  const input = req.body as CreateParameterInput;
+  assertCalculationApprovalAllowed(req, input.calculationApproved);
   const parameter = await createParameterService(
     userId,
-    req.body as CreateParameterInput,
+    input,
   );
   await recordAudit({
     user: userId,
@@ -82,10 +102,12 @@ export const createParameter = asyncHandler(async (req: Request, res: Response) 
 
 export const updateParameter = asyncHandler(async (req: Request, res: Response) => {
   const userId = requireUserId(req);
+  const input = req.body as UpdateParameterInput;
+  assertCalculationApprovalAllowed(req, input.calculationApproved);
   const parameter = await updateParameterService(
     req.params.id,
     userId,
-    req.body as UpdateParameterInput,
+    input,
   );
   await recordAudit({
     user: userId,

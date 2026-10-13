@@ -44,16 +44,22 @@ export async function generatePatientId(): Promise<string> {
 }
 
 /**
- * Generates a human-readable Bill number with a configurable prefix, e.g.
- * `OSP<YYYY><5-digit sequence>` or `VCB<YYYY><5-digit sequence>`.
+ * Generates a human-readable Bill number with a configurable prefix.
+ * OSP bills use the `DIAG<YYYY>-<sequence>` format (e.g. `DIAG2026-4329`),
+ * preserving the existing `bill:<year>` counter so the sequence continues
+ * from prior OSP numbers. Other prefixes (e.g. `VCB`) keep the legacy
+ * `<PREFIX><YYYY><5-digit sequence>` format with their own counter key.
  * The sequence resets implicitly each year through a distinct counter key.
  * Bill numbers are always generated server-side.
  */
-export async function generateBillNumber(prefix = "OSP"): Promise<string> {
+export async function generateBillNumber(prefix = "DIAG"): Promise<string> {
   const year = new Date().getFullYear();
-  // Keep the OSP counter key unchanged so existing OSP sequences continue.
-  const key = prefix === "OSP" ? `bill:${year}` : `bill:${prefix}:${year}`;
+  // Keep the OSP/DIAG counter key unchanged so existing sequences continue.
+  const key = prefix === "DIAG" || prefix === "OSP" ? `bill:${year}` : `bill:${prefix}:${year}`;
   const sequence = await nextSequence(key);
+  if (prefix === "DIAG" || prefix === "OSP") {
+    return `${prefix}${year}-${sequence}`;
+  }
   return `${prefix}${year}${String(sequence).padStart(5, "0")}`;
 }
 

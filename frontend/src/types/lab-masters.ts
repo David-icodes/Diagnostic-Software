@@ -7,6 +7,7 @@ export type LabTestResultMode =
   | "CALCULATED";
 
 export interface LabTestRow {
+  sourceTestCode?: string;
   id: string;
   testCode: string;
   testName: string;
@@ -218,7 +219,9 @@ export interface ParameterRow {
   testName?: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
+  calculation?: { enabled?: boolean; expression?: string; formulaId: string; dependencyIds?: string[]; precision?: number; overwrite?: string; sourceVerification?:string } | null;
+  calculationApproval?: {revision:number;formulaVersion:string;rounding:string;approvedBy:string;approvedAt:string};
+  pendingCalculation?: {requestId:string;calculation:NonNullable<ParameterRow["calculation"]>;unit:string;requestedBy:string;requestedAt:string};
   subtitle?: string;
   displayOrder: number;
   resultType: ParameterResultType;
@@ -295,7 +298,7 @@ export interface ParameterPayload {
   testId: string;
   parameterName: string;
   itemType?: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  calculation?: { formulaId: string; dependencyIds?: string[]; precision?: number } | null;
+  calculation?: { enabled?: boolean; expression?: string; formulaId: string; dependencyIds?: string[]; precision?: number; overwrite?: string; sourceVerification?:string } | null;
   subtitle?: string;
   displayOrder?: number;
   resultType: ParameterResultType;

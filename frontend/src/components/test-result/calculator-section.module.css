@@ -1,0 +1,13 @@
+/* Scoped to result entry; no dashboard, master-search or report styles. */
+.section table { min-width: 960px; }
+.section .controls { flex-wrap: nowrap; gap: 4px; min-height: 30px; }
+.actions { gap: 2px; }
+.section .controls > input { flex: 1 1 100px; min-width: 80px; max-width: 280px; height: 30px; }
+.section .controls > textarea { flex: 1; min-width: 0; }
+.section .controls .icon { width: 28px; height: 30px; padding: 4px; }
+.section .controls .calculate { height: 30px; padding: 0 8px; font-size: 12px; }
+.hint { margin-top: 3px; font-size: 11px; line-height: 15px; color: #64748b; }
+.validation { margin-top: 3px; font-size: 12px; line-height: 16px; color: #92400e; overflow-wrap: anywhere; }
+.unconfigured { color: #94a3b8; }
+.section .controls .icon.unconfigured { opacity: 0.65; }
+.section .controls .icon.unconfigured:hover, .section .controls .icon.unconfigured:focus-visible { opacity: 1; }

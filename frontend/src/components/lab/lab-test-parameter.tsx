@@ -1,6 +1,10 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { parameterParentOptions } from "@/lib/parameter-parent-options";
+import { editRangeBounds, needsExplicitRangeComposition } from "@/lib/reference-range-edit";
+import referenceStyles from './parameter-master-reference.module.css';
+import { ParameterFormulaEditor } from "./parameter-formula-editor";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -46,7 +50,6 @@ import {
   type ParameterReferenceScope,
   type ParameterRow,
 } from "@/types/lab-masters";
-import { CALCULATION_FORMULAS, reviewCalculationBinding, calculationBindingChanged, recalculateConfigured } from "@/lib/configured-calculations";
 import { cn } from "@/lib/utils";
 
 const PAGE_LIMIT = 20;
@@ -105,9 +108,6 @@ type GenderRangeCells = Record<GenderRangeGender, RangeCell>;
 
 interface ParameterFormState {
   itemType: "PARAMETER" | "SUBTITLE" | "TEXT_AREA";
-  formulaId: string;
-  precision: string;
-  dependencyIds: string[];
   parameterName: string;
   subtitle: string;
   displayOrder: string;
@@ -144,9 +144,6 @@ function emptyGenderRanges(): GenderRangeCells {
 
 const EMPTY_FORM: ParameterFormState = {
   itemType: "PARAMETER",
-  formulaId: "",
-  precision:"2",
-  dependencyIds: [],
   parameterName: "",
   subtitle: "",
   displayOrder: "0",
@@ -216,7 +213,7 @@ function rangeLabel(row: ParameterRow): string {
     if (composed) return composed;
     return row.referenceRange?.trim() || "—";
   }
-  if (row.rangeText) return row.rangeText;
+  if (row.rangeText !== undefined) return row.rangeText || "—";
   if (row.rangeFrom !== undefined || row.rangeTo !== undefined) {
     const from = row.rangeFrom !== undefined ? String(row.rangeFrom) : "";
     const to = row.rangeTo !== undefined ? String(row.rangeTo) : "";
@@ -263,14 +260,13 @@ export function LabTestParameterContent() {
   const [testId, setTestId] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [calculationApproved, setCalculationApproved] = useState(false);
-  const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
   const [form, setForm] = useState<ParameterFormState>(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingRow, setEditingRow] = useState<ParameterRow | null>(null);
   const [confirmTarget, setConfirmTarget] = useState<ParameterRow | null>(null);
   // VIEW opens the reference-range mapping modal for the row; the row itself is
   // all the modal needs, because it carries the test and department context.
+  const [formulaTarget,setFormulaTarget]=useState<ParameterRow|null>(null);
   const [mappingTarget, setMappingTarget] = useState<ParameterRow | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -315,7 +311,6 @@ export function LabTestParameterContent() {
     placeholderData: (previous) => previous,
   });
 
-  const calculationSources = useQuery({ queryKey:["lab-test-parameters","calculation-sources",testId],enabled:!!testId,queryFn:async()=>{const first=await fetchLabParameters({testId,limit:100});const pages=await Promise.all(Array.from({length:Math.max(0,first.pagination.totalPages-1)},(_,index)=>fetchLabParameters({testId,limit:100,page:index+2})));return [...first.data,...pages.flatMap(page=>page.data)];} });
   const subtitlesQuery = useQuery({
     queryKey: ["lab-test-parameters", "subtitles", testId],
     queryFn: () => fetchLabParameterSubtitles(testId),
@@ -349,10 +344,8 @@ export function LabTestParameterContent() {
 
       const payload = {
         testId,
-        calculationApproved,
         parameterName: form.parameterName.trim(),
         itemType:form.itemType,
-        calculation:form.itemType === "PARAMETER" && form.formulaId ? {formulaId:form.formulaId,dependencyIds:form.dependencyIds,precision:Number(form.precision)}:null,
         subtitle: form.subtitle.trim() || undefined,
         displayOrder: Number(form.displayOrder) || 0,
         resultType: form.resultType as ParameterRow["resultType"],
@@ -383,22 +376,22 @@ export function LabTestParameterContent() {
             : {
                 rangeFrom: toNum(form.rangeFrom),
                 rangeTo: toNum(form.rangeTo),
-                rangeText: form.rangeText.trim() || undefined,
+                rangeText: editingRow && form.rangeText === editingRow.rangeText
+                  ? form.rangeText
+                  : form.rangeText.trim() || undefined,
                 // Sent as an empty array rather than omitted: switching to a
                 // general range must retire the sex rows, or they linger in the
                 // document and silently come back if the mode is flipped again.
                 genderRanges: [],
               }),
       };
-      if(form.itemType !== "PARAMETER")Object.assign(payload,{calculation:null,resultType:form.itemType === "SUBTITLE"?"TEXT":"TEXTAREA",unit:undefined,method:undefined,options:undefined,rangeFrom:undefined,rangeTo:undefined,rangeText:undefined,referenceType:"GENERAL",referenceScope:"GENERIC",onlyReferenceRange:false,genderRanges:[],...(form.itemType === "SUBTITLE"?{defaultValue:undefined}:{})});
+      if(form.itemType !== "PARAMETER")Object.assign(payload,{resultType:form.itemType === "SUBTITLE"?"TEXT":"TEXTAREA",unit:undefined,method:undefined,options:undefined,rangeFrom:undefined,rangeTo:undefined,rangeText:undefined,referenceType:"GENERAL",referenceScope:"GENERIC",onlyReferenceRange:false,genderRanges:[],...(form.itemType === "SUBTITLE"?{defaultValue:undefined}:{})});
       return editingId
         ? updateLabParameter(editingId, payload)
         : createLabParameter(payload);
     },
     onSuccess: () => {
       invalidate();
-      setCalculationApproved(false);
-      setPreviewValues({});
       setEditingId(null);
       setEditingRow(null);
       setForm(EMPTY_FORM);
@@ -457,7 +450,6 @@ export function LabTestParameterContent() {
   }, [optionsQuery.data]);
 
   const update = (patch: Partial<ParameterFormState>) => {
-    setCalculationApproved(false);
     setForm((current) => ({ ...current, ...patch }));
   };
 
@@ -466,31 +458,33 @@ export function LabTestParameterContent() {
       ...current,
       genderRanges: {
         ...current.genderRanges,
-        [gender]: { ...current.genderRanges[gender], ...patch },
+        [gender]: patch.text !== undefined ? { ...current.genderRanges[gender], ...patch } : editRangeBounds(current.genderRanges[gender], patch),
       },
     }));
   };
 
   const clearForm = () => {
-    setCalculationApproved(false);
-    setPreviewValues({});
     setEditingId(null);
     setEditingRow(null);
     setForm(EMPTY_FORM);
     setFeedback(null);
   };
 
-  const selectedFormula = CALCULATION_FORMULAS.find(row => row.id === form.formulaId);
-  const draftCalculation = form.itemType === "PARAMETER" && form.formulaId ? {formulaId:form.formulaId,dependencyIds:form.dependencyIds,precision:Number(form.precision)} : null;
-  const bindingTarget = {id:editingId ?? "draft-target",unit:form.unit,resultType:form.resultType,itemType:form.itemType,calculation:draftCalculation};
-  const bindingIssues = reviewCalculationBinding(calculationSources.data ?? [], bindingTarget);
-  if (draftCalculation && (!Number.isInteger(Number(form.precision)) || Number(form.precision)<0 || Number(form.precision)>6)) bindingIssues.push("Precision must be an integer from 0 to 6.");
-  const approvalRequired = calculationBindingChanged(draftCalculation, editingRow?.calculation, form.unit, editingRow?.unit);
-  const calculationBlocked = !!draftCalculation && (calculationSources.isPending || calculationSources.isError || bindingIssues.length>0 || (approvalRequired && !calculationApproved));
-  const previewParameters = (calculationSources.data ?? []).map(row => ({parameterId:row.id,parameterName:row.parameterName,unit:row.unit}));
-  const preview = draftCalculation ? recalculateConfigured([...previewParameters,{...bindingTarget,parameterId:bindingTarget.id,parameterName:form.parameterName}],previewValues) : null;
   const handleSave = () => {
-    if (!testId || form.parameterName.trim().length < 1 || calculationBlocked) return;
+    if (!testId || form.parameterName.trim().length < 1) {
+      setFeedback(!testId ? "Select a lab test before saving." : "Enter a parameter name before saving.");
+      return;
+    }
+    if (editingRow && !form.legacyLocked) {
+      const previous = form.referenceType === "GENDER_WISE" ? (editingRow.genderRanges ?? []).map(row => ({
+        previous: { from: row.from === undefined ? "" : String(row.from), to: row.to === undefined ? "" : String(row.to), text: row.text ?? "" },
+        current: form.genderRanges[row.gender],
+      })) : [{ previous: { from: editingRow.rangeFrom === undefined ? "" : String(editingRow.rangeFrom), to: editingRow.rangeTo === undefined ? "" : String(editingRow.rangeTo), text: editingRow.rangeText ?? editingRow.referenceRange ?? "" }, current: { from: form.rangeFrom, to: form.rangeTo, text: form.rangeText } }];
+      if (previous.some(row => needsExplicitRangeComposition(row.previous, row.current))) {
+        setFeedback("Numeric bounds changed. Update the reference text or use Compose reference range text before saving.");
+        return;
+      }
+    }
     saveMutation.mutate();
   };
 
@@ -521,8 +515,6 @@ export function LabTestParameterContent() {
   };
 
   const handleEdit = useCallback((parameter: ParameterRow) => {
-    setCalculationApproved(false);
-    setPreviewValues({});
     setEditingId(parameter.id);
     setEditingRow(parameter);
     setTestId(parameter.testId);
@@ -538,9 +530,6 @@ export function LabTestParameterContent() {
     setForm({
       parameterName: parameter.parameterName,
       itemType:parameter.itemType ?? "PARAMETER",
-      formulaId:parameter.calculation?.formulaId ?? "",
-      precision:String(parameter.calculation?.precision??2),
-      dependencyIds:parameter.calculation?.dependencyIds ?? [],
       subtitle: parameter.subtitle ?? "",
       displayOrder: String(parameter.displayOrder ?? 0),
       resultType: parameter.resultType,
@@ -626,7 +615,6 @@ export function LabTestParameterContent() {
         render: (row: ParameterRow) => (
           <span className="block whitespace-pre-line break-words text-xs text-slate-600">
             {rangeLabel(row)}
-            {row.unit ? ` ${row.unit}` : ""}
             {row.needsLabReview ? (
               <span
                 className="ml-1 rounded bg-amber-100 px-1 text-[10px] font-semibold uppercase tracking-wide text-amber-700"
@@ -685,6 +673,9 @@ export function LabTestParameterContent() {
         ),
       },
       {
+        key: "formula", header: "Formula", align: "center" as const, render: (row:ParameterRow)=><Button type="button" variant="ghost" size="icon-sm" disabled={row.itemType==="SUBTITLE"||row.itemType==="TEXT_AREA"} aria-label={`Configure formula for ${row.parameterName}`} onClick={()=>setFormulaTarget(row)}><SlidersHorizontal className="size-4"/></Button>,
+      },
+      {
         key: "delete",
         header: "Del",
         align: "center" as const,
@@ -713,7 +704,7 @@ export function LabTestParameterContent() {
   const genderPreview = genderRangePreview(form.genderRanges);
 
   return (
-    <div className="lis-dm lis-parameter-master space-y-3">
+    <div className={cn("lis-dm lis-parameter-master space-y-3",referenceStyles.page)}>
       <PageHeader
         icon={SlidersHorizontal}
         title="Create New Lab Test Parameter"
@@ -846,7 +837,7 @@ export function LabTestParameterContent() {
                   disabled={saveMutation.isPending}
                 >
                   <option value="">--Select--</option>
-                  {testOptions.map((test) => (
+                  {parameterParentOptions(testOptions, editingId ? editingRow : null, departmentId).map((test) => (
                     <option key={test.id} value={test.id}>
                       {test.testName}
                     </option>
@@ -854,16 +845,8 @@ export function LabTestParameterContent() {
                 </Select>
               </CompactField>
 
-              <CompactField id="param-item-type" label="Parameter/Subtitle"><Select id="param-item-type" value={form.itemType} onChange={event=>update({itemType:event.target.value as ParameterFormState["itemType"],formulaId:"",dependencyIds:[],...(event.target.value === "TEXT_AREA"?{resultType:"TEXTAREA"}:event.target.value === "SUBTITLE"?{resultType:"TEXT"}:{})})}><option value="PARAMETER">Parameter</option><option value="SUBTITLE">Subtitle</option><option value="TEXT_AREA">Text Area</option></Select></CompactField>
-              <CompactField id="param-subtitle" label="Group Subtitle">
-                <AddableDatalist
-                  id="param-subtitle"
-                  value={form.subtitle}
-                  onChange={(value) => update({ subtitle: value })}
-                  options={subtitlesQuery.data ?? []}
+              <CompactField id="param-item-type" label="Parameter/Subtitle"><Select id="param-item-type" value={form.itemType} onChange={event=>update({itemType:event.target.value as ParameterFormState["itemType"],...(event.target.value === "TEXT_AREA"?{resultType:"TEXTAREA"}:event.target.value === "SUBTITLE"?{resultType:"TEXT"}:{})})}><option value="PARAMETER">Parameter</option><option value="SUBTITLE">Subtitle</option><option value="TEXT_AREA">Text Area</option></Select></CompactField>
 
-                />
-              </CompactField>
 
               <CompactField id="param-name" label={form.itemType === "SUBTITLE" ? "Subtitle Name" : "Parameter Name"} required>
                 <Input
@@ -890,20 +873,6 @@ export function LabTestParameterContent() {
                 </Select>
               </CompactField>)}
 
-              {form.itemType === "PARAMETER" && <CompactField id="param-formula" label="Automatic calculation"><Select id="param-formula" value={form.formulaId} onChange={event=>update({formulaId:event.target.value,dependencyIds:[],...(event.target.value?{resultType:"NUMBER"}:{})})}><option value="">Measured / manual</option>{CALCULATION_FORMULAS.map(formula=><option key={formula.id} value={formula.id}>{formula.label}</option>)}</Select></CompactField>}
-              {form.itemType === "PARAMETER" && form.formulaId && <CompactField id="param-precision" label="Decimal precision"><Input id="param-precision" type="number" min={0} max={6} value={form.precision} onChange={event=>update({precision:event.target.value})}/></CompactField>}
-              {CALCULATION_FORMULAS.find(formula=>formula.id===form.formulaId)?.sources.map((source,index)=><CompactField key={source} id={"param-source-"+index} label={source}><Select id={"param-source-"+index} value={form.dependencyIds[index]??""} onChange={event=>{const ids=[...form.dependencyIds];ids[index]=event.target.value;update({dependencyIds:ids});}}><option value="">Select source parameter</option>{(calculationSources.data??[]).filter(parameter=>parameter.id!==editingId&&parameter.itemType!=="SUBTITLE"&&parameter.itemType!=="TEXT_AREA"&&parameter.active&&["NUMBER","RANGE"].includes(parameter.resultType)).map(parameter=><option key={parameter.id} value={parameter.id}>{parameter.parameterName} ({parameter.unit??"unit required"}; ID {parameter.id.slice(-6)})</option>)}</Select></CompactField>)}
-              {selectedFormula && <section className="col-span-full border border-border bg-slate-50 p-3 space-y-2" aria-label="Calculation binding review">
-                <h3 className="font-semibold">Review and approve calculation</h3>
-                <p>{selectedFormula.label}. Expected output unit: {selectedFormula.outputUnit}. Formula version: {selectedFormula.version}.</p>
-                <p className="text-sm">Select active numeric sources by their IDs. Review legacy text sources and units individually; no automatic conversion or name-based binding is performed. PCV and MCV must not calculate each other.</p>
-                {calculationSources.isPending && <p role="status">Loading source parameters…</p>}
-                {calculationSources.isError && <p role="alert">Source parameters could not be loaded. <Button onClick={()=>void calculationSources.refetch()} type="button" variant="outline">Retry</Button></p>}
-                {bindingIssues.length>0 ? <ul role="alert" className="text-red-700">{bindingIssues.map(issue=><li key={issue}>{issue}</li>)}</ul> : <p role="status">Source IDs, numeric types, units and dependencies validated. Saving changes only this parameter; historical results and reference ranges are preserved.</p>}
-                <div className="flex flex-wrap gap-3">{selectedFormula.sources.map((source,index)=><label key={source} className="text-sm">Illustrative {source} ({selectedFormula.units[index]})<Input aria-label={"Illustrative "+source} value={previewValues[form.dependencyIds[index]]??""} onChange={event=>setPreviewValues(current=>({...current,[form.dependencyIds[index]]:event.target.value}))} disabled={!form.dependencyIds[index]} /></label>)}</div>
-                <p role="status">Illustrative result: {preview?.errors[bindingTarget.id] ?? (typeof preview?.values[bindingTarget.id] === "number" ? Number(preview.values[bindingTarget.id]).toFixed(Math.min(6,Math.max(0,Number(form.precision)||0)))+" "+form.unit : "Enter source values")}. This check does not save patient results.</p>
-                {approvalRequired && <label className="flex items-start gap-2"><Checkbox aria-label="Laboratory approves formula, source IDs and units" checked={calculationApproved} disabled={bindingIssues.length>0 || calculationSources.isError || calculationSources.isPending} onChange={event=>setCalculationApproved(event.target.checked)} />I am authorized by the laboratory to approve this formula, source IDs, output unit and precision for this test. Approval is recorded with my account in the audit history.</label>}
-              </section>}
               <CompactField id="param-order" label="OrderNo">
                 <Input
                   id="param-order"
@@ -916,7 +885,7 @@ export function LabTestParameterContent() {
                 />
               </CompactField>
 
-              {form.itemType !== "SUBTITLE" && (<CompactField id="param-default" label="Default Value">
+              {form.itemType !== "SUBTITLE" && (<CompactField id="param-default" label="Default Value" className="md:col-start-1">
                 <Textarea
                   id="param-default"
                   rows={2}
@@ -927,7 +896,7 @@ export function LabTestParameterContent() {
                 />
               </CompactField>)}
 
-              {form.itemType === "PARAMETER" && (<CompactField id="param-unit" label="Units">
+              {form.itemType === "PARAMETER" && (<CompactField id="param-unit" label="Units" className="md:col-start-1">
                 <Input
                   id="param-unit"
                   value={form.unit}
@@ -937,7 +906,7 @@ export function LabTestParameterContent() {
                 />
               </CompactField>)}
 
-              <CompactField id="param-active" label="Active Status">
+              <CompactField id="param-active" label="Active Status" className="md:col-start-1">
                 <Select
                   id="param-active"
                   value={form.active ? "Y" : "N"}
@@ -959,6 +928,15 @@ export function LabTestParameterContent() {
                 />
               </CompactField>)}
 
+              <CompactField id="param-subtitle" label="Group Subtitle">
+                <AddableDatalist
+                  id="param-subtitle"
+                  value={form.subtitle}
+                  onChange={(value) => update({ subtitle: value })}
+                  options={subtitlesQuery.data ?? []}
+
+                />
+              </CompactField>
               {form.resultType === "SELECT" ? (
                 <CompactField
                   id="param-options"
@@ -1046,7 +1024,7 @@ export function LabTestParameterContent() {
                       <p className="mt-0.5 text-[13px] font-medium text-slate-800">
                         {editingRow === null || rangeLabel(editingRow) === "—"
                           ? "Not configured"
-                          : `${rangeLabel(editingRow)}${editingRow.unit ? ` ${editingRow.unit}` : ""}`}
+                          : rangeLabel(editingRow)}
                       </p>
                       <p className="mt-0.5 text-[11px] text-amber-800">
                         This value is preserved for reference. Result entry uses the configured
@@ -1082,7 +1060,7 @@ export function LabTestParameterContent() {
                             </span>
                             <Input
                               aria-label={`${GENDER_RANGE_LABELS[gender]} from`}
-                              className="w-24"
+                              className="w-20"
                               type="number"
                               step="any"
                               value={form.genderRanges[gender].from}
@@ -1093,7 +1071,7 @@ export function LabTestParameterContent() {
                             />
                             <Input
                               aria-label={`${GENDER_RANGE_LABELS[gender]} to`}
-                              className="w-24"
+                              className="w-20"
                               type="number"
                               step="any"
                               value={form.genderRanges[gender].to}
@@ -1104,7 +1082,7 @@ export function LabTestParameterContent() {
                             />
                             <Input
                               aria-label={`${GENDER_RANGE_LABELS[gender]} range text`}
-                              className="min-w-0 flex-1"
+                              className="min-w-0 max-w-[180px] flex-1"
                               value={form.genderRanges[gender].text}
                               onChange={(event) =>
                                 updateGenderRange(gender, { text: event.target.value })
@@ -1121,25 +1099,25 @@ export function LabTestParameterContent() {
                         </span>
                         <Input
                           aria-label="General from"
-                          className="w-24"
+                          className="w-20"
                           type="number"
                           step="any"
                           value={form.rangeFrom}
-                          onChange={(event) => update({ rangeFrom: event.target.value })}
+                          onChange={(event) => setForm(current => { const next = editRangeBounds({ from: current.rangeFrom, to: current.rangeTo, text: current.rangeText }, { from: event.target.value }); return { ...current, rangeFrom: next.from, rangeTo: next.to, rangeText: next.text }; })}
                           disabled={readOnlyRange}
                         />
                         <Input
                           aria-label="General to"
-                          className="w-24"
+                          className="w-20"
                           type="number"
                           step="any"
                           value={form.rangeTo}
-                          onChange={(event) => update({ rangeTo: event.target.value })}
+                          onChange={(event) => setForm(current => { const next = editRangeBounds({ from: current.rangeFrom, to: current.rangeTo, text: current.rangeText }, { to: event.target.value }); return { ...current, rangeFrom: next.from, rangeTo: next.to, rangeText: next.text }; })}
                           disabled={readOnlyRange}
                         />
                         <Input
                           aria-label="General range text"
-                          className="min-w-0 flex-1"
+                          className="min-w-0 max-w-[180px] flex-1"
                           value={form.rangeText}
                           onChange={(event) => update({ rangeText: event.target.value })}
                           disabled={readOnlyRange}
@@ -1196,7 +1174,7 @@ export function LabTestParameterContent() {
                 variant="default"
                 size="sm"
                 onClick={handleSave}
-                disabled={editingId !== null || saveMutation.isPending || calculationBlocked}
+                disabled={editingId !== null || saveMutation.isPending}
               >
                 {saveMutation.isPending ? "Saving..." : "Submit"}
               </Button>
@@ -1205,7 +1183,7 @@ export function LabTestParameterContent() {
                 variant="default"
                 size="sm"
                 onClick={handleSave}
-                disabled={editingId === null || saveMutation.isPending || calculationBlocked}
+                disabled={editingId === null || saveMutation.isPending}
               >
                 {saveMutation.isPending ? "Saving..." : "Update"}
               </Button>
@@ -1271,14 +1249,17 @@ export function LabTestParameterContent() {
               </option>
             ))}
           </Select>
-          <div className="ml-auto">
+          <div className="flex items-center gap-2">
+            <label htmlFor="parameter-list-search" className="text-sm">Search</label>
             <SearchInput
+              id="parameter-list-search"
+              hideIcon
               value={search}
               onChange={(value) => {
                 setSearch(value);
                 setPage(1);
               }}
-              placeholder="Search parameters..."
+              placeholder=""
             />
           </div>
         </div>
@@ -1328,6 +1309,7 @@ export function LabTestParameterContent() {
         }}
       />
 
+      {formulaTarget&&<ParameterFormulaEditor key={formulaTarget.id} parameter={formulaTarget} onClose={()=>setFormulaTarget(null)} onChanged={invalidate}/>}
       <ReferenceMappingDialog
         open={mappingTarget !== null}
         onOpenChange={(open) => {

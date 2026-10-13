@@ -37,6 +37,7 @@ import type { BillListParams } from "@/services/billing";
 import { hasEnteredResult } from "@/lib/lab-workflows";
 import { reportReferenceText } from "@/lib/report-reference";
 import { enteredNumber, previewFlag } from "@/lib/result-preview";
+import { usesClinicalReference } from "@/lib/parameter-reference-eligibility";
 import { InvoicePrintDialog } from "@/components/test-result/invoice-print-dialog";
 import type { LabBill } from "@/types/billing";
 import type {
@@ -870,12 +871,12 @@ export function PrintPreview({
                       </tr>
                     )}
                     {group.rows.map((parameter) => {
-                      if(parameter.itemType === "SUBTITLE")return <tr key={parameter.id}><th colSpan={4} className="py-[1mm] text-left">{parameter.parameterName}</th></tr>;
+                      if(parameter.itemType === "SUBTITLE")return <tr key={parameter.id}><th colSpan={4} className="py-[1mm] text-left font-bold">{parameter.parameterName}</th></tr>;
                       const result = resultByParameter.get(parameter.id);
                       const value = result?.result;
                       const method = result?.method ?? parameter.method;
                       const reference = referenceResolutions?.[parameter.id];
-                      const numericValue = parameter.itemType === "TEXT_AREA" ? undefined : typeof value === "number" ? value : enteredNumber(typeof value === "string" ? value : undefined);
+                      const numericValue = !usesClinicalReference(parameter) ? undefined : typeof value === "number" ? value : enteredNumber(typeof value === "string" ? value : undefined);
                       const abnormal = reference
                         ? previewFlag(numericValue, reference) === "out-of-range"
                         : result?.referenceSnapshot?.flag === "OUT_OF_RANGE";
@@ -910,7 +911,7 @@ export function PrintPreview({
                             {result?.unit ?? parameter.unit ?? "—"}
                           </td>
                           <td className="py-[0.7mm]">
-                            {reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange) || "—"}
+                            {usesClinicalReference(parameter) ? reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange) || "—" : "—"}
                           </td>
                         </tr>
                       );

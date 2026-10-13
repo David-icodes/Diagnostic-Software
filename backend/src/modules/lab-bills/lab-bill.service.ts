@@ -242,7 +242,7 @@ export async function createLabBill(
     input.paidAmount ?? 0,
   );
 
-  const billNumber = await generateBillNumber(billType === "vendor" ? "VCB" : "OSP");
+  const billNumber = await generateBillNumber(billType === "vendor" ? "VCB" : "DIAG");
 
   const paidAmount = round2(input.paidAmount ?? 0);
 

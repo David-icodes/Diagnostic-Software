@@ -6,6 +6,7 @@ export type BillStatus = "draft" | "generated" | "cancelled";
 export type BillType = "osp" | "vendor";
 
 export interface IBillItem {
+  parameterVersionIds?: string[];
   testId: Types.ObjectId;
   testCode: string;
   testName: string;
@@ -57,6 +58,7 @@ export const BILL_TYPES: BillType[] = ["osp", "vendor"];
 
 const billItemSchema = new Schema<IBillItem>(
   {
+    parameterVersionIds: {type:[String],default:undefined,immutable:true},
     testId: { type: Schema.Types.ObjectId, ref: "LabTest", required: true },
     testCode: { type: String, required: true, trim: true },
     testName: { type: String, required: true, trim: true },

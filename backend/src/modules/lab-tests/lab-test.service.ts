@@ -19,6 +19,7 @@ export interface PaginatedTests {
 
 /** Lab-test row as returned to the UI (includes display-only departmentName). */
 export interface LabTestRow {
+  sourceTestCode?: string;
   id: string;
   testCode: string;
   testName: string;
@@ -93,6 +94,7 @@ export async function listTests({
     filter.$or = [
       { testName: { $regex: escaped, $options: "i" } },
       { testCode: { $regex: escaped, $options: "i" } },
+      { "catalogueImport.sourceCode": { $regex: escaped, $options: "i" } },
       { shortName: { $regex: escaped, $options: "i" } },
     ];
   }
@@ -135,6 +137,7 @@ function toRow(
     sampleType: test.sampleType,
     containerType: test.containerType,
     testType: test.testType,
+    sourceTestCode: test.catalogueImport?.sourceCode,
     price: test.price,
     priceIp: test.priceIp,
     priceInsIp: test.priceInsIp,

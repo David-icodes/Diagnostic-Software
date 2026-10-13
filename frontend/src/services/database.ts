@@ -164,6 +164,7 @@ export function fetchDatabaseDepartments(
 }
 
 export function createDatabaseDepartment(payload: {
+  active?: boolean;
   name: string;
   code: string;
   description?: string;
@@ -176,6 +177,7 @@ export function createDatabaseDepartment(payload: {
 export function updateDatabaseDepartment(
   id: string,
   payload: {
+      active?: boolean;
     name?: string;
     code?: string;
     description?: string;

@@ -51,7 +51,7 @@ const basePatientSchema = z
       .min(0, "Age must be between 0 and 150")
       .max(150, "Age must be between 0 and 150")
       .optional(),
-    mobile: z.string().regex(/^\d{1,13}$/, "Enter 1 to 13 digits for the mobile number"),
+    mobile: z.string().trim().regex(/^\d{1,13}$/, "Enter 1 to 13 digits for the mobile number"),
     email: z
       .string()
       .trim()
@@ -83,14 +83,7 @@ const basePatientSchema = z
   })
   .strict(); // Rejects unknown keys (e.g. patientId) so it can never be spoofed.
 
-export const createPatientSchema = basePatientSchema.extend({
-  /**
-   * Explicit operator confirmation that a new registration is a different
-   * person who shares an already-registered mobile number. Without it the
-   * service answers with the matching record so the caller can reuse it.
-   */
-  duplicateMobileAcknowledged: z.boolean().optional(),
-});
+export const createPatientSchema = basePatientSchema;
 
 export const updatePatientSchema = basePatientSchema.partial();
 

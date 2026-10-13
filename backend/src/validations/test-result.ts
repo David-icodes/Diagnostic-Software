@@ -45,6 +45,9 @@ export const submitResultsSchema = z
   .object({
     billId: z.string().refine(isValidObjectId, "Invalid bill ID"),
     testId: z.string().refine(isValidObjectId, "Invalid test ID"),
+    calculationProposals:z.array(z.object({parameterId:z.string().refine(isValidObjectId),formulaId:z.string().min(1).max(80),dependencyIds:z.array(z.string().refine(isValidObjectId)).min(1).max(10),expression:z.string().trim().min(1).max(240)}).strict()).max(200).optional(),
+    acceptedCalculationIds: z.array(z.string().refine(isValidObjectId, "Invalid calculation ID")).max(200).optional(),
+    acceptedCalculationRevisions: z.record(z.string().refine(isValidObjectId,"Invalid calculation ID"),z.number().int().min(0)).optional(),
     entries: z.array(resultEntrySchema).min(1, "At least one result is required").max(200, "Too many results"),
   })
   .strict();

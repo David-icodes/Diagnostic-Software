@@ -28,6 +28,7 @@ import type { Department } from "@/types/billing";
 const PAGE_LIMIT = 20;
 
 interface DepartmentFormState {
+  active: boolean;
   name: string;
   code: string;
   type: string;
@@ -36,6 +37,7 @@ interface DepartmentFormState {
 }
 
 const EMPTY_FORM: DepartmentFormState = {
+  active: true,
   name: "",
   code: "",
   type: "",
@@ -72,6 +74,7 @@ export function DepartmentContent() {
   const saveMutation = useMutation({
     mutationFn: () => {
       const payload = {
+        active: form.active,
         name: form.name.trim(),
         code: form.code.trim(),
         description: form.description.trim() || undefined,
@@ -136,6 +139,7 @@ export function DepartmentContent() {
   const handleEdit = (department: Department) => {
     setEditingId(department.id);
     setForm({
+      active: department.active !== false,
       name: department.name,
       code: department.code,
       type: department.type ?? "",
@@ -299,6 +303,14 @@ export function DepartmentContent() {
                   onChange={(event) => update({ sortOrder: event.target.value })}
                   disabled={saveMutation.isPending}
                 />
+              </FormField>
+              <FormField id="dept-active" label="Active Status">
+                <Select id="dept-active" value={form.active ? "Y" : "N"}
+                  disabled={saveMutation.isPending}
+                  onChange={(event) => update({ active: event.target.value === "Y" })}>
+                  <option value="Y">Active (Y)</option>
+                  <option value="N">Inactive (N)</option>
+                </Select>
               </FormField>
             </div>
 

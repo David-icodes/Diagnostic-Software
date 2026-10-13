@@ -1,0 +1,5 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {parameterParentOptions} from './parameter-parent-options.ts';
+test('editing retains only its exact existing inactive parent without mutating active selections',()=>{const active=[{id:'active',testName:'Active'}];const parent={testId:'inactive',testName:'Same name',departmentId:'BIO1'};assert.deepEqual(parameterParentOptions(active,parent,'BIO1').map(t=>t.id),['active','inactive']);assert.equal(active.length,1);assert.deepEqual(parameterParentOptions(active,null,'BIO1'),active);});
+test('parent identity never matches by name and does not leak across departments',()=>{const active=[{id:'active',testName:'Same name'}];const parent={testId:'inactive',testName:'Same name',departmentId:'BIO1'};assert.equal(parameterParentOptions(active,parent,'BIO1').length,2);assert.deepEqual(parameterParentOptions(active,parent,'BIO'),active);assert.deepEqual(parameterParentOptions(active,{...parent,testId:'active'},'BIO1'),active);});

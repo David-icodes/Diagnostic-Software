@@ -88,6 +88,7 @@
 .lis-content .lis-client-tariffs .lis-form-field > :not(label):not(p) { max-width: 274px; }
 .lis-content > :not(.lis-dashboard) td p,
 .lis-content > :not(.lis-dashboard) td span { overflow-wrap: normal; }
+.lis-content > :not(.lis-dashboard) .lis-parameter-result-grid td span { overflow-wrap: break-word; }
 .lis-content .lis-parameter-result-grid { max-height: 500px; }
 .lis-content .lis-parameter-result-grid td { vertical-align: top; }
 .lis-content .lis-parameter-result-grid td:nth-child(6) { overflow-wrap: break-word; }

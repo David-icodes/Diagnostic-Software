@@ -5,13 +5,15 @@ import { calculationBindingChanged, reviewCalculationBinding } from "./configure
 const sources = [{id:"hb",resultType:"NUMBER",unit:"g/dL"},{id:"rbc",resultType:"NUMBER",unit:"million/µL"}];
 const target = {id:"mch",resultType:"NUMBER",unit:"pg",calculation:{formulaId:"mch",dependencyIds:["hb","rbc"],precision:2}};
 test("review accepts explicit numeric MCH sources and compatible units",()=>assert.deepEqual(reviewCalculationBinding(sources,target),[]));
-test("review refuses missing, legacy text and cross-test source IDs",()=>{
-  assert.match(reviewCalculationBinding([],target).join(),/numeric/);
-  assert.match(reviewCalculationBinding([{...sources[0],resultType:"TEXT"},sources[1]],target).join(),/numeric/);
+test("review refuses missing, inactive and cross-test source IDs",()=>{
+  assert.match(reviewCalculationBinding([],target).join(),/active parameters/);
+  assert.match(reviewCalculationBinding([{...sources[0],active:false},sources[1]],target).join(),/active parameters/);
+  assert.match(reviewCalculationBinding([{...sources[0],itemType:"SUBTITLE"},sources[1]],target).join(),/active parameters/);
   assert.match(reviewCalculationBinding(sources,{...target,calculation:{formulaId:"mch"}}).join(),/explicitly/);
 });
-test("review refuses incompatible units, self references and PCV-MCV cycles",()=>{
-  assert.match(reviewCalculationBinding(sources,{...target,unit:"%"}).join(),/units/);
+test("CBP display units are independent; self references and PCV-MCV cycles remain blocked",()=>{
+  assert.deepEqual(reviewCalculationBinding(sources,{...target,unit:"%"}),[]);
+  assert.match(reviewCalculationBinding([{id:"a",resultType:"NUMBER",unit:"g/dl"},{id:"b",resultType:"NUMBER",unit:"mg/dl"}],{id:"out",unit:"g/dl",resultType:"NUMBER",calculation:{formulaId:"globulin",dependencyIds:["a","b"]}}).join(),/units/);
   assert.match(reviewCalculationBinding(sources,{...target,calculation:{formulaId:"mch",dependencyIds:["mch","rbc"]}}).join(),/itself/);
   const pcv={id:"pcv",unit:"%",resultType:"NUMBER",calculation:{formulaId:"pcv",dependencyIds:["rbc","mcv"]}};
   const mcv={id:"mcv",unit:"fL",resultType:"NUMBER",calculation:{formulaId:"mcv",dependencyIds:["pcv","rbc"]}};
