@@ -755,7 +755,6 @@ export function PrintPreview({
     >
       {bill && patient && (
         <div className="lis-report-paper mx-auto w-[186mm] bg-white font-serif text-[9pt] leading-[13pt] text-black">
-          <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} />
           {/* Results */}
           <table className="mt-[2mm] w-full table-fixed border-collapse text-left align-top">
             <colgroup>
@@ -920,6 +919,7 @@ export function PrintPreview({
           <p className="mt-[3mm] text-[8pt]">
             Note : Please Correlate Clinically if necessary kindly discuss.
           </p>
+          <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} />
 
           </div>
             </td></tr></tbody>

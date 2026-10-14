@@ -3,24 +3,3 @@
 .lis-technician-signature { width:30mm; height:14mm; margin-left:auto; }
 .lis-technician-signature img { width:100%; height:100%; object-fit:contain; }
 .lis-report-footer-contact { border-top:1px solid black; padding-top:1mm; font-size:7pt; text-align:left; }
-@media screen {
-  .lis-report-paper { display:flex; flex-direction:column; }
-  .lis-report-page-footer { order:2; }
-}
-@media print {
-  @page lab-report {
-    margin-bottom: 43mm;
-    @bottom-left { content:"Lab Technician"; width:30mm; vertical-align:top; padding-top:18mm; font: bold 8pt/11pt "Times New Roman",Times,serif; }
-    @bottom-center {
-      content:"***** END OF REPORT *****\A\A\A\A\A\A Plot No. 347, HMT Hills, Opp. Community Hall, Beside Park, Opp. JNTU, Kukatpally, Hyderabad - 500 085.\A Contact : 9989 2209 38, 9440 6268 92, 040-40147350";
-      white-space:pre; vertical-align:top; text-align:center; font:7pt/11pt "Times New Roman",Times,serif;
-    }
-    @bottom-right {
-      content:"Lab Technician\A\A\A Page " counter(page) " of " counter(pages);
-      width:30mm; white-space:pre; text-align:right; vertical-align:top; padding-top:18mm;
-      background:url("/technician-signature.svg") right 4mm / 30mm 14mm no-repeat;
-      font: bold 8pt/11pt "Times New Roman",Times,serif;
-    }
-  }
-  .lis-report-page-footer { display:none; }
-}
