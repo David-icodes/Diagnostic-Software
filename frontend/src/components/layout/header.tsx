@@ -140,12 +140,13 @@ export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem
+            {user?.role === "admin" && <DropdownMenuItem onClick={() => router.push("/admin-settings")}>Admin Settings</DropdownMenuItem>}
+            {user?.role !== "vendor" && <DropdownMenuItem
               onClick={() => router.push("/change-password")}
             >
               <KeyRound className="size-4" />
               Change Password
-            </DropdownMenuItem>
+            </DropdownMenuItem>}
           </DropdownMenuContent>
         </DropdownMenu>
         <Button

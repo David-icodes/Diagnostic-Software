@@ -48,7 +48,7 @@ export function sampleContextFromQuery(query: Record<string, string | string[] |
     billId: value("billId"), testId: value("testId"), billNumber: value("billNumber"), sampleId: value("sampleId") || undefined,
     returnFilters: { mode: value("resultMode") === "today" ? "today" : "criteria", fromDate: date("resultFromDate"), toDate: date("resultToDate"),
       ...(typeof query.resultBillNumber === "string" ? { billNumber: query.resultBillNumber } : {}),
-      patientName: value("resultPatientName"), includeClients: value("resultIncludeClients") === "true" },
+      patientName: value("resultPatientName"), includeClients: value("resultIncludeClients") !== "false" },
   };
 }
 

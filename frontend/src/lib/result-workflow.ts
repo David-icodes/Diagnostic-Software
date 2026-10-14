@@ -14,6 +14,14 @@ export function requireReportEligibility(workflow: ResultWorkflow, billId: strin
   if (workflow.hasOutstandingDue || workflow.outstandingDue > 0) throw new Error("This patient has an outstanding due. Report generation is not allowed.");
 }
 
+/** An old preview stays stale even after the replacement collection is submitted. */
+export function requireReportCollections(workflow: ResultWorkflow, reports: Array<{testId:string;collectionId?:string}>): void {
+  for (const report of reports) {
+    const current=workflow.tests.find(test=>test.testId===report.testId);
+    if(!current || (current.collectionId??"")!==(report.collectionId??""))throw new Error("The sample collection changed. Generate a fresh report before printing.");
+  }
+}
+
 /** Keep bill order; insert breaks only at observed print-mode boundaries. */
 export function reportStartsPage(mode: ResultPrintMode, index: number, department: string, previousDepartment?: string): boolean {
   return index > 0 && (mode === "test" || (mode === "department" && department !== previousDepartment));

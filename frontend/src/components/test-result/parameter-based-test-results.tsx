@@ -651,6 +651,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
           onSubmit={(entries, acceptedCalculationIds, calculationProposals) => {
             if (!selectedBill || !selectedTestId) return;
             submitMutation.mutate({
+              collectionId: selectedTestEntry?.collectionId,
               billId: selectedBill.id,
               testId: selectedTestId,
               entries,

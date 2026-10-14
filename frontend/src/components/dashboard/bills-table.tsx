@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { useEffect, useRef } from "react";
 
 export interface ColumnDef<T> {
   key: string;
@@ -29,6 +30,9 @@ interface BillsTableProps<T> {
   footer?: React.ReactNode;
   completedRow?: (row: T) => boolean;
   tableClassName?: string;
+  onScroll?: React.UIEventHandler<HTMLDivElement>;
+  canLoadMore?: boolean;
+  onLoadMore?: () => void;
 }
 
 export function BillsTable<T>({
@@ -40,9 +44,19 @@ export function BillsTable<T>({
   footer,
   completedRow,
   tableClassName,
+  onScroll,
+  canLoadMore,
+  onLoadMore,
 }: BillsTableProps<T>) {
+  const container=useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    const node=container.current;
+    if(!node||!canLoadMore||!onLoadMore)return;
+    const fill=()=>{if(node.clientHeight>0&&node.scrollHeight<=node.clientHeight+1)onLoadMore();};
+    fill();const observer=new ResizeObserver(fill);observer.observe(node);return()=>observer.disconnect();
+  },[rows.length,canLoadMore,onLoadMore]);
   return (
-    <div className={cn("overflow-auto", maxHeightClass)}>
+    <div ref={container} onScroll={onScroll} className={cn("overflow-auto", maxHeightClass)}>
       <table className={cn("min-w-full table-fixed border-collapse text-sm", tableClassName)}>
         {columns.some(column => column.width) && <colgroup>{columns.map(column => <col key={column.key} style={{width:column.width}} />)}</colgroup>}
         <TableHeader className="sticky top-0 z-10">

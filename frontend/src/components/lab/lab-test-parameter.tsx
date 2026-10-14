@@ -278,11 +278,10 @@ export function LabTestParameterContent() {
   });
 
   const departmentsQuery = useQuery({
-    queryKey: ["departments", "lab-master"],
+    queryKey: ["departments", "lab-master", "all"],
     queryFn: () =>
-      fetchDepartments({ status: "active" }).then((rows) =>
+      fetchDepartments().then((rows) =>
         rows
-          .filter((row) => row.active !== false)
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
   });
@@ -818,7 +817,7 @@ export function LabTestParameterContent() {
                   disabled={saveMutation.isPending}
                 >
                   <option value="">--Select--</option>
-                  {departments.map((department) => (
+                  {departments.filter(department => department.active !== false || editingRow?.departmentId === department.id).map((department) => (
                     <option key={department.id} value={department.id}>
                       {department.name}
                     </option>
@@ -1216,6 +1215,7 @@ export function LabTestParameterContent() {
       {/* FILTER ROW + TABLE */}
       <div className="rounded-lg bg-card p-2 ring-1 ring-foreground/10">
         <div className="flex flex-wrap items-center gap-2">
+          <Button type="button" variant="outline" onClick={() => {setDepartmentId("");setTestId("");setPage(1);}}>All Departments</Button>
           <Select
             aria-label="Filter by department"
             className="w-56"

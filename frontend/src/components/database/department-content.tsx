@@ -1,6 +1,7 @@
 "use client";
 
 import { ConfirmDialog } from "@/components/database/confirm-dialog";
+import { Dialog } from "@/components/ui/dialog";
 
 import { useMemo, useState } from "react";
 import { invalidateMasterData } from "@/lib/master-data-cache";
@@ -55,6 +56,8 @@ export function DepartmentContent() {
 
   const [deleting, setDeleting] = useState<Department | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [successDialog, setSuccessDialog] = useState<string | null>(null);
+  const [validationError,setValidationError]=useState<string|null>(null);
 
   const optionsQuery = useQuery({
     queryKey: ["database-options"],
@@ -89,6 +92,7 @@ export function DepartmentContent() {
       invalidate();
       setEditingId(null);
       setForm(EMPTY_FORM);
+      setSuccessDialog(editingId ? "Department updated successfully." : "Department registered successfully.");
       setFeedback(
         editingId
           ? "Department updated successfully"
@@ -108,6 +112,10 @@ export function DepartmentContent() {
       setDeleting(null); setPage(1); setFeedback("Department deleted successfully");
     },
   });
+  const deactivateMutation = useMutation({
+    mutationFn: (id: string) => updateDatabaseDepartment(id, { active: false }),
+    onSuccess: () => { invalidate(); if (editingId === deleting?.id) {setEditingId(null);setForm(EMPTY_FORM);} setDeleting(null); setFeedback("Department deactivated; existing relationships preserved"); },
+  });
 
   const departmentTypes = optionsQuery.data?.departmentTypes ?? [];
 
@@ -119,7 +127,7 @@ export function DepartmentContent() {
       if (!keyword) return true;
       return (
         department.name.toLowerCase().includes(keyword) ||
-        department.code.toLowerCase().includes(keyword)
+        (department.code ?? "").toLowerCase().includes(keyword)
       );
     });
   }, [listQuery.data, search, statusFilter]);
@@ -128,20 +136,26 @@ export function DepartmentContent() {
   const visible = filtered.slice((page - 1) * PAGE_LIMIT, page * PAGE_LIMIT);
 
   const update = (patch: Partial<DepartmentFormState>) => {
+    setValidationError(null);
     setForm((current) => ({ ...current, ...patch }));
   };
 
   const handleSave = () => {
-    if (form.name.trim().length < 2 || form.code.trim().length < 2) return;
+    if (saveMutation.isPending) return;
+    if (form.name.trim().length < 2 || form.code.trim().length < 2) {setValidationError("Enter a department name and short name with at least two characters.");return;}
+    const order=Number(form.sortOrder);
+    if(!Number.isInteger(order)||order<0||order>9999){setValidationError("Sort order must be a whole number between 0 and 9999.");return;}
+    setValidationError(null);
     saveMutation.mutate();
   };
 
   const handleEdit = (department: Department) => {
+    saveMutation.reset();setValidationError(null);
     setEditingId(department.id);
     setForm({
       active: department.active !== false,
       name: department.name,
-      code: department.code,
+      code: department.code ?? "",
       type: department.type ?? "",
       sortOrder: String(department.sortOrder ?? 0),
       description: department.description ?? "",
@@ -205,7 +219,7 @@ export function DepartmentContent() {
             <Pencil className="size-4" />
           </Button>
           <Button type="button" variant="ghost" size="icon-sm" aria-label={`Delete ${row.name}`}
-            disabled={deleteMutation.isPending} onClick={() => { deleteMutation.reset(); setDeleting(row); }}>
+            disabled={deleteMutation.isPending} onClick={() => { deleteMutation.reset(); deactivateMutation.reset(); setDeleting(row); }}>
             <Trash2 className="size-4 text-destructive" />
           </Button>
         </div>
@@ -215,9 +229,14 @@ export function DepartmentContent() {
 
   return (
     <div className="lis-dm lis-department space-y-3">
-      <ConfirmDialog open={Boolean(deleting)} onOpenChange={(open) => { if (!open && !deleteMutation.isPending) setDeleting(null); }}
-        title="Delete Department" confirmLabel="Delete" loading={deleteMutation.isPending}
-        description={deleteMutation.isError ? deleteMutation.error.message : `Delete ${deleting?.name ?? "this department"}? Referenced departments cannot be deleted.`}
+      <Dialog open={Boolean(successDialog)} onOpenChange={open=>{if(!open)setSuccessDialog(null);}} title="Department saved">
+        <p role="status">{successDialog}</p><Button onClick={()=>setSuccessDialog(null)}>OK</Button>
+      </Dialog>
+      <ConfirmDialog open={Boolean(deleting)} onOpenChange={(open) => { if (!open && !deleteMutation.isPending && !deactivateMutation.isPending) setDeleting(null); }}
+        title="Delete Department" confirmLabel="Delete" loading={deleteMutation.isPending || deactivateMutation.isPending}
+        secondaryLabel={deleteMutation.isError && deleting?.active !== false ? "Deactivate instead" : undefined}
+        onSecondary={deleteMutation.isError ? () => {if (deleting) deactivateMutation.mutate(deleting.id);} : undefined}
+        description={deactivateMutation.isError ? deactivateMutation.error.message : deleteMutation.isError ? deleteMutation.error.message : `Delete ${deleting?.name ?? "this department"}? Referenced departments cannot be deleted.`}
         onConfirm={() => { if (deleting) deleteMutation.mutate(deleting.id); }} />
       <PageHeader
         icon={Layers}
@@ -235,13 +254,14 @@ export function DepartmentContent() {
           }
         >
           <div className="space-y-3">
+            {validationError&&<p role="alert">{validationError}</p>}
             {feedback && (
               <p className="rounded-md bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20">
                 {feedback}
               </p>
             )}
             {saveMutation.isError && (
-              <p className="rounded-md bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive ring-1 ring-destructive/20">
+              <p role="alert" className="rounded-md bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive ring-1 ring-destructive/20">
                 {saveMutation.error instanceof Error
                   ? saveMutation.error.message
                   : "Failed to save"}
@@ -318,6 +338,7 @@ export function DepartmentContent() {
               homeBeforeReset
               onSubmit={handleSave}
               onReset={() => {
+                saveMutation.reset();setValidationError(null);
                 setEditingId(null);
                 setForm(EMPTY_FORM);
                 setFeedback(null);
@@ -333,6 +354,7 @@ export function DepartmentContent() {
           description="Departments are used to group lab tests"
           actions={
             <div className="flex flex-wrap items-center gap-2">
+              <Button type="button" variant={statusFilter === "all" ? "default" : "outline"} onClick={() => {setStatusFilter("all");setSearch("");setPage(1);}}>All</Button>
               <Select
                 aria-label="Filter by status"
                 className="w-32"

@@ -21,6 +21,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { TestSelector, type OutsideChoice, type SelectedTestItem } from "@/components/billing/test-selector";
+import { groupedBillItems } from "@/lib/package-billing";
 import { LabBillPlaceholder } from "@/components/billing/lab-bill-placeholder";
 import { fetchLabBills, modifyLabBill } from "@/services/billing";
 import { cn, formatDate, formatMoney } from "@/lib/utils";
@@ -117,10 +118,11 @@ export function ModifyLabBill() {
 
   const isDirty = useMemo(() => {
     if (!bill) return false;
-    if (items.length !== bill.items.length) return true;
+    const originalItems=groupedBillItems(bill.items);
+    if (items.length !== originalItems.length) return true;
     for (let index = 0; index < items.length; index += 1) {
       const left = items[index];
-      const right = bill.items[index];
+      const right = originalItems[index];
       if (!right) return true;
       if (left.testId !== right.testId || left.quantity !== right.quantity || (left.outsideLabId ?? null) !== (right.outsideLabId ?? null) || Boolean(left.out) !== Boolean(right.outsideLabId)) {
         return true;
@@ -137,8 +139,9 @@ export function ModifyLabBill() {
   const applyBillSelection = (candidate: LabBill) => {
     setBill(candidate);
     setItems(
-      candidate.items.map((item) => ({
+      groupedBillItems(candidate.items).map((item) => ({
         testId: item.testId,
+        packageId:item.packageId,
         testCode: item.testCode,
         testName: item.testName,
         departmentName: item.departmentName,
@@ -175,6 +178,7 @@ export function ModifyLabBill() {
         ...current,
         {
           testId: test.id,
+          packageId:test.packageId,
           testCode: test.testCode,
           testName: test.testName,
           departmentName,
@@ -249,7 +253,7 @@ export function ModifyLabBill() {
         throw new ApiError("Select an outside lab for every test marked Out.");
       }
       return modifyLabBill(bill.id, {
-        items: items.map((item) => ({ testId: item.testId, quantity: item.quantity, out: Boolean(item.out ?? item.outsideLabId), outsideLabId: item.outsideLabId ?? null })),
+        items: items.map((item) => ({ testId: item.testId, packageId:item.packageId, quantity: item.quantity, out: Boolean(item.out ?? item.outsideLabId), outsideLabId: item.outsideLabId ?? null })),
         discountPercent: Number(discountPercent),
         paymentMode,
         comments: comments.trim() || undefined,
@@ -520,7 +524,7 @@ export function ModifyLabBill() {
           )}
 
           <div className="space-y-3 p-2.5">
-            <TestSelector key={bill.id} items={items} onAdd={handleAddTest}
+            <TestSelector key={bill.id} allowPackages={bill.billType!=="vendor"} items={items} onAdd={handleAddTest}
               onRemove={handleRemoveItem} onQuantityChange={handleQuantityChange}
               disabled={lockEdits} selectedTitle="Existed Lab Tests" showSerial={false} />
 

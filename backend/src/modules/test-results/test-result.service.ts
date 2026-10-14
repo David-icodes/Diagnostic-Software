@@ -1,3 +1,4 @@
+import { withSampleResultWrite } from "../lab-samples/recollection.service";
 import {cbpSyntheticExecution} from "../lab-test-parameters/cbp-synthetic-execution.service";
 import { formulaEditorContextAllowed } from "../../utils/formula-editor-context";
 import { applyCalculationProposals, type CalculationProposal } from "../../utils/configured-calculations";
@@ -142,6 +143,7 @@ export async function listTestParameters(
 /** One ordered test of a bill, with its parameters and applicable references. */
 export interface BillTestEntry {
   testId: string;
+  collectionId?: string;
   testCode: string;
   testName: string;
   /** Position of this test in the bill's ordered items. */
@@ -244,6 +246,7 @@ export async function getBillResultEntry(
     const routed = routeParameterVersions(byTest.get(testId) ?? [],item.parameterVersionIds,savedRows.filter(row=>String(row.testId)===testId));
     tests.push({
       testId,
+      collectionId: item.activeCollectionId?.toString(),
       testCode: item.testCode,
       testName: item.testName,
       order: index,
@@ -392,7 +395,7 @@ export async function listTestResults(
  */
 export async function submitTestResults(
   userId: string,
-  input: { billId: string; testId: string; calculationProposals?:CalculationProposal[]; acceptedCalculationIds?:string[]; acceptedCalculationRevisions?:Record<string,number>; entries: Array<{ parameterId: string; result: ResultValue }> },
+  input: { billId: string; testId: string; collectionId?: string; calculationProposals?:CalculationProposal[]; acceptedCalculationIds?:string[]; acceptedCalculationRevisions?:Record<string,number>; entries: Array<{ parameterId: string; result: ResultValue }> },
 ): Promise<{ results: ILabTestResult[]; testId: string }> {
   if (!Types.ObjectId.isValid(input.billId) || !Types.ObjectId.isValid(input.testId)) {
     throw new ApiError(400, "Invalid bill or test ID");
@@ -502,6 +505,8 @@ export async function submitTestResults(
     assertParameterTypeMatches(parameter, entry.result);
   }
 
+  return withSampleResultWrite(input.billId, input.testId, input.collectionId, async (session, collectionId) => {
+  const options = session ? {session} : {};
   const now = new Date();
   const enteredBy = new Types.ObjectId(userId);
   const patient = await Patient.findById(bill.patientId).exec();
@@ -511,21 +516,15 @@ export async function submitTestResults(
     gender: patient?.gender ?? null,
   };
 
-  // Persistence model: this MongoDB deployment is a single node (no replica
-  // set), so multi-document transactions are unavailable. The safe-equivalent
-  // strategy is: a unique (billId, testId, parameterId) key prevents
-  // duplicates, and every overwrite pushes the previous value into
-  // `revisions` and bumps `version`, so no clinical value is ever lost or
-  // written without its author and timestamp.
-  // A durable confirmation uses the existing audit model. It is deliberately
-  // strict (not best-effort): a partial multi-row save must never unlock Print.
-  // Save its anchor first, so any later partial save remains linked to this log.
+  // Atlas transactions serialize submissions with recollection through the bill
+  // and sample fences. Unique result IDs and revisions remain unchanged.
   const first = entries[0];
-  const anchor = await LabTestResult.findOne({ billId: bill._id, testId: input.testId, parameterId: first.parameterId }).exec();
+  const anchor = await LabTestResult.findOne({ billId: bill._id, testId: input.testId, parameterId: first.parameterId, superseded: {$in:[true,false,null]} }, null, options).exec();
   const anchorId = anchor?._id ?? new Types.ObjectId();
-  const confirmation = await AuditLog.create({ user: enteredBy, action: SUBMISSION_PENDING,
+  const confirmationData = { user: enteredBy, action: SUBMISSION_PENDING,
     entityType: "LabTestResult", entity: anchorId, timestamp: now,
-    details:{acceptedCalculationIds:[...accepted],keptCalculationIds:[...kept],calculationAcceptance:"USER_ACCEPTED_AND_SERVER_VERIFIED"} });
+    details:{acceptedCalculationIds:[...accepted],keptCalculationIds:[...kept],calculationAcceptance:"USER_ACCEPTED_AND_SERVER_VERIFIED"} };
+  const confirmation = session ? (await AuditLog.create([confirmationData], options))[0] : await AuditLog.create(confirmationData);
   const saveEntry = async (entry: typeof first) => {
       const parameter = parameterMap.get(entry.parameterId)!;
       const effective = executable(parameter);
@@ -535,10 +534,12 @@ export async function submitTestResults(
         billId: bill._id,
         testId: input.testId,
         parameterId: parameter._id,
-      }).exec();
+        superseded: {$in:[true,false,null]},
+      }, null, options).exec();
 
       if (!existing) {
-        await LabTestResult.create({
+        const data = {
+          collectionId, superseded:false,
           ...(entry === first && !anchor ? { _id: anchorId } : {}),
           billId: bill._id,
           patientId: bill.patientId,
@@ -562,7 +563,9 @@ export async function submitTestResults(
           enteredAt: now,
           version: 1,
           revisions: [],
-        });
+        };
+        if (session) await LabTestResult.create([data], options);
+        else await LabTestResult.create(data);
         return;
       }
 
@@ -573,6 +576,16 @@ export async function submitTestResults(
         enteredAt: existing.enteredAt,
         version: existing.version,
       });
+      if (existing.superseded) {
+        // The previous collection's complete metadata is archived separately.
+        existing.parameterName = parameter.parameterName;
+        existing.resultType = parameter.resultType;
+        existing.unit = parameter.unit;
+        existing.referenceRange = parameter.referenceRange;
+        existing.method = parameter.method;
+      }
+      existing.collectionId = collectionId;
+      existing.superseded = false;
       existing.result = entry.result;
       existing.calculationSnapshot = calculationSnapshot;
       existing.enteredBy = enteredBy;
@@ -589,25 +602,28 @@ export async function submitTestResults(
       await existing.save();
   };
   await saveEntry(first);
-  const writes = await Promise.allSettled(entries.slice(1).map(saveEntry));
+  const writes = session ? await (async()=>{for(const entry of entries.slice(1))await saveEntry(entry);return [] as PromiseSettledResult<void>[];})() : await Promise.allSettled(entries.slice(1).map(saveEntry));
   const failed = writes.find((write): write is PromiseRejectedResult => write.status === "rejected");
   if (failed) throw failed.reason;
   confirmation.action = SUBMISSION_CONFIRMED;
   await confirmation.save();
 
-  await recordAudit({
+  const auditEntry = {
     user: userId,
     action: "test_result.entered",
     entityType: "LabTestResult",
     entity: bill._id,
-  });
+  };
+  if (session) await AuditLog.create([{ ...auditEntry, timestamp: now }], options);
+  else await recordAudit(auditEntry);
 
   const results = await LabTestResult.find({
     billId: bill._id,
     testId: input.testId,
-  })
+  }, null, options)
     .sort({ enteredAt: -1 })
     .exec();
 
   return { results, testId: input.testId };
+  });
 }

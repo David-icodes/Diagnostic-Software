@@ -36,7 +36,7 @@ export function ResultReportUpload({ billId, testId, testName }: { billId: strin
       {reports.isError && <p role="alert">Unable to load reports: {reports.error.message}</p>}
       {(reports.data ?? []).map((report) => <p key={report.id}><button type="button" disabled={downloading || upload.isPending} className="underline text-sm" onClick={async () => {
         setError(null); setDownloading(true); try { await downloadResultUpload(billId, testId, report); } catch (reason) { setError(reason instanceof Error ? reason.message : "Unable to download report."); } finally { setDownloading(false); }
-      }}>{report.fileName}</button></p>)}
+      }}>{report.fileName}</button><Button variant="outline" size="sm" onClick={()=>window.open(`${process.env.NEXT_PUBLIC_API_URL??"http://localhost:5000/api/v1"}/lab-test-results/report-uploads/${encodeURIComponent(report.id)}?${new URLSearchParams({billId,testId,view:"true"})}`,"_blank","noopener,noreferrer")}>View PDF</Button></p>)}
       <div className="flex justify-end gap-2 mt-3"><Button disabled={!file || upload.isPending || reports.isError} onClick={() => upload.mutate()}>{upload.isPending ? "Uploading…" : "Upload"}</Button><Button variant="outline" disabled={upload.isPending} onClick={() => setOpen(false)}>Close</Button></div>
     </Dialog>, document.body)}
   </div>;

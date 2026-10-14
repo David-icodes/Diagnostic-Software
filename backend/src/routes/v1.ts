@@ -1,4 +1,7 @@
 import { Router } from "express";
+import { getDatabaseStatus } from "../config/db";
+import { authenticate } from "../middleware/authenticate";
+import vendorPortalRoutes from "../modules/vendor-portal/vendor-portal.routes";
 import authRoutes from "../modules/auth/auth.routes";
 import dashboardRoutes from "../modules/dashboard/dashboard.routes";
 import patientRoutes from "../modules/patients/patient.routes";
@@ -24,10 +27,12 @@ import clientTariffRoutes from "../modules/client-tariffs/client-tariff.routes";
 const router = Router();
 
 router.get("/health", (_req, res) => {
-  return res.json({ success: true, message: "Diagnostic LIS API is running" });
+  return res.status(getDatabaseStatus() === "connected" ? 200 : 503).json({ success: getDatabaseStatus() === "connected", database: getDatabaseStatus() });
 });
 
 router.use("/auth", authRoutes);
+router.use(authenticate);
+router.use("/vendor-portal", vendorPortalRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/patients", patientRoutes);
 router.use("/departments", departmentRoutes);

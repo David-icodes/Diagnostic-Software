@@ -39,5 +39,6 @@ export async function allResultBillPages<T>(load: (page: number) => Promise<{ da
   const first = await load(1);
   const rows = [...first.data];
   for (let page = 2; page <= first.pagination.totalPages; page++) rows.push(...(await load(page)).data);
-  return rows;
+  // A record can cross an offset boundary while a bill is edited concurrently.
+  return Array.from(new Map(rows.map((row, index) => [(row as { id?: string }).id ?? `row-${index}`, row])).values());
 }

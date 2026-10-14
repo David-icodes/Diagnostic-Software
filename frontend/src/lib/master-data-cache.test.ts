@@ -6,8 +6,9 @@ import { invalidateMasterData } from "./master-data-cache.ts";
 for (const [root, affected] of Object.entries({
   "doctor-specialisations": ["doctor-specialisations", "doctors"],
   "doctor-designations": ["doctor-designations", "doctors"],
-  departments: ["departments", "lab-tests", "lab-tariffs", "commission-mappings", "client-tariffs"],
-  "lab-tests": ["lab-tests", "lab-tariffs", "commission-mappings", "client-tariffs"],
+  departments: ["departments", "lab-tests", "lab-test-parameters", "test-results", "lab-tariffs", "commission-mappings", "client-tariffs", "packages", "vendor-departments", "vendor-catalogue"],
+  "lab-tests": ["lab-tests", "lab-tariffs", "commission-mappings", "client-tariffs", "vendor-catalogue", "packages"],
+  packages: ["packages", "vendor-packages"],
   "lab-tariffs": ["lab-tariffs", "lab-tests", "commission-mappings", "client-tariffs"],
 })) {
   test(`${root} invalidates dependent queries without clearing unrelated data`, async () => {

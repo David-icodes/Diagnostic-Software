@@ -1,3 +1,8 @@
+import { SampleCollection } from "../../models/sample-collection.model";
+import { Types } from "mongoose";
+import { ApiError } from "../../utils/api-error";
+import { asyncHandler } from "../../utils/async-handler";
+import { sendSuccess } from "../../utils/http";
 import { Router } from "express";
 import { authenticate } from "../../middleware/authenticate";
 import { validate } from "../../middleware/validate";
@@ -14,6 +19,10 @@ const router = Router();
 
 router.use(authenticate);
 
+router.get("/:id/collections", requirePermission("test_results.view"), asyncHandler(async(req,res)=>{
+ if(!Types.ObjectId.isValid(req.params.id))throw new ApiError(400,"Invalid sample ID");
+ return sendSuccess(res,await SampleCollection.find({sampleId:req.params.id}).sort({_id:1}).exec());
+}));
 router.get("/", requirePermission("sample.view"), listLabSamples);
 router.patch(
   "/:id/status",

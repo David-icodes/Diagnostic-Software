@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "staff" | "operator";
+export type UserRole = "admin" | "staff" | "operator" | "vendor";
 
 export type UserStatus = "active" | "inactive" | "suspended";
 
@@ -8,6 +8,7 @@ export interface User {
   name: string;
   role: UserRole;
   status: UserStatus;
+  clientId?: string;
   createdAt?: string;
   updatedAt?: string;
 }

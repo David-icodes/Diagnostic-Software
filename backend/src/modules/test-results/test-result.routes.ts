@@ -6,6 +6,9 @@ import { authenticate } from "../../middleware/authenticate";
 import { validate } from "../../middleware/validate";
 import { requirePermission } from "../../middleware/require-permission";
 import { submitResultsSchema } from "../../validations/test-result";
+import { asyncHandler } from "../../utils/async-handler";
+import { sendSuccess } from "../../utils/http";
+import { browserReportPdf, reportPdfQuery, reportRenderData } from "./report-pdf.service";
 import {
   getBillResultEntry,
   listTestParameters,
@@ -22,6 +25,16 @@ router.use((req, res, next) => {
   next();
 });
 router.use(authenticate);
+router.get("/report.pdf",requirePermission("test_results.view"),asyncHandler(async(req,res)=>{
+  const parsed=reportPdfQuery.safeParse(req.query);if(!parsed.success)throw new ApiError(400,"Invalid report viewing options");
+  const report=await browserReportPdf(parsed.data,req);
+  res.set({"Content-Type":"application/pdf","Content-Disposition":`${parsed.data.download==="true"?"attachment":"inline"}; filename*=UTF-8''${encodeURIComponent(report.filename)}`,
+    "Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff","Referrer-Policy":"no-referrer","X-Report-Cache":report.status});
+  return res.send(report.bytes);
+}));
+router.get("/render-data/:jobId",requirePermission("test_results.view"),asyncHandler(async(req,res)=>{
+  res.set("Cache-Control","private, no-store");return sendSuccess(res,reportRenderData(req.params.jobId,req.user!.id));
+}));
 router.get("/report-uploads", requirePermission("test_results.view"), listUploads);
 const parseReport = raw({ type: "application/pdf", limit: "5mb" });
 router.post("/report-uploads", requirePermission("test_results.enter"), (req, res, next) => {

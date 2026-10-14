@@ -205,6 +205,7 @@ export interface BillTestParameter {
 }
 
 export interface BillTestEntry {
+  collectionId?: string;
   testId: string;
   testCode: string;
   testName: string;
@@ -280,6 +281,7 @@ export interface ResultsResponse {
 }
 
 export interface SubmitResultsRequest {
+  collectionId?: string;
   calculationProposals?: import("@/lib/calculation-proposal").CalculationProposal[];
   acceptedCalculationIds?: string[];
   acceptedCalculationRevisions?: Record<string,number>;
@@ -301,7 +303,7 @@ export interface ResultWorkflow {
   patientId: string;
   outstandingDue: number;
   hasOutstandingDue: boolean;
-  tests: Array<{ testId: string; submitted: boolean }>;
+  tests: Array<{ testId: string; collectionId?: string; submitted: boolean }>;
 }
 
 export interface LabTechnician {

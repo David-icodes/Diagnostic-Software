@@ -1,0 +1,28 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+process.env.MONGODB_URI="mongodb://127.0.0.1/vendor_tests_no_connection";
+process.env.JWT_SECRET="test-only-vendor-isolation-secret";
+for (const key of ["CLOUDINARY_CLOUD_NAME","CLOUDINARY_API_KEY","CLOUDINARY_API_SECRET"]) process.env[key]="";
+test("real HTTP routes reject cross-client IDs, scope searches, deny administration and revoke sessions", async t => {
+  const [{default:app},{User},{LabClient},{LabBill},{LabSample},{signAuthToken}] = await Promise.all([import("../../app.js"),import("../../models/user.model.js"),import("../../models/lab-client.model.js"),import("../../models/lab-bill.model.js"),import("../../models/lab-sample.model.js"),import("../../utils/jwt.js")]);
+  const clientId="507f1f77bcf86cd799439011", billId="507f1f77bcf86cd799439012", foreign="507f1f77bcf86cd799439013";
+  const user={id:"507f1f77bcf86cd799439014",name:"Synthetic",username:"fixture",role:"vendor",status:"active",clientId,sessionVersion:0,toJSON(){return this;}};
+  t.mock.method(User,"findById",async()=>user);
+  t.mock.method(LabClient,"exists",async(filter:any)=>{assert.equal(filter._id,clientId);return {_id:clientId};});
+  const chain=(value:unknown)=>{const q={sort:()=>q,skip:()=>q,limit:()=>q,populate:()=>q,select:()=>q,lean:()=>q,exec:async()=>value};return q;};
+  t.mock.method(LabBill,"countDocuments",async(filter:any)=>{assert.equal(String(filter.clientId),clientId);assert.equal(filter.billType,"vendor");return 1;});
+  t.mock.method(LabBill,"find",(filter:any)=>{assert.equal(String(filter.clientId),clientId);return chain([{_id:billId,billType:"vendor",clientId,items:[]}]);});
+  t.mock.method(LabBill,"findOne",(filter:any)=>{assert.equal(filter.clientId,clientId);assert.equal(filter.billType,"vendor");return chain(filter._id===billId?{_id:billId,clientId,items:[]}:null);});
+  t.mock.method(LabSample,"find",()=>chain([]));
+  const server=(app as unknown as import("express").Express).listen(0,"127.0.0.1"); await new Promise<void>(resolve=>server.once("listening",resolve));
+  t.after(()=>new Promise<void>((resolve,reject)=>server.close((error?: Error)=>error?reject(error):resolve())));
+  const origin=`http://127.0.0.1:${(server.address() as {port:number}).port}`;
+  const token=signAuthToken({sub:user.id,username:user.username,role:user.role,sessionVersion:0});
+  const request=(path:string)=>fetch(origin+path,{headers:{cookie:`diagnostic_token=${token}`}});
+  assert.equal((await request(`/api/v1/vendor-portal/bills?clientId=${foreign}`)).status,200);
+  assert.equal((await request(`/api/v1/vendor-portal/bills/${billId}`)).status,200);
+  assert.equal((await request(`/api/v1/vendor-portal/bills/${foreign}`)).status,404);
+  assert.equal((await request(`/api/v1/vendor-portal/bills/${foreign}/attachments/${billId}?testId=${foreign}`)).status,404);
+  for (const path of ["/api/v1/patients","/api/v1/dashboard/summary","/api/v1/auth/vendor-users"]) assert.equal((await request(path)).status,403);
+  user.sessionVersion=1;assert.equal((await request("/api/v1/vendor-portal/bills")).status,401);
+});

@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+import { LabSample } from "../../models/lab-sample.model";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
@@ -9,6 +11,10 @@ import {Patient} from "../../models/patient.model";
 import {getBillResultEntry,submitTestResults} from "./test-result.service";
 
 test("entry/report-data routing preserves seven snapshots and rejects an unpinned successor submission before writes",async t=>{
+ t.mock.method(mongoose.connection,"transaction",async(callback:any)=>callback(undefined));
+ t.mock.method(LabSample,"findOne",()=>({exec:async()=>null}) as any);
+ t.mock.method(LabBill,"updateOne",()=>({exec:async()=>({matchedCount:1})}) as any);
+
  const billId=new Types.ObjectId(),patientId=new Types.ObjectId(),testId=new Types.ObjectId(),userId=new Types.ObjectId();
  const oldIds=Array.from({length:7},()=>new Types.ObjectId()),newIds=oldIds.map(()=>new Types.ObjectId());
  const old=oldIds.map((_id,i)=>({_id,testId,active:true,parameterName:"Changed master "+i,resultType:"TEXT",unit:"changed",method:"changed",referenceRange:"changed",displayOrder:i}));
@@ -28,6 +34,10 @@ test("entry/report-data routing preserves seven snapshots and rejects an unpinne
 });
 
 test("prospective pinned order exposes only numeric successor and its unchanged display unit",async t=>{
+ t.mock.method(mongoose.connection,"transaction",async(callback:any)=>callback(undefined));
+ t.mock.method(LabSample,"findOne",()=>({exec:async()=>null}) as any);
+ t.mock.method(LabBill,"updateOne",()=>({exec:async()=>({matchedCount:1})}) as any);
+
  const billId=new Types.ObjectId(),testId=new Types.ObjectId(),oldId=new Types.ObjectId(),nextId=new Types.ObjectId();
  const q=(value:unknown)=>{const query={exec:async()=>value,sort:()=>query};return query;};
  t.mock.method(LabBill,"findById",()=>q({_id:billId,patientId:new Types.ObjectId(),status:"generated",items:[{testId,testName:"Synthetic CBP",parameterVersionIds:[String(nextId)]}]}));

@@ -45,7 +45,7 @@ body { font-family: var(--lis-font); font-size: 13px; line-height: 1.42857143; }
 .lis-content table td { padding: 4px; height: auto; line-height: 1.42857143; border-bottom-color: #eee; }
 .lis-content table td p, .lis-content table td span { overflow-wrap: anywhere; }
 .lis-content table td > p, .lis-content table td > span { font-size: inherit; }
-.lis-content table tbody tr:nth-child(odd):not([data-state="selected"]):not([aria-selected="true"]):not(.bg-blue-50):not([class*="bg-red-"]):not([class*="bg-rose-"]):not([class*="bg-green-"]):not([class*="bg-teal-"]):not([class*="bg-amber-"]) { background-color: #f9f9f9; }
+.lis-content table tbody tr:nth-child(odd):not(.lis-sample-row):not([data-state="selected"]):not([aria-selected="true"]):not(.bg-blue-50):not([class*="bg-red-"]):not([class*="bg-rose-"]):not([class*="bg-green-"]):not([class*="bg-teal-"]):not([class*="bg-amber-"]) { background-color: #f9f9f9; }
 .lis-content table tbody tr:hover:not([class*="bg-red-"]):not([class*="bg-green-"]):not([class*="bg-teal-"]):not(.bg-blue-50) { background-color: #f5f5f5; }
 .lis-content [data-slot="table-container"] { max-height: 440px; overflow: auto; }
 .lis-data-grid { border-radius: 0; box-shadow: none; border: 1px solid #eee; }

@@ -20,6 +20,7 @@ export type LabTestResultMode =
   | "CALCULATED";
 
 export interface LabTest {
+  packageId?: string;
   id: string;
   testCode: string;
   testName: string;
@@ -137,6 +138,9 @@ export interface BillDoctor {
 }
 
 export interface BillItem {
+  packageId?: string;
+  packageName?: string;
+  packageAmount?: number;
   testId: string;
   testCode: string;
   testName: string;
@@ -195,6 +199,7 @@ export interface CollectDueRequest {
 }
 
 export interface BillItemsRequest {
+  packageId?: string;
   out?: boolean;
   outsideLabId?: string | null;
   testId: string;

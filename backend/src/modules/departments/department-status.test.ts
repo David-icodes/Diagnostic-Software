@@ -6,6 +6,7 @@ import { listDepartments, setDepartmentActive } from "./department.service";
 test("status changes preserve ID and permit referenced departments without deletion",async(t)=>{
   const record={_id:"507f1f77bcf86cd799439011",active:true,save:async()=>record};
   t.mock.method(Department,"findById",()=>({exec:async()=>record}));
+  t.mock.method(Department,"findByIdAndUpdate",(_id:unknown,update:{$set:Partial<typeof record>})=>({exec:async()=>Object.assign(record,update.$set)}));
   t.mock.method(LabTest,"countDocuments",()=>{throw new Error("Status must not check deletion references");});
   const id=record._id;
   await setDepartmentActive(id,id,false);assert.equal(record.active,false);

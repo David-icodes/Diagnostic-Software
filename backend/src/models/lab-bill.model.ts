@@ -6,6 +6,10 @@ export type BillStatus = "draft" | "generated" | "cancelled";
 export type BillType = "osp" | "vendor";
 
 export interface IBillItem {
+  activeCollectionId?: Types.ObjectId;
+  packageId?: Types.ObjectId;
+  packageName?: string;
+  packageAmount?: number;
   parameterVersionIds?: string[];
   testId: Types.ObjectId;
   testCode: string;
@@ -21,6 +25,7 @@ export interface IBillItem {
 }
 
 export interface ILabBill {
+  sampleWriteRevision?: number;
   billNumber: string;
   billType: BillType;
   patientId: Types.ObjectId;
@@ -58,6 +63,10 @@ export const BILL_TYPES: BillType[] = ["osp", "vendor"];
 
 const billItemSchema = new Schema<IBillItem>(
   {
+    activeCollectionId: {type:Schema.Types.ObjectId,ref:"SampleCollection"},
+    packageId:{type:Schema.Types.ObjectId,ref:"LabPackage"},
+    packageName:{type:String},
+    packageAmount:{type:Number,min:0},
     parameterVersionIds: {type:[String],default:undefined,immutable:true},
     testId: { type: Schema.Types.ObjectId, ref: "LabTest", required: true },
     testCode: { type: String, required: true, trim: true },
@@ -76,6 +85,7 @@ const billItemSchema = new Schema<IBillItem>(
 
 const labBillSchema = new Schema<ILabBill>(
   {
+    sampleWriteRevision: {type:Number,default:0},
     billNumber: { type: String, required: true, unique: true, trim: true },
     billType: { type: String, enum: BILL_TYPES, default: "osp", index: true },
     patientId: { type: Schema.Types.ObjectId, ref: "Patient", required: true, index: true },
@@ -104,7 +114,8 @@ const labBillSchema = new Schema<ILabBill>(
   },
   {
     timestamps: true,
-    versionKey: false,
+    versionKey: "__v",
+    optimisticConcurrency: true,
     toJSON: {
       virtuals: true,
       transform(_doc: unknown, ret: Record<string, unknown>) {

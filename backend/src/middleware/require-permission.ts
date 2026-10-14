@@ -116,6 +116,7 @@ const ROLE_PERMISSIONS: Record<AuthUser["role"], readonly string[]> = {
     "lab.client_tariff.write",
   ],
   operator: ["billing.view", "billing.create", "sample.view", "test_results.view"],
+  vendor: ["vendor.bills.view"],
 };
 
 /** Clinical approval of a calculation binding; held by authorized roles only. */

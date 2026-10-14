@@ -3,6 +3,7 @@ import { hashPassword, verifyPassword } from "../../models/user.model";
 import { ApiError } from "../../utils/api-error";
 import { signAuthToken } from "../../utils/jwt";
 import type { AuthUser } from "../../types/auth";
+import { LabClient } from "../../models/lab-client.model";
 
 export interface LoginResult {
   user: AuthUser;
@@ -55,6 +56,11 @@ export async function authenticateUser(
     );
     throw new ApiError(401, "Invalid username or password");
   }
+  if (user.role === "vendor" && (!user.clientId || !await LabClient.exists({
+    _id: user.clientId, active: { $ne: false },
+  }))) {
+    throw new ApiError(403, "Client account is unavailable. Contact the administrator.");
+  }
 
   console.log(`[auth] login accepted username=${normalizedUsername}`);
 
@@ -62,6 +68,7 @@ export async function authenticateUser(
     sub: user.id,
     username: user.username,
     role: user.role,
+    sessionVersion: user.sessionVersion ?? 0,
   });
 
   return {
@@ -96,5 +103,6 @@ export async function changePassword(
   }
 
   user.passwordHash = await hashPassword(newPassword);
+  user.sessionVersion = (user.sessionVersion ?? 0) + 1;
   await user.save();
 }

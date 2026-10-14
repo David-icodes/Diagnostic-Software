@@ -21,6 +21,8 @@ export interface ISampleHistoryEntry {
 }
 
 export interface ILabSample {
+  activeCollectionId?: Types.ObjectId;
+  resultWriteRevision?: number;
   sampleId: string;
   billId: Types.ObjectId;
   patientId: Types.ObjectId;
@@ -56,6 +58,8 @@ const sampleHistorySchema = new Schema<ISampleHistoryEntry>(
 
 const labSampleSchema = new Schema<ILabSample>(
   {
+    activeCollectionId: { type: Schema.Types.ObjectId, ref: "SampleCollection" },
+    resultWriteRevision: { type: Number, default: 0 },
     sampleId: {
       type: String,
       required: true,

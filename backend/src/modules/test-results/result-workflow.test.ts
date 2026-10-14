@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+import { LabSample } from "../../models/lab-sample.model";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { Types } from "mongoose";
@@ -20,6 +22,10 @@ test("saved false/zero values are valid; blank/nonfinite/unconfirmed results can
 });
 
 test("patient dues and successful/failed/partial submissions are verified from storage after reopen", async (t) => {
+ t.mock.method(mongoose.connection,"transaction",async(callback:any)=>callback(undefined));
+ t.mock.method(LabSample,"findOne",()=>({exec:async()=>null}) as any);
+ t.mock.method(LabBill,"updateOne",()=>({exec:async()=>({matchedCount:1})}) as any);
+
   const billId = new Types.ObjectId(); const patientId = new Types.ObjectId(); const testId = new Types.ObjectId();
   const p1 = new Types.ObjectId(); const p2 = new Types.ObjectId(); const userId = new Types.ObjectId();
   const bill = { _id: billId, patientId, status: "generated", items: [{ testId }], netAmount: 100, paidAmount: 100, dueAmount: 0 };
@@ -90,6 +96,10 @@ test("patient dues and successful/failed/partial submissions are verified from s
 });
 
  test("configured CBC results are recalculated by the server, audited and preserved across revisions despite dues", async t => {
+ t.mock.method(mongoose.connection,"transaction",async(callback:any)=>callback(undefined));
+ t.mock.method(LabSample,"findOne",()=>({exec:async()=>null}) as any);
+ t.mock.method(LabBill,"updateOne",()=>({exec:async()=>({matchedCount:1})}) as any);
+
  const billId=new Types.ObjectId(), patientId=new Types.ObjectId(), testId=new Types.ObjectId(), userId=new Types.ObjectId();
  const rbcId=new Types.ObjectId(), mcvId=new Types.ObjectId(), pcvId=new Types.ObjectId();
  const bill={_id:billId,patientId,status:"generated",items:[{testId}],netAmount:100,paidAmount:0,dueAmount:100};

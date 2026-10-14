@@ -31,6 +31,7 @@ export interface DashboardSummary {
 }
 
 export interface TodayBill {
+  vendorName?: string;
   id: string;
   billNo: string;
   patientId: string;
@@ -147,15 +148,25 @@ export async function getTodayBills({
   fromDate,
   toDate,
   limit = DEFAULT_LIMIT,
+  before,
 }: {
   fromDate?: string;
   toDate?: string;
   limit?: number;
+  before?: string;
 }): Promise<TodayBill[]> {
   const filter = await billsInRange(fromDate, toDate);
+  if (before) {
+    const anchor = await LabBill.findById(before).select("createdAt").lean().exec();
+    if (!anchor?.createdAt) return [];
+    filter.$and = [...(filter.$and ?? []), { $or: [
+      { createdAt: { $lt: anchor.createdAt } },
+      { createdAt: anchor.createdAt, _id: { $lt: anchor._id } },
+    ] }];
+  }
 
   const bills = (await LabBill.find(filter)
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: -1, _id: -1 })
     .limit(limit)
     .populate("patientId")
     .lean()
@@ -168,6 +179,7 @@ export async function getTodayBills({
     return {
       id: String(bill._id),
       billNo: bill.billNumber,
+      ...(bill.billType === "vendor" ? { vendorName: bill.clientName ?? "Vendor client" } : {}),
       patientId: patient?.patientId ?? "—",
       patientName: patient?.fullName ?? "—",
       age: patient ? ageLabel(patient) : "—",

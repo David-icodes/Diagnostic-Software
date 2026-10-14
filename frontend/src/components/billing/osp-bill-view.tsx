@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { InvoicePrintDialog } from "@/components/test-result/invoice-print-dialog";
+import { groupedBillItems } from "@/lib/package-billing";
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -39,6 +42,7 @@ function toDoctor(
 }
 
 export function OspBillView({ billId }: OspBillViewProps) {
+  const [printOpen,setPrintOpen]=useState(false);
   const billQuery = useQuery({
     queryKey: ["lab-bills", "detail", billId],
     queryFn: () => fetchLabBill(billId),
@@ -124,7 +128,7 @@ export function OspBillView({ billId }: OspBillViewProps) {
             type="button"
             variant="outline"
             size="sm"
-            onClick={async()=>{try{await checkBillDocumentEligibility(bill.id);window.print();}catch(error){window.alert(error instanceof Error?error.message:"Unable to verify invoice eligibility");}}}
+            onClick={async()=>{try{await checkBillDocumentEligibility(bill.id);setPrintOpen(true);}catch(error){window.alert(error instanceof Error?error.message:"Unable to verify invoice eligibility");}}}
             disabled={bill.status === "cancelled"}
           >
             <Printer />
@@ -229,7 +233,7 @@ export function OspBillView({ billId }: OspBillViewProps) {
                 </tr>
               </thead>
               <tbody>
-                {bill.items.map((item, index) => (
+                {groupedBillItems(bill.items).map((item, index) => (
                   <tr
                     key={item.testId + index}
                     className="border-t border-border"
@@ -244,6 +248,7 @@ export function OspBillView({ billId }: OspBillViewProps) {
                       <p className="font-mono text-[11px] text-muted-foreground">
                         {item.testCode === "INVG2044" ? "" : item.testCode}
                       </p>
+                      {item.packageId&&<p className="text-xs">Includes: {bill.items.filter(member=>member.packageId===item.packageId).map(member=>member.testName).join(", ")}</p>}
                     </td>
                     <td className="px-3 py-1.5 text-slate-700">
                       {item.departmentName}
@@ -309,6 +314,7 @@ export function OspBillView({ billId }: OspBillViewProps) {
           </div>
         </CardContent>
       </Card>
+      {printOpen&&<InvoicePrintDialog bill={bill} onClose={()=>setPrintOpen(false)}/>}
     </div>
   );
 }

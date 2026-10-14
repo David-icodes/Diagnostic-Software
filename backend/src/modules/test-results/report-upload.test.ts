@@ -26,6 +26,19 @@ test("report upload validates bounded PDF bytes and safe PDF filename", async ()
   assert.throws(() => validateReportPdf(null, "test.pdf"));
 });
 
+test("fresh results cannot unlock an attachment from a superseded collection", async t=>{
+ const [{readReportUpload,listReportUploads}]=await modules;
+ const billId=new Types.ObjectId(),testId=new Types.ObjectId(),patientId=new Types.ObjectId(),activeCollectionId=new Types.ObjectId();
+ const q=(value:unknown)=>{const query={exec:async()=>value,select:()=>query,sort:()=>query};return query;};
+ t.mock.method(LabBill,"findById",()=>q({_id:billId,patientId,status:"generated",dueAmount:0,items:[{testId,activeCollectionId}]}));
+ t.mock.method(LabTestResult,"find",()=>q([{_id:new Types.ObjectId(),testId,result:16,version:2,enteredAt:new Date()}]));
+ t.mock.method(AuditLog,"find",()=>q([]));
+ t.mock.method(LabReportUpload,"findOne",(filter:Record<string,unknown>)=>{assert.equal(filter.collectionId,activeCollectionId);return q(null);});
+ t.mock.method(LabReportUpload,"find",(filter:Record<string,unknown>)=>{assert.equal(filter.collectionId,activeCollectionId);return q([]);});
+ assert.deepEqual(await listReportUploads(String(billId),String(testId)),[]);
+ await assert.rejects(readReportUpload(String(billId),String(testId),String(new Types.ObjectId())),/not found/);
+});
+
 test("uploaded report retrieval rechecks submission, dues and exact patient/bill/test binding", async (t) => {
   const [{ readReportUpload }] = await modules;
   const billId = new Types.ObjectId(); const testId = new Types.ObjectId(); const patientId = new Types.ObjectId();

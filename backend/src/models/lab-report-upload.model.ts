@@ -1,6 +1,7 @@
 import { model, Schema, type Types } from "mongoose";
 
 interface ILabReportUpload {
+  collectionId?: Types.ObjectId;
   billId: Types.ObjectId;
   patientId: Types.ObjectId;
   testId: Types.ObjectId;
@@ -14,6 +15,7 @@ interface ILabReportUpload {
 
 // Separate attachment collection: no changes to bills, samples or clinical results.
 const schema = new Schema<ILabReportUpload>({
+  collectionId: {type:Schema.Types.ObjectId,ref:"SampleCollection"},
   billId: { type: Schema.Types.ObjectId, ref: "LabBill", required: true },
   patientId: { type: Schema.Types.ObjectId, ref: "Patient", required: true },
   testId: { type: Schema.Types.ObjectId, ref: "LabTest", required: true },

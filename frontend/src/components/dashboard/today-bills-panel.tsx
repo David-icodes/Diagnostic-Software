@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { BillsPanel } from "@/components/dashboard/bills-panel";
 import { BillsTable, type ColumnDef } from "@/components/dashboard/bills-table";
@@ -24,15 +24,17 @@ const columns: ColumnDef<TodayBill>[] = [
     ),
   },
   { key: "patientId", width: "20%", label: "Pat Id", className: "w-[20%] whitespace-nowrap" },
-  { key: "patientName", width: "30%", label: "Pat Name", className: "w-[27%] whitespace-normal", render: (bill) => <span title={bill.patientName}>{bill.patientName}</span> },
+  { key: "patientName", width: "30%", label: "Pat Name", className: "w-[27%] whitespace-normal", render: (bill) => <span title={bill.patientName}>{bill.patientName}{bill.vendorName&&<small className="block text-[11px] font-normal">Vendor: {bill.vendorName}</small>}</span> },
   { key: "age", width: "15%", label: "Age", className: "w-[20%] whitespace-normal" },
   { key: "gender", width: "15%", label: "Gender", className: "w-[12%]" },
 ];
 
 export function TodayBillsPanel() {
-  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, error, refetch, hasNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: [...queryKeys.dashboard, "today-bills"],
-    queryFn: fetchTodayBills,
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam }) => fetchTodayBills(pageParam),
+    getNextPageParam: page => page.length === 30 ? page.at(-1)?.id : undefined,
   });
 
   return (
@@ -48,9 +50,15 @@ export function TodayBillsPanel() {
       <BillsTable
         columns={columns}
         tableClassName="lis-today-bills-table w-full"
-        rows={data ?? []}
+        rows={Array.from(new Map((data?.pages.flat() ?? []).map(bill => [bill.id, bill])).values())}
+        onScroll={event => {
+          const el = event.currentTarget;
+          if (hasNextPage && !isFetching && el.scrollHeight - el.scrollTop - el.clientHeight < 80) void fetchNextPage({cancelRefetch:false});
+        }}
         rowKey={(bill) => bill.id}
         completedRow={(bill) => bill.completed}
+        canLoadMore={hasNextPage&&!isFetching}
+        onLoadMore={()=>void fetchNextPage({cancelRefetch:false})}
         maxHeightClass="min-h-0 flex-1"
       />
     </BillsPanel>

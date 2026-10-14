@@ -1,0 +1,12 @@
+/* Invoice-only sizing: preserve clinical reports and wide statistical tables. */
+.lis-invoice-paper { width: 190mm; max-width: 100%; box-sizing: border-box; }
+.lis-invoice-paper :is(header, .lis-invoice-info, table, td, th, p, span) { min-width: 0; overflow-wrap: anywhere; }
+@media print {
+  @page lab-invoice { size: A4 portrait; margin: 8mm; }
+  body:has(.lis-invoice-paper) { page: lab-invoice; }
+  .lis-invoice-paper { width: 100%; max-width: 194mm; padding: 0; margin: 0; page: lab-invoice; }
+  .lis-invoice-paper table { width: 100%; table-layout: fixed; }
+  .lis-invoice-paper :is(th,td):first-child { width: 9mm; white-space: nowrap; }
+  .lis-invoice-paper thead { display: table-header-group; }
+  .lis-invoice-paper tr, .lis-invoice-paper footer, .lis-invoice-paper dl { break-inside: avoid; }
+}

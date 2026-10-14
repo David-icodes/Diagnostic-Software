@@ -14,7 +14,9 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const vendor = user?.role === "vendor";
+  const allowed = !vendor || pathname === "/vendor-portal" || pathname === "/vendor-dashboard";
   const [collapsed, setCollapsed] = useState(true);
   const [mobileState, setMobileState] = useState({ pathname, open: false });
   if (mobileState.pathname !== pathname) setMobileState({ pathname, open: false });
@@ -24,7 +26,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     if (!isLoading && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, router, pathname]);
+  useEffect(() => { if (isAuthenticated && !allowed) router.replace("/vendor-dashboard"); }, [isAuthenticated, allowed, router]);
 
   // Any route change closes the mobile drawer, so navigating Home (or anywhere)
   // never leaves the drawer overlaying the destination page.
@@ -44,7 +47,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !allowed) {
     return null;
   }
 
@@ -57,12 +60,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
       <div className="flex flex-1 overflow-hidden">
         <div className="contents print:hidden">
-          <Sidebar key={pathname}
+          {vendor ? <nav className="w-48 border-r p-3"><a href="/vendor-dashboard">Vendor Dashboard</a></nav> : <Sidebar key={pathname}
             collapsed={collapsed}
             mobileOpen={mobileOpen}
             onCloseMobile={() => setMobileState({ pathname, open: false })}
             onNavigate={() => setCollapsed(true)}
-          />
+          />}
         </div>
         <main className="lis-content min-w-0 flex-1 overflow-y-auto bg-background">
           {children}

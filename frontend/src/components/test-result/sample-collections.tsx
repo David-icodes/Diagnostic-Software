@@ -2,6 +2,8 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { api } from "@/lib/api";
+import { Dialog } from "@/components/ui/dialog";
 import {
   useMutation,
   useQuery,
@@ -60,10 +62,10 @@ const STATUS_STYLES: Record<SampleStatus, { chip: string; row: string; label: st
   // untouched row is a neutral dark grey. White text keeps the chip readable,
   // and the status word is always shown as well as the colour.
   SELECT: { chip: "bg-slate-600 text-white", row: "bg-white", label: "Not Updated" },
-  COLLECTED: { chip: "bg-green-700 text-white", row: "bg-green-100/70", label: "Collected" },
+  COLLECTED: { chip: "bg-green-800 text-white", row: "bg-green-200", label: "Collected" },
   RECEIVED: { chip: "bg-green-800 text-white", row: "bg-green-100/70", label: "Received" },
   PROCESSED: { chip: "bg-green-900 text-white", row: "bg-green-200/60", label: "Processed" },
-  RECOLLECTED: { chip: "bg-teal-800 text-white", row: "bg-teal-100/70", label: "Recollected" },
+  RECOLLECTED: { chip: "bg-emerald-900 text-white", row: "bg-emerald-300", label: "Recollected" },
   REJECTED: { chip: "bg-red-800 text-white", row: "bg-red-100/70", label: "Rejected" },
 };
 
@@ -108,6 +110,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
         queryKeys.labSamples,
         queryKeys.labBills,
         queryKeys.dashboard,
+        queryKeys.testResults,
       );
     },
     onError: (error: Error) => {
@@ -363,7 +366,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-0 table-fixed text-xs [&_th]:whitespace-nowrap">
-              <colgroup>{[4,10,7,9,11,7,12,8,10,7,9,6].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
+              <colgroup>{[3,9,8,9,10,8,11,7,10,10,8,7].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
               <thead>
                 <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-3 py-1.5">S.No</th>
@@ -465,11 +468,13 @@ function SampleRow({
   const editDraft = (patch: Partial<RowDraft>) =>
     setDraft((current) => ({ ...current, ...patch }));
 
+  const [historyOpen,setHistoryOpen]=useState(false);
+  const history=useQuery({queryKey:["sample-collections",row.id],enabled:historyOpen,queryFn:()=>api.get<{_id:string;reason:string;createdAt:string;supersededAt?:string;resultSnapshots:{parameterName:string;result:string|number|boolean;unit?:string}[]}[]>(`/lab-samples/${row.id}/collections`)});
   const statusStyle = STATUS_STYLES[row.sampleStatus];
-  const save = !draft || draft.status === "SELECT" || draft.status === row.sampleStatus || isSaving;
+  const save = !draft || draft.status === "SELECT" || draft.status === row.sampleStatus || isSaving || (draft.status==="RECOLLECTED"&&!draft.comments.trim());
 
   return (
-    <tr className={`border-t border-border ${statusStyle.row}`}>
+    <tr data-sample-status={row.sampleStatus} data-completed={row.testStatus==="CLOSED"||undefined} className={`lis-sample-row border-t border-border ${statusStyle.row}`}>
       <td className="px-3 py-1.5 text-slate-500">{index + 1}</td>
       <td className="px-2 py-1.5 whitespace-nowrap font-mono font-medium text-slate-800">{row.billNumber}</td>
       <td className="px-2 py-1.5 whitespace-nowrap text-slate-600">
@@ -546,13 +551,14 @@ function SampleRow({
           value={draft.comments}
           onChange={(event) => editDraft({ comments: event.target.value })}
           disabled={isSaving}
-          className="h-8 w-36"
+          className="h-8 w-full min-w-0"
         />
       </td>
-      <td className="px-3 py-1.5">
+      <td className="px-1 py-1.5">
         <Button
           type="button"
           size="sm"
+          className="w-full min-w-0 px-1 text-[11px]"
           variant="outline"
           disabled={save}
           onClick={() => onSave(row.id, draft)}
@@ -560,6 +566,13 @@ function SampleRow({
           {isThisSaving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />}
           Save
         </Button>
+        <Button type="button" size="sm" variant="outline" className="mt-1 w-full min-w-0 px-1 text-[11px]" onClick={()=>setHistoryOpen(true)}>History</Button>
+        {draft.status==="RECOLLECTED"&&<p className="text-xs">Enter a recollection reason. Previous results will be retained in history.</p>}
+        {historyOpen&&<Dialog open onOpenChange={setHistoryOpen} title="Sample collection history" size="lg">
+          {history.isError&&<p role="alert">Unable to load collection history.</p>}
+          {history.data?.map(collection=><section key={collection._id} className="border p-2"><h3>{collection.supersededAt?"Superseded collection":"Active collection"}</h3><p>{collection.reason} · {new Date(collection.createdAt).toLocaleString()}</p>{collection.resultSnapshots.map((result,i)=><p key={i}>{result.parameterName}: {String(result.result)} {result.unit}</p>)}</section>)}
+          {!history.isPending&&!history.data?.length&&<p>No recollection history recorded.</p>}
+        </Dialog>}
       </td>
     </tr>
   );

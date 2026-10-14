@@ -1,0 +1,14 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+process.env.MONGODB_URI="mongodb://127.0.0.1/vendor_management_no_connection";process.env.JWT_SECRET="synthetic-vendor-management-secret";
+for(const key of ["CLOUDINARY_CLOUD_NAME","CLOUDINARY_API_KEY","CLOUDINARY_API_SECRET"])process.env[key]="";
+test("admin-only account creation hashes credentials; deactivation preserves ownership and revokes sessions",async t=>{
+ const [{default:app},{User,verifyPassword},{LabClient},{AuditLog},{signAuthToken}]=await Promise.all([import("../../app.js"),import("../../models/user.model.js"),import("../../models/lab-client.model.js"),import("../../models/audit-log.model.js"),import("../../utils/jwt.js")]);
+ const id="507f1f77bcf86cd799439011",clientId="507f1f77bcf86cd799439012";const admin={id,role:"admin",status:"active",sessionVersion:0,toJSON(){return this;}};const account={id:"507f1f77bcf86cd799439013",_id:"507f1f77bcf86cd799439013",clientId,name:"Synthetic",status:"active",sessionVersion:0,save:async()=>{},toJSON(){return {id:this.id,name:this.name,status:this.status};}};let inserted:any;
+ t.mock.method(User,"findById",async()=>admin as any);t.mock.method(LabClient,"findById",(requested:any)=>({exec:async()=>({_id:requested,active:true})}) as any);t.mock.method(User,"exists",async()=>null);t.mock.method(User,"create",async (row:any)=>{inserted=row;return {...account,toJSON:()=>({id:account.id})};});t.mock.method(User,"findOne",()=>({exec:async()=>account}) as any);t.mock.method(AuditLog,"create",async()=>({}) as any);
+ const server=(app as unknown as import("express").Express).listen(0,"127.0.0.1");await new Promise<void>(resolve=>server.once("listening",resolve));t.after(()=>new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve())));const origin=`http://127.0.0.1:${(server.address() as {port:number}).port}`;const cookie=`diagnostic_token=${signAuthToken({sub:id,username:"synthetic-admin",role:"admin",sessionVersion:0})}`;
+ const request=(method:string,path:string,body:unknown)=>fetch(origin+"/api/v1/auth/vendor-users"+path,{method,headers:{cookie,"Content-Type":"application/json"},body:JSON.stringify(body)});
+ assert.equal((await request("POST","",{clientId,name:"Synthetic",status:"active",password:"synthetic-initial"})).status,200);assert.equal(await verifyPassword("synthetic-initial",inserted.passwordHash),true);assert.notEqual(inserted.passwordHash,"synthetic-initial");
+ assert.equal((await request("PATCH","/"+account.id,{clientId,name:"Synthetic Updated",status:"inactive"})).status,200);assert.equal(account.status,"inactive");assert.equal(account.sessionVersion,1);assert.equal(account.clientId,clientId);
+ assert.equal((await request("PATCH","/"+account.id,{clientId:"507f1f77bcf86cd799439014",name:"Other",status:"active"})).status,422);
+});

@@ -9,6 +9,7 @@ import {
 } from "../../models/lab-bill.model";
 import { LabBillPayment } from "../../models/lab-bill-payment.model";
 import { LabTest, type ILabTest } from "../../models/lab-test.model";
+import { LabPackage } from "../../models/lab-package.model";
 import { Department } from "../../models/department.model";
 import { Patient, type IPatient } from "../../models/patient.model";
 import { Doctor } from "../../models/doctor.model";
@@ -110,6 +111,21 @@ export async function buildSnapshotItems(
   previous: IBillItem[] = [],
   clientId?: string,
 ): Promise<IBillItem[]> {
+  const packageMap=new Map<string,{id:string;name:string;price:number}>();
+  const expanded:typeof items=[];
+  for(const item of items){
+    if(!item.packageId){expanded.push(item);continue;}
+    if(clientId)throw new ApiError(422,"Vendor package tariffs are not configured; select individually tariffed tests");
+    const pack=await LabPackage.findOne({_id:item.packageId,active:true}).exec();
+    if(!pack||!pack.items.length)throw new ApiError(422,"Select an active package containing laboratory tests");
+    for(const [index,member] of pack.items.entries()){
+      const id=String(member.testId);if(packageMap.has(id))throw new ApiError(422,"Selected packages contain overlapping investigations");
+      packageMap.set(id,{id:String(pack._id),name:pack.name,price:index===0?pack.amount:0});
+      expanded.push({testId:id,quantity:item.quantity});
+    }
+  }
+  items=expanded;
+  if(new Set(items.map(item=>item.testId)).size!==items.length)throw new ApiError(422,"A test cannot be charged individually and through a package in the same bill");
   const testIds = items.map((item) => new Types.ObjectId(item.testId));
   const [tests, departments] = await Promise.all([
     LabTest.find({ _id: { $in: testIds } }).exec(),
@@ -150,7 +166,8 @@ export async function buildSnapshotItems(
     const test = testMap.get(item.testId)!;
     const tariff = tariffMap.get(item.testId);
     if(tariff && String(tariff.departmentId)!==String(test.departmentId))throw new ApiError(422,"Client tariff department does not match the selected test");
-    const unitPrice = tariff ? tariff.price : resolveBillPrice(test, patientType);
+    const packageEntry=packageMap.get(item.testId);
+    const unitPrice = packageEntry ? packageEntry.price : tariff ? tariff.price : resolveBillPrice(test, patientType);
     const quantity = item.quantity;
     const old = previousMap.get(item.testId);
     const explicit = item.out !== undefined || item.outsideLabId !== undefined;
@@ -158,9 +175,12 @@ export async function buildSnapshotItems(
     const retained = outsideId && String(old?.outsideLabId ?? "") === String(outsideId);
 
     return {
+      ...(packageEntry?{packageId:new Types.ObjectId(packageEntry.id),packageName:packageEntry.name,packageAmount:packageEntry.price}:{}),
       testId: test._id as Types.ObjectId,
       testCode: test.testCode,
       testName: test.testName,
+      ...(old?.activeCollectionId ? { activeCollectionId: old.activeCollectionId } : {}),
+      ...(old?.parameterVersionIds ? { parameterVersionIds: [...old.parameterVersionIds] } : {}),
       departmentId: test.departmentId,
       departmentName: departmentNameMap.get(String(test.departmentId)) ?? "Unassigned",
       unitPrice,
@@ -387,7 +407,13 @@ export async function modifyLabBill(
   bill.comments = input.comments;
   bill.displayComments = input.displayComments;
   bill.updatedBy = new Types.ObjectId(userId);
-  await bill.save();
+  // Guard legacy documents as well as versioned bills against a stale edit.
+  bill.$where = { updatedAt: bill.updatedAt };
+  try { await bill.save(); }
+  catch (error) {
+    if (error instanceof Error && (error.name === "VersionError" || error.name === "DocumentNotFoundError")) throw new ApiError(409,"This bill changed during editing. Reload before saving.");
+    throw error;
+  }
 
   await recordAudit({
     user: userId,
@@ -445,6 +471,7 @@ export async function listLabBills({
   fromDate,
   toDate,
   billType,
+  clientId,
 }: {
   page?: number;
   limit?: number;
@@ -453,8 +480,14 @@ export async function listLabBills({
   fromDate?: string;
   toDate?: string;
   billType?: string;
+  clientId?: string;
 } = {}): Promise<PaginatedBills> {
   const filter: FilterQuery<ILabBill> = {};
+  if (clientId) {
+    if (!Types.ObjectId.isValid(clientId)) throw new ApiError(400,"Invalid client ID");
+    filter.clientId = new Types.ObjectId(clientId);
+    filter.billType = "vendor";
+  }
 
   if (status === "draft" || status === "generated") {
     filter.status = status;
@@ -491,6 +524,7 @@ export async function listLabBills({
     filter.$or = [
       { billNumber: { $regex: escaped, $options: "i" } },
       { doctorName: { $regex: escaped, $options: "i" } },
+      { clientName: { $regex: escaped, $options: "i" } },
     ];
     if (patients.length > 0) {
       filter.$or.push({ patientId: { $in: patients.map((patient) => patient._id) } });

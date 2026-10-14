@@ -212,7 +212,7 @@ export function fetchPackages(
   if (params.limit) qs.set("limit", String(params.limit));
   if (params.search) qs.set("search", params.search);
   if (params.active !== undefined)
-    qs.set("active", String(params.active));
+      qs.set("status", params.active ? "active" : "inactive");
   const query = qs.toString();
   return api.get<PaginatedResult<LabPackage>>(
     `/database/packages${query ? `?${query}` : ""}`,

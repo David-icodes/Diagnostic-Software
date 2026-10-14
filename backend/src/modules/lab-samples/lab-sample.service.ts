@@ -1,3 +1,4 @@
+import { recollectSample } from "./recollection.service";
 import { businessDateInput, businessDayStart } from "../../utils/business-date";
 import { localDayRange } from "../../utils/date-range";
 import { isSampleTransitionAllowed } from "../../utils/sample-lifecycle";
@@ -477,6 +478,8 @@ export async function updateLabSampleStatus(
       `Sample status cannot move from ${sample.sampleStatus} to ${input.status}`,
     );
   }
+
+  if (input.status === "RECOLLECTED") return getSampleBillContext(await recollectSample(userId, sampleId, input.comments, resolvedTimestamp(input.time)));
 
   const previousStatus = sample.sampleStatus;
   const changedAt = resolvedTimestamp(input.time);

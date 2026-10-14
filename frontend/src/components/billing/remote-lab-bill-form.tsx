@@ -341,6 +341,7 @@ export function RemoteLabBillForm({
         referringDoctorId: doctor?.id,
         items: items.map((item) => ({
           testId: item.testId,
+          packageId:item.packageId,
           quantity: item.quantity,
           out: Boolean(item.out ?? item.outsideLabId),
           outsideLabId: item.outsideLabId ?? null,
@@ -394,6 +395,7 @@ export function RemoteLabBillForm({
         ...current,
         {
           testId: test.id,
+          packageId:test.packageId,
           testCode: test.testCode,
           testName: test.testName,
           departmentName,
@@ -582,6 +584,7 @@ const saveDraft = () => {
 
       <section aria-label="Test selection">
         <TestSelector
+          allowPackages={!isVendor}
           items={items}
           onAdd={handleAddTest}
           onRemove={handleRemoveTest}

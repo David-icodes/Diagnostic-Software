@@ -7,6 +7,7 @@ export interface DashboardSummary {
 }
 
 export interface TodayBill {
+  vendorName?: string;
   id: string;
   billNo: string;
   patientId: string;

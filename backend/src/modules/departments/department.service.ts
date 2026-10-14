@@ -102,11 +102,14 @@ export async function updateDepartment(
   id: string,
   input: UpdateDepartmentInput,
 ): Promise<DepartmentDoc> {
-  const department = await getDepartment(id);
-
+  await getDepartment(id);
   try {
-    Object.assign(department, input, { updatedBy: new Types.ObjectId(userId) });
-    await department.save();
+    // Validate edited fields without requiring unrelated missing legacy fields
+    // or fabricating a historical creator. Creation remains fully validated.
+    const department = await Department.findByIdAndUpdate(id,
+      { $set: { ...input, updatedBy: new Types.ObjectId(userId) } },
+      { new: true, runValidators: true }).exec();
+    if (!department) throw new ApiError(404, "Department not found");
     return department;
   } catch (error) {
     if (isDuplicateKeyError(error)) {
@@ -126,27 +129,22 @@ export async function setDepartmentActive(
   id: string,
   active: boolean,
 ): Promise<DepartmentDoc> {
-  const department = await getDepartment(id);
-  // Status changes retain every relationship; reference checks apply to deletion.
-  department.active = active;
-  Object.assign(department, { updatedBy: new Types.ObjectId(userId) });
-  await department.save();
-  return department;
+  return updateDepartment(userId, id, { active });
 }
 /** All references, including inactive masters and historical documents, block deletion. */
 export async function deleteDepartment(id: string): Promise<void> {
   const department = await getDepartment(id);
-  const dependencies = await Promise.all([
-    LabTest.exists({ departmentId: id }),
-    LabBill.exists({ "items.departmentId": id }),
-    LabSample.exists({ departmentId: id }),
-    LabPackage.exists({ "items.departmentId": id }),
-    Doctor.exists({ departmentId: id }),
-    DoctorCommission.exists({ departmentId: id }),
-    LabClientTariff.exists({ departmentId: id }),
-  ]);
+  const checks = [
+    ["tests", LabTest], ["bills", LabBill], ["samples", LabSample], ["packages", LabPackage],
+    ["doctors", Doctor], ["commissions", DoctorCommission], ["client tariffs", LabClientTariff],
+  ] as const;
+  const dependencies = await Promise.all(checks.map(async ([label, model]) => {
+    const filter = label === "bills" || label === "packages" ? { "items.departmentId": id } : { departmentId: id };
+    const exists = await (model as typeof LabTest).exists(filter);
+    return exists ? label : undefined;
+  }));
   if (dependencies.some(Boolean)) {
-    throw new ApiError(409, "Cannot delete: this department is referenced by tests, bills, samples, packages, doctors or tariff/commission records. Existing records must be preserved.");
+    throw new ApiError(409, `Cannot delete: referenced by ${dependencies.filter(Boolean).join(", ")}. Deactivate this department instead to preserve existing records.`);
   }
   await department.deleteOne();
 }

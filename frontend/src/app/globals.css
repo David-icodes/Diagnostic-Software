@@ -11,6 +11,8 @@
 @import "./lis-client-refinement.css";
 @import "./lis-modify-a4.css";
 @import "./lis-report-compact.css";
+@import "./lis-report-page-footer.css";
+@import "./lis-invoice-a4.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -292,3 +294,11 @@
  .lis-dashboard .lis-due-bills-table td {height:28px;}
  .lis-dashboard .lis-due-total {min-height:30px;padding:4px 8px;font-size:13px;line-height:19px;}
 }
+
+/* Patient status rows only; preserve the shared and section header themes. */
+.lis-samples table :is(th, td) { padding-left: 4px; padding-right: 4px; }
+.lis-samples table tbody tr.lis-sample-row[data-sample-status="COLLECTED"] { background: #bbf7d0; box-shadow: inset 5px 0 #166534; }
+.lis-samples table tbody tr.lis-sample-row[data-sample-status="RECOLLECTED"] { background: #6ee7b7; box-shadow: inset 5px 0 #064e3b; }
+.lis-samples table tbody tr.lis-sample-row[data-completed="true"] { background: #d1fae5; box-shadow: inset 5px 0 #065f46; }
+.lis-sample-row:focus-within { outline: 2px solid #166534; outline-offset: -2px; }
+.lis-sample-row:hover { filter: brightness(.97); }

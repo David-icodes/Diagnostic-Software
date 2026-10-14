@@ -88,8 +88,8 @@ app.use(cookieParser());
  * `GET /api/v1/health` remains available for the app's own clients.
  */
 app.get("/health", (_req, res) => {
-  res.json({
-    success: true,
+  res.status(getDatabaseStatus() === "connected" ? 200 : 503).json({
+    success: getDatabaseStatus() === "connected",
     message: "Diagnostic LIS API is running",
     database: getDatabaseStatus(),
   });

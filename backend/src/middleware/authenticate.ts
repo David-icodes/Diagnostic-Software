@@ -4,6 +4,7 @@ import { User } from "../models/user.model";
 import { ApiError } from "../utils/api-error";
 import { verifyAuthToken } from "../utils/jwt";
 import type { AuthUser } from "../types/auth";
+import { vendorRouteAllowed } from "../utils/vendor-access";
 
 export async function authenticate(
   req: Request,
@@ -38,6 +39,9 @@ export async function authenticate(
     if (user.status !== "active") {
       throw new ApiError(403, "Account is not active");
     }
+
+    if ((payload.sessionVersion ?? 0) !== (user.sessionVersion ?? 0)) throw new ApiError(401, "Session expired. Please sign in again.");
+    if (!vendorRouteAllowed(user.role, req.originalUrl.split("?")[0])) throw new ApiError(403, "This account can access only its Vendor Client Bills portal");
 
     req.user = user.toJSON() as unknown as AuthUser;
     return next();

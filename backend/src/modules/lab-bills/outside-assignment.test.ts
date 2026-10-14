@@ -24,10 +24,13 @@ test("billing Out choices preserve prices, centre snapshots and historical times
     assert.equal(inhouse.total, 100); assert.equal(out.total, 100);
     assert.equal(String(out.outsideLabId), String(centre)); assert.equal(out.outsideLabName, "Synthetic centre");
     assert.ok(out.sentOutAt instanceof Date);
-    const historical = { ...out, sentOutAt: new Date("2026-10-07T03:00:00Z") } as IBillItem;
+    const historical = { ...out, parameterVersionIds: ["synthetic-pinned-version"], sentOutAt: new Date("2026-10-07T03:00:00Z") } as IBillItem;
     centreActive = false;
     const [retained] = await buildSnapshotItems([{ ...item, out: true, outsideLabId: String(centre) }], "osp", [historical]);
     assert.equal(retained.sentOutAt?.toISOString(), historical.sentOutAt?.toISOString());
+    assert.deepEqual(retained.parameterVersionIds,historical.parameterVersionIds);
+    assert.notEqual(retained.parameterVersionIds,historical.parameterVersionIds);
+    assert.equal(inhouse.parameterVersionIds,undefined);
     await assert.rejects(buildSnapshotItems([{ ...item, out: true, outsideLabId: String(centre) }], "osp"), /active outside lab/);
     const [cleared] = await buildSnapshotItems([{ ...item, out: false, outsideLabId: null }], "osp", [historical]);
     assert.equal(cleared.outsideLabId, null); assert.equal(cleared.sentOutAt, null); assert.equal(cleared.total, 100);

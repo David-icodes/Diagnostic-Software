@@ -5,6 +5,7 @@ export interface AuthTokenPayload {
   sub: string;
   username: string;
   role: string;
+  sessionVersion?: number;
 }
 
 export function signAuthToken(payload: AuthTokenPayload): string {

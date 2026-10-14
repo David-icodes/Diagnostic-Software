@@ -8,7 +8,7 @@ export function LoginPage() {
   return (
     <main className="lis-login">
       <section className="lis-login-panel" aria-labelledby="login-title">
-        <BrandMark src={BRAND_ASSETS.header} />
+        <BrandMark src={BRAND_ASSETS.header} preload />
         <h1 id="login-title">{APP_CONFIG.name}</h1>
         <p>Please login to access your account</p>
         <LoginForm />

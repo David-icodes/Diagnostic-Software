@@ -31,7 +31,7 @@ export const downloadUpload = asyncHandler(async (req, res) => {
   if (env.NODE_ENV === "development") res.set("Server-Timing", events.map(event => `${event.stage.replaceAll(" ", "_")};dur=${event.durationMs}`).join(", "));
   const started = performance.now();
   res.once("finish", () => console.info("[report-pipeline]", JSON.stringify({ stage: "response delivery", durationMs: Math.round((performance.now() - started) * 100) / 100, outcome: "completed" })));
-  res.set({ "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(row.fileName)}`,
+  res.set({ "Content-Type": "application/pdf", "Content-Disposition": `${req.query.view === "true" ? "inline" : "attachment"}; filename*=UTF-8''${encodeURIComponent(row.fileName)}`,
     "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" });
   return res.send(row.content);
 });

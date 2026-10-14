@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { model, Schema, type HydratedDocument } from "mongoose";
 
-export type UserRole = "admin" | "staff" | "operator";
+export type UserRole = "admin" | "staff" | "operator" | "vendor";
 export type UserStatus = "active" | "inactive" | "suspended";
 
 export interface IUser {
@@ -10,6 +10,8 @@ export interface IUser {
   name: string;
   role: UserRole;
   status: UserStatus;
+  clientId?: Schema.Types.ObjectId;
+  sessionVersion?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -37,7 +39,7 @@ const userSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["admin", "staff", "operator"],
+      enum: ["admin", "staff", "operator", "vendor"],
       default: "staff",
     },
     status: {
@@ -60,7 +62,13 @@ const userSchema = new Schema<IUser>(
   },
 );
 
+userSchema.add({
+  clientId: { type: Schema.Types.ObjectId, ref: "LabClient", required: function () { return this.role === "vendor"; } },
+  sessionVersion: { type: Number, default: 0, min: 0 },
+});
+
 export type UserDoc = HydratedDocument<IUser>;
+userSchema.index({ clientId: 1 }, { unique: true, partialFilterExpression: { role: "vendor" } });
 
 export function hashPassword(plainPassword: string): Promise<string> {
   return bcrypt.hash(plainPassword, 10);

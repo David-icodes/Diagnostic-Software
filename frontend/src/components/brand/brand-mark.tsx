@@ -20,14 +20,16 @@ export function BrandMark({
   src,
   className,
   alt = "Anjali Diagnostics Centre",
+  preload = false,
 }: {
   /** Asset to render. Defaults to the sidebar main mark. */
   src?: string;
   className?: string;
   alt?: string;
+  preload?: boolean;
 }) {
   return (
-    <Image unoptimized width={src === BRAND_ASSETS.header ? 2172 : 1254} height={src === BRAND_ASSETS.header ? 724 : 1254}
+    <Image preload={preload} unoptimized width={src === BRAND_ASSETS.header ? 2172 : 1254} height={src === BRAND_ASSETS.header ? 724 : 1254}
       src={src ?? BRAND_ASSETS.main}
       alt={alt}
       draggable={false}

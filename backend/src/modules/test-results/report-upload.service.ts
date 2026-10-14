@@ -33,6 +33,7 @@ export async function saveReportUpload(userId: string, billId: string, testId: s
   const storageKey = await pdfStorage.store(file.content, { owner: userId, billId,
     patientId: String(bill.patientId), testId, kind: "attachment" });
   const saved = await LabReportUpload.create({ billId: bill._id, patientId: bill.patientId, testId,
+    collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId,
     uploadedBy: userId, fileName: file.fileName, size: file.content.length,
     ...(storageKey ? { storageKey } : { content: file.content }) });
   return { id: String(saved._id), fileName: saved.fileName, size: saved.size, createdAt: saved.createdAt };
@@ -40,7 +41,7 @@ export async function saveReportUpload(userId: string, billId: string, testId: s
 
 export async function listReportUploads(billId: string, testId: string) {
   const bill = await orderedBill(billId, testId);
-  const rows = await LabReportUpload.find({ billId: bill._id, patientId: bill.patientId, testId }).sort({ createdAt: -1, _id: -1 }).exec();
+  const rows = await LabReportUpload.find({ billId: bill._id, patientId: bill.patientId, testId, collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId ?? {$exists:false} }).sort({ createdAt: -1, _id: -1 }).exec();
   return rows.map((row) => ({ id: String(row._id), fileName: row.fileName, size: row.size, createdAt: row.createdAt }));
 }
 
@@ -52,12 +53,16 @@ export async function readReportUpload(billId: string, testId: string, id: strin
     await assertResultReportAllowed(billId, [testId]);
     return ordered;
   });
-  const row = await timedPipeline("attachment metadata lookup", () => LabReportUpload.findOne({ _id: id, billId: bill._id, patientId: bill.patientId, testId }).select("+content").exec());
+  const row = await timedPipeline("attachment metadata lookup", () => LabReportUpload.findOne({ _id: id, billId: bill._id, patientId: bill.patientId, testId, collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId ?? {$exists:false} }).select("+content").exec());
   if (!row) throw new ApiError(404, "Uploaded report not found.");
   if (row.storageKey) {
     row.content = await pdfStorage.retrieve(row.storageKey, { owner: String(row.uploadedBy), billId,
       patientId: String(bill.patientId), testId, kind: "attachment" });
   }
   if (!row.content?.length) throw new ApiError(502, "Uploaded report content is unavailable.");
+  const current = await orderedBill(billId, testId);
+  const collectionId = current.items.find(item=>String(item.testId)===testId)?.activeCollectionId;
+  if (String(collectionId ?? "") !== String(row.collectionId ?? "")) throw new ApiError(409,"The sample collection changed. Reload the current report");
+  await assertResultReportAllowed(billId, [testId]);
   return row;
 }

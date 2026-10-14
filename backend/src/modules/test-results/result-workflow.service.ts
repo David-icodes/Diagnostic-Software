@@ -51,7 +51,7 @@ export async function getResultWorkflow(billId: string) {
     const saved = results.filter((row) => String(row.testId) === testId);
     const savedIds = new Set(saved.map((row) => String(row._id)));
     const latest = confirmations.find((row) => savedIds.has(String(row.entity)));
-    return { testId, submitted: persistedSubmission(saved, latest?.action) };
+    return { testId, collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId?.toString(), submitted: persistedSubmission(saved, latest?.action) };
   });
   return { billId: String(bill._id), patientId: String(bill.patientId),
     outstandingDue: Math.round(due * 100) / 100, hasOutstandingDue: due > 0, tests };

@@ -11,10 +11,12 @@ import { fetchDepartments, fetchLabTests, fetchLabTest } from "@/services/billin
 import { formatMoney, cn } from "@/lib/utils";
 import type { LabTest } from "@/types/billing";
 import { selectedTransfer } from "@/lib/lab-workflows";
+import { api } from "@/lib/api";
 
 export interface OutsideChoice { out?: boolean; outsideLabId?: string | null; outsideLabName?: string; }
 
 export interface SelectedTestItem extends OutsideChoice {
+  packageId?: string;
   testId: string;
   testCode: string;
   testName: string;
@@ -25,6 +27,7 @@ export interface SelectedTestItem extends OutsideChoice {
 }
 
 interface TestSelectorProps {
+  allowPackages?: boolean;
   items: SelectedTestItem[];
   onAdd: (test: LabTest, departmentName: string, outside?: OutsideChoice) => void;
   onRemove: (testId: string) => void;
@@ -35,6 +38,7 @@ interface TestSelectorProps {
 }
 
 export function TestSelector({
+  allowPackages=false,
   items,
   onAdd,
   onRemove,
@@ -64,23 +68,25 @@ export function TestSelector({
         page: 1,
         limit: 100,
       }),
-    enabled: Boolean(selectedDepartmentId),
+    enabled: Boolean(selectedDepartmentId)&&selectedDepartmentId!=="__packages",
   });
+  const packagesQuery=useQuery({queryKey:["packages","billing",testSearch],enabled:allowPackages&&selectedDepartmentId==="__packages",queryFn:()=>api.get<{id:string;name:string;amount:number}[]>(`/lab-tests/packages?${new URLSearchParams({search:testSearch})}`)});
 
   const containerQuery = useQuery({
-    queryKey: ["lab-tests", "selected-containers", items.filter((item) => item.containerType === undefined).map((item) => item.testId)],
-    queryFn: async () => Object.fromEntries(await Promise.all(items.filter((item) => item.containerType === undefined).map(async (item) => {
+    queryKey: ["lab-tests", "selected-containers", items.filter((item) => !item.packageId && item.containerType === undefined).map((item) => item.testId)],
+    queryFn: async () => Object.fromEntries(await Promise.all(items.filter((item) => !item.packageId && item.containerType === undefined).map(async (item) => {
       try { const test = await fetchLabTest(item.testId); return [item.testId, test.containerType ?? ""]; }
       catch { return [item.testId, ""]; }
-    }))), enabled: items.some((item) => item.containerType === undefined),
+    }))), enabled: items.some((item) => !item.packageId && item.containerType === undefined),
   });
-  const departments = departmentsQuery.data ?? [];
+  const departments = [...(departmentsQuery.data??[]),...(allowPackages?[{id:"__packages",name:"Packages/Profiles",active:true,testCount:packagesQuery.data?.length??0}]:[])];
   const visibleDepartments = departmentSearch.trim()
     ? departments.filter((department) =>
         department.name.toLowerCase().includes(departmentSearch.trim().toLowerCase()),
       )
     : departments;
-  const tests = testsQuery.data?.items ?? [];
+  const tests:LabTest[] = selectedDepartmentId==="__packages"?(packagesQuery.data??[]).map(pack=>({id:pack.id,packageId:pack.id,testCode:"PACKAGE",testName:pack.name,shortName:pack.name,departmentId:"__packages",price:pack.amount,active:true,resultMode:"parameter" as LabTest["resultMode"]})):(testsQuery.data?.items??[]);
+  const selectionQuery=selectedDepartmentId==="__packages"?packagesQuery:testsQuery;
 
   const selectedIds = new Set(items.map((item) => item.testId));
   const totalAmount = items.reduce(
@@ -203,16 +209,16 @@ export function TestSelector({
         <div className="min-h-0 flex-1 overflow-y-auto">
           {!selectedDepartmentId ? (
             <EmptyState message="Select a department to view tests" />
-          ) : testsQuery.isLoading ? (
+          ) : selectionQuery.isLoading ? (
             <div className="flex flex-col gap-1.5 p-2" aria-busy>
               {Array.from({ length: 6 }).map((_, index) => (
                 <div key={index} className="h-[28px] animate-pulse rounded bg-muted" />
               ))}
             </div>
-          ) : testsQuery.error ? (
+          ) : selectionQuery.error ? (
             <ErrorState
-              message={testsQuery.error.message}
-              onRetry={() => void testsQuery.refetch()}
+              message={selectionQuery.error.message}
+              onRetry={() => void selectionQuery.refetch()}
             />
           ) : tests.length === 0 ? (
             <EmptyState message="No tests found" />

@@ -10,12 +10,14 @@ import {
 const itemSchema = z
   .object({
     testId: z.string().refine(isValidObjectId, "Invalid test ID"),
+    packageId: z.string().refine(isValidObjectId,"Invalid package ID").optional(),
     out: z.boolean().optional(),
     outsideLabId: z.string().refine(isValidObjectId, "Invalid outside lab ID").nullable().optional(),
     quantity: z.number().int("Quantity must be a whole number").min(1, "Quantity must be at least 1").max(100, "Quantity is too large"),
   })
   .strict()
   .superRefine((item, context) => {
+    if(item.packageId && (item.packageId!==item.testId || item.out || item.outsideLabId))context.addIssue({code:z.ZodIssueCode.custom,message:"Package selections must use their own ID and cannot be sent outside as a group"});
     if (item.out === true && !item.outsideLabId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["outsideLabId"], message: "Select an outside lab for this test" });
     if (item.out === false && item.outsideLabId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["outsideLabId"], message: "In-house tests cannot have an outside lab" });
   });

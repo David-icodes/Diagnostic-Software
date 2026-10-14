@@ -3,6 +3,11 @@ import assert from "node:assert/strict";
 import { selectedTransfer, orderedPrintIds, hasEnteredResult, sampleIsCollected, sampleContextHref, resultContextHref, sampleContextFromQuery, matchesSampleContext, patientNameForUpdate } from "./lab-workflows.ts";
 
 describe("focused lab workflows", () => {
+  it("result return links include clients by default and retain an explicit exclusion", () => {
+    const context={billId:"synthetic-vendor-bill",testId:"synthetic-test",billNumber:"SYNTHETIC"};
+    assert.equal(sampleContextFromQuery(context)?.returnFilters?.includeClients,true);
+    assert.equal(sampleContextFromQuery({...context,resultIncludeClients:"false"})?.returnFilters?.includeClients,false);
+  });
   it("round-trips exact sample/result context and safe filters through a fixed local return route", () => {
     const context = { billId: "bill-1", testId: "test-2", billNumber: "OSP/123", sampleId: "sample-3", returnFilters: { mode: "criteria" as const, fromDate: "2026-10-01", toDate: "2026-10-08", billNumber: "", patientName: "query", includeClients: true } };
     const sample = new URL(sampleContextHref(context), "http://localhost:3000");

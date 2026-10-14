@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { invalidateMasterData } from "@/lib/master-data-cache";
+import { Dialog } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Package, Pencil, ChevronsRight, Trash2 } from "lucide-react";
 import { DataTable } from "@/components/database/data-table";
@@ -59,6 +61,7 @@ export function PackageCreateContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [successDialog, setSuccessDialog] = useState<string | null>(null);
 
   const departmentsQuery = useQuery({
     queryKey: ["departments", "database", "all"],
@@ -86,7 +89,7 @@ export function PackageCreateContent() {
   });
 
   const invalidate = () => {
-    void queryClient.invalidateQueries({ queryKey: ["packages"] });
+    void invalidateMasterData(queryClient,"packages");
   };
 
   const saveMutation = useMutation({
@@ -95,6 +98,7 @@ export function PackageCreateContent() {
       return editingId ? updatePackage(editingId, payload) : createPackage(payload);
     },
     onSuccess: () => {
+      setSuccessDialog(editingId ? "Package updated successfully." : "Package registered successfully.");
       invalidate();
       setEditingId(null);
       setForm(EMPTY_FORM);
@@ -107,7 +111,7 @@ export function PackageCreateContent() {
   });
 
   const departments = useMemo(
-    () => (departmentsQuery.data ?? []).filter((record) => record.active),
+    () => (departmentsQuery.data ?? []).filter((record) => record.active !== false),
     [departmentsQuery.data],
   );
 
@@ -164,6 +168,7 @@ export function PackageCreateContent() {
   };
 
   const handleSave = () => {
+    if (saveMutation.isPending) return;
     try { packageDraftPayload(form, items); }
     catch (reason) { setFeedback(reason instanceof Error ? reason.message : "Check package details"); return; }
     setFeedback(null);
@@ -220,6 +225,9 @@ export function PackageCreateContent() {
 
   return (
     <div className="lis-dm lis-package space-y-3">
+      <Dialog open={Boolean(successDialog)} onOpenChange={open=>{if(!open)setSuccessDialog(null);}} title="Package saved">
+        <p role="status">{successDialog}</p><Button onClick={()=>setSuccessDialog(null)}>OK</Button>
+      </Dialog>
       <PageHeader
         icon={Package}
         title="Create Package"

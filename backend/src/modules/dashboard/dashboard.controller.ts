@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
+import { Types } from "mongoose";
+import { ApiError } from "../../utils/api-error";
 import {getOutstandingBills as getOutstandingBillsService} from './outstanding-bills.service';
 import {
   getDueBills as getDueBillsService,
@@ -28,12 +30,15 @@ export const getSummary = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getTodayBills = asyncHandler(async (req: Request, res: Response) => {
+  const before = queryString(req, "before");
+  if (before && !Types.ObjectId.isValid(before)) throw new ApiError(400, "Invalid bill cursor");
   return sendSuccess(
     res,
     await getTodayBillsService({
       fromDate: queryString(req, "from"),
       toDate: queryString(req, "to"),
       limit: queryLimit(req, 10),
+      before,
     }),
   );
 });
@@ -41,7 +46,7 @@ export const getTodayBills = asyncHandler(async (req: Request, res: Response) =>
 export const getDueBills = asyncHandler(async (req: Request, res: Response) => {
   return sendSuccess(res, await getDueBillsService({ limit: queryLimit(req, 10) }));
 });
-export const getOutstandingBills = asyncHandler(async(req:Request,res:Response)=>sendSuccess(res,await getOutstandingBillsService(Number(req.query.page)||1,queryLimit(req,20))));
+export const getOutstandingBills = asyncHandler(async(req:Request,res:Response)=>sendSuccess(res,await getOutstandingBillsService(Number(req.query.page)||1,queryLimit(req,20),req.query.cursor==="true",queryString(req,"before"))));
 
 export const getRecentPatients = asyncHandler(async (req: Request, res: Response) => {
   return sendSuccess(

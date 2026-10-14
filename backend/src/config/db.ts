@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 import { env } from "./env";
+import { connectWithRetry, databaseFailureStage } from "./database-startup";
+import { setServers } from "node:dns";
+import { isIP } from "node:net";
 
 let listenersAttached = false;
 
@@ -21,7 +24,7 @@ function attachListeners(): void {
   });
 
   mongoose.connection.on("error", (err) => {
-    console.error("[db] MongoDB connection error:", err.message);
+    console.error("[db] MongoDB connection error:", databaseFailureStage(err));
   });
 
   mongoose.connection.on("disconnected", () => {
@@ -31,12 +34,20 @@ function attachListeners(): void {
 
 export async function connectDB(): Promise<void> {
   attachListeners();
+  // Explicit process-local DNS configuration; never switch databases or weaken TLS.
+  if (env.MONGODB_DNS_SERVERS) {
+    const servers = env.MONGODB_DNS_SERVERS.split(",").map(value => value.trim());
+    if (servers.some(value => !isIP(value))) throw new Error("MONGODB_DNS_SERVERS must contain resolver IP addresses");
+    setServers(servers);
+  }
 
   if (mongoose.connection.readyState === 1) {
     return;
   }
 
-  await mongoose.connect(env.MONGODB_URI);
+  await connectWithRetry(() => mongoose.connect(env.MONGODB_URI, { serverSelectionTimeoutMS: 10000, connectTimeoutMS: 10000 }),
+    ms => new Promise(resolve => setTimeout(resolve, ms)),
+    (stage, attempt) => console.error("[db] Startup connection failed", { stage, attempt }));
 }
 
 /**

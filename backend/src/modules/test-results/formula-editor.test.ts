@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+import { LabSample } from "../../models/lab-sample.model";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {Types} from "mongoose";
@@ -8,6 +10,10 @@ import {Patient} from "../../models/patient.model";
 import {AuditLog} from "../../models/audit-log.model";
 import {submitTestResults} from "./test-result.service";
 test("submission rejects a one-time edit outside the isolated synthetic context before any result or audit write",async t=>{
+ t.mock.method(mongoose.connection,"transaction",async(callback:any)=>callback(undefined));
+ t.mock.method(LabSample,"findOne",()=>({exec:async()=>null}) as any);
+ t.mock.method(LabBill,"updateOne",()=>({exec:async()=>({matchedCount:1})}) as any);
+
  const billId=new Types.ObjectId(),patientId=new Types.ObjectId(),testId=new Types.ObjectId(),hb=new Types.ObjectId(),rbc=new Types.ObjectId(),mch=new Types.ObjectId();
  const bill={_id:billId,patientId,billNumber:"DEV-EDITOR-1234abcd",status:"generated",items:[{testId}]};
  const parameters=[{_id:hb,testId,active:true,resultType:"NUMBER",parameterName:"Hemoglobin (Hb)",unit:"g/dL"},{_id:rbc,testId,active:true,resultType:"NUMBER",parameterName:"RBC Count",unit:"million/ul"},{_id:mch,testId,active:true,resultType:"NUMBER",parameterName:"MCH",unit:"pg"}];

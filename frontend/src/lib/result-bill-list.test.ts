@@ -21,3 +21,8 @@ test("complete result list consumes every matching API page", async () => {
   });
   assert.deepEqual(calls, [1, 2, 3]); assert.deepEqual(rows, [1, 2, 3]);
 });
+test("client inclusion leaves generated vendor bills eligible and duplicate page boundaries render once", async () => {
+  assert.equal(resultBillParams({mode:"today",today:"2026-10-14",includeClients:true}).billType,undefined);
+  const rows=await allResultBillPages(async page=>({data:page===1?[{id:"osp"},{id:"vendor"}]:[{id:"vendor"},{id:"vendor-2"}],pagination:{totalPages:2}}));
+  assert.deepEqual(rows.map(row=>row.id),["osp","vendor","vendor-2"]);
+});

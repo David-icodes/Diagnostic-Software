@@ -1,9 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { submittedForTest, requireReportEligibility, reportStartsPage } from "./result-workflow.ts";
+import { submittedForTest, requireReportEligibility, requireReportCollections, reportStartsPage } from "./result-workflow.ts";
 
 const saved = { billId: "bill", patientId: "patient", outstandingDue: 0, hasOutstandingDue: false,
   tests: [{ testId: "test", submitted: true }, { testId: "pending", submitted: false }] };
+
+test("a replacement submission cannot unlock a preview from the previous collection",()=>{
+  const current={...saved,tests:[{testId:"test",submitted:true,collectionId:"replacement"}]};
+  assert.throws(()=>requireReportCollections(current,[{testId:"test"}]),/collection changed/);
+  assert.throws(()=>requireReportCollections(current,[{testId:"test",collectionId:"original"}]),/collection changed/);
+  assert.doesNotThrow(()=>requireReportCollections(current,[{testId:"test",collectionId:"replacement"}]));
+  assert.doesNotThrow(()=>requireReportCollections(saved,[{testId:"test"}]));
+});
 
 test("typed/selected/loading/failed states cannot unlock Print; persisted confirmation survives reopen", () => {
   assert.equal(submittedForTest(undefined, "bill", "test"), false);

@@ -4,10 +4,12 @@ import { asyncHandler } from "../../utils/async-handler";
 import { sendMessage, sendSuccess } from "../../utils/http";
 import { requireUserId } from "../../utils/require-user-id";
 import { authenticateUser, changePassword as changePasswordService } from "./auth.service";
+import { verifyAuthToken } from "../../utils/jwt";
+import { User } from "../../models/user.model";
 
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
-function baseCookieOptions() {
+export function baseCookieOptions() {
   const sameSite = env.COOKIE_SAMESITE;
 
   return {
@@ -43,7 +45,13 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   return sendSuccess(res, { user });
 });
 
-export const logout = asyncHandler(async (_req: Request, res: Response) => {
+export const logout = asyncHandler(async (req: Request, res: Response) => {
+  const token=req.cookies?.[env.COOKIE_NAME];
+  if(typeof token==="string") {
+    let subject:string|undefined;
+    try { const payload=verifyAuthToken(token); if(payload.role==="vendor")subject=payload.sub; } catch { /* Expired/invalid sessions can still clear their cookie. */ }
+    if(subject) await User.updateOne({_id:subject,role:"vendor"},{$inc:{sessionVersion:1}}).exec();
+  }
   res.clearCookie(env.COOKIE_NAME, baseCookieOptions());
   return sendMessage(res, "Logged out successfully");
 });

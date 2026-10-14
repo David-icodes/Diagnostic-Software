@@ -58,17 +58,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // actually established before we enter the dashboard.
       await queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
 
-      router.push("/dashboard");
+      router.push(response.user.role === "vendor" ? "/vendor-dashboard" : "/dashboard");
       return response.user;
     },
     [loginMutation, queryClient, router],
   );
 
   const logout = useCallback(async () => {
+    const vendor = meQuery.data?.role === "vendor";
     await logoutMutation.mutateAsync();
     queryClient.clear();
-    router.push("/login");
-  }, [logoutMutation, queryClient, router]);
+    router.push(vendor ? "/vendor-login" : "/login");
+  }, [logoutMutation, queryClient, router, meQuery.data?.role]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

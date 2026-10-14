@@ -1,4 +1,5 @@
 "use client";
+import { ReportPageFooter } from "./report-page-footer";
 
 import { Fragment, useMemo, useState } from "react";
 import Image from "next/image";
@@ -657,9 +658,6 @@ export function LabReprint() {
 const REPORT_WORDMARK = "ANJALI";
 const REPORT_WORDMARK_SUB = "DIAGNOSTICS";
 const REPORT_REGD_NO = "Regd. No. 414/DM & HO/RR/2008";
-const REPORT_ADDRESS =
-  "Plot No. 347, HMT Hills, Opp. Community Hall, Beside Park, Opp. JNTU, Kukatpally, Hyderabad - 500 085.";
-const REPORT_CONTACT = "Contact : 9989 2209 38, 9440 6268 92, 040-40147350";
 
 /** `dd-mm-yyyy hh:mm AM/PM`, matching the reference report. */
 function formatReportDateTime(value?: string | Date | null): string {
@@ -689,6 +687,7 @@ export function PrintPreview({
   results,
   technician,
   signatureNote,
+  signatureAsset,
   documentTitle,
   visible = false,
   includeHeader = true,
@@ -707,6 +706,7 @@ export function PrintPreview({
   results: LabTestResult[];
   technician: LabTechnician | null;
   signatureNote?: string;
+  signatureAsset?: "/technician-signature.svg" | null;
   documentTitle: string;
   visible?: boolean;
   includeHeader?: boolean;
@@ -753,15 +753,9 @@ export function PrintPreview({
       className={visible ? "block" : "hidden print:block"}
       data-print-title={documentTitle}
     >
-      <style>{`@media print {
-        @page lab-report { @bottom-center {
-          content: ${JSON.stringify(REPORT_ADDRESS)} "\\A" ${JSON.stringify(REPORT_CONTACT)};
-          white-space: pre; font-family: "Times New Roman", Times, serif;
-          font-size: 7pt; line-height: 10pt; vertical-align: middle;
-        } }
-      }`}</style>
       {bill && patient && (
         <div className="lis-report-paper mx-auto w-[186mm] bg-white font-serif text-[9pt] leading-[13pt] text-black">
+          <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} />
           {/* Results */}
           <table className="mt-[2mm] w-full table-fixed border-collapse text-left align-top">
             <colgroup>
@@ -927,34 +921,6 @@ export function PrintPreview({
             Note : Please Correlate Clinically if necessary kindly discuss.
           </p>
 
-          <p className="mt-[2mm] text-center text-[9pt] font-bold">
-            ****** END OF REPORT ******
-          </p>
-
-          {/* Technician / signature */}
-          <div className="mt-[5mm] grid grid-cols-2 items-end gap-[4mm]">
-            <p className="text-[8.5pt] font-bold">Lab Technician</p>
-            <div className="text-center">
-              {technician?.name ? (
-                <p className="text-[9pt] font-bold">{technician.name}</p>
-              ) : (
-                <span className="block h-[10pt]" />
-              )}
-              <p className="text-[8.5pt] font-bold">Lab Technician</p>
-              {signatureNote ? (
-                <p className="text-[7pt] italic">{signatureNote}</p>
-              ) : null}
-            </div>
-          </div>
-          {/* Footer */}
-          <div className="lis-clinical-address mt-[5mm] border-t border-black pt-[1.5mm]">
-            <div className="flex items-start justify-between gap-[4mm] text-[7.5pt] leading-[11pt]">
-              <div>
-                <p>{REPORT_ADDRESS}</p>
-                <p>{REPORT_CONTACT}</p>
-              </div>
-            </div>
-          </div>
           </div>
             </td></tr></tbody>
           </table>

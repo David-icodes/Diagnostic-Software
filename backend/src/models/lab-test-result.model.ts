@@ -41,6 +41,8 @@ export interface IReferenceSnapshot {
 }
 
 export interface ILabTestResult {
+  collectionId?: Types.ObjectId;
+  superseded?: boolean;
   billId: Types.ObjectId;
   patientId: Types.ObjectId;
   testId: Types.ObjectId;
@@ -102,6 +104,8 @@ const resultRevisionSchema = new Schema<IResultRevision>(
 
 const labTestResultSchema = new Schema<ILabTestResult>(
   {
+    collectionId: { type: Schema.Types.ObjectId, ref: "SampleCollection" },
+    superseded: { type: Boolean, default: false },
     billId: { type: Schema.Types.ObjectId, ref: "LabBill", required: true, index: true },
     patientId: { type: Schema.Types.ObjectId, ref: "Patient", required: true, index: true },
     testId: { type: Schema.Types.ObjectId, ref: "LabTest", required: true },
@@ -141,5 +145,11 @@ labTestResultSchema.index(
   { unique: true },
 );
 labTestResultSchema.index({ enteredAt: -1 });
+
+// Current clinical reads exclude invalidated projections. Explicit history reads
+// must deliberately supply a superseded condition; count guards still include history.
+labTestResultSchema.pre(["find", "findOne"], function () {
+  if (this.getFilter().superseded === undefined) this.where({ superseded: { $ne: true } });
+});
 
 export const LabTestResult = model<ILabTestResult>("LabTestResult", labTestResultSchema);
