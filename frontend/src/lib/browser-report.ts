@@ -18,6 +18,11 @@ export async function validatedReportPdf(response: Response): Promise<Blob> {
 
 /** Reserve the tab in the click event; populate it only after an authorized PDF succeeds. */
 export async function generateBrowserReport(options: ReportOptions) {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
+  return openAuthorizedReportPdf(browserReportUrl(base, options));
+}
+
+export async function openAuthorizedReportPdf(url: string) {
   const tab = window.open("about:blank", "_blank");
   if (!tab) throw new Error("Allow pop-ups for this application, then generate the report again.");
   tab.opener = null;
@@ -25,8 +30,7 @@ export async function generateBrowserReport(options: ReportOptions) {
   const timeout = window.setTimeout(() => controller.abort(), 90000);
   let objectUrl: string | undefined;
   try {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
-    const response = await fetch(browserReportUrl(base, options), { credentials: "include", signal: controller.signal });
+    const response = await fetch(url, { credentials: "include", signal: controller.signal });
     const pdf = await validatedReportPdf(response);
     if (tab.closed) return;
     objectUrl = URL.createObjectURL(pdf);

@@ -1,8 +1,9 @@
+import { createHash } from "node:crypto";
 import { Types } from "mongoose";
 import { LabBill } from "../../models/lab-bill.model";
 import { LabReportUpload } from "../../models/lab-report-upload.model";
 import { ApiError } from "../../utils/api-error";
-import { assertResultReportAllowed } from "./result-workflow.service";
+import { assertBillDocumentAllowed, assertResultReportAllowed } from "./result-workflow.service";
 import { pdfStorage } from "../documents/pdf-storage.service";
 import { validatePdf } from "../documents/pdf-integrity";
 import { timedPipeline } from "../whatsapp/pipeline-timing";
@@ -30,27 +31,45 @@ export async function saveReportUpload(userId: string, billId: string, testId: s
   const file = validateReportPdf(body, name);
   const bill = await orderedBill(billId, testId);
   await validatePdf(file.content, "attachment");
+  const sha256 = createHash("sha256").update(file.content).digest("hex");
+  const collectionId = bill.items.find(item => String(item.testId) === testId)?.activeCollectionId;
+  const identity = { billId: bill._id, patientId: bill.patientId, testId,
+    collectionId: collectionId ?? { $exists: false },
+    sha256 };
+  const existing = await LabReportUpload.findOne(identity).exec();
+  if (existing) return { id: String(existing._id), fileName: existing.fileName, size: existing.size, createdAt: existing.createdAt };
   const storageKey = await pdfStorage.store(file.content, { owner: userId, billId,
     patientId: String(bill.patientId), testId, kind: "attachment" });
-  const saved = await LabReportUpload.create({ billId: bill._id, patientId: bill.patientId, testId,
+  const current = await orderedBill(billId, testId);
+  if (String(current.items.find(item => String(item.testId) === testId)?.activeCollectionId ?? "") !== String(collectionId ?? ""))
+    throw new ApiError(409, "The sample collection changed. Reload before uploading the report.");
+  let saved;
+  try { saved = await LabReportUpload.create({ sha256, billId: bill._id, patientId: bill.patientId, testId,
     collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId,
     uploadedBy: userId, fileName: file.fileName, size: file.content.length,
-    ...(storageKey ? { storageKey } : { content: file.content }) });
+    ...(storageKey ? { storageKey } : { content: file.content }) }); }
+  catch (error) {
+    if ((error as {code?:number}).code !== 11000) throw error;
+    saved = await LabReportUpload.findOne(identity).exec();
+    if (!saved) throw error;
+  }
   return { id: String(saved._id), fileName: saved.fileName, size: saved.size, createdAt: saved.createdAt };
 }
 
 export async function listReportUploads(billId: string, testId: string) {
   const bill = await orderedBill(billId, testId);
   const rows = await LabReportUpload.find({ billId: bill._id, patientId: bill.patientId, testId, collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId ?? {$exists:false} }).sort({ createdAt: -1, _id: -1 }).exec();
-  return rows.map((row) => ({ id: String(row._id), fileName: row.fileName, size: row.size, createdAt: row.createdAt }));
+  return rows.map((row) => ({ id: String(row._id), fileName: row.fileName, size: row.size, createdAt: row.createdAt, external: Boolean(bill.items.find(item => String(item.testId) === testId)?.outsideLabId) }));
 }
 
 export async function readReportUpload(billId: string, testId: string, id: string) {
   if (!Types.ObjectId.isValid(id)) throw new ApiError(400, "Invalid uploaded report.");
   const bill = await timedPipeline("application authorization", async () => {
     const ordered = await orderedBill(billId, testId);
-    // Retrieving printable attachments obeys the same fresh due/submission check.
-    await assertResultReportAllowed(billId, [testId]);
+    // An external source PDF is not an in-house result submission. Financial,
+    // current-order and authenticated-access guards still apply.
+    if (ordered.items.find(item => String(item.testId) === testId)?.outsideLabId) await assertBillDocumentAllowed(billId);
+    else await assertResultReportAllowed(billId, [testId]);
     return ordered;
   });
   const row = await timedPipeline("attachment metadata lookup", () => LabReportUpload.findOne({ _id: id, billId: bill._id, patientId: bill.patientId, testId, collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId ?? {$exists:false} }).select("+content").exec());
@@ -63,6 +82,7 @@ export async function readReportUpload(billId: string, testId: string, id: strin
   const current = await orderedBill(billId, testId);
   const collectionId = current.items.find(item=>String(item.testId)===testId)?.activeCollectionId;
   if (String(collectionId ?? "") !== String(row.collectionId ?? "")) throw new ApiError(409,"The sample collection changed. Reload the current report");
-  await assertResultReportAllowed(billId, [testId]);
+  if (current.items.find(item => String(item.testId) === testId)?.outsideLabId) await assertBillDocumentAllowed(billId);
+  else await assertResultReportAllowed(billId, [testId]);
   return row;
 }

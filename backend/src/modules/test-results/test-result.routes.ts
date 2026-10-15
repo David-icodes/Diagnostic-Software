@@ -1,3 +1,5 @@
+import { recordAudit } from "../audit/audit.service";
+import { printExternalReport } from "./external-report-print";
 import { Router, raw } from "express";
 import { performance } from "node:perf_hooks";
 import { uploadReport, listUploads, downloadUpload } from "./report-upload.controller";
@@ -42,6 +44,14 @@ router.post("/report-uploads", requirePermission("test_results.enter"), (req, re
     ? error.type === "entity.too.large" ? new ApiError(413, "Select a PDF report up to 5 MB.") : error
     : undefined));
 }, uploadReport);
+router.get("/report-uploads/:id/print", requirePermission("test_results.view"), requirePermission("reports.print"), asyncHandler(async(req,res)=>{
+  const header=req.query.header ?? "header";
+  if(!["header","none","letterhead"].includes(String(header)))throw new ApiError(400,"Invalid external report header option");
+  const bytes=await printExternalReport(String(req.query.billId??""),String(req.query.testId??""),req.params.id,header as "header"|"none"|"letterhead",req);
+  await recordAudit({user:req.user!.id,action:"report_attachment.printed",entityType:"LabReportUpload",entity:req.params.id});
+  res.set({"Content-Type":"application/pdf","Content-Disposition":"inline; filename=external-report-print.pdf","Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"});
+  return res.send(bytes);
+}));
 router.get("/report-uploads/:id", requirePermission("test_results.view"), downloadUpload);
 
 router.get(

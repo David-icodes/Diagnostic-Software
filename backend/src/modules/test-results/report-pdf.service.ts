@@ -39,7 +39,8 @@ async function snapshot(input:Input,printedBy:string) {
   }));
   return JSON.parse(JSON.stringify({bill,reports,technician,printedBy,onlyEntered:input.onlyEntered==="true",includeHeader:input.includeHeader==="true",letterhead:input.letterhead==="true",printMode:input.printMode}));
 }
-const jobs=new Map<string,{owner:string;expires:number;data:Awaited<ReturnType<typeof snapshot>>}>();
+type RenderSnapshot = Awaited<ReturnType<typeof snapshot>> & { externalReport?: {testName:string;fileName:string} };
+const jobs=new Map<string,{owner:string;expires:number;data:RenderSnapshot}>();
 export function reportRenderData(jobId:string,owner:string) {
   const job=jobs.get(jobId);
   if(!job||job.owner!==owner||job.expires<Date.now())throw new ApiError(410,"Report preparation has expired");
@@ -47,7 +48,7 @@ export function reportRenderData(jobId:string,owner:string) {
 }
 const cache=createReportPdfCache();
 
-async function render(data:Awaited<ReturnType<typeof snapshot>>,req:Request):Promise<Buffer> {
+async function render(data:RenderSnapshot,req:Request):Promise<Buffer> {
   const frontend=rendererOrigin(env.FRONTEND_URL),api=rendererOrigin(env.WHATSAPP_RENDER_API_ORIGIN);
   const cookie=req.cookies?.[env.COOKIE_NAME];if(typeof cookie!=="string"||!cookie)throw new ApiError(401,"Sign in before viewing reports");
   const lease=await pdfBrowserPool.acquire();let context:import("playwright").BrowserContext|undefined;
@@ -70,4 +71,13 @@ export async function browserReportPdf(input:Input,req:Request) {
   const result=await cache.get(key,()=>render(data,req));
   if(digest(await snapshot(input,req.user!.name))!==version)throw new ApiError(409,"Report changed during preparation. Open the current report again");
   return {...result,filename:`${data.bill.billNumber}-report.pdf`.replace(/[^a-zA-Z0-9._-]/g,"_")};
+}
+
+/** A separate cover keeps configured stationery away from original external content. */
+export async function renderExternalReportCover(billId:string,testId:string,fileName:string,includeHeader:boolean,letterhead:boolean,req:Request) {
+  const bill=await getLabBill(billId);
+  const item=bill.items.find(item=>String(item.testId)===testId);
+  if(!item?.outsideLabId)throw new ApiError(422,"This test is not assigned to an outside laboratory");
+  return render(JSON.parse(JSON.stringify({bill,reports:[],technician:null,printedBy:req.user!.name,
+    includeHeader,letterhead,onlyEntered:false,printMode:"continuous",externalReport:{testName:item.testName,fileName}})),req);
 }

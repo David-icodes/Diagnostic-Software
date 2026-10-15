@@ -1,6 +1,7 @@
+import { openAuthorizedReportPdf } from "@/lib/browser-report";
 import { api, ApiError } from "@/lib/api";
 
-export interface UploadedResultReport { id: string; fileName: string; size: number; createdAt: string }
+export interface UploadedResultReport { id: string; fileName: string; size: number; createdAt: string; external?: boolean }
 const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
 const query = (billId: string, testId: string) => new URLSearchParams({ billId, testId });
 
@@ -26,4 +27,10 @@ export async function downloadResultUpload(billId: string, testId: string, repor
   const url = URL.createObjectURL(await response.blob());
   const link = document.createElement("a"); link.href = url; link.download = report.fileName;
   link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+export function viewResultUpload(billId:string,testId:string,id:string,header?:"header"|"none"|"letterhead") {
+  const params=query(billId,testId);params.set("view","true");
+  if(header)params.set("header",header);
+  return openAuthorizedReportPdf(`${base}/lab-test-results/report-uploads/${encodeURIComponent(id)}${header?"/print":""}?${params}`);
 }

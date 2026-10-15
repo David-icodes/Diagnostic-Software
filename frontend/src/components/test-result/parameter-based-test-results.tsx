@@ -559,7 +559,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
                               <SampleCollectionControl sample={sampleRow} testName={item.testName} />}
                           </td>
                           {sampleRow && !billSamplesQuery.isError ? <SampleOutsideControl key={`${sampleRow.id}-${sampleRow.outsideLabId === undefined ? item.outsideLabId ?? "" : sampleRow.outsideLabId ?? ""}-${sampleRow.sentOutAt ?? ""}`} sample={sampleRow} item={item} /> : <><td>—</td><td /></>}
-                          <td><ResultReportUpload key={`${selectedBill.id}-${item.testId}`} billId={selectedBill.id} testId={item.testId} testName={item.testName} /></td>
+                          <td><ResultReportUpload key={`${selectedBill.id}-${item.testId}`} billId={selectedBill.id} testId={item.testId} testName={item.testName} billNumber={selectedBill.billNumber} patientLabel={toPatientBill(selectedBill)?.fullName} /></td>
                         </tr>
                       );
                     })

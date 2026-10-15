@@ -80,6 +80,7 @@ test("uploads bind the actual bill patient and ordered test without completing r
   const userId = new Types.ObjectId(); const uploadId = new Types.ObjectId();
   const pdf = await syntheticPdf();
   let saved: Record<string, unknown> | undefined;
+  t.mock.method(LabReportUpload,"findOne",()=>({exec:async()=>null}));
   t.mock.method(LabBill, "findById", () => ({ exec: async () => ({ _id: billId, patientId, status: "generated", items: [{ testId }] }) }));
   t.mock.method(LabReportUpload, "create", async (input: Record<string, unknown>) => { saved = input; return { ...input, _id: uploadId, createdAt: new Date() }; });
   const result = await saveReportUpload(String(userId), String(billId), String(testId), "report.pdf", pdf);
@@ -106,6 +107,7 @@ test("configured attachment upload persists only a restricted key; failures neve
   const userId = new Types.ObjectId(); const key = "a".repeat(64);
   const pdf = await syntheticPdf();
   t.mock.method(LabBill, "findById", () => ({ exec: async () => ({ _id: billId, patientId, status: "generated", items: [{ testId }] }) }));
+  t.mock.method(LabReportUpload,"findOne",()=>({exec:async()=>null}));
   let creates = 0;
   t.mock.method(pdfStorage, "store", async (bytes: Buffer, scope: import("../documents/pdf-storage.service").PdfScope) => {
     assert.deepEqual(bytes, pdf); assert.deepEqual(scope, { owner: String(userId), billId: String(billId),

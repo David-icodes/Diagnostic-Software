@@ -1,6 +1,7 @@
 import { model, Schema, type Types } from "mongoose";
 
 interface ILabReportUpload {
+  sha256?: string;
   collectionId?: Types.ObjectId;
   billId: Types.ObjectId;
   patientId: Types.ObjectId;
@@ -15,6 +16,7 @@ interface ILabReportUpload {
 
 // Separate attachment collection: no changes to bills, samples or clinical results.
 const schema = new Schema<ILabReportUpload>({
+  sha256: {type:String,match:/^[a-f0-9]{64}$/},
   collectionId: {type:Schema.Types.ObjectId,ref:"SampleCollection"},
   billId: { type: Schema.Types.ObjectId, ref: "LabBill", required: true },
   patientId: { type: Schema.Types.ObjectId, ref: "Patient", required: true },
@@ -26,4 +28,7 @@ const schema = new Schema<ILabReportUpload>({
   storageKey: { type: String, match: /^[a-f0-9]{64}$/ },
 }, { timestamps: { createdAt: true, updatedAt: false } });
 schema.index({ billId: 1, testId: 1, createdAt: -1 });
+// Historical rows without a digest remain untouched; new identical uploads are idempotent.
+schema.index({billId:1,patientId:1,testId:1,collectionId:1,sha256:1},
+  {unique:true,partialFilterExpression:{sha256:{$type:"string"}}});
 export const LabReportUpload = model<ILabReportUpload>("LabReportUpload", schema);
