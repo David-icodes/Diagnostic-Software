@@ -1,4 +1,4 @@
-import { Types, type FilterQuery } from "mongoose";
+import mongoose, { Types, type FilterQuery } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { parseLocalDayStart } from "../../utils/date-range";
 import { generateBillNumber } from "../../utils/id-generator";
@@ -17,7 +17,7 @@ import { LabClientTariff } from "../../models/lab-client-tariff.model";
 import { LabClient } from "../../models/lab-client.model";
 import { OutsideLab } from "../../models/outside-lab.model";
 import { LabSample } from "../../models/lab-sample.model";
-import { LabTestResult } from "../../models/lab-test-result.model";
+import { AuditLog } from "../../models/audit-log.model";
 import { recordAudit } from "../audit/audit.service";
 import type {
   CollectLabDueInput,
@@ -327,102 +327,87 @@ export async function modifyLabBill(
     throw new ApiError(400, "Invalid bill ID");
   }
 
-  const bill = await LabBill.findById(billId).exec();
-  if (!bill) {
-    throw new ApiError(404, "Bill not found");
-  }
-  if (bill.status === "cancelled") {
-    throw new ApiError(422, "A cancelled bill cannot be modified");
-  }
+  await mongoose.connection.transaction(async session => {
+    const bill = await LabBill.findById(billId).session(session).exec();
+    if (!bill) {
+      throw new ApiError(404, "Bill not found");
+    }
+    if (bill.status === "cancelled") {
+      throw new ApiError(422, "A cancelled bill cannot be modified");
+    }
 
-  if (input.referringDoctorId !== undefined) {
-    if (input.referringDoctorId) {
-      const doctor = await Doctor.findById(input.referringDoctorId).exec();
-      if (!doctor) {
-        throw new ApiError(422, "Referring doctor not found");
+    if (input.referringDoctorId !== undefined) {
+      if (input.referringDoctorId) {
+        const doctor = await Doctor.findById(input.referringDoctorId).exec();
+        if (!doctor) {
+          throw new ApiError(422, "Referring doctor not found");
+        }
+        bill.referringDoctorId = new Types.ObjectId(input.referringDoctorId);
+        bill.doctorName = doctor.name;
+      } else {
+        bill.referringDoctorId = undefined;
+        bill.doctorName = undefined;
       }
-      bill.referringDoctorId = new Types.ObjectId(input.referringDoctorId);
-      bill.doctorName = doctor.name;
-    } else {
-      bill.referringDoctorId = undefined;
-      bill.doctorName = undefined;
     }
-  }
 
-  await hydrateOutsideAssignments([bill]);
-  const snapshotItems = await buildSnapshotItems(input.items, bill.patientType, bill.items, bill.billType === "vendor" ? String(bill.clientId) : undefined);
+    await hydrateOutsideAssignments([bill]);
+    const snapshotItems = await buildSnapshotItems(input.items, bill.patientType, bill.items, bill.billType === "vendor" ? String(bill.clientId) : undefined);
 
-  // A test that already produced a sample or a result stays on the bill:
-  // dropping it would orphan those records and silently rewrite history.
-  const nextTestIds = new Set(snapshotItems.map((item) => String(item.testId)));
-  const removedTestIds = bill.items
-    .map((item) => String(item.testId))
-    .filter((testId) => !nextTestIds.has(testId));
-  if (removedTestIds.length > 0) {
-    const billId = bill._id;
-    const [sampleHits, resultHits] = await Promise.all([
-      LabSample.find({ billId, testId: { $in: removedTestIds } })
-        .select("testId")
-        .lean()
-        .exec(),
-      LabTestResult.find({ billId, testId: { $in: removedTestIds } })
-        .select("testId")
-        .lean()
-        .exec(),
-    ]);
-    const lockedTestIds = new Set([
-      ...sampleHits.map((sample) => String(sample.testId)),
-      ...resultHits.map((result) => String(result.testId)),
-    ]);
-    if (lockedTestIds.size > 0) {
-      const lockedNames = await LabTest.find({ _id: { $in: [...lockedTestIds] } })
-        .select("testName")
-        .lean()
-        .exec();
-      const names = lockedNames.map((test) => test.testName).join(", ");
-      throw new ApiError(
-        422,
-        lockedTestIds.size === 1
-          ? `${names} already has a sample or a result on this bill and cannot be removed`
-          : `${names} already have samples or results on this bill and cannot be removed`,
-      );
+    // A removed investigation remains in clinical storage and in the amendment.
+    // Re-adding requires a fresh-order lifecycle; never reactivate old results.
+    const retiredIds = new Set((bill.amendments ?? []).flatMap(change => change.removedItems.map(item => String(item.testId))));
+    if (snapshotItems.some(item => retiredIds.has(String(item.testId)))) {
+      throw new ApiError(422, "A removed test cannot be re-added to this bill. Create a new order to preserve its clinical history.");
     }
-  }
+    const nextTestIds = new Set(snapshotItems.map(item => String(item.testId)));
+    const removedItems = bill.items.filter(item => !nextTestIds.has(String(item.testId)));
+    const changedAt = new Date();
+    bill.amendments ??= [];
+    bill.amendments.push({
+      changedBy: new Types.ObjectId(userId), changedAt,
+      removedItems, previousItems: bill.items,
+      previousTotals: {
+        totalAmount: bill.totalAmount, discountPercent: bill.discountPercent,
+        discountAmount: bill.discountAmount, netAmount: bill.netAmount,
+        paidAmount: bill.paidAmount, dueAmount: bill.dueAmount,
+      },
+    });
 
-  const totals = computeTotals(
-    snapshotItems,
-    input.discountPercent ?? 0,
-    input.discountAmount,
-    bill.paidAmount ?? 0,
-    true, // Modification preserves receipts even when the revised net is lower.
-  );
+    const totals = computeTotals(
+      snapshotItems,
+      input.discountPercent ?? 0,
+      input.discountAmount,
+      bill.paidAmount ?? 0,
+      true, // Modification preserves receipts even when the revised net is lower.
+    );
 
-  bill.items = snapshotItems;
-  bill.totalAmount = totals.totalAmount;
-  bill.discountPercent = totals.discountPercent;
-  bill.discountAmount = totals.discountAmount;
-  bill.netAmount = totals.netAmount;
-  bill.dueAmount = totals.dueAmount;
-  bill.paymentMode = (input.paymentMode ?? bill.paymentMode) as ILabBill["paymentMode"];
-  bill.comments = input.comments;
-  bill.displayComments = input.displayComments;
-  bill.updatedBy = new Types.ObjectId(userId);
-  // Guard legacy documents as well as versioned bills against a stale edit.
-  bill.$where = { updatedAt: bill.updatedAt };
-  try { await bill.save(); }
-  catch (error) {
-    if (error instanceof Error && (error.name === "VersionError" || error.name === "DocumentNotFoundError")) throw new ApiError(409,"This bill changed during editing. Reload before saving.");
-    throw error;
-  }
+    bill.items = snapshotItems;
+    bill.totalAmount = totals.totalAmount;
+    bill.discountPercent = totals.discountPercent;
+    bill.discountAmount = totals.discountAmount;
+    bill.netAmount = totals.netAmount;
+    bill.dueAmount = totals.dueAmount;
+    bill.paymentMode = (input.paymentMode ?? bill.paymentMode) as ILabBill["paymentMode"];
+    bill.comments = input.comments;
+    bill.displayComments = input.displayComments;
+    bill.updatedBy = new Types.ObjectId(userId);
+    // Guard legacy documents as well as versioned bills against a stale edit.
+    bill.$where = { updatedAt: bill.updatedAt };
+    try { await bill.save({ session }); }
+    catch (error) {
+      if (error instanceof Error && (error.name === "VersionError" || error.name === "DocumentNotFoundError")) throw new ApiError(409,"This bill changed during editing. Reload before saving.");
+      throw error;
+    }
 
-  await recordAudit({
-    user: userId,
-    action: "lab_bill.modified",
-    entityType: "LabBill",
-    entity: bill._id,
+    // Fail closed: the amendment and audit must commit together.
+    await AuditLog.create([{
+      user: userId, action: "lab_bill.modified", entityType: "LabBill",
+      entity: bill._id, timestamp: changedAt,
+      details: { removedTestIds: removedItems.map(item => String(item.testId)), amendmentCount: bill.amendments.length },
+    }], { session });
   });
 
-  return LabBill.findById(bill._id)
+  return LabBill.findById(billId)
     .populate("patientId", "patientId fullName gender dateOfBirth age mobile")
     .populate("referringDoctorId", "name qualification specialization")
     .populate("clientId", "clientCode name")

@@ -2,7 +2,7 @@ import { recollectSample } from "./recollection.service";
 import { businessDateInput, businessDayStart } from "../../utils/business-date";
 import { localDayRange } from "../../utils/date-range";
 import { isSampleTransitionAllowed } from "../../utils/sample-lifecycle";
-import { Types, type AnyBulkWriteOperation, type FilterQuery } from "mongoose";
+import mongoose, { Types, type AnyBulkWriteOperation, type FilterQuery } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { generateSampleId } from "../../utils/id-generator";
 import { LabSample, type ILabSample, type SampleStatus } from "../../models/lab-sample.model";
@@ -13,6 +13,7 @@ import { Department } from "../../models/department.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
 import { OutsideLab } from "../../models/outside-lab.model";
 import type { UpdateSampleOutsideInput } from "../../validations/sample-outside";
+import { AuditLog } from "../../models/audit-log.model";
 import { recordAudit } from "../audit/audit.service";
 
 export interface SampleRow {
@@ -332,8 +333,8 @@ const billCreatedAt = new Map<string, number>(
 
   // Sort by bill (newest first, matching the page window) and then by the
   // position of the test inside that bill. A sample whose test is no longer on
-  // the bill sorts last inside its bill rather than disappearing.
-  const orderedSamples = [...samples].sort((a, b) => {
+  // the bill is retained in storage but excluded from the active worklist.
+  const orderedSamples = samples.filter(sample => itemOrder.has(`${sample.billId}:${sample.testId}`)).sort((a, b) => {
     const billDiff =
       (billCreatedAt.get(String(b.billId)) ?? 0) -
       (billCreatedAt.get(String(a.billId)) ?? 0);
@@ -489,20 +490,20 @@ export async function updateLabSampleStatus(
   const timestamps: Record<string, Date | undefined> = {};
   const timestampField = ({ COLLECTED: "collectedAt", RECEIVED: "receivedAt", PROCESSED: "processedAt", RECOLLECTED: "recollectedAt", REJECTED: "rejectedAt" } as Record<string,string>)[input.status];
   if (timestampField) timestamps[timestampField] = changedAt;
-  const saved = await LabSample.findOneAndUpdate(
-    { _id: sample._id, sampleStatus: previousStatus === "SELECT" ? { $in: ["SELECT", null] } : previousStatus, ...(sample.updatedAt ? {updatedAt:sample.updatedAt} : {}) },
-    { $set: {sampleStatus:input.status,comments,updatedBy:changedBy,...timestamps}, $push: {history:{status:input.status,changedAt,changedBy,comments}} },
-    { new: true, runValidators: true },
-  ).exec();
-  if (!saved) throw new ApiError(409, "This sample changed while you were editing. Reload and select its next status.");
-
-  await recordAudit({
-    user: userId,
-    action: "sample.status_updated",
-    entityType: "LabSample",
-    entity: sample._id,
+  const saved = await mongoose.connection.transaction(async session => {
+    // Serialize with bill amendment and result writes on the same bill document.
+    const fence = await LabBill.updateOne({ _id: sample.billId, patientId: sample.patientId,
+      status: "generated", "items.testId": sample.testId }, { $inc: { sampleWriteRevision: 1 } }, { session }).exec();
+    if (fence.matchedCount !== 1) throw new ApiError(409, "This test is no longer active on the bill. Reload before updating samples.");
+    const updated = await LabSample.findOneAndUpdate(
+      { _id: sample._id, sampleStatus: previousStatus === "SELECT" ? { $in: ["SELECT", null] } : previousStatus, ...(sample.updatedAt ? {updatedAt:sample.updatedAt} : {}) },
+      { $set: {sampleStatus:input.status,comments,updatedBy:changedBy,...timestamps}, $push: {history:{status:input.status,changedAt,changedBy,comments}} },
+      { new: true, runValidators: true, session },
+    ).exec();
+    if (!updated) throw new ApiError(409, "This sample changed while you were editing. Reload and select its next status.");
+    await AuditLog.create([{ user: userId, action: "sample.status_updated", entityType: "LabSample", entity: sample._id, timestamp: changedAt }], { session });
+    return updated;
   });
-
   return getSampleBillContext(saved);
 }
 /** Updates only the existing bill-item outside snapshot; collection/results/money are untouched. */

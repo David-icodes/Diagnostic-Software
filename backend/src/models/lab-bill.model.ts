@@ -25,6 +25,13 @@ export interface IBillItem {
 }
 
 export interface ILabBill {
+  amendments?: Array<{
+    changedBy: Types.ObjectId;
+    changedAt: Date;
+    removedItems: IBillItem[];
+    previousItems: IBillItem[];
+    previousTotals: { totalAmount: number; discountPercent: number; discountAmount: number; netAmount: number; paidAmount: number; dueAmount: number };
+  }>;
   sampleWriteRevision?: number;
   billNumber: string;
   billType: BillType;
@@ -85,6 +92,16 @@ const billItemSchema = new Schema<IBillItem>(
 
 const labBillSchema = new Schema<ILabBill>(
   {
+    amendments: { type: [new Schema({
+      changedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+      changedAt: { type: Date, required: true },
+      removedItems: { type: [billItemSchema], required: true },
+      previousItems: { type: [billItemSchema], required: true },
+      previousTotals: { type: new Schema({
+        totalAmount: Number, discountPercent: Number, discountAmount: Number,
+        netAmount: Number, paidAmount: Number, dueAmount: Number,
+      }, { _id: false }), required: true },
+    }, { _id: false })], default: undefined },
     sampleWriteRevision: {type:Number,default:0},
     billNumber: { type: String, required: true, unique: true, trim: true },
     billType: { type: String, enum: BILL_TYPES, default: "osp", index: true },

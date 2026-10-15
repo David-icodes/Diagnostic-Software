@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { Patient } from "../../models/patient.model";
 import { LabBill } from "../../models/lab-bill.model";
 import { LabTest } from "../../models/lab-test.model";
@@ -15,7 +15,7 @@ import { createLabBill, modifyLabBill } from "../lab-bills/lab-bill.service";
 
 const patientId = new Types.ObjectId(); const userId = new Types.ObjectId();
 const testId = new Types.ObjectId(); const departmentId = new Types.ObjectId();
-function q(value: unknown) { const chain = { exec: async () => value, select: () => chain, lean: () => chain, populate: () => chain }; return chain; }
+function q(value: unknown) { const chain = { exec: async () => value, select: () => chain, lean: () => chain, populate: () => chain, session: () => chain }; return chain; }
 
 test("patient modification saves without reading or enforcing bill dues", async (t) => {
   let saves = 0;
@@ -46,6 +46,7 @@ test("OSP and Vendor bill creation remain available with outstanding patient bal
 });
 
 test("unpaid, partial and settled bills can be modified without changing payments", async (t) => {
+  t.mock.method(mongoose.connection, "transaction", async (callback: any) => callback({}));
   let saves = 0;
   const bill = { _id: new Types.ObjectId(), patientId, status: "generated", patientType: "osp", paidAmount: 0,
     dueAmount: 100, items: [{ testId }], save: async () => { saves++; } };

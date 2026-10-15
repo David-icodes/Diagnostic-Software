@@ -261,7 +261,7 @@ export function ModifyLabBill() {
       });
     },
     onSuccess: (updated) => {
-      setBill(updated);
+      applyBillSelection(updated);
       setFormError(null);
       setSuccessMessage(`Bill ${updated.billNumber} updated successfully.`);
       // Items, totals and dues changed: refresh the bill views, the sample
@@ -270,6 +270,7 @@ export function ModifyLabBill() {
         queryClient,
         queryKeys.labBills,
         queryKeys.labSamples,
+        queryKeys.testResults,
         queryKeys.dashboard,
       );
     },
@@ -647,6 +648,14 @@ export function ModifyLabBill() {
             </div>
           </div>
         </section>
+      )}
+
+      {bill && groupedBillItems(bill.items).some(original => !items.some(item => item.testId === original.testId)) && (
+        <p role="status" className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          Saving removes these tests from active billing, sample collection and new reports.
+          Existing samples, results and clinical history are retained in an audited amendment.
+          Removed tests require a new order if needed again.
+        </p>
       )}
 
       <BillActionBar
