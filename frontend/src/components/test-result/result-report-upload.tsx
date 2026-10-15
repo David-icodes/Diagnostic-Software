@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { queryKeys } from "@/lib/query-keys";
 import { FileUp } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dialog } from "@/components/ui/dialog";
@@ -24,7 +25,7 @@ export function ResultReportUpload({ billId, testId, testName, billNumber, patie
   const reports = useQuery({ queryKey: key, queryFn: () => fetchResultUploads(billId, testId), enabled: open, retry: false });
   const upload = useMutation({ mutationFn: (selected:File) => uploadResultReport(billId, testId, selected),
     onMutate: () => { setError(null); setSuccess(false); },
-    onSuccess: async () => { setFile(null); if (fileInput.current) fileInput.current.value = ""; setSuccess(true); await cache.invalidateQueries({ queryKey: key }); },
+    onSuccess: async () => { setFile(null); if (fileInput.current) fileInput.current.value = ""; setSuccess(true); await Promise.all([cache.invalidateQueries({ queryKey: key }),cache.invalidateQueries({queryKey:queryKeys.testResults})]); },
     onError: (reason: Error) => setError(reason.message),
     onSettled: () => { uploading.current = false; },
   });

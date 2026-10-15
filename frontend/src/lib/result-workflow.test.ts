@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { submittedForTest, requireReportEligibility, requireReportCollections, reportStartsPage } from "./result-workflow.ts";
+import { printableForTest, submittedForTest, requireReportEligibility, requireReportCollections, reportStartsPage } from "./result-workflow.ts";
 
 const saved = { billId: "bill", patientId: "patient", outstandingDue: 0, hasOutstandingDue: false,
   tests: [{ testId: "test", submitted: true }, { testId: "pending", submitted: false }] };
@@ -38,4 +38,14 @@ test("print layouts retain order and insert only requested boundaries", () => {
   assert.equal(reportStartsPage("test", 1, "Hema", "Hema"), true);
   assert.equal(reportStartsPage("department", 1, "Hema", "Hema"), false);
   assert.equal(reportStartsPage("department", 2, "Bio", "Hema"), true);
+});
+
+
+test("an uploaded outside PDF is print-ready without claiming in-house submission",()=>{
+  const external={...saved,tests:[{testId:"outside",submitted:false,uploadedReportId:"saved-pdf"}]};
+  assert.equal(submittedForTest(external,"bill","outside"),false);
+  assert.equal(printableForTest(external,"bill","outside"),true);
+  assert.equal(printableForTest(external,"other-bill","outside"),false);
+  assert.doesNotThrow(()=>requireReportEligibility(external,"bill","patient",["outside"]));
+  assert.throws(()=>requireReportEligibility({...external,outstandingDue:10,hasOutstandingDue:true},"bill","patient",["outside"]),/outstanding due/);
 });

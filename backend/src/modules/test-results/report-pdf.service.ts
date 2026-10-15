@@ -1,3 +1,4 @@
+import { recordAudit } from "../audit/audit.service";
 import { createHash, randomUUID } from "node:crypto";
 import type { Request } from "express";
 import { z } from "zod";
@@ -5,7 +6,9 @@ import { env } from "../../config/env";
 import { ApiError } from "../../utils/api-error";
 import { getLabBill } from "../lab-bills/lab-bill.service";
 import { getBillResultEntry } from "./test-result.service";
-import { assertResultReportAllowed } from "./result-workflow.service";
+import { roleHasPermission } from "../../middleware/require-permission";
+import { mergePrintedReports } from "./report-pdf-merge";
+import { assertPrintableReportAllowed } from "./result-workflow.service";
 import { LabTestResult } from "../../models/lab-test-result.model";
 import { LabSample } from "../../models/lab-sample.model";
 import { LabTechnician } from "../../models/lab-technician.model";
@@ -22,14 +25,16 @@ type Input=z.infer<typeof reportPdfQuery>;
 const digest=(data:unknown)=>createHash("sha256").update(JSON.stringify(data)).digest("hex");
 
 async function snapshot(input:Input,printedBy:string) {
-  await assertResultReportAllowed(input.billId,input.testIds);
+  const workflow = await assertPrintableReportAllowed(input.billId,input.testIds);
+  const externalReports = workflow.tests.filter(test=>input.testIds.includes(test.testId) && test.uploadedReportId)
+    .map(test=>({testId:test.testId,uploadId:test.uploadedReportId!,collectionId:test.collectionId}));
   const [bill,entry,results,samples,technician]=await Promise.all([getLabBill(input.billId),getBillResultEntry(input.billId),
     LabTestResult.find({billId:input.billId,testId:{$in:input.testIds}}).sort({parameterId:1}).exec(),
     LabSample.find({billId:input.billId,testId:{$in:input.testIds}}).exec(),
     input.technicianId?LabTechnician.findOne({_id:input.technicianId,active:{$ne:false}}).exec():null]);
   if(input.technicianId&&!technician)throw new ApiError(422,"Selected technician is unavailable");
   if(results.some(row=>String(row.patientId)!==entry.patientId))throw new ApiError(409,"Report patient association could not be verified");
-  const reports=entry.tests.filter(test=>input.testIds.includes(test.testId)).map(test=>({
+  const reports=entry.tests.filter(test=>input.testIds.includes(test.testId) && !externalReports.some(row=>row.testId===test.testId)).map(test=>({
     item:bill.items.find(item=>String(item.testId)===test.testId),collectionId:test.collectionId,
     parameters:test.parameters.map(parameter=>({...parameter,id:parameter.parameterId,testId:test.testId,active:true,referenceRange:parameter.reference.displayValue})),
     results:results.filter(row=>String(row.testId)===test.testId),
@@ -37,7 +42,7 @@ async function snapshot(input:Input,printedBy:string) {
     referenceResolutions:Object.fromEntries(test.parameters.map(parameter=>[parameter.parameterId,parameter.reference])),
     collectedOn:samples.find(sample=>String(sample.testId)===test.testId)?.collectedAt,
   }));
-  return JSON.parse(JSON.stringify({bill,reports,technician,printedBy,onlyEntered:input.onlyEntered==="true",includeHeader:input.includeHeader==="true",letterhead:input.letterhead==="true",printMode:input.printMode}));
+  return JSON.parse(JSON.stringify({bill,reports,externalReports,technician,printedBy,onlyEntered:input.onlyEntered==="true",includeHeader:input.includeHeader==="true",letterhead:input.letterhead==="true",printMode:input.printMode}));
 }
 type RenderSnapshot = Awaited<ReturnType<typeof snapshot>> & { externalReport?: {testName:string;fileName:string} };
 const jobs=new Map<string,{owner:string;expires:number;data:RenderSnapshot}>();
@@ -68,8 +73,23 @@ async function render(data:RenderSnapshot,req:Request):Promise<Buffer> {
 
 export async function browserReportPdf(input:Input,req:Request) {
   const data=await snapshot(input,req.user!.name);const version=digest(data);const key=digest({owner:req.user!.id,version});
-  const result=await cache.get(key,()=>render(data,req));
+  let result:{bytes:Buffer;status:string};
+  if(data.externalReports.length) {
+    if(!roleHasPermission(req.user!.role,"reports.print"))throw new ApiError(403,"Permission denied: external report printing requires reports.print");
+    // Fetch each source afresh: do not cache away ownership, collection or provider-integrity checks.
+    const {printExternalReport}=await import("./external-report-print.js");
+    const parts:Buffer[]=[];let group:typeof data.reports=[];
+    const flush=async()=>{if(group.length){parts.push(await render({...data,reports:group},req));group=[];}};
+    for(const item of data.bill.items.filter((item:{testId:string})=>input.testIds.includes(String(item.testId)))) {
+      const external=data.externalReports.find((row:{testId:string})=>row.testId===String(item.testId));
+      if(external){await flush();parts.push(await printExternalReport(input.billId,String(item.testId),external.uploadId,
+        input.letterhead==="true"?"letterhead":input.includeHeader==="true"?"header":"none",req));}
+      else {const report=data.reports.find((row:{item:{testId:string}})=>String(row.item.testId)===String(item.testId));if(report)group.push(report);}
+    }
+    await flush();result={bytes:await mergePrintedReports(parts),status:"MISS"};
+  } else result=await cache.get(key,()=>render(data,req));
   if(digest(await snapshot(input,req.user!.name))!==version)throw new ApiError(409,"Report changed during preparation. Open the current report again");
+  for(const external of data.externalReports) await recordAudit({user:req.user!.id,action:"report_attachment.printed",entityType:"LabReportUpload",entity:external.uploadId});
   return {...result,filename:`${data.bill.billNumber}-report.pdf`.replace(/[^a-zA-Z0-9._-]/g,"_")};
 }
 

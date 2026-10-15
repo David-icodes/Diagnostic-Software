@@ -303,7 +303,7 @@ export interface ResultWorkflow {
   patientId: string;
   outstandingDue: number;
   hasOutstandingDue: boolean;
-  tests: Array<{ testId: string; collectionId?: string; submitted: boolean }>;
+  tests: Array<{ testId: string; collectionId?: string; submitted: boolean; uploadedReportId?: string }>;
 }
 
 export interface LabTechnician {

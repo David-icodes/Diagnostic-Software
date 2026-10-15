@@ -48,7 +48,7 @@ import { usesClinicalReference } from "@/lib/parameter-reference-eligibility";
 import { applyCalculationProposals, type CalculationProposal } from "@/lib/calculation-proposal";
 import { calculateImmediately } from "@/lib/immediate-calculation";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
-import { submittedForTest, requireReportEligibility, type ResultPrintMode } from "@/lib/result-workflow";
+import { submittedForTest, printableForTest, requireReportEligibility, type ResultPrintMode } from "@/lib/result-workflow";
 import { REFERENCE_MAPPING_LABELS } from "@/types/lab-masters";
 import type { BillListParams } from "@/services/billing";
 import type { LabBill } from "@/types/billing";
@@ -170,8 +170,8 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
     queryKey: [...queryKeys.testResults, "workflow", selectedBill?.id],
     queryFn: () => fetchResultWorkflow(selectedBill!.id), enabled: Boolean(selectedBill), staleTime: 0,
   });
-  const testSubmitted = (testId: string) => !unconfirmedTests[`${selectedBill?.id}-${testId}`] &&
-    submittedForTest(workflowQuery.data, selectedBill?.id, testId);
+  const testSubmitted = (testId: string) => printableForTest(workflowQuery.data, selectedBill?.id, testId) &&
+    (Boolean(workflowQuery.data?.tests.find(row=>row.testId===testId)?.uploadedReportId) || !unconfirmedTests[`${selectedBill?.id}-${testId}`]);
   const printIds = orderedPrintIds(selectedBillTests, printMarked).filter(testSubmitted);
 
   const selectedTest = selectedTestId

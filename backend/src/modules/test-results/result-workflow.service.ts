@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { LabBill } from "../../models/lab-bill.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
+import { LabReportUpload } from "../../models/lab-report-upload.model";
 import { AuditLog } from "../../models/audit-log.model";
 import { ApiError } from "../../utils/api-error";
 
@@ -47,11 +48,18 @@ export async function getResultWorkflow(billId: string) {
     entityType: "LabTestResult", entity: { $in: results.map((row) => row._id) },
     action: { $in: [SUBMISSION_PENDING, SUBMISSION_CONFIRMED] },
   }).sort({ timestamp: -1, _id: -1 }).exec() : [];
+  const outsideIds = bill.items.filter(item => item.outsideLabId).map(item => item.testId);
+  const uploads = outsideIds.length ? await LabReportUpload.find({billId:bill._id,patientId:bill.patientId,testId:{$in:outsideIds}})
+    .select("testId collectionId size").sort({createdAt:-1,_id:-1}).lean().exec() : [];
   const tests = [...new Set(bill.items.map((item) => String(item.testId)))].map((testId) => {
     const saved = results.filter((row) => String(row.testId) === testId);
     const savedIds = new Set(saved.map((row) => String(row._id)));
     const latest = confirmations.find((row) => savedIds.has(String(row.entity)));
-    return { testId, collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId?.toString(), submitted: persistedSubmission(saved, latest?.action) };
+    const item = bill.items.find(item=>String(item.testId)===testId)!;
+    const upload = item.outsideLabId ? uploads.find(row => String(row.testId) === testId && row.size > 0 &&
+      String(row.collectionId ?? "") === String(item.activeCollectionId ?? "")) : undefined;
+    return { testId, collectionId: item.activeCollectionId?.toString(), submitted: persistedSubmission(saved, latest?.action),
+      ...(upload ? {uploadedReportId:String(upload._id)} : {}) };
   });
   return { billId: String(bill._id), patientId: String(bill.patientId),
     outstandingDue: Math.round(due * 100) / 100, hasOutstandingDue: due > 0, tests };
@@ -69,5 +77,15 @@ export async function assertResultReportAllowed(billId: string, testIds: string[
   // Legacy callers cannot use this compatibility argument to bypass financial rules.
   void restrictDue;
   if (workflow.hasOutstandingDue) throw new ApiError(422, PATIENT_DUE_MESSAGE);
+  return workflow;
+}
+
+/** Print readiness also accepts a validated current outside PDF, without claiming result submission. */
+export async function assertPrintableReportAllowed(billId:string,testIds:string[]) {
+  if(!testIds.length || testIds.some(id=>!Types.ObjectId.isValid(id)))throw new ApiError(400,"Select submitted tests or uploaded outside reports to print");
+  const workflow=await getResultWorkflow(billId);
+  if(testIds.some(id=>!workflow.tests.some(test=>test.testId===id && (test.submitted || test.uploadedReportId))))
+    throw new ApiError(422,"Submit the selected test results or upload the outside report before printing.");
+  if(workflow.hasOutstandingDue)throw new ApiError(422,PATIENT_DUE_MESSAGE);
   return workflow;
 }
