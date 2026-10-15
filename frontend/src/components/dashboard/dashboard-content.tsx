@@ -83,8 +83,8 @@ export function DashboardContent() {
               iconClassName="text-[#337ab7]"
             />
             <StatisticCard
-              title="Pending Tests"
-              value={summary.data?.pendingTestCount ?? 0}
+              title="Pending Bills"
+              value={summary.data?.pendingTests ?? 0}
               hint={summary.data?.date || undefined}
               icon={SquareMinus}
               iconClassName="text-[#c9302c]"

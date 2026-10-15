@@ -1027,6 +1027,7 @@ function ResultEntryTable({
                               </span>
                             ) : null}
                           </div>
+                          {parameter.defaultValue !== undefined && parameter.defaultValue !== "" && <p className="whitespace-pre-wrap break-words text-xs text-muted-foreground">Configured default: {parameter.defaultValue}</p>}
                           {calculationErrors[parameter.parameterId] && <p role="status" className={calculatorStyles.validation}>{calculationErrors[parameter.parameterId]}</p>}
                         </td>
                         <td className="px-2 py-1 text-slate-600">

@@ -223,7 +223,7 @@ const baseFields = {
     .enum(PARAMETER_RESULT_TYPES as unknown as [ParameterResultType, ...ParameterResultType[]])
     .default("TEXT"),
   parameterType: optionalText(50, "Parameter type is too long"),
-  defaultValue: optionalText(2000, "Default value is too long"),
+  defaultValue: z.string().max(2000, "Default value is too long").optional(),
   unit: optionalText(50, "Unit is too long"),
   method: optionalText(120, "Method name is too long"),
   referenceType: z

@@ -348,7 +348,7 @@ const labTestParameterSchema = new Schema<ILabTestParameter>(
       default: "TEXT",
     },
     parameterType: { type: String, trim: true, maxlength: 50 },
-    defaultValue: { type: String, trim: true, maxlength: 2000 },
+    defaultValue: { type: String, maxlength: 2000 },
     unit: { type: String, trim: true, maxlength: 50 },
     referenceRange: { type: String, maxlength: 200 },
     referenceType: {

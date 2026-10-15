@@ -2,6 +2,7 @@ export interface DashboardSummary {
   labBills: number;
   completedTests: number;
   pendingTests: number;
+  /** Legacy backend alias for pending bills. */
   pendingTestCount: number;
   date: string;
 }

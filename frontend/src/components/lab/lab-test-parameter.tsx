@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { parameterTextDraft, composeParameterRange } from "@/lib/parameter-value-draft";
 import { parameterParentOptions } from "@/lib/parameter-parent-options";
 import { editRangeBounds, needsExplicitRangeComposition } from "@/lib/reference-range-edit";
 import referenceStyles from './parameter-master-reference.module.css';
@@ -176,14 +177,7 @@ function toNum(value: string): number | undefined {
  * read-only preview show exactly what will be stored in `referenceRange`.
  */
 function composeCell(cell: RangeCell): string {
-  const from = toNum(cell.from);
-  const to = toNum(cell.to);
-  const text = cell.text.trim();
-  if (text && from === undefined && to === undefined) return text;
-  if (from !== undefined && to !== undefined) return `${from} - ${to}`;
-  if (from !== undefined) return `>= ${from}`;
-  if (to !== undefined) return `<= ${to}`;
-  return text;
+  return composeParameterRange(cell);
 }
 
 function genderRangePreview(cells: GenderRangeCells): string {
@@ -351,7 +345,7 @@ export function LabTestParameterContent() {
         // Preserved rather than dropped: the layout has no field for it, but an
         // edit must not clear a value the user cannot see.
         parameterType: form.parameterType.trim() || undefined,
-        defaultValue: form.defaultValue.trim() || undefined,
+        defaultValue: parameterTextDraft(form.defaultValue, form.rangeText).defaultValue,
         unit: form.unit.trim() || undefined,
         method: form.method.trim() || undefined,
         options:
@@ -375,9 +369,9 @@ export function LabTestParameterContent() {
             : {
                 rangeFrom: toNum(form.rangeFrom),
                 rangeTo: toNum(form.rangeTo),
-                rangeText: editingRow && form.rangeText === editingRow.rangeText
-                  ? form.rangeText
-                  : form.rangeText.trim() || undefined,
+                rangeText: !editingRow && form.rangeText === "" && (form.rangeFrom.trim() || form.rangeTo.trim())
+                  ? composeParameterRange({from: form.rangeFrom, to: form.rangeTo, text: ""})
+                  : parameterTextDraft(form.defaultValue, form.rangeText).rangeText,
                 // Sent as an empty array rather than omitted: switching to a
                 // general range must retire the sex rows, or they linger in the
                 // document and silently come back if the mode is flipped again.
@@ -1114,9 +1108,10 @@ export function LabTestParameterContent() {
                           onChange={(event) => setForm(current => { const next = editRangeBounds({ from: current.rangeFrom, to: current.rangeTo, text: current.rangeText }, { to: event.target.value }); return { ...current, rangeFrom: next.from, rangeTo: next.to, rangeText: next.text }; })}
                           disabled={readOnlyRange}
                         />
-                        <Input
+                        <Textarea
+                          rows={1}
                           aria-label="General range text"
-                          className="min-w-0 max-w-[180px] flex-1"
+                          className="h-8 min-h-8 min-w-0 max-w-[180px] flex-1 resize-y"
                           value={form.rangeText}
                           onChange={(event) => update({ rangeText: event.target.value })}
                           disabled={readOnlyRange}
@@ -1145,10 +1140,10 @@ export function LabTestParameterContent() {
                     <Textarea
                       aria-label="Reference range display"
                       rows={4}
-                      // Display-only: the editable text lives in the General range
-                      // text input / the gender rows on the left. Marked readOnly
-                      // so it is not a controlled field without an onChange.
-                      readOnly
+                      // Generic reference text may be multiline. Structured/sex rows
+                      // retain their own editor and must not be flattened here.
+                      readOnly={genderWise || readOnlyRange}
+                      onChange={event => { if (!genderWise && !readOnlyRange) update({ rangeText: event.target.value }); }}
                       value={genderWise ? genderPreview : form.rangeText}
 
                       className="font-mono text-xs"

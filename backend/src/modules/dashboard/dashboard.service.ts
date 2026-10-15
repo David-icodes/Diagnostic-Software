@@ -12,10 +12,12 @@
  */
 
 import { patientAgeLabel } from "../../utils/patient-age";
-import { billCompletion, pendingTestCount } from "./bill-completion";
+import { billCompletion } from "./bill-completion";
 import type { FilterQuery, Types } from "mongoose";
 import { LabBill, type ILabBill } from "../../models/lab-bill.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
+import { AuditLog } from "../../models/audit-log.model";
+import { SUBMISSION_PENDING, SUBMISSION_CONFIRMED } from "../test-results/result-workflow.service";
 import { Patient, type IPatient } from "../../models/patient.model";
 import { dayRange } from "../reports/utils/report-core";
 import { formatLocalDate, formatLocalDisplayDate } from "../../utils/date-range";
@@ -26,6 +28,7 @@ export interface DashboardSummary {
   labBills: number;
   completedTests: number;
   pendingTests: number;
+  /** Legacy API alias; counts pending bills, just like pendingTests. */
   pendingTestCount: number;
   date: string;
 }
@@ -109,10 +112,23 @@ async function billsInRange(
 async function completionByBill(bills: BillWithPatient[]): Promise<Map<string, boolean>> {
   if (!bills.length) return new Map();
   const billIds = bills.map((bill) => bill._id);
-  const results = await LabTestResult.find({ billId: { $in: billIds } }).select("billId patientId testId parameterId result").lean().exec();
+  const results = await LabTestResult.find({ billId: { $in: billIds } })
+    .select("_id billId patientId testId parameterId result version enteredAt collectionId superseded").lean().exec();
+  const events = results.length ? await AuditLog.find({
+    entityType: "LabTestResult", entity: { $in: results.map(row => row._id) },
+    action: { $in: [SUBMISSION_PENDING, SUBMISSION_CONFIRMED] },
+  }).sort({ timestamp: -1, _id: -1 }).select("entity action").lean().exec() : [];
   return billCompletion(
-    bills.map((bill) => ({ id: String(bill._id), patientId: String(bill.patientId?._id ?? ""), testIds: bill.items.map((item) => String(item.testId)) })),
-    results.map((result) => ({ ...result, billId: String(result.billId), patientId: String(result.patientId), testId: String(result.testId), parameterId: String(result.parameterId) })),
+    bills.map(bill => ({ id: String(bill._id), patientId: String(bill.patientId?._id ?? ""),
+      testIds: bill.items.map(item => String(item.testId)),
+      collectionIds: Object.fromEntries(bill.items.filter(item => item.activeCollectionId)
+        .map(item => [String(item.testId), String(item.activeCollectionId)])),
+    })),
+    results.map(result => ({ ...result, id: String(result._id), billId: String(result.billId),
+      patientId: String(result.patientId), testId: String(result.testId), parameterId: String(result.parameterId),
+      collectionId: result.collectionId?.toString(),
+    })),
+    events.map(event => ({ entity: String(event.entity), action: event.action })),
   );
 }
 
@@ -133,12 +149,11 @@ export async function getSummary({
   const states = await completionByBill(bills);
   const completed = [...states.values()].filter(Boolean).length;
 
-  const results = await LabTestResult.find({billId:{$in:bills.map(bill=>bill._id)}}).select("billId patientId testId parameterId result").lean().exec();
-  const pending = pendingTestCount(bills.map(bill=>({id:String(bill._id),patientId:String(bill.patientId?._id??""),testIds:bill.items.map(item=>String(item.testId))})), results.map(result=>({...result,billId:String(result.billId),patientId:String(result.patientId),testId:String(result.testId),parameterId:String(result.parameterId)})));
+  const pending = states.size - completed;
   return {
     labBills: bills.length,
     completedTests: completed,
-    pendingTests: Math.max(0, bills.length - completed),
+    pendingTests: pending,
     pendingTestCount: pending,
     date: formatDashboardDate(),
   };
