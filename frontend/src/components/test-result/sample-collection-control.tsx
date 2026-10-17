@@ -6,17 +6,18 @@ import { ConfirmDialog } from "@/components/database/confirm-dialog";
 import { updateSampleStatus } from "@/services/test-results";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import type { LabSampleRow } from "@/types/test-result";
+import { sampleIsCollected } from "@/lib/lab-workflows";
 
 export function SampleCollectionControl({ sample, testName }: { sample: LabSampleRow; testName: string }) {
   const cache = useQueryClient();
   const pending = useRef(false);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [collected, setCollected] = useState(false);
+  const collected = sampleIsCollected(sample.sampleStatus);
   const save = useMutation({
     mutationFn: () => updateSampleStatus(sample.id, { status: "COLLECTED" }),
     onSuccess: (updated) => {
-      setCollected(true); setOpen(false); setError(null);
+      setOpen(false); setError(null);
       cache.setQueriesData<{ data: LabSampleRow[] }>({ queryKey: queryKeys.labSamples }, (current) =>
         current?.data ? { ...current, data: current.data.map((row) => row.id === updated.id ? updated : row) } : current);
       void invalidateRoots(cache, queryKeys.labSamples, queryKeys.labBills, queryKeys.dashboard);

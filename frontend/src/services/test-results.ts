@@ -93,3 +93,4 @@ export function checkResultReportEligibility(billId: string, testIds: string[]):
 }
 
 export function checkBillDocumentEligibility(billId:string):Promise<{billId:string;patientId:string;outstandingDue:number}> { return api.get(`/lab-bills/${encodeURIComponent(billId)}/document-eligibility`); }
+export function checkInvoicePrintEligibility(billId:string):Promise<{billId:string;patientId:string;outstandingDue:number}> { return api.get(`/lab-bills/${encodeURIComponent(billId)}/invoice-print-eligibility`); }

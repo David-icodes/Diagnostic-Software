@@ -13,7 +13,7 @@ export function hasEnteredResult(value: unknown): boolean {
 }
 
 export function sampleIsCollected(status?: string): boolean {
-  return ["COLLECTED", "RECOLLECTED", "RECEIVED", "PROCESSED"].includes(status ?? "");
+  return ["COLLECTED", "RECEIVED", "PROCESSED"].includes(status ?? "");
 }
 
 export interface SampleContext {

@@ -31,7 +31,7 @@ const columns: ColumnDef<DueBill>[] = [
     width: "15%",
     label: "Net",
     align: "right",
-    headerClassName: "text-left",
+    headerClassName: "text-right",
     render: (bill) => formatMoney(bill.net),
   },
   {
@@ -39,7 +39,7 @@ const columns: ColumnDef<DueBill>[] = [
     width: "15%",
     label: "Paid",
     align: "right",
-    headerClassName: "text-left",
+    headerClassName: "text-right",
     render: (bill) => formatMoney(bill.paid),
   },
   {
@@ -47,7 +47,7 @@ const columns: ColumnDef<DueBill>[] = [
     width: "15%",
     label: "Due",
     align: "right",
-    headerClassName: "text-left",
+    headerClassName: "text-right",
     render: (bill) => formatMoney(bill.due),
   },
 ];
@@ -63,7 +63,7 @@ export function DueBillsPanel() {
   const rows = [...new Map((data?.pages.flatMap(page=>page.items)??[]).map(row=>[row.id,row])).values()];
   const latest=data?.pages.at(-1);
   const totalDue = latest?.totalDue ?? 0;
-  const pagedColumns:ColumnDef<(typeof rows)[number]>[]=[...columns.slice(0,4),{key:'billDate',width:'14%',label:'Bill Date',render:(bill:DueBill & {billDate:string})=>formatDate(bill.billDate)},...columns.slice(4)].map((column,index)=>({...column,width:[4,15,13,21,14,11,11,11][index]+'%',...(index===0?{render:(_row:DueBill,index:number)=>index+1}:{})}));
+  const pagedColumns:ColumnDef<(typeof rows)[number]>[]=[...columns.slice(0,4),{key:'billDate',width:'14%',label:'Bill Date',render:(bill:DueBill & {billDate:string})=>formatDate(bill.billDate)},...columns.slice(4)].map((column,index)=>({...column,width:[4,15,13,20,12,12,12,12][index]+'%',...(index===0?{render:(_row:DueBill,index:number)=>index+1}:{})}));
 
   return (
     <BillsPanel

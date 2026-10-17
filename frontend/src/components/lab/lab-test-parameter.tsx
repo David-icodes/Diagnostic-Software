@@ -810,7 +810,7 @@ export function LabTestParameterContent() {
                   }}
                   disabled={saveMutation.isPending}
                 >
-                  <option value="">--Select--</option>
+                  <option value="">ALL Departments</option>
                   {departments.filter(department => department.active !== false || editingRow?.departmentId === department.id).map((department) => (
                     <option key={department.id} value={department.id}>
                       {department.name}
@@ -1221,7 +1221,7 @@ export function LabTestParameterContent() {
               setPage(1);
             }}
           >
-            <option value="">Department Name</option>
+            <option value="">ALL Departments</option>
             {departments.map((department) => (
               <option key={department.id} value={department.id}>
                 {department.name}

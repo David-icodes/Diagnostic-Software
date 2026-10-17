@@ -1,3 +1,4 @@
+import { newestReportUpload } from "./report-upload-order";
 import { Types } from "mongoose";
 import { LabBill } from "../../models/lab-bill.model";
 import { LabTestResult } from "../../models/lab-test-result.model";
@@ -34,6 +35,14 @@ export async function assertBillDocumentAllowed(billId:string) {
  const due=verifiedOutstandingDue(bill);if(due>0)throw new ApiError(422,"This bill has an outstanding due. Settle dues before generating or releasing a report or invoice.");
  return {billId:String(bill._id),patientId:String(bill.patientId),outstandingDue:due};
 }
+/** An invoice documents the balance; it is not a clinical report release. */
+export async function assertInvoicePrintAllowed(billId: string) {
+  if (!Types.ObjectId.isValid(billId)) throw new ApiError(400, "Invalid bill ID");
+  const bill = await LabBill.findById(billId).exec();
+  if (!bill) throw new ApiError(404, "Bill not found");
+  if (bill.status !== "generated") throw new ApiError(422, "Invoices require a generated, non-cancelled bill");
+  return { billId: String(bill._id), patientId: String(bill.patientId), outstandingDue: verifiedOutstandingDue(bill) };
+}
 export async function getResultWorkflow(billId: string) {
   if (!Types.ObjectId.isValid(billId)) throw new ApiError(400, "Invalid bill ID");
   const bill = await LabBill.findById(billId).exec();
@@ -50,13 +59,13 @@ export async function getResultWorkflow(billId: string) {
   }).sort({ timestamp: -1, _id: -1 }).exec() : [];
   const outsideIds = bill.items.filter(item => item.outsideLabId).map(item => item.testId);
   const uploads = outsideIds.length ? await LabReportUpload.find({billId:bill._id,patientId:bill.patientId,testId:{$in:outsideIds}})
-    .select("testId collectionId size").sort({createdAt:-1,_id:-1}).lean().exec() : [];
+    .select("testId collectionId size selectedAt createdAt").sort({createdAt:-1,_id:-1}).lean().exec() : [];
   const tests = [...new Set(bill.items.map((item) => String(item.testId)))].map((testId) => {
     const saved = results.filter((row) => String(row.testId) === testId);
     const savedIds = new Set(saved.map((row) => String(row._id)));
     const latest = confirmations.find((row) => savedIds.has(String(row.entity)));
     const item = bill.items.find(item=>String(item.testId)===testId)!;
-    const upload = item.outsideLabId ? uploads.find(row => String(row.testId) === testId && row.size > 0 &&
+    const upload = item.outsideLabId ? newestReportUpload(uploads).find(row => String(row.testId) === testId && row.size > 0 &&
       String(row.collectionId ?? "") === String(item.activeCollectionId ?? "")) : undefined;
     return { testId, collectionId: item.activeCollectionId?.toString(), submitted: persistedSubmission(saved, latest?.action),
       ...(upload ? {uploadedReportId:String(upload._id)} : {}) };

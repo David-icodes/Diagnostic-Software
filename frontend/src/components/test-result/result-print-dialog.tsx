@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -17,21 +17,23 @@ export function ResultPrintDialog({ bill, testIds, technician, onClose, initialO
   const [includeHeader, setIncludeHeader] = useState(false);
   const [letterhead, setLetterhead] = useState(false);
   const [onlyEntered, setOnlyEntered] = useState(initialOnlyEntered);
+  const generating = useRef(false);
   const [checking, setChecking] = useState(false);
   const [printError, setPrintError] = useState<string | null>(null);
   const ids = orderedPrintIds(bill.items, Object.fromEntries(testIds.map(id => [id, true])));
 
   const generate = async () => {
-    if (checking) return;
+    if (generating.current) return;
     setPrintError(null);
     if (!ids.length || !bill.patientId) { setPrintError("Select a patient and submitted tests to print."); return; }
+    generating.current=true;
     setChecking(true);
     try {
       await generateBrowserReport({ billId: bill.id, testIds: ids, technicianId: technician?.id,
         onlyEntered, includeHeader, letterhead, printMode });
     } catch (error) {
       setPrintError(error instanceof Error ? error.message : "Unable to generate this report.");
-    } finally { setChecking(false); }
+    } finally { generating.current=false; setChecking(false); }
   };
 
   return createPortal(<Dialog open onOpenChange={open => { if (!open && !checking) onClose(); }} title="Print reports" size="lg" className="lis-print-dialog">
@@ -46,6 +48,7 @@ export function ResultPrintDialog({ bill, testIds, technician, onClose, initialO
       </fieldset>
       {printError && <p role="alert">{printError}</p>}
       {checking && <p role="status">Generating report…</p>}
+      <p className="text-sm">The PDF viewer opens when the report is ready. Use its Print button to print.</p>
       <div className="flex justify-end gap-2 pb-3">
         <Button disabled={!ids.length || checking} onClick={generate}>{checking ? "Generating…" : "Generate Report"}</Button>
         <Button variant="outline" disabled={checking} onClick={onClose}>Close</Button>

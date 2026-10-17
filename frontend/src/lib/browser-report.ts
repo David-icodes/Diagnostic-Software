@@ -26,15 +26,26 @@ export async function openAuthorizedReportPdf(url: string) {
   const tab = window.open("about:blank", "_blank");
   if (!tab) throw new Error("Allow pop-ups for this application, then generate the report again.");
   tab.opener = null;
+  tab.document.title="Preparing laboratory report";
+  const status=tab.document.createElement("p");status.textContent="Generating report... The PDF viewer will open when ready. Use its Print button to print.";
+  tab.document.body.replaceChildren(status);
+  performance.mark("lis-report-request-start");
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), 90000);
   let objectUrl: string | undefined;
   try {
     const response = await fetch(url, { credentials: "include", signal: controller.signal });
+    performance.mark("lis-report-response-headers");
     const pdf = await validatedReportPdf(response);
+    performance.mark("lis-report-bytes-ready");
+    performance.measure("lis-report-request", "lis-report-request-start", "lis-report-response-headers");
+    performance.measure("lis-report-download", "lis-report-response-headers", "lis-report-bytes-ready");
     if (tab.closed) return;
     objectUrl = URL.createObjectURL(pdf);
+    // PDF iframe load is not PDF-plugin print readiness. Navigate the validated
+    // bytes as the top-level document; the native viewer owns its Print action.
     tab.location.replace(objectUrl);
+    performance.mark("lis-report-viewer-handoff");
     // Keep the native viewer's download/print functional for the lifetime of its tab.
     const retainedUrl = objectUrl;
     const release = () => { URL.revokeObjectURL(retainedUrl); window.clearInterval(timer); window.removeEventListener("pagehide", release); };

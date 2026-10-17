@@ -1,3 +1,4 @@
+import { newestReportUpload } from "./report-upload-order";
 import { createHash } from "node:crypto";
 import { Types } from "mongoose";
 import { LabBill } from "../../models/lab-bill.model";
@@ -37,7 +38,17 @@ export async function saveReportUpload(userId: string, billId: string, testId: s
     collectionId: collectionId ?? { $exists: false },
     sha256 };
   const existing = await LabReportUpload.findOne(identity).exec();
-  if (existing) return { id: String(existing._id), fileName: existing.fileName, size: existing.size, createdAt: existing.createdAt };
+  if (existing) {
+    const current = await orderedBill(billId, testId);
+    if (String(current.items.find(item => String(item.testId) === testId)?.activeCollectionId ?? "") !== String(collectionId ?? ""))
+      throw new ApiError(409, "The sample collection changed. Reload before uploading the report.");
+    // Update selection metadata only: legacy MongoDB PDF content is intentionally
+    // excluded from this query and must never be validated/replaced by this write.
+    const selected = await LabReportUpload.updateOne({ ...identity, _id: existing._id },
+      { $set: { selectedAt: new Date(), selectedBy: new Types.ObjectId(userId) } }, { runValidators: true }).exec();
+    if (selected.matchedCount !== 1) throw new ApiError(409, "The uploaded report changed. Reload before retrying.");
+    return { id: String(existing._id), fileName: existing.fileName, size: existing.size, createdAt: existing.createdAt };
+  }
   const storageKey = await pdfStorage.store(file.content, { owner: userId, billId,
     patientId: String(bill.patientId), testId, kind: "attachment" });
   const current = await orderedBill(billId, testId);
@@ -46,7 +57,7 @@ export async function saveReportUpload(userId: string, billId: string, testId: s
   let saved;
   try { saved = await LabReportUpload.create({ sha256, billId: bill._id, patientId: bill.patientId, testId,
     collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId,
-    uploadedBy: userId, fileName: file.fileName, size: file.content.length,
+    selectedAt: new Date(), selectedBy: userId, uploadedBy: userId, fileName: file.fileName, size: file.content.length,
     ...(storageKey ? { storageKey } : { content: file.content }) }); }
   catch (error) {
     if ((error as {code?:number}).code !== 11000) throw error;
@@ -59,7 +70,7 @@ export async function saveReportUpload(userId: string, billId: string, testId: s
 export async function listReportUploads(billId: string, testId: string) {
   const bill = await orderedBill(billId, testId);
   const rows = await LabReportUpload.find({ billId: bill._id, patientId: bill.patientId, testId, collectionId: bill.items.find(item=>String(item.testId)===testId)?.activeCollectionId ?? {$exists:false} }).sort({ createdAt: -1, _id: -1 }).exec();
-  return rows.map((row) => ({ id: String(row._id), fileName: row.fileName, size: row.size, createdAt: row.createdAt, external: Boolean(bill.items.find(item => String(item.testId) === testId)?.outsideLabId) }));
+  return newestReportUpload(rows).map((row) => ({ id: String(row._id), fileName: row.fileName, size: row.size, createdAt: row.createdAt, external: Boolean(bill.items.find(item => String(item.testId) === testId)?.outsideLabId) }));
 }
 
 export async function readReportUpload(billId: string, testId: string, id: string) {

@@ -1,4 +1,5 @@
 "use client";
+import {PackageInvoiceDetails} from "./package-invoice-details";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -167,7 +168,7 @@ export function OspBillView({ billId }: OspBillViewProps) {
               </p>
               {patient ? (
                 <>
-                  <p className="text-sm font-semibold text-slate-800">
+                  <p className="text-base font-bold text-slate-800">
                     {patient.fullName}
                     <Badge variant="secondary" className="ml-2">
                       {patient.patientId}
@@ -242,13 +243,11 @@ export function OspBillView({ billId }: OspBillViewProps) {
                       {index + 1}
                     </td>
                     <td className="px-3 py-1.5">
-                      <p className="text-xs font-medium text-slate-800">
-                        {item.testName}
-                      </p>
+                      <p className="text-xs font-semibold text-slate-800">{item.testName}</p>
+                      {item.includedTests && <PackageInvoiceDetails members={item.includedTests} total={item.total}/>}
                       <p className="font-mono text-[11px] text-muted-foreground">
                         {item.testCode === "INVG2044" ? "" : item.testCode}
                       </p>
-                      {item.packageId&&<p className="text-xs">Includes: {bill.items.filter(member=>member.packageId===item.packageId).map(member=>member.testName).join(", ")}</p>}
                     </td>
                     <td className="px-3 py-1.5 text-slate-700">
                       {item.departmentName}

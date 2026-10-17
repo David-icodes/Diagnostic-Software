@@ -1,6 +1,6 @@
 import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
-import { assertBillDocumentAllowed } from "../test-results/result-workflow.service";
+import { assertBillDocumentAllowed, assertInvoicePrintAllowed } from "../test-results/result-workflow.service";
 import { Router } from "express";
 import { authenticate } from "../../middleware/authenticate";
 import { validate } from "../../middleware/validate";
@@ -35,6 +35,7 @@ router.get(
 );
 router.post("/", requirePermission("billing.create"), validate(createLabBillSchema), createLabBill);
 router.get("/:id/document-eligibility", requirePermission("billing.view"), asyncHandler(async(req,res)=>sendSuccess(res,await assertBillDocumentAllowed(req.params.id))));
+router.get("/:id/invoice-print-eligibility", requirePermission("billing.view"), asyncHandler(async(req,res)=>sendSuccess(res,await assertInvoicePrintAllowed(req.params.id))));
 router.get("/:id", requirePermission("billing.view"), getLabBill);
 router.put(
   "/:id",

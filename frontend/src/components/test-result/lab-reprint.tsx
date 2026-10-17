@@ -1,7 +1,10 @@
 "use client";
+import { cbcCountValueOnly, cbcSmearEmptyCells, reportCellText } from "../../../../backend/src/utils/cbc-report-display";
+import { resultDisplay } from "../../../../backend/src/utils/result-display";
 import { ReportLetterhead } from "./report-letterhead";
 import { ReportPageFooter } from "./report-page-footer";
 
+import { isReportNarrative, reportNarrative } from "@/lib/report-narrative";
 import { Fragment, useMemo, useState } from "react";
 import { businessDateInput, businessTimeInput } from "@/lib/business-date";
 import { useQuery } from "@tanstack/react-query";
@@ -734,7 +737,7 @@ export function PrintPreview({
   for (const parameter of [...parameters].sort(
     (a, b) => a.displayOrder - b.displayOrder,
   )) {
-    if (parameter.itemType !== "SUBTITLE" && onlyEntered && !hasEnteredResult(resultByParameter.get(parameter.id)?.result)) continue;
+    if (parameter.itemType !== "SUBTITLE" && onlyEntered && !hasEnteredResult(isReportNarrative(parameter) ? reportNarrative(parameter, resultByParameter.get(parameter.id)) : resultByParameter.get(parameter.id)?.result)) continue;
     const subtitle = (parameter.subtitle ?? "").trim();
     const last = groups[groups.length - 1];
     if (!last || last.subtitle !== subtitle) {
@@ -851,6 +854,15 @@ export function PrintPreview({
                     )}
                     {group.rows.map((parameter) => {
                       if(parameter.itemType === "SUBTITLE")return <tr key={parameter.id}><th colSpan={4} className="py-[1mm] text-left font-bold">{parameter.parameterName}</th></tr>;
+                      if (isReportNarrative(parameter)) {
+                        const narrative = reportNarrative(parameter, resultByParameter.get(parameter.id));
+                        return <tr key={parameter.id}><td colSpan={4} className="py-[1mm] text-left">
+                          <strong className="block">{parameter.parameterName}</strong>
+                          {narrative !== "" && <div className="mt-[1mm] whitespace-pre-wrap break-words">{narrative}</div>}
+                        </td></tr>;
+                      }
+                      const valueOnly = cbcCountValueOnly(parameter);
+                      const blankMissing=cbcSmearEmptyCells(parameter);
                       const result = resultByParameter.get(parameter.id);
                       const value = result?.result;
                       const method = result?.method ?? parameter.method;
@@ -877,20 +889,17 @@ export function PrintPreview({
                           <td
                             className={cn(
                               "py-[0.7mm] pr-[2mm] whitespace-pre-wrap",
-                              abnormal && "lis-abnormal-result font-bold text-[10pt]",
+                              abnormal && "lis-abnormal-result font-bold",
+                              valueOnly && "lis-cbc-count-result font-bold",
                             )}
                           >
-                            {value === undefined ||
-                            value === null ||
-                            value === ""
-                              ? "—"
-                              : String(value)}
+                            {resultDisplay(value, result?.resultDisplay)}
                           </td>
                           <td className="py-[0.7mm] pr-[2mm]">
-                            {result?.unit ?? parameter.unit ?? "—"}
+                            {valueOnly ? "" : blankMissing ? reportCellText(result?.unit ?? parameter.unit,true) : result?.unit ?? parameter.unit ?? "—"}
                           </td>
                           <td className="py-[0.7mm]">
-                            {usesClinicalReference(parameter) ? reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange) || "—" : "—"}
+                            {valueOnly ? "" : blankMissing ? reportCellText(usesClinicalReference(parameter) ? reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange) : result?.referenceRange ?? parameter.referenceRange,true) : usesClinicalReference(parameter) ? reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange) || "—" : "—"}
                           </td>
                         </tr>
                       );

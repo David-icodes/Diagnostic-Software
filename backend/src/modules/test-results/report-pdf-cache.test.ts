@@ -19,3 +19,11 @@ test("render failure is retryable and cached bytes are integrity checked",async(
  saved.bytes[0]=0;await assert.rejects(cache.get("x",async()=>Buffer.from("PDF")),/integrity/);
  assert.equal((await cache.get("x",async()=>Buffer.from("PDF"))).status,"MISS");
 });
+
+test("concurrent owners and print-option versions retain distinct report bytes",async()=>{
+ const cache=createReportPdfCache();
+ const jobs=[{key:"owner-A:report-1:header",bytes:Buffer.from("synthetic A header")},{key:"owner-B:report-2:header",bytes:Buffer.from("synthetic B header")},{key:"owner-A:report-1:none",bytes:Buffer.from("synthetic A no header")}];
+ const output=await Promise.all(jobs.map(async job=>cache.get(job.key,async()=>{await Promise.resolve();return job.bytes;})));
+ output.forEach((row,index)=>assert.deepEqual(row.bytes,jobs[index].bytes));
+ for(const job of jobs){const cached=await cache.get(job.key,async()=>{throw Error("Must use matching cached snapshot");});assert.equal(cached.status,"HIT");assert.deepEqual(cached.bytes,job.bytes);}
+});

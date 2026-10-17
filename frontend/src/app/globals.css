@@ -195,7 +195,7 @@
 .lis-clinical-info > div > div{grid-template-columns:80pt minmax(0,1fr);font-size:10pt;line-height:13pt;overflow-wrap:anywhere;}
 .lis-clinical-info > div:first-child > div:first-child{font-size:11pt;font-weight:bold;}
 .lis-report-paper tbody td:nth-child(2){font-size:11pt;font-weight:600;}
-.lis-report-paper .lis-abnormal-result{font-size:12pt;font-weight:700;}
+.lis-report-paper .lis-abnormal-result{font-size:13pt;line-height:14pt;font-weight:800;}
 .lis-invoice-paper{font-size:11pt;line-height:14pt;}
 .lis-invoice-paper :is(th,td){font-size:11pt;padding:.6mm;}
 
@@ -217,7 +217,8 @@
 @media screen {
  .lis-dashboard .lis-today-bills-table th{white-space:nowrap;}
 }
-.lis-report-paper tbody td.lis-abnormal-result{font-size:12pt;font-weight:700;}
+.lis-report-paper tbody td.lis-cbc-count-result:not(.lis-abnormal-result){font-weight:700;}
+.lis-report-paper tbody td.lis-abnormal-result{font-size:13pt;line-height:14pt;font-weight:800;}
 
 @media screen {
  .lis-dashboard .lis-today-bills-table th{text-transform:none;letter-spacing:normal;font-weight:700;color:#505050;}
@@ -302,3 +303,24 @@
 .lis-samples table tbody tr.lis-sample-row[data-completed="true"] { background: #d1fae5; box-shadow: inset 5px 0 #065f46; }
 .lis-sample-row:focus-within { outline: 2px solid #166534; outline-offset: -2px; }
 .lis-sample-row:hover { filter: brightness(.97); }
+
+/* Keep long due-bill content inside this table, without changing billing logic. */
+.lis-dashboard .lis-due-bills-table { width:100%; min-width:720px; table-layout:fixed; }
+.lis-dashboard .lis-due-bills-table :is(th,td) { box-sizing:border-box; vertical-align:middle; }
+.lis-dashboard .lis-due-bills-table td:nth-child(-n+5) { white-space:normal; overflow-wrap:anywhere; }
+.lis-dashboard .lis-due-bills-table td:nth-child(n+6) { white-space:nowrap; font-variant-numeric:tabular-nums; }
+
+.lis-dashboard .lis-due-bills-table tbody td { height:48px; }
+.lis-dashboard .lis-due-cell-text { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; white-space:normal; overflow-wrap:anywhere; }
+
+/* Package invoice details are scoped to their reusable bill-only component. */
+.lis-package-invoice-details { margin:4px 0; font-size:12px; font-weight:400; }
+.lis-package-allocation-label { font-size:10px; color:#52525b; }
+.lis-package-member-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:4px 16px; }
+.lis-package-member-grid ol { margin:0; padding:0; list-style:none; }
+.lis-package-member-grid li { display:grid; grid-template-columns:minmax(0,1fr) max-content; gap:8px; padding:2px 0; break-inside:avoid; }
+.lis-package-member-grid li>span:first-child { overflow-wrap:anywhere; }
+.lis-package-member-amount { white-space:nowrap; text-align:right; font-variant-numeric:tabular-nums; }
+.lis-package-fixed-total { display:flex; justify-content:flex-end; gap:16px; border-top:1px solid #ddd; margin-top:4px; padding-top:3px; }
+@media(min-width:768px) { .lis-package-member-grid[data-columns="2"] { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media print { .lis-package-member-grid[data-columns="2"] { grid-template-columns:repeat(2,minmax(0,1fr)); }.lis-invoice-paper .lis-package-invoice-details{font-size:8pt}.lis-invoice-paper .lis-package-allocation-label{font-size:7pt}.lis-invoice-paper .lis-invoice-patient-name{font-weight:700} }

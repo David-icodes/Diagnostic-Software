@@ -1,3 +1,4 @@
+import { departmentFilter, everyCataloguePage } from "@/lib/catalogue-selection";
 import { api } from "@/lib/api";
 import type {
   CancelLabBillRequest,
@@ -63,7 +64,7 @@ export function fetchLabTests(
   params: LabTestListParams = {},
 ): Promise<LabTestListResult> {
   const query = new URLSearchParams();
-  if (params.departmentId) query.set("departmentId", params.departmentId);
+  if (departmentFilter(params.departmentId)) query.set("departmentId", departmentFilter(params.departmentId)!);
   if (params.search) query.set("search", params.search);
   if (params.status) query.set("status", params.status);
   if (params.page) query.set("page", String(params.page));
@@ -72,10 +73,20 @@ export function fetchLabTests(
   return api.get<LabTestListResult>(`/lab-tests${qs ? `?${qs}` : ""}`);
 }
 
+/** Selection lists must not silently stop at the server's page-size cap. */
+export async function fetchAllEligibleLabTests(params: LabTestListParams = {}): Promise<LabTestListResult> {
+  const items = await everyCataloguePage(page => fetchLabTests({ ...params, page, limit: 100 }));
+  return { items, pagination: { page: 1, limit: items.length, total: items.length, totalPages: 1 } };
+}
+
 export function fetchLabTest(id: string): Promise<LabTest> {
   return api
     .get<LabTestResponse>(`/lab-tests/${encodeURIComponent(id)}`)
-    .then((response) => response.test);
+    .then((response) => {
+      // The detail endpoint populates departmentId; list endpoints return IDs.
+      const department = response.test.departmentId as unknown as string | {id?: string; _id?: string};
+      return {...response.test, departmentId: typeof department === "string" ? department : department.id ?? department._id ?? ""};
+    });
 }
 
 export function createLabTest(

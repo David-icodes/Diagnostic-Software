@@ -1,4 +1,5 @@
 "use client";
+import {automaticLft,refreshLftDependents} from "@/lib/lft-dependent-values";
 
 import { businessDateInput } from "@/lib/business-date";
 import { useMemo, useState, useRef } from "react";
@@ -693,11 +694,11 @@ function ResultEntryTable({
   testLinked: boolean;
   loading: boolean;
   submitting: boolean;
-  onSubmit: (entries: Array<{ parameterId: string; result: ResultValue }>, acceptedCalculationIds: string[], calculationProposals:CalculationProposal[]) => void;
+  onSubmit: (entries: Array<{ parameterId: string; result: ResultValue; resultDisplay?: string }>, acceptedCalculationIds: string[], calculationProposals:CalculationProposal[]) => void;
 }) {
   const [textValues, setTextValues] = useState<Record<string, string>>(() => {
     const existing = new Map(
-      existingResults.map((result) => [result.parameterId, result.result]),
+      existingResults.map((result) => [result.parameterId, result.resultDisplay ?? result.result]),
     );
     const text: Record<string, string> = {};
     for (const parameter of parameters) {
@@ -725,7 +726,8 @@ function ResultEntryTable({
   });
 
   const [proposals,setProposals]=useState<Record<string,CalculationProposal>>(()=>Object.fromEntries(existingResults.filter(result=>result.calculationSnapshot?.definitionKind==="DEVELOPMENT_ONE_TIME").map(result=>[result.parameterId,{parameterId:result.parameterId,formulaId:result.calculationSnapshot!.formulaId,expression:result.calculationSnapshot!.expression!,dependencyIds:result.calculationSnapshot!.dependencyIds!}])));
-  const acceptedCalculationIds=useRef(new Set<string>());
+  const acceptedCalculationIds=useRef(new Set<string>(existingResults.filter(result=>result.calculationSnapshot && parameters.some(p=>p.parameterId===result.parameterId && automaticLft(p) && p.calculation?.formulaId===result.calculationSnapshot?.formulaId)).map(result=>result.parameterId)));
+  const latestTextValues=useRef(textValues);
 
   const [fieldError, setFieldError] = useState<string | null>(null);
 
@@ -740,9 +742,12 @@ function ResultEntryTable({
     usesClinicalReference(parameter) ? previewFlag(enteredNumber(textValues[parameter.parameterId]), parameter.reference) : "not-comparable";
 
   const updateTextValue=(parameterId:string,value:string)=>{
-    // A source edit changes only that source; the user reviews each target again.
+    const next=refreshLftDependents(effectiveParameters,latestTextValues.current,parameterId,value,acceptedCalculationIds.current);
     acceptedCalculationIds.current.clear();
-    setTextValues(current=>({...current,[parameterId]:value}));
+    for(const id of next.calculated)acceptedCalculationIds.current.add(id);
+    latestTextValues.current=next.values;
+    setTextValues(next.values);
+    setFieldError(next.error??null);
   };
   // Only executable calculations gate submission; a mapping still pending approval
   // behaves as a normal manual parameter and must not block the form.
@@ -752,15 +757,16 @@ function ResultEntryTable({
   const calculationErrors=recalculateConfigured(effectiveParameters.map(parameter=>parameter.calculationStatus==="PENDING"?{...parameter,calculation:undefined}:parameter),textValues).errors;
   const calculateParameter=(parameter:BillTestParameter)=>{
     setFieldError(null);
-    const result=calculateImmediately(effectiveParameters,textValues,parameter.parameterId);
+    const result=calculateImmediately(effectiveParameters,latestTextValues.current,parameter.parameterId);
     if(result.error){setFieldError(result.error);return;}
     for(const id of result.changed)acceptedCalculationIds.current.add(id);
-    setTextValues(Object.fromEntries(Object.entries(result.values).map(([id,value])=>[id,String(value??"")])));
+    latestTextValues.current=Object.fromEntries(Object.entries(result.values).map(([id,value])=>[id,String(value??"")]));
+    setTextValues(latestTextValues.current);
   };
   const handleSubmit = () => {
     if(proposalError){setFieldError(proposalError);return;}
     if(Object.keys(calculationErrors).length){setFieldError(Object.values(calculationErrors)[0]);return;}
-    const entries: Array<{ parameterId: string; result: ResultValue }> = [];
+    const entries: Array<{ parameterId: string; result: ResultValue; resultDisplay?: string }> = [];
     for (const parameter of parameters) {
       if (parameter.itemType === "SUBTITLE") continue;
       if (parameter.resultType === "BOOLEAN") {
@@ -777,14 +783,14 @@ function ResultEntryTable({
           );
           return;
         }
-        entries.push({ parameterId: parameter.parameterId, result: numeric });
+        entries.push({ parameterId: parameter.parameterId, result: numeric, resultDisplay: raw });
       } else {
         // TEXT and other string types: submit as number when the value is
         // numeric and the parameter participates in a configured calculation
         // (source or target) so the server can verify formula arithmetic.
         const participatesInCalc = effectiveParameters.some(p => p.calculation && p.calculation.enabled !== false && p.calculationStatus !== "PENDING" && (p.parameterId === parameter.parameterId || (p.calculation.dependencyIds ?? []).includes(parameter.parameterId)));
         if (participatesInCalc && Number.isFinite(Number(raw))) {
-          entries.push({ parameterId: parameter.parameterId, result: Number(raw) });
+          entries.push({ parameterId: parameter.parameterId, result: Number(raw), resultDisplay: raw });
         } else {
           entries.push({ parameterId: parameter.parameterId, result: raw });
         }
@@ -801,6 +807,7 @@ function ResultEntryTable({
   const handleClear = () => {
     acceptedCalculationIds.current.clear();
     setProposals({});
+    latestTextValues.current={};
     setTextValues({});
     setFieldError(null);
     const bool: Record<string, boolean> = {};

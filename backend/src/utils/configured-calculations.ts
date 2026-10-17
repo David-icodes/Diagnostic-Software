@@ -39,10 +39,10 @@ const ABSOLUTE_COUNT_ABBREVIATIONS: Record<string, string> = {
  */
 export const CALCULATION_FORMULAS: Formula[] = [
  {id:"pcv-hb-approx",expression:"S1 * 3",label:"PCV ≈ Hb × 3 (approximation)",method:"Hb-based approximation; not a measured hematocrit",sources:["Hb"],aliases:[],targets:[],units:["g/dl"],outputUnit:"%",precision:1,compute:v=>v[0]*3},
- {id:"indirect-bilirubin",label:"Indirect bilirubin = Total − Direct",sources:["Total bilirubin","Direct bilirubin"],aliases:[],targets:["Indirect Bilirubin"],units:["mg/dl","mg/dl"],outputUnit:"mg/dl",compute:v=>v[0]-v[1]},
- {id:"globulin",label:"Globulin = Total protein − Albumin",sources:["Total protein","Albumin"],aliases:[],targets:["Globulin"],units:["g/dl","g/dl"],outputUnit:"g/dl",compute:v=>v[0]-v[1]},
- {id:"ag-ratio",label:"A/G ratio = Albumin ÷ Globulin",sources:["Albumin","Globulin"],aliases:[],targets:["A/G Ratio","A G Ratio","AG Ratio","Albumin Globulin Ratio"],units:["g/dl","g/dl"],outputUnit:"ratio",denominator:1,compute:v=>v[0]/v[1]},
- {id:"non-hdl",label:"Non-HDL = Total cholesterol − HDL",sources:["Total cholesterol","HDL"],aliases:[],targets:["Non-HDL","Non HDL","Non-HDL Cholesterol","Non HDL Cholesterol"],units:["mg/dl","mg/dl"],outputUnit:"mg/dl",compute:v=>v[0]-v[1]},
+ {id:"indirect-bilirubin",expression:"S1 - S2",label:"Indirect bilirubin = Total − Direct",sources:["Total bilirubin","Direct bilirubin"],aliases:[],targets:["Indirect Bilirubin"],units:["mg/dl","mg/dl"],outputUnit:"mg/dl",compute:v=>v[0]-v[1]},
+ {id:"globulin",expression:"S1 - S2",label:"Globulin = Total protein − Albumin",sources:["Total protein","Albumin"],aliases:[],targets:["Globulin"],units:["g/dl","g/dl"],outputUnit:"g/dl",compute:v=>v[0]-v[1]},
+ {id:"ag-ratio",expression:"S1 / S2",label:"A/G ratio = Albumin ÷ Globulin",sources:["Albumin","Globulin"],aliases:[],targets:["A/G Ratio","A G Ratio","AG Ratio","Albumin Globulin Ratio"],units:["g/dl","g/dl"],outputUnit:"ratio",denominator:1,compute:v=>v[0]/v[1]},
+ {id:"non-hdl",expression:"S1 - S2",label:"Non-HDL = Total cholesterol − HDL",sources:["Total cholesterol","HDL"],aliases:[],targets:["Non-HDL","Non HDL","Non-HDL Cholesterol","Non HDL Cholesterol"],units:["mg/dl","mg/dl"],outputUnit:"mg/dl",compute:v=>v[0]-v[1]},
  {id:"bun-from-urea",label:"BUN = Urea × 28 ÷ 60",sources:["Urea"],aliases:[],targets:["BUN","Blood Urea Nitrogen","Blood Urea"],units:["mg/dl"],outputUnit:"mg/dl",compute:v=>v[0]*28/60},
  {id:"urea-from-bun",label:"Urea = BUN × 60 ÷ 28",sources:["BUN"],aliases:[],targets:["Urea"],units:["mg/dl"],outputUnit:"mg/dl",compute:v=>v[0]*60/28},
  {id:"eag",label:"eAG = HbA1c × 28.7 − 46.7",sources:["HbA1c"],aliases:[],targets:["Estimated Average Glucose","Estimated Average Glucose (EAG)","EAG"],units:["%"],outputUnit:"mg/dl",method:"ADAG estimate; validated HbA1c method required",validate:v=>v[0]>100?"HbA1c percentage cannot exceed 100.":undefined,compute:v=>v[0]*28.7-46.7},
@@ -199,7 +199,7 @@ export function resolveCalculationDependencyIds(_parameters:CalculationParameter
  if(!ids.length)return [];
  return hasDuplicateCalculationSources(ids)?[]:ids;
 }
-export function normalizeCalculationUnit(value?:string): string { const unit=(value??"").toLowerCase().replace(/[µμ]/g,"u").replace(/\s+/g,""); return ({"×10⁶/ul":"million/ul","×10³/ul":"thousand/ul","millions/ul":"million/ul","million/cumm":"million/ul","10^6/ul":"million/ul","cells/cumm":"cells/ul","/ul":"cells/ul","10^3/ul":"thousand/ul","10^9/l":"thousand/ul", "":"","1":"ratio"} as Record<string,string>)[unit]??unit; }
+export function normalizeCalculationUnit(value?:string): string { const unit=(value??"").toLowerCase().replace(/[µμ]/g,"u").replace(/\s+/g,""); return ({"×10⁶/ul":"million/ul","×10³/ul":"thousand/ul","millions/ul":"million/ul","million/cumm":"million/ul","10^6/ul":"million/ul","cells/cumm":"cells/ul","/ul":"cells/ul","10^3/ul":"thousand/ul","10^9/l":"thousand/ul", "":"","1":"ratio","gm/dl":"g/dl","gms/dl":"g/dl"} as Record<string,string>)[unit]??unit; }
 /** CBP units remain display metadata, never arithmetic operands. */
 export function isNumericOnlyCalculation(id:string):boolean { return ["pcv-hb-approx","mch","mcv","mchc"].includes(id); }
 export function calculationUnitsMatch(formula:Formula, sourceUnits:string[], outputUnit:string):boolean {

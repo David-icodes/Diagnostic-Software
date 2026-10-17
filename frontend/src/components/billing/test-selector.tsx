@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/common/empty-state";
 import { ErrorState } from "@/components/common/error-state";
-import { fetchDepartments, fetchLabTests, fetchLabTest } from "@/services/billing";
+import { fetchDepartments, fetchAllEligibleLabTests, fetchLabTest } from "@/services/billing";
 import { formatMoney, cn } from "@/lib/utils";
 import type { LabTest } from "@/types/billing";
+import { departmentFilter } from "@/lib/catalogue-selection";
 import { selectedTransfer } from "@/lib/lab-workflows";
 import { api } from "@/lib/api";
 
@@ -17,6 +18,7 @@ export interface OutsideChoice { out?: boolean; outsideLabId?: string | null; ou
 
 export interface SelectedTestItem extends OutsideChoice {
   packageId?: string;
+  includedTests?: { testId: string; testName: string; departmentName: string }[];
   testId: string;
   testCode: string;
   testName: string;
@@ -61,8 +63,8 @@ export function TestSelector({
   const testsQuery = useQuery({
     queryKey: ["lab-tests", "by-department", selectedDepartmentId, testSearch],
     queryFn: () =>
-      fetchLabTests({
-        departmentId: selectedDepartmentId ?? undefined,
+      fetchAllEligibleLabTests({
+        departmentId: departmentFilter(selectedDepartmentId),
         search: testSearch || undefined,
         status: "active",
         page: 1,
@@ -70,7 +72,7 @@ export function TestSelector({
       }),
     enabled: Boolean(selectedDepartmentId)&&selectedDepartmentId!=="__packages",
   });
-  const packagesQuery=useQuery({queryKey:["packages","billing",testSearch],enabled:allowPackages&&selectedDepartmentId==="__packages",queryFn:()=>api.get<{id:string;name:string;amount:number}[]>(`/lab-tests/packages?${new URLSearchParams({search:testSearch})}`)});
+  const packagesQuery=useQuery({queryKey:["packages","billing",testSearch],enabled:allowPackages&&(selectedDepartmentId==="__packages"||selectedDepartmentId==="__all"),queryFn:()=>api.get<{id:string;name:string;amount:number;items:{testId:string;departmentId:string}[]}[]>(`/lab-tests/packages?${new URLSearchParams({search:testSearch})}`)});
 
   const containerQuery = useQuery({
     queryKey: ["lab-tests", "selected-containers", items.filter((item) => !item.packageId && item.containerType === undefined).map((item) => item.testId)],
@@ -79,14 +81,17 @@ export function TestSelector({
       catch { return [item.testId, ""]; }
     }))), enabled: items.some((item) => !item.packageId && item.containerType === undefined),
   });
-  const departments = [...(departmentsQuery.data??[]),...(allowPackages?[{id:"__packages",name:"Packages/Profiles",active:true,testCount:packagesQuery.data?.length??0}]:[])];
+  const departments = [{id:"__all",name:"ALL",active:true,testCount:undefined},...(departmentsQuery.data??[]),...(allowPackages?[{id:"__packages",name:"Packages/Profiles",active:true,testCount:packagesQuery.data?.length??0}]:[])];
   const visibleDepartments = departmentSearch.trim()
     ? departments.filter((department) =>
         department.name.toLowerCase().includes(departmentSearch.trim().toLowerCase()),
       )
     : departments;
-  const tests:LabTest[] = selectedDepartmentId==="__packages"?(packagesQuery.data??[]).map(pack=>({id:pack.id,packageId:pack.id,testCode:"PACKAGE",testName:pack.name,shortName:pack.name,departmentId:"__packages",price:pack.amount,active:true,resultMode:"parameter" as LabTest["resultMode"]})):(testsQuery.data?.items??[]);
-  const selectionQuery=selectedDepartmentId==="__packages"?packagesQuery:testsQuery;
+  const packageOptions: LabTest[] = (packagesQuery.data ?? []).map(pack => ({id:pack.id,packageId:pack.id,testCode:"PACKAGE",testName:pack.name,shortName:pack.name,departmentId:"__packages",price:pack.amount,active:true,resultMode:"PARAMETER_BASED"}));
+  const tests: LabTest[] = selectedDepartmentId === "__packages" ? packageOptions : [...(testsQuery.data?.items ?? []).filter(test => departmentsQuery.data?.some(department => department.id === test.departmentId)), ...(selectedDepartmentId === "__all" ? packageOptions : [])];
+  const selectionQuery = selectedDepartmentId === "__packages" ? packagesQuery : testsQuery;
+  const selectionError = selectionQuery.error || (selectedDepartmentId === "__all" ? packagesQuery.error : null);
+  const selectionLoading = selectionQuery.isLoading || (selectedDepartmentId === "__all" && packagesQuery.isLoading);
 
   const selectedIds = new Set(items.map((item) => item.testId));
   const totalAmount = items.reduce(
@@ -101,7 +106,7 @@ export function TestSelector({
   const transferTest = selectedTransfer(tests, focusedTestId, selectedIds);
   const transferSelected = () => {
     if (!transferTest || !activeDepartment || disabled) return;
-    onAdd(transferTest, activeDepartment.name);
+    onAdd(transferTest, transferTest.packageId ? "Packages/Profiles" : departments.find(dept => dept.id === transferTest.departmentId)?.name ?? "Unassigned");
     setSelectedItemId(transferTest.id);
     setFocusedTestId(null);
   };
@@ -209,16 +214,16 @@ export function TestSelector({
         <div className="min-h-0 flex-1 overflow-y-auto">
           {!selectedDepartmentId ? (
             <EmptyState message="Select a department to view tests" />
-          ) : selectionQuery.isLoading ? (
+          ) : selectionLoading ? (
             <div className="flex flex-col gap-1.5 p-2" aria-busy>
               {Array.from({ length: 6 }).map((_, index) => (
                 <div key={index} className="h-[28px] animate-pulse rounded bg-muted" />
               ))}
             </div>
-          ) : selectionQuery.error ? (
+          ) : selectionError ? (
             <ErrorState
-              message={selectionQuery.error.message}
-              onRetry={() => void selectionQuery.refetch()}
+              message={selectionError.message}
+              onRetry={() => { void testsQuery.refetch(); if (allowPackages) void packagesQuery.refetch(); }}
             />
           ) : tests.length === 0 ? (
             <EmptyState message="No tests found" />
@@ -316,6 +321,7 @@ export function TestSelector({
                       <p className="break-words text-xs font-medium text-slate-800">
                         {item.testName}
                       </p>
+                      {item.includedTests && <ul className="mt-1 space-y-0.5 text-[11px] text-slate-600">{item.includedTests.map(member => <li key={member.testId}>{member.testName}</li>)}</ul>}
                       <p className="font-mono text-[11px] text-muted-foreground">
                         {item.testCode === "INVG2044" ? "" : item.testCode}
                       </p>

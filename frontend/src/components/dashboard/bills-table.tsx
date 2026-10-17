@@ -48,6 +48,12 @@ export function BillsTable<T>({
   canLoadMore,
   onLoadMore,
 }: BillsTableProps<T>) {
+  const cellContent=(row:T,column:ColumnDef<T>,index:number)=>{
+    const raw=(row as Record<string,unknown>)[column.key];
+    const content=column.render ? column.render(row,index) : String(raw ?? "");
+    return tableClassName === "lis-due-bills-table" && ["billNo","patientId","patientName","billDate"].includes(column.key)
+      ? <span className="lis-due-cell-text" title={String(raw ?? "")}>{content}</span> : content;
+  };
   const container=useRef<HTMLDivElement>(null);
   useEffect(()=>{
     const node=container.current;
@@ -56,8 +62,8 @@ export function BillsTable<T>({
     fill();const observer=new ResizeObserver(fill);observer.observe(node);return()=>observer.disconnect();
   },[rows.length,canLoadMore,onLoadMore]);
   return (
-    <div ref={container} onScroll={onScroll} className={cn("overflow-auto", maxHeightClass)}>
-      <table className={cn("min-w-full table-fixed border-collapse text-sm", tableClassName)}>
+    <div ref={container} onScroll={onScroll} className={cn("min-w-0 max-w-full overflow-auto", maxHeightClass)}>
+      <table className={cn("w-full min-w-full table-fixed border-collapse text-sm", tableClassName)}>
         {columns.some(column => column.width) && <colgroup>{columns.map(column => <col key={column.key} style={{width:column.width}} />)}</colgroup>}
         <TableHeader className="sticky top-0 z-10">
           <TableRow className="border-b border-border bg-muted hover:bg-muted">
@@ -105,9 +111,7 @@ export function BillsTable<T>({
                       column.className,
                     )}
                   >
-                    {column.render
-                      ? column.render(row, index)
-                      : String((row as Record<string, unknown>)[column.key] ?? "")}
+                    {cellContent(row,column,index)}
                   </TableCell>
                 ))}
               </TableRow>

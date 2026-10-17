@@ -108,6 +108,8 @@ export type ParameterResultType =
   | "RANGE";
 
 export interface LabTestParameter {
+  defaultValue?: string;
+  reportValueOnly?: boolean;
   id: string;
   testId: string;
   parameterName: string;
@@ -183,6 +185,7 @@ export interface ReferenceResolution {
 
 /** One ordered test of a bill, with the reference resolved for its patient. */
 export interface BillTestParameter {
+  reportValueOnly?: boolean;
   calculationEditingAllowed?:boolean;
   parameterId: string;
   parameterName: string;
@@ -269,6 +272,7 @@ export interface LabTestResult {
   referenceSnapshot?: ReferenceSnapshot;
   method?: string;
   result: ResultValue;
+  resultDisplay?: string;
   enteredBy: string;
   enteredAt: string;
   version: number;
@@ -290,6 +294,7 @@ export interface SubmitResultsRequest {
   entries: Array<{
     parameterId: string;
     result: ResultValue;
+  resultDisplay?: string;
   }>;
 }
 

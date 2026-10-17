@@ -48,10 +48,10 @@ export function ResultReportUpload({ billId, testId, testName, billNumber, patie
       {(reports.data ?? []).some(report=>report.external) && <label className="my-2 block text-sm">External report print header
         <select aria-label="External report print header" value={header} onChange={event=>setHeader(event.target.value as typeof header)} disabled={downloading}>
           <option value="header">Including Header</option><option value="none">Without Header</option><option value="letterhead">Print On LetterHead</option>
-        </select><span className="block text-xs">A separate cover preserves all original pages. Printing does not submit or approve in-house results.</span>
+        </select><span className="block text-xs">Include Header adds stationery above the original first page without shrinking its content. The derived first page is taller; use Original size or a suitable paper size when printing. Stored PDFs are never changed. Printing does not submit or approve in-house results.</span>
       </label>}
-      {(reports.data ?? []).map(report => <div key={report.id} className="my-2 flex flex-wrap items-center gap-2 border-t py-2">
-        <span className="break-all text-sm">{report.fileName}</span>
+      {(reports.data ?? []).map((report,index) => <div key={report.id} className="my-2 flex flex-wrap items-center gap-2 border-t py-2">
+        <span className="break-all text-sm">{report.fileName}{index === 0 ? " — Current report" : " — Previous version"}</span>
         <Button variant="outline" size="sm" disabled={downloading || upload.isPending} onClick={()=>void openPdf(report.id)}>View PDF</Button>
         <Button variant="outline" size="sm" disabled={downloading || upload.isPending} onClick={async()=>{
           setError(null);setDownloading(true);try {await downloadResultUpload(billId,testId,report);} catch(reason){setError(reason instanceof Error?reason.message:"Unable to download report.");}finally{setDownloading(false);}

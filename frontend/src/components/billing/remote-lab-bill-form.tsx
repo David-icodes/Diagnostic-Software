@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { ApiError } from "@/lib/api";
+import { ApiError, api } from "@/lib/api";
 import {
   OspPatientDetails,
   birthAgeFromDob,
@@ -30,6 +30,7 @@ import {
 import { OspPatientSearch } from "@/components/billing/osp-patient-search";
 import { ClientPicker } from "@/components/billing/client-picker";
 import { Dialog } from "@/components/ui/dialog";
+import { InvoicePrintDialog } from "@/components/test-result/invoice-print-dialog";
 import {
   TestSelector,
   type OutsideChoice, type SelectedTestItem,
@@ -37,7 +38,7 @@ import {
 import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { BillingPaymentSection } from "@/components/billing/billing-payment-section";
 import { fetchClientTariffs } from "@/services/lab-masters";
-import { createLabBill } from "@/services/billing";
+import { createLabBill, fetchLabTest, fetchDepartments } from "@/services/billing";
 import {
   createPatient,
   updatePatient,
@@ -49,6 +50,7 @@ import { patientFormSchema, type PatientFormValues } from "@/validations/patient
 import type { Patient } from "@/types/patient";
 import {
   PATIENT_TYPES,
+  type LabBill,
   type Doctor,
   type LabClient,
   type LabTest,
@@ -192,6 +194,8 @@ export function RemoteLabBillForm({
   const queryClient = useQueryClient();
   const submittingRef = useRef(false);
   const [successDialog, setSuccessDialog] = useState(false);
+  const [savedBill, setSavedBill] = useState<LabBill | null>(null);
+  const [printSavedBill, setPrintSavedBill] = useState(false);
   const [patientNotice, setPatientNotice] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [details, setDetails] = useState<PatientDetails>(
@@ -333,7 +337,7 @@ export function RemoteLabBillForm({
         throw new ApiError("Please correct the highlighted patient details.", 400);
       }
 
-      return createLabBill({
+      const saved = await createLabBill({
         patientId: patientForBill.id,
         patientType: isVendor ? "osp" : patientType,
         billType: isVendor ? "vendor" : undefined,
@@ -354,6 +358,7 @@ export function RemoteLabBillForm({
         displayComments: displayOnBill ? comments.trim() || undefined : undefined,
         status,
       });
+      return { ...saved, patientId: patientForBill };
     },
     onSuccess: (bill) => {
       // A new bill changes the bill lists, the patient's bills and the
@@ -366,7 +371,7 @@ export function RemoteLabBillForm({
         queryKeys.dashboard,
       );
       if (isVendor) router.push(`/billing/osp/${bill.id}`);
-      else { clearAll(); setSuccessDialog(true); }
+      else { setSavedBill(bill); clearAll(); setSuccessDialog(true); }
     },
     onError: (error) => {
       setFormError(error.message || "Failed to save the bill.");
@@ -386,6 +391,20 @@ export function RemoteLabBillForm({
   });
 
   const handleAddTest = async (test: LabTest, departmentName: string, outside: OutsideChoice = {}) => {
+    let includedTests: SelectedTestItem["includedTests"];
+    if (test.packageId) {
+      if (isVendor) { setFormError("Vendor package tariffs are not configured; select individually tariffed tests."); return; }
+      try {
+        const [packages, departments] = await Promise.all([
+          api.get<{id:string;items:{testId:string}[]}[]>("/lab-tests/packages"), fetchDepartments({status:"active"}),
+        ]);
+        const pack = packages.find(row => row.id === test.packageId);
+        if (!pack?.items.length) throw new Error("This package no longer has eligible tests. Reload the catalogue.");
+        const members = await Promise.all(pack.items.map(item => fetchLabTest(item.testId)));
+        if (members.some(member => !member.active || !departments.some(dept => dept.id === member.departmentId))) throw new Error("This package contains an unavailable test or department. Review its configuration before billing.");
+        includedTests = members.map(member => ({testId:member.id,testName:member.testName,departmentName:departments.find(dept => dept.id === member.departmentId)!.name}));
+      } catch (error) { setFormError(error instanceof Error ? error.message : "Unable to load package tests."); return; }
+    }
     let unitPrice=test.price;
     if(isVendor){if(!client){setFormError("Select Client before adding tests.");return;}try{const rows=await fetchClientTariffs(client.id,test.departmentId);const tariff=rows.find(row=>row.testId===test.id);if(tariff?.clientPrice===undefined){setFormError("No applicable client tariff for this test. Configure it in Client Wise Lab Tariffs.");return;}if(clientSelectionRef.current!==client.id)return;unitPrice=tariff.clientPrice;}catch(error){setFormError(error instanceof Error?error.message:"Could not load client tariff");return;}}
 
@@ -396,6 +415,7 @@ export function RemoteLabBillForm({
         {
           testId: test.id,
           packageId:test.packageId,
+          includedTests,
           testCode: test.testCode,
           testName: test.testName,
           departmentName,
@@ -638,7 +658,8 @@ const saveDraft = () => {
         ) : null}
       </BillActionBar>
 
-      <Dialog open={successDialog} centered title="OSP lab bill registered successfully." onOpenChange={setSuccessDialog}><div className="flex justify-center"><Button onClick={() => setSuccessDialog(false)}>Close</Button></div></Dialog>
+      <Dialog open={successDialog} centered title="OSP Bill saved successfully. Do you want to print it now?" onOpenChange={setSuccessDialog}><div className="flex justify-center gap-2"><Button disabled={!savedBill} onClick={() => { setSuccessDialog(false); setPrintSavedBill(true); }}>Yes, Print</Button><Button variant="outline" onClick={() => setSuccessDialog(false)}>No</Button></div></Dialog>
+      {printSavedBill && savedBill && <InvoicePrintDialog bill={savedBill} autoPrint onClose={() => setPrintSavedBill(false)} />}
     </div>
   );
 }

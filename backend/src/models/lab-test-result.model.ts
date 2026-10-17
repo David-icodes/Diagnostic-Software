@@ -6,6 +6,7 @@ export interface CalculationSnapshot {definitionKind?:"DEVELOPMENT_ONE_TIME"|"DE
 export interface IResultRevision {
   calculationSnapshot?: CalculationSnapshot;
   result: ResultValue;
+  resultDisplay?: string;
   enteredBy: Types.ObjectId;
   enteredAt: Date;
   version: number;
@@ -58,6 +59,7 @@ export interface ILabTestResult {
   referenceSnapshot?: IReferenceSnapshot;
   method?: string;
   result: ResultValue;
+  resultDisplay?: string;
   enteredBy: Types.ObjectId;
   enteredAt: Date;
   version: number;
@@ -95,6 +97,7 @@ const resultRevisionSchema = new Schema<IResultRevision>(
   {
     calculationSnapshot:{type:Schema.Types.Mixed,default:undefined},
     result: { type: Schema.Types.Mixed, required: true },
+    resultDisplay: { type: String, maxlength: 2000 },
     enteredBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     enteredAt: { type: Date, required: true },
     version: { type: Number, required: true, min: 1 },
@@ -122,6 +125,7 @@ const labTestResultSchema = new Schema<ILabTestResult>(
     referenceSnapshot: { type: referenceSnapshotSchema },
     method: { type: String, trim: true, maxlength: 120 },
     result: { type: Schema.Types.Mixed, required: true },
+    resultDisplay: { type: String, maxlength: 2000 },
     enteredBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     enteredAt: { type: Date, required: true },
     version: { type: Number, required: true, min: 1, default: 1 },

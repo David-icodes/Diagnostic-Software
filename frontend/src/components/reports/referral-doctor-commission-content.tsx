@@ -49,7 +49,7 @@ import {
 
 } from "@/components/reports/report-export";
 
-import { fetchDepartments, fetchDoctors, fetchLabTests } from "@/services/billing";
+import { fetchDepartments, fetchDoctors, fetchAllEligibleLabTests } from "@/services/billing";
 
 import { fetchReferralDoctorCommission } from "@/services/reports";
 
@@ -187,7 +187,7 @@ export function ReferralDoctorCommissionContent() {
 
       ),
 
-      fetchLabTests({ limit: 1000, status: "active" }).then((res) =>
+      fetchAllEligibleLabTests({ limit: 1000, status: "active" }).then((res) =>
 
         res.items
 

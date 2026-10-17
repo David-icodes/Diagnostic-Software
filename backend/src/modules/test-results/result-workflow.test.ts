@@ -56,13 +56,20 @@ test("patient dues and successful/failed/partial submissions are verified from s
   });
   t.mock.method(AuditLog, "find", (filter: any) => query(audits.filter((row) => filter.action.$in.includes(row.action) &&
     filter.entity.$in.some((id: Types.ObjectId) => String(id) === String(row.entity))).reverse()));
-  const input = { billId: String(billId), testId: String(testId), entries: [{ parameterId: String(p1), result: 13 }, { parameterId: String(p2), result: 7 }] };
+  const input = { billId: String(billId), testId: String(testId), entries: [{ parameterId: String(p1), result: 13, resultDisplay: "13.0" }, { parameterId: String(p2), result: 7 }] };
 
   assert.equal((await getResultWorkflow(String(billId))).tests[0].submitted, false);
   await assert.rejects(assertResultReportAllowed(String(billId), [String(testId)]), /Submit/);
   // A patient with due can submit; due affects only report generation.
   bill.dueAmount = 25;
   await submitTestResults(String(userId), input);
+  assert.equal(rows[0].resultDisplay, "13.0");
+  input.entries[0].resultDisplay = "13.00";
+  await submitTestResults(String(userId), input);
+  assert.equal(rows[0].result, 13);
+  assert.equal(rows[0].resultDisplay, "13.00");
+  assert.equal(rows[0].revisions[0].resultDisplay, "13.0");
+  await assert.rejects(submitTestResults(String(userId), {...input, entries: [{parameterId:String(p1), result:13, resultDisplay:"13.01"}]}), /exact numeric result/);
   assert.equal((await getResultWorkflow(String(billId))).tests[0].submitted, true);
   await assert.rejects(assertResultReportAllowed(String(billId), [String(testId)]), /outstanding due/);
   await assert.rejects(assertResultReportAllowed(String(billId), [String(testId)], false), /outstanding due/);

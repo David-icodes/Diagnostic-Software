@@ -1,28 +1,41 @@
 "use client";
+import {PackageInvoiceDetails} from "@/components/billing/package-invoice-details";
 
 import { createPortal } from "react-dom";
-import { useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { formatDateTime, formatGender, formatMoney } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { rupeesInWords } from "@/lib/amount-words";
-import { checkBillDocumentEligibility } from "@/services/test-results";
+import { checkInvoicePrintEligibility } from "@/services/test-results";
 import { printDocument } from "@/lib/print-document";
 import type { LabBill } from "@/types/billing";
+import { selectedColumns } from "@/lib/catalogue-selection";
 import { groupedBillItems } from "@/lib/package-billing";
 
 /** Billing reprint, separate from clinical test-result reports. No writes. */
-export function InvoicePrintDialog({ bill, onClose }: { bill: LabBill; onClose: () => void }) {
+export function InvoicePrintDialog({ bill, onClose, autoPrint = false }: { bill: LabBill; onClose: () => void; autoPrint?: boolean }) {
   const { user } = useAuth();
   const documentRef = useRef<HTMLDivElement>(null);
   const [printError, setPrintError] = useState<string | null>(null);
+  const printing = useRef(false);
+  const [busy, setBusy] = useState(false);
   const patient = typeof bill.patientId === "object" ? bill.patientId : null;
+  const autoStarted = useRef(false);
+  const startPrint = useCallback(async () => {
+    if (printing.current || !patient) return;
+    printing.current = true; setBusy(true); setPrintError(null);
+    try { await checkInvoicePrintEligibility(bill.id); await printDocument(documentRef.current); }
+    catch (error) { setPrintError(error instanceof Error ? error.message : "Unable to print this bill."); }
+    finally { printing.current = false; setBusy(false); }
+  }, [bill.id, patient]);
+  useEffect(() => { if (autoPrint && patient && !autoStarted.current) { autoStarted.current = true; void startPrint(); } }, [autoPrint, patient, startPrint]);
   return createPortal(<Dialog open onOpenChange={(open) => { if (!open) onClose(); }} title="Lab bill print preview" size="lg" className="lis-print-dialog">
     <div className="lis-print-controls flex justify-end gap-2 pb-3">
       {printError && <p role="alert">{printError}</p>}
-      <Button disabled={!patient} onClick={async () => { setPrintError(null); try { await checkBillDocumentEligibility(bill.id); await printDocument(documentRef.current); } catch (error) { setPrintError(error instanceof Error ? error.message : "Unable to print this bill."); } }}>Print bill</Button>
+      <Button disabled={!patient || busy} onClick={() => void startPrint()}>{busy ? "Preparing…" : "Print bill"}</Button>
       <Button variant="outline" onClick={onClose}>Close preview</Button>
     </div>
     {!patient ? <p role="alert">Patient information is not available for this bill.</p> : <div ref={documentRef}><InvoiceDocument bill={bill} printedBy={user?.name ?? ""} /></div>}
@@ -31,7 +44,6 @@ export function InvoicePrintDialog({ bill, onClose }: { bill: LabBill; onClose: 
 
 export function InvoiceDocument({ bill, printedBy }: { bill: LabBill; printedBy: string }) {
   const patient = typeof bill.patientId === "object" ? bill.patientId : null;
-  if(bill.dueAmount>0)return <p role="alert">Settle outstanding dues before generating an invoice.</p>;
   if (!patient) return <p role="alert">Patient information is not available for this bill.</p>;
   return (<div  className="lis-print-document" aria-label="Lab bill invoice preview">
       <div className="lis-invoice-page-watermark" aria-hidden="true"><Image src="/Main logo.png" alt="" width={1254} height={1254} unoptimized loading="eager" /></div>
@@ -44,21 +56,26 @@ export function InvoiceDocument({ bill, printedBy }: { bill: LabBill; printedBy:
         <div className="lis-invoice-info">
           <div><strong>PATIENT ID</strong><span>: {patient.patientId}</span></div>
           <div><strong>BILL NO</strong><span>: {bill.billNumber}</span></div>
-          <div><strong>PATIENT NAME</strong><span>: {patient.fullName.toUpperCase()}</span></div>
+          <div><strong>PATIENT NAME</strong><span className="lis-invoice-patient-name">: {patient.fullName.toUpperCase()}</span></div>
           <div><strong>BILL DATE</strong><span>: {formatDateTime(bill.createdAt)}</span></div>
           <div><strong>AGE/SEX</strong><span>: {patient.age ?? "—"} years / {formatGender(patient.gender)}</span></div>
           <div><strong>MOBILE</strong><span>: {patient.mobile}</span></div>
           <div><strong>REFER BY</strong><span>: {bill.doctorName ?? "Self"}</span></div>
         </div>
-        <table className="mt-3"><thead><tr><th className="w-8 text-left">SNo</th><th className="text-left">INVESTIGATIONS</th><th className="w-24 text-right">AMOUNT</th></tr></thead>
-          <tbody>{groupedBillItems(bill.items).map((item,index) => <tr key={item.testId}><td>{index+1}</td><td>{item.testCode && item.testCode !== "INVG2044" ? `${item.testCode} - ` : ""}{item.testName}{item.quantity !== 1 ? ` × ${item.quantity}` : ""}</td><td className="text-right">{formatMoney(item.total)}</td></tr>)}</tbody>
+        <div className={`mt-3 grid gap-3 ${bill.billType !== "vendor" && groupedBillItems(bill.items).length > 5 ? "grid-cols-2" : "grid-cols-1"}`}>
+          {(bill.billType !== "vendor" ? selectedColumns(groupedBillItems(bill.items)) : [groupedBillItems(bill.items)]).map((column,columnIndex) => (
+        <table key={columnIndex} className="w-full table-fixed"><thead><tr><th className="w-8 text-left">SNo</th><th className="text-left">INVESTIGATIONS</th><th className="w-24 text-right">AMOUNT</th></tr></thead>
+          <tbody>{column.map((item,index) => <Fragment key={item.testId}><tr><td>{columnIndex * 5 + index+1}</td><td className="break-words whitespace-normal">{item.testCode && item.testCode !== "INVG2044" ? `${item.testCode} - ` : ""}{item.testName}{item.quantity !== 1 ? ` × ${item.quantity}` : ""}</td><td className="text-right font-bold">{item.includedTests?"":formatMoney(item.total)}</td></tr>
+            {item.includedTests && <tr><td colSpan={3}><PackageInvoiceDetails members={item.includedTests} total={item.total}/></td></tr>}</Fragment>)}</tbody>
         </table>
+          ))}
+        </div>
         <div className="grid grid-cols-2 border border-t-0 border-black p-1">
           <div><p>{rupeesInWords(bill.paidAmount)}</p><p>MODE OF PAYMENT : {bill.paymentMode.replaceAll("_"," ").toUpperCase()}</p>{bill.displayComments && <p>{bill.displayComments}</p>}</div>
           <dl className="grid grid-cols-2 text-right">
             <dt>TOTAL AMOUNT :</dt><dd>{formatMoney(bill.totalAmount)}</dd>
             {bill.discountAmount > 0 && <><dt>DISCOUNT :</dt><dd>{formatMoney(bill.discountAmount)}</dd></>}
-            <dt>NET AMOUNT :</dt><dd>{formatMoney(bill.netAmount)}</dd>
+            <dt>NET AMOUNT :</dt><dd className="font-bold">{formatMoney(bill.netAmount)}</dd>
             <dt>PAID AMOUNT :</dt><dd>{formatMoney(bill.paidAmount)}</dd>
             <dt>BALANCE AMOUNT :</dt><dd>{formatMoney(bill.dueAmount)}</dd>
           </dl>

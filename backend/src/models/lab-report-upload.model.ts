@@ -1,6 +1,8 @@
 import { model, Schema, type Types } from "mongoose";
 
 interface ILabReportUpload {
+  selectedAt?: Date;
+  selectedBy?: Types.ObjectId;
   sha256?: string;
   collectionId?: Types.ObjectId;
   billId: Types.ObjectId;
@@ -16,6 +18,8 @@ interface ILabReportUpload {
 
 // Separate attachment collection: no changes to bills, samples or clinical results.
 const schema = new Schema<ILabReportUpload>({
+  selectedAt: {type:Date},
+  selectedBy: {type:Schema.Types.ObjectId,ref:"User"},
   sha256: {type:String,match:/^[a-f0-9]{64}$/},
   collectionId: {type:Schema.Types.ObjectId,ref:"SampleCollection"},
   billId: { type: Schema.Types.ObjectId, ref: "LabBill", required: true },

@@ -50,14 +50,19 @@ test("same PDF retries reuse the saved attachment, while invalid files never rea
   t.mock.method(LabBill, "findById", () => q({ _id: billId, patientId, status: "generated", items: [{ testId }] }) as any);
   t.mock.method(LabReportUpload, "findOne", (filter: any) => {
     assert.equal(filter.sha256, createHash("sha256").update(content).digest("hex"));
-    return q({ _id: uploadId, fileName: "synthetic.pdf", size: content.length, createdAt: new Date() }) as any;
+    return q({ _id: uploadId, fileName: "synthetic.pdf", size: content.length, createdAt: new Date(), save: async function (this: {selectedAt?: Date; selectedBy?: unknown}) { assert.ok(this.selectedAt); assert.ok(this.selectedBy); } }) as any;
+  });
+  t.mock.method(LabReportUpload, "updateOne", (filter: any, update: any, options: any) => {
+    assert.equal(String(filter._id), String(uploadId)); assert.equal(options.runValidators, true);
+    assert.deepEqual(Object.keys(update.$set).sort(), ["selectedAt", "selectedBy"]);
+    return q({matchedCount: 1}) as any;
   });
   t.mock.method(LabReportUpload, "create", () => { throw Error("Must reuse the existing attachment"); });
   assert.equal((await saveReportUpload(String(new Types.ObjectId()), String(billId), String(testId), "synthetic.pdf", content)).id, String(uploadId));
   await assert.rejects(saveReportUpload(String(new Types.ObjectId()), String(billId), String(testId), "bad.pdf", Buffer.from("%PDF-invalid\n%%EOF")), /invalid/);
 });
 
-test("cover printing preserves source dimensions, rotations and bytes without rasterizing or overlaying", async () => {
+test("non-A4 PDFs receive a reserved header band and interactive PDFs reject composition", async () => {
   const [, { appendExternalPages }] = await modules;
   const cover = await PDFDocument.create(); cover.addPage([595.28, 841.89]).drawText("Synthetic cover");
   const source = await PDFDocument.create();
@@ -65,13 +70,32 @@ test("cover printing preserves source dimensions, rotations and bytes without ra
   source.addPage([792, 612]).drawText("Landscape synthetic clinical value 12.0");
   source.addPage([612, 792]).setRotation(degrees(90));
   const original = Buffer.from(await source.save()), before = Buffer.from(original);
-  const output = await PDFDocument.load(await appendExternalPages(Buffer.from(await cover.save()), original));
-  assert.equal(output.getPageCount(), 4);
+  const {sharedReportHeader}=await import("./report-header-asset.js");
+  const composed=await PDFDocument.load(await appendExternalPages(await sharedReportHeader(),original));
+  assert.equal(composed.getPageCount(),3);assert.equal(composed.getPage(0).getWidth(),612);assert.ok(composed.getPage(0).getHeight()>792);
+  const output = await PDFDocument.load(original);
+  assert.equal(output.getPageCount(), 3);
   source.getPages().forEach((page, index) => {
-    assert.deepEqual(output.getPage(index + 1).getSize(), page.getSize());
-    assert.deepEqual(output.getPage(index + 1).getRotation(), page.getRotation());
+    assert.deepEqual(output.getPage(index).getSize(), page.getSize());
+    assert.deepEqual(output.getPage(index).getRotation(), page.getRotation());
   });
   assert.deepEqual(original, before);
   source.getForm().createTextField("clinical-value").setText("15");
-  await assert.rejects(appendExternalPages(Buffer.from(await cover.save()), Buffer.from(await source.save())), /interactive or signed fields/);
+  await assert.rejects(appendExternalPages(await sharedReportHeader(), Buffer.from(await source.save())), /Interactive or signed PDFs/);
+});
+
+
+test("reserved header space preserves page count and supports existing outside headers", async () => {
+ const [, {appendExternalPages}] = await modules;
+ const cover=await PDFDocument.create();cover.addPage([595.28,841.89]).drawText("Synthetic header",{x:32,y:790,size:14});
+ const source=await PDFDocument.create();source.addPage([595.28,841.89]).drawText("Synthetic result 12.0",{x:32,y:650,size:12});
+ source.addPage([792,612]).drawText("Synthetic multipage 0.05",{x:32,y:500,size:12});
+ source.getPage(1).setRotation(degrees(90));
+ const original=Buffer.from(await source.save()),coverBytes=await (await import("./report-header-asset.js")).sharedReportHeader();
+ const bytes=await appendExternalPages(coverBytes,original);assert.notDeepEqual(bytes,original);
+ const output=await PDFDocument.load(bytes);assert.equal(output.getPageCount(),2);assert.equal(output.getPage(0).getWidth(),source.getPage(0).getWidth());assert.ok(output.getPage(0).getHeight()>source.getPage(0).getHeight());assert.deepEqual(output.getPage(1).getSize(),source.getPage(1).getSize());assert.equal(output.getPage(1).getRotation().angle,90);
+ const brandedSource=await PDFDocument.create();brandedSource.addPage([595.28,841.89]).drawText("Existing outside header",{x:32,y:790,size:14});
+ const branded=Buffer.from(await brandedSource.save());assert.equal((await PDFDocument.load(await appendExternalPages(coverBytes,branded))).getPageCount(),1);
+ const {hasBlankHeaderSpace}=await import("./external-report-space.js");
+ const graphic=await PDFDocument.create();graphic.addPage([595.28,841.89]).drawRectangle({x:0,y:800,width:595,height:25});assert.equal(await hasBlankHeaderSpace(Buffer.from(await graphic.save())),false);
 });

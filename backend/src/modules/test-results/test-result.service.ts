@@ -1,3 +1,6 @@
+import { displayPatientCode } from "../../utils/patient-code";
+import { cbcCountValueOnly } from "../../utils/cbc-report-display";
+import { validNumericDisplay } from "../../utils/result-display";
 import { withSampleResultWrite } from "../lab-samples/recollection.service";
 import {cbpSyntheticExecution} from "../lab-test-parameters/cbp-synthetic-execution.service";
 import { formulaEditorContextAllowed } from "../../utils/formula-editor-context";
@@ -151,6 +154,7 @@ export interface BillTestEntry {
   /** False when the bill item no longer links to a usable test master. */
   testLinked: boolean;
   parameters: Array<{
+    reportValueOnly?: boolean;
     parameterId: string;
     parameterName: string;
     itemType?: ILabTestParameter["itemType"];
@@ -276,6 +280,7 @@ export async function getBillResultEntry(
         return rows.map(({parameter, saved}) => {
         const resolution = resolutions.get(String(parameter._id));
         return ({
+        reportValueOnly: cbcCountValueOnly(parameter),
         parameterId: String(parameter._id),
         parameterName: parameter.parameterName,
         itemType: parameter.itemType ?? "PARAMETER",
@@ -321,7 +326,7 @@ export async function getBillResultEntry(
     billId: String(bill._id),
     billNumber: bill.billNumber,
     patientId: String(bill.patientId),
-    ...(patient ? { patientCode: patient.patientId } : {}),
+    ...(patient ? { patientCode: displayPatientCode(patient.patientId) } : {}),
     ...(patient ? { patientName: patient.fullName } : {}),
     ...(patient?.gender ? { patientGender: patient.gender } : {}),
     ...(patient?.dateOfBirth ? { patientDateOfBirth: patient.dateOfBirth } : {}),
@@ -395,7 +400,7 @@ export async function listTestResults(
  */
 export async function submitTestResults(
   userId: string,
-  input: { billId: string; testId: string; collectionId?: string; calculationProposals?:CalculationProposal[]; acceptedCalculationIds?:string[]; acceptedCalculationRevisions?:Record<string,number>; entries: Array<{ parameterId: string; result: ResultValue }> },
+  input: { billId: string; testId: string; collectionId?: string; calculationProposals?:CalculationProposal[]; acceptedCalculationIds?:string[]; acceptedCalculationRevisions?:Record<string,number>; entries: Array<{ parameterId: string; result: ResultValue; resultDisplay?: string }> },
 ): Promise<{ results: ILabTestResult[]; testId: string }> {
   if (!Types.ObjectId.isValid(input.billId) || !Types.ObjectId.isValid(input.testId)) {
     throw new ApiError(400, "Invalid bill or test ID");
@@ -503,6 +508,7 @@ export async function submitTestResults(
   for (const entry of entries) {
     const parameter = parameterMap.get(entry.parameterId)!;
     assertParameterTypeMatches(parameter, entry.result);
+    if (entry.resultDisplay !== undefined && !validNumericDisplay(entry.result, entry.resultDisplay)) throw new ApiError(422, "Result display must represent the exact numeric result");
   }
 
   return withSampleResultWrite(input.billId, input.testId, input.collectionId, async (session, collectionId) => {
@@ -559,6 +565,7 @@ export async function submitTestResults(
           ),
           method: parameter.method,
           result: entry.result,
+          resultDisplay: entry.resultDisplay,
           enteredBy,
           enteredAt: now,
           version: 1,
@@ -571,6 +578,7 @@ export async function submitTestResults(
 
       existing.revisions.push({
         result: existing.result,
+        resultDisplay: existing.resultDisplay,
         calculationSnapshot:existing.calculationSnapshot,
         enteredBy: existing.enteredBy,
         enteredAt: existing.enteredAt,
@@ -587,6 +595,7 @@ export async function submitTestResults(
       existing.collectionId = collectionId;
       existing.superseded = false;
       existing.result = entry.result;
+      existing.resultDisplay = entry.resultDisplay;
       existing.calculationSnapshot = calculationSnapshot;
       existing.enteredBy = enteredBy;
       existing.enteredAt = now;

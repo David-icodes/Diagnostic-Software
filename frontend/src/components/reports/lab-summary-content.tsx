@@ -29,7 +29,7 @@ import {
   type ReportExportFormat,
   reportCsvName,
 } from "@/components/reports/report-export";
-import { fetchDepartments, fetchLabTests } from "@/services/billing";
+import { fetchDepartments, fetchAllEligibleLabTests } from "@/services/billing";
 import { fetchLabSummary } from "@/services/reports";
 import {
   APPROVAL_STATUS_OPTIONS,
@@ -96,7 +96,7 @@ export function LabSummaryContent() {
           .map((row) => ({ value: row.id, label: row.name }))
           .sort((a, b) => a.label.localeCompare(b.label)),
       ),
-      fetchLabTests({ limit: 1000, status: "active" }).then((res) =>
+      fetchAllEligibleLabTests({ limit: 1000, status: "active" }).then((res) =>
         res.items
           .filter((row) => row.active !== false)
           .map((row) => ({
