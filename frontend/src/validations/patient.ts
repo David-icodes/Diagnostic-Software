@@ -35,6 +35,7 @@ const dateOfBirthField = z
  */
 export const patientFormSchema = z
   .object({
+    title: optionalText(20),
     firstName: z
       .string()
       .trim()
@@ -81,6 +82,7 @@ export function toFormValues(
   patient: PatientFormValues | undefined | null,
 ): PatientFormValues {
   return {
+    title: patient?.title ?? "",
     firstName: patient?.firstName ?? "",
     lastName: patient?.lastName ?? "",
     gender: patient?.gender ?? "male",

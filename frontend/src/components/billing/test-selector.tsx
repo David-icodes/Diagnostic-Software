@@ -30,10 +30,12 @@ export interface SelectedTestItem extends OutsideChoice {
 
 interface TestSelectorProps {
   allowPackages?: boolean;
+  catalogueSource?: {departments:{id:string;name:string;testCount?:number}[];tests:LabTest[]};
   items: SelectedTestItem[];
   onAdd: (test: LabTest, departmentName: string, outside?: OutsideChoice) => void;
   onRemove: (testId: string) => void;
   onQuantityChange: (testId: string, quantity: number) => void;
+  onUnitPriceChange?: (testId: string, raw: string) => void;
   disabled?: boolean;
   selectedTitle?: string;
   showSerial?: boolean;
@@ -41,9 +43,11 @@ interface TestSelectorProps {
 
 export function TestSelector({
   allowPackages=false,
+  catalogueSource,
   items,
   onAdd,
   onRemove,
+  onUnitPriceChange,
   disabled = false,
   selectedTitle = "Selected Lab Tests",
   showSerial = true,
@@ -58,6 +62,7 @@ export function TestSelector({
   const departmentsQuery = useQuery({
     queryKey: ["departments", "all"],
     queryFn: () => fetchDepartments({ status: "active" }),
+    enabled:!catalogueSource,
   });
 
   const testsQuery = useQuery({
@@ -70,7 +75,7 @@ export function TestSelector({
         page: 1,
         limit: 100,
       }),
-    enabled: Boolean(selectedDepartmentId)&&selectedDepartmentId!=="__packages",
+    enabled: !catalogueSource&&Boolean(selectedDepartmentId)&&selectedDepartmentId!=="__packages",
   });
   const packagesQuery=useQuery({queryKey:["packages","billing",testSearch],enabled:allowPackages&&(selectedDepartmentId==="__packages"||selectedDepartmentId==="__all"),queryFn:()=>api.get<{id:string;name:string;amount:number;items:{testId:string;departmentId:string}[]}[]>(`/lab-tests/packages?${new URLSearchParams({search:testSearch})}`)});
 
@@ -79,19 +84,19 @@ export function TestSelector({
     queryFn: async () => Object.fromEntries(await Promise.all(items.filter((item) => !item.packageId && item.containerType === undefined).map(async (item) => {
       try { const test = await fetchLabTest(item.testId); return [item.testId, test.containerType ?? ""]; }
       catch { return [item.testId, ""]; }
-    }))), enabled: items.some((item) => !item.packageId && item.containerType === undefined),
+    }))), enabled: !catalogueSource&&items.some((item) => !item.packageId && item.containerType === undefined),
   });
-  const departments = [{id:"__all",name:"ALL",active:true,testCount:undefined},...(departmentsQuery.data??[]),...(allowPackages?[{id:"__packages",name:"Packages/Profiles",active:true,testCount:packagesQuery.data?.length??0}]:[])];
+  const departments = [{id:"__all",name:"ALL",active:true,testCount:undefined},...(catalogueSource?.departments??departmentsQuery.data??[]),...(allowPackages?[{id:"__packages",name:"Packages/Profiles",active:true,testCount:packagesQuery.data?.length??0}]:[])];
   const visibleDepartments = departmentSearch.trim()
     ? departments.filter((department) =>
         department.name.toLowerCase().includes(departmentSearch.trim().toLowerCase()),
       )
     : departments;
   const packageOptions: LabTest[] = (packagesQuery.data ?? []).map(pack => ({id:pack.id,packageId:pack.id,testCode:"PACKAGE",testName:pack.name,shortName:pack.name,departmentId:"__packages",price:pack.amount,active:true,resultMode:"PARAMETER_BASED"}));
-  const tests: LabTest[] = selectedDepartmentId === "__packages" ? packageOptions : [...(testsQuery.data?.items ?? []).filter(test => departmentsQuery.data?.some(department => department.id === test.departmentId)), ...(selectedDepartmentId === "__all" ? packageOptions : [])];
+  const tests: LabTest[] = catalogueSource ? catalogueSource.tests.filter(test=>(selectedDepartmentId==="__all"||test.departmentId===selectedDepartmentId)&&`${test.testName} ${test.testCode}`.toLowerCase().includes(testSearch.toLowerCase())) : selectedDepartmentId === "__packages" ? packageOptions : [...(testsQuery.data?.items ?? []).filter(test => departmentsQuery.data?.some(department => department.id === test.departmentId)), ...(selectedDepartmentId === "__all" ? packageOptions : [])];
   const selectionQuery = selectedDepartmentId === "__packages" ? packagesQuery : testsQuery;
-  const selectionError = selectionQuery.error || (selectedDepartmentId === "__all" ? packagesQuery.error : null);
-  const selectionLoading = selectionQuery.isLoading || (selectedDepartmentId === "__all" && packagesQuery.isLoading);
+  const selectionError = !catalogueSource && (selectionQuery.error || (selectedDepartmentId === "__all" ? packagesQuery.error : null));
+  const selectionLoading = !catalogueSource && (selectionQuery.isLoading || (selectedDepartmentId === "__all" && packagesQuery.isLoading));
 
   const selectedIds = new Set(items.map((item) => item.testId));
   const totalAmount = items.reduce(
@@ -109,6 +114,10 @@ export function TestSelector({
     onAdd(transferTest, transferTest.packageId ? "Packages/Profiles" : departments.find(dept => dept.id === transferTest.departmentId)?.name ?? "Unassigned");
     setSelectedItemId(transferTest.id);
     setFocusedTestId(null);
+    // A search narrows the list for one transfer only. Clearing it immediately
+    // lets the next test be picked from the full department without retyping.
+    setTestSearchInput("");
+    setTestSearch("");
   };
 
   const panelClass =
@@ -135,13 +144,13 @@ export function TestSelector({
           </div>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">
-          {departmentsQuery.isLoading ? (
+          {!catalogueSource && departmentsQuery.isLoading ? (
             <div className="flex flex-col gap-1.5 p-2" aria-busy>
               {Array.from({ length: 8 }).map((_, index) => (
                 <div key={index} className="h-[30px] animate-pulse rounded bg-muted" />
               ))}
             </div>
-          ) : departmentsQuery.error ? (
+          ) : !catalogueSource && departmentsQuery.error ? (
             <ErrorState
               message={departmentsQuery.error.message}
               onRetry={() => void departmentsQuery.refetch()}
@@ -327,7 +336,13 @@ export function TestSelector({
                       </p>
                     </td>
                     <td className="px-2 py-1 text-right text-slate-700">
-                      {formatMoney(item.unitPrice)}
+                      {onUnitPriceChange && !item.packageId ? (
+                        <Input type="number" inputMode="decimal" min={0} max={100_000_000} step="0.01"
+                          aria-label={`Selected test price for ${item.testName}`}
+                          value={item.unitPrice} disabled={disabled}
+                          onChange={event => onUnitPriceChange(item.testId, event.target.value)}
+                          className="ml-auto h-8 w-full min-w-0 text-right text-xs" />
+                      ) : formatMoney(item.unitPrice)}
                     </td>
                     <td className="px-2 py-1">
                       <span className="block text-center">{item.containerType || containerQuery.data?.[item.testId] || "—"}</span>

@@ -57,7 +57,7 @@ test("absolute counts preserve configured WBC units and reject invalid different
 test("measured/manual results and narrative content remain unchanged without explicit configuration",()=>{
  const params=[source("hb","Hemoglobin","g/dL"),source("rbc","RBC","million/µL"),source("platelets","Platelet count","cells/µL"),source("mcv","MCV","fL")];
  const entered={hb:12,rbc:4,platelets:250000,mcv:90,narrative:"Synthetic text\nSecond line"};
- assert.deepEqual(recalculateConfigured(params,entered),{values:entered,errors:{}}); assert.equal(CALCULATION_FORMULAS.length,22);
+ assert.deepEqual(recalculateConfigured(params,entered),{values:entered,errors:{}}); assert.equal(CALCULATION_FORMULAS.length,29);
  assert.deepEqual(CALCULATION_FORMULAS.find(formula=>formula.id==='pcv-hb-approx')?.targets,[]);
 });
 

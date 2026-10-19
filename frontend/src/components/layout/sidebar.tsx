@@ -10,6 +10,7 @@ import {
   FlaskConical,
   Home,
   ChevronRight,
+  UserRoundPlus,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 interface SidebarLeaf {
   label: string;
   href?: string;
+  exact?: boolean;
 }
 
 interface SidebarGroup {
@@ -31,6 +33,7 @@ interface SidebarTopLevel {
   label: string;
   icon: LucideIcon;
   href?: string;
+  exact?: boolean;
   group?: SidebarGroup[];
   isPathMatch?: (pathname: string) => boolean;
 }
@@ -164,6 +167,21 @@ const DATABASE_GROUPS: SidebarGroup[] = [
   },
 ];
 
+/**
+ * Vendor navigation deliberately uses the administrator's rail, flyout and
+ * responsive behaviour. It only changes the destination list, so a vendor
+ * session has the same visual language as the rest of the application while
+ * the route guard continues to restrict access to vendor-owned data.
+ */
+export const VENDOR_NAV_ITEMS: SidebarTopLevel[] = [
+  { key: "vendor-home", label: "Home", icon: Home, href: "/vendor-portal", exact: true },
+  { key: "vendor-osp", label: "Generate Vendor-Client Investigations Bill", icon: UserRoundPlus, href: "/vendor-portal/osp" },
+];
+
+function isActivePath(pathname: string, href: string, exact?: boolean): boolean {
+  return exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+}
+
 const NAV_ITEMS: SidebarTopLevel[] = [
   { key: "dashboard", label: "Home", icon: Home, href: "/dashboard" },
   {
@@ -212,8 +230,8 @@ const FLYOUT_VIEWPORT_EDGE = 12;
  */
 const FLYOUT_CLOSE_DELAY_MS = 320;
 
-function activeMenuFor(pathname: string): string | null {
-  const match = NAV_ITEMS.find((item) => item.group && item.isPathMatch?.(pathname));
+function activeMenuFor(pathname: string, items: SidebarTopLevel[]): string | null {
+  const match = items.find((item) => item.group && item.isPathMatch?.(pathname));
   return match ? match.key : null;
 }
 
@@ -228,6 +246,8 @@ interface SidebarProps {
   mobileOpen: boolean;
   onCloseMobile: () => void;
   onNavigate: () => void;
+  items?: SidebarTopLevel[];
+  ariaLabel?: string;
 }
 
 export function Sidebar({
@@ -235,11 +255,13 @@ export function Sidebar({
   mobileOpen,
   onCloseMobile,
   onNavigate,
+  items = NAV_ITEMS,
+  ariaLabel = "Main navigation",
 }: SidebarProps) {
   const pathname = usePathname();
   const [notice, setNotice] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(() =>
-    activeMenuFor(pathname),
+    activeMenuFor(pathname, items),
   );
   const [flyoutSection, setFlyoutSection] = useState<string | null>(null);
   const [flyoutPos, setFlyoutPos] = useState<FlyoutPos | null>(null);
@@ -450,7 +472,7 @@ export function Sidebar({
   );
 
   const renderLeaf = (leaf: SidebarLeaf, index: number) => {
-    const active = Boolean(leaf.href && pathname.startsWith(leaf.href));
+    const active = Boolean(leaf.href && isActivePath(pathname, leaf.href, leaf.exact));
     const key = `${leaf.label}-${index}`;
     const classes = cn(
       leafBase,
@@ -499,7 +521,7 @@ export function Sidebar({
    */
   const renderActiveFlyout = () => {
     if (!flyoutEligible || !flyoutSection || !flyoutPos) return null;
-    const item = NAV_ITEMS.find((entry) => entry.key === flyoutSection);
+    const item = items.find((entry) => entry.key === flyoutSection);
     if (!item) return null;
     return (
       <div
@@ -620,7 +642,7 @@ export function Sidebar({
       );
     }
 
-    const active = Boolean(item.href && pathname.startsWith(item.href));
+    const active = Boolean(item.href && isActivePath(pathname, item.href, item.exact));
 
     if (expandedView) {
       const linkClasses = cn(
@@ -716,8 +738,8 @@ export function Sidebar({
           collapsed ? "md:w-[60px]" : "md:w-[220px]",
         )}
       >
-        <nav className="flex-1 space-y-0.5 overflow-y-auto py-0">
-          {NAV_ITEMS.map((item) => renderTopLevel(item))}
+        <nav aria-label={ariaLabel} className="flex-1 space-y-0.5 overflow-y-auto py-0">
+          {items.map((item) => renderTopLevel(item))}
         </nav>
 
         {notice && (

@@ -27,6 +27,7 @@ import {
   getInitials,
   toDateInputValue,
 } from "@/lib/utils";
+import { formatPatientDisplayName } from "@/lib/patient-title";
 import type { Patient } from "@/types/patient";
 import type { PatientFormValues } from "@/validations/patient";
 
@@ -140,7 +141,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
         <header className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h1 className="font-heading text-base font-medium text-slate-800">
-              Edit {patient.fullName}
+              Edit {formatPatientDisplayName({ title: patient.title, displayName: patient.displayName, fullName: patient.fullName })}
             </h1>
             <p className="text-xs text-muted-foreground">
               Patient ID {patient.patientId} cannot be changed
@@ -190,7 +191,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="font-heading text-lg font-medium text-slate-900">
-              {patient.fullName}
+              {formatPatientDisplayName({ title: patient.title, displayName: patient.displayName, fullName: patient.fullName })}
             </h1>
             <Badge variant="secondary">{patient.patientId}</Badge>
             <Badge variant={patient.status === "active" ? "outline" : "destructive"}>

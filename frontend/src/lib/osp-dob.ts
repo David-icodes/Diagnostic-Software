@@ -2,6 +2,7 @@ import { businessDateInput } from './business-date.ts';
 
 export function parseOspDob(input: string, now = new Date()): {date: string; error?: string} {
   if (!input) return {date: ''};
+  input = compactOspDob(input);
   if (!/^\d{8}$/.test(input)) return {date: '', error: 'Enter all eight digits in DDMMYYYY order.'};
   const date = `${input.slice(4)}-${input.slice(2,4)}-${input.slice(0,2)}`;
   if (Number(input.slice(4)) < 1 || !businessDateInput(date)) return {date: '', error: 'Enter a valid calendar date.'};

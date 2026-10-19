@@ -1,3 +1,6 @@
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { VendorPortal } from "@/components/vendor/vendor-portal";
-export default function VendorDashboardPage(){return <DashboardLayout><VendorPortal/></DashboardLayout>;}
+import { redirect } from "next/navigation";
+
+/** Kept for existing bookmarks and vendor-login redirects. */
+export default function VendorDashboardPage() {
+  redirect("/vendor-portal");
+}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Header } from "@/components/layout/header";
-import { Sidebar } from "@/components/layout/sidebar";
+import { Sidebar, VENDOR_NAV_ITEMS } from "@/components/layout/sidebar";
 import { LoadingState } from "@/components/common/loading-state";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -16,7 +16,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const { isAuthenticated, isLoading, user } = useAuth();
   const vendor = user?.role === "vendor";
-  const allowed = !vendor || pathname === "/vendor-portal" || pathname === "/vendor-dashboard";
+  const allowed =
+    !vendor ||
+    pathname === "/vendor-dashboard" ||
+    pathname === "/vendor-portal" ||
+    pathname.startsWith("/vendor-portal/");
   const [collapsed, setCollapsed] = useState(true);
   const [mobileState, setMobileState] = useState({ pathname, open: false });
   if (mobileState.pathname !== pathname) setMobileState({ pathname, open: false });
@@ -60,12 +64,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
       <div className="flex flex-1 overflow-hidden">
         <div className="contents print:hidden">
-          {vendor ? <nav className="w-48 border-r p-3"><a href="/vendor-dashboard">Vendor Dashboard</a></nav> : <Sidebar key={pathname}
+          <Sidebar
+            key={`${vendor ? "vendor" : "staff"}:${pathname}`}
             collapsed={collapsed}
             mobileOpen={mobileOpen}
             onCloseMobile={() => setMobileState({ pathname, open: false })}
             onNavigate={() => setCollapsed(true)}
-          />}
+            items={vendor ? VENDOR_NAV_ITEMS : undefined}
+            ariaLabel={vendor ? "Vendor navigation" : "Main navigation"}
+          />
         </div>
         <main className="lis-content min-w-0 flex-1 overflow-y-auto bg-background">
           {children}

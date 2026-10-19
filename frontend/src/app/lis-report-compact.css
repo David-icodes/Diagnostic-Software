@@ -132,7 +132,9 @@
 }
 
 /* Parameter Result Entry: Wilco's seven distinct, horizontal test columns. */
-.lis-results .lis-result-test-list th:nth-child(1) { width: 48px; }
+.lis-results .lis-result-test-list th:nth-child(1) { width: 80px; }
+.lis-results .lis-result-test-list th:first-child label { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.lis-results .lis-result-test-list th:first-child input { flex-shrink: 0; }
 .lis-results .lis-result-test-list th:nth-child(2) { width: 17%; }
 .lis-results .lis-result-test-list th:nth-child(4) { width: 58px; }
 .lis-results .lis-result-test-list th:nth-child(5) { width: 36px; }

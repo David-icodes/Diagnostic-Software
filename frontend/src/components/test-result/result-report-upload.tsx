@@ -19,7 +19,7 @@ export function ResultReportUpload({ billId, testId, testName, billNumber, patie
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [header, setHeader] = useState<"header"|"none"|"letterhead">("header");
+  const [header, setHeader] = useState<"header"|"none">("header");
   const cache = useQueryClient();
   const key = ["result-report-uploads", billId, testId];
   const reports = useQuery({ queryKey: key, queryFn: () => fetchResultUploads(billId, testId), enabled: open, retry: false });
@@ -47,7 +47,7 @@ export function ResultReportUpload({ billId, testId, testName, billNumber, patie
       {reports.isError && <p role="alert">Unable to load reports: {reports.error.message} <button onClick={()=>void reports.refetch()}>Retry</button></p>}
       {(reports.data ?? []).some(report=>report.external) && <label className="my-2 block text-sm">External report print header
         <select aria-label="External report print header" value={header} onChange={event=>setHeader(event.target.value as typeof header)} disabled={downloading}>
-          <option value="header">Including Header</option><option value="none">Without Header</option><option value="letterhead">Print On LetterHead</option>
+          <option value="header">Including Header</option><option value="none">Without Header</option>
         </select><span className="block text-xs">Include Header adds stationery above the original first page without shrinking its content. The derived first page is taller; use Original size or a suitable paper size when printing. Stored PDFs are never changed. Printing does not submit or approve in-house results.</span>
       </label>}
       {(reports.data ?? []).map((report,index) => <div key={report.id} className="my-2 flex flex-wrap items-center gap-2 border-t py-2">

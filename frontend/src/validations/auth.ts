@@ -7,6 +7,15 @@ export const loginSchema = z.object({
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
+/** Vendor clients authenticate against their existing client account record. */
+export const vendorLoginSchema = z.object({
+  clientCode: z.string().trim().min(1, "Client code is required"),
+  clientName: z.string().trim().min(1, "Client name is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export type VendorLoginFormValues = z.infer<typeof vendorLoginSchema>;
+
 /**
  * Change-password form. Only the four required fields; `username` is shown but
  * the account is taken from the session on the server.

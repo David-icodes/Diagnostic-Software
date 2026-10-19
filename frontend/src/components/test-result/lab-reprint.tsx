@@ -35,10 +35,12 @@ import {
   fetchLabTechnicians,
 } from "@/services/test-results";
 import { formatDate, formatGender, cn } from "@/lib/utils";
+import { formatPatientDisplayName } from "@/lib/patient-title";
+import { patientAgeYears } from "@/lib/patient-age";
 import { queryKeys } from "@/lib/query-keys";
 import { useRouter } from "next/navigation";
 import type { BillListParams } from "@/services/billing";
-import { hasEnteredResult } from "@/lib/lab-workflows";
+import {enteredReportParameters} from "@/lib/entered-report-parameters";
 import { reportReferenceText } from "@/lib/report-reference";
 import { enteredNumber, previewFlag } from "@/lib/result-preview";
 import { usesClinicalReference } from "@/lib/parameter-reference-eligibility";
@@ -435,11 +437,11 @@ export function LabReprint() {
                                 {patient?.patientId ?? "—"}
                               </td>
                               <td className="px-3 py-1.5 font-medium text-slate-800">
-                                {patient?.fullName ?? "—"}
+                                {patient ? formatPatientDisplayName({ title: patient.title, displayName: patient.displayName, fullName: patient.fullName }) : "—"}
                               </td>
                               <td className="px-3 py-1.5 text-slate-700">
                                 {patient
-                                  ? `${formatGender(patient.gender)}${patient.age !== undefined && patient.age !== null ? ` / ${patient.age}` : ""}`
+                                  ? `${formatGender(patient.gender)}${patientAgeYears(patient) !== undefined ? ` / ${patientAgeYears(patient)}` : ""}`
                                   : "—"}
                               </td>
                               <td className="px-3 py-1.5 text-slate-700">
@@ -602,7 +604,7 @@ export function LabReprint() {
             <div className="flex gap-2">
               <dt className="w-20 shrink-0 text-muted-foreground">Patient:</dt>
               <dd className="font-medium text-slate-800">
-                {selectedPatient?.fullName ?? "—"}
+                {selectedPatient ? formatPatientDisplayName({ title: selectedPatient.title, displayName: selectedPatient.displayName, fullName: selectedPatient.fullName }) : "—"}
               </dd>
             </div>
             <div className="flex gap-2">
@@ -695,6 +697,7 @@ export function PrintPreview({
   onlyEntered = false,
   resolvedReferences,
   referenceResolutions,
+  reportTests,
 }: {
   bill: LabBill | null;
   testName: string;
@@ -714,11 +717,13 @@ export function PrintPreview({
   onlyEntered?: boolean;
   resolvedReferences?: Record<string, string>;
   referenceResolutions?: Record<string, ReferenceResolution>;
+  /** Department consolidation reuses the exact individual parameter rows. */
+  reportTests?: ReportTestContent[];
 }) {
   const patient = bill ? toPatientBill(bill) : null;
 
   // "REPORTED ON" is the newest entry across the test's results.
-  const reportedOn = results.reduce<string | undefined>((latest, result) => {
+  const reportedOn = (reportTests ? reportTests.flatMap(test=>test.results) : results).reduce<string | undefined>((latest, result) => {
     if (!result.enteredAt) return latest;
     if (!latest) return result.enteredAt;
     return new Date(result.enteredAt) > new Date(latest)
@@ -726,26 +731,6 @@ export function PrintPreview({
       : latest;
   }, undefined);
 
-  const resultByParameter = new Map(
-    results.map((result) => [result.parameterId, result] as const),
-  );
-
-  // Parameters grouped by their optional subtitle, in display order, so the
-  // reference's DIFFERENTIAL COUNT / PERIPHERAL SMEAR headings are produced from
-  // the real data instead of being hardcoded.
-  const groups: { subtitle: string; rows: LabTestParameter[] }[] = [];
-  for (const parameter of [...parameters].sort(
-    (a, b) => a.displayOrder - b.displayOrder,
-  )) {
-    if (parameter.itemType !== "SUBTITLE" && onlyEntered && !hasEnteredResult(isReportNarrative(parameter) ? reportNarrative(parameter, resultByParameter.get(parameter.id)) : resultByParameter.get(parameter.id)?.result)) continue;
-    const subtitle = (parameter.subtitle ?? "").trim();
-    const last = groups[groups.length - 1];
-    if (!last || last.subtitle !== subtitle) {
-      groups.push({ subtitle, rows: [parameter] });
-    } else {
-      last.rows.push(parameter);
-    }
-  }
 
   return (
     <section
@@ -774,12 +759,12 @@ export function PrintPreview({
           <div className="lis-clinical-info mt-[1.5mm] grid grid-cols-2 gap-x-[6mm]">
             <div>
               <ReportInfoRow label="Patient Id" value={patient.patientId} />
-              <ReportInfoRow label="Name" value={patient.fullName} />
+              <ReportInfoRow label="Name" value={formatPatientDisplayName({ title: patient.title, displayName: patient.displayName, fullName: patient.fullName })} />
               <ReportInfoRow
                 label="Gender / Age"
                 value={`${formatGender(patient.gender)}${
-                  patient.age !== undefined && patient.age !== null
-                    ? ` / ${patient.age} years`
+                  patientAgeYears(patient) !== undefined
+                    ? ` / ${patientAgeYears(patient)} years`
                     : ""
                 }`}
               />
@@ -814,7 +799,7 @@ export function PrintPreview({
             Department of {departmentName || "—"}
           </p>
           <p className="mt-[1.5mm] text-center text-[11pt] font-bold uppercase">
-            {testName || "—"}
+            {reportTests ? "Selected investigations" : testName || "—"}
           </p>
 
               </td></tr>
@@ -832,6 +817,55 @@ export function PrintPreview({
                 <th colSpan={4} className="p-0" />
               </tr>
             </thead>
+            {reportTests ? reportTests.map((test,index)=><Fragment key={index}>
+              <tbody data-report-test={test.testName}><tr><th colSpan={4} className="pt-[2mm] pb-[1mm] text-center font-bold uppercase">{test.testName}</th></tr>
+                {test.collectedOn && <tr><td colSpan={4} className="text-[8pt]">Collected on: {formatReportDateTime(test.collectedOn)}</td></tr>}
+              </tbody>
+              <ReportParameterRows {...test} onlyEntered={onlyEntered}/>
+            </Fragment>) : <ReportParameterRows parameters={parameters} results={results} onlyEntered={onlyEntered} resolvedReferences={resolvedReferences} referenceResolutions={referenceResolutions}/>}
+
+            <tbody><tr><td colSpan={4} className="lis-clinical-ending-cell">
+          <div className="lis-clinical-ending">
+          {/* Clinical note */}
+          <p className="mt-[3mm] text-[8pt]">
+            Note : Please Correlate Clinically if necessary kindly discuss.
+          </p>
+          <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} />
+
+          </div>
+            </td></tr></tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
+}
+
+type ReportTestContent = {
+  testName: string; collectedOn?: string; parameters: LabTestParameter[]; results: LabTestResult[];
+  resolvedReferences?: Record<string,string>; referenceResolutions?: Record<string,ReferenceResolution>;
+};
+function ReportParameterRows({parameters,results,onlyEntered=false,resolvedReferences,referenceResolutions}:Omit<ReportTestContent,"testName">&{onlyEntered?:boolean}) {
+  const resultByParameter = new Map(
+    results.map((result) => [result.parameterId, result] as const),
+  );
+
+  // Parameters grouped by their optional subtitle, in display order, so the
+  // reference's DIFFERENTIAL COUNT / PERIPHERAL SMEAR headings are produced from
+  // the real data instead of being hardcoded.
+  const groups: { subtitle: string; rows: LabTestParameter[] }[] = [];
+  const ordered=[...parameters].sort((a,b)=>a.displayOrder-b.displayOrder);
+  for (const parameter of onlyEntered?enteredReportParameters(ordered,results):ordered) {
+    const subtitle = (parameter.subtitle ?? "").trim();
+    const last = groups[groups.length - 1];
+    if (!last || last.subtitle !== subtitle) {
+      groups.push({ subtitle, rows: [parameter] });
+    } else {
+      last.rows.push(parameter);
+    }
+  }
+
+  return (
             <tbody>
               {groups.length === 0 ? (
                 <tr className="border-b border-black">
@@ -896,10 +930,21 @@ export function PrintPreview({
                             {resultDisplay(value, result?.resultDisplay)}
                           </td>
                           <td className="py-[0.7mm] pr-[2mm]">
-                            {valueOnly ? "" : blankMissing ? reportCellText(result?.unit ?? parameter.unit,true) : result?.unit ?? parameter.unit ?? "—"}
+                            {blankMissing
+                              ? reportCellText(result?.unit ?? parameter.unit, true)
+                              : result?.unit ?? parameter.unit ?? "—"}
                           </td>
                           <td className="py-[0.7mm]">
-                            {valueOnly ? "" : blankMissing ? reportCellText(usesClinicalReference(parameter) ? reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange) : result?.referenceRange ?? parameter.referenceRange,true) : usesClinicalReference(parameter) ? reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange) || "—" : "—"}
+                            {blankMissing
+                              ? reportCellText(
+                                  usesClinicalReference(parameter)
+                                    ? reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange)
+                                    : result?.referenceRange ?? parameter.referenceRange,
+                                  true,
+                                )
+                              : usesClinicalReference(parameter)
+                                ? reportReferenceText(parameter.id, resolvedReferences, result?.referenceRange ?? parameter.referenceRange) || "—"
+                                : "—"}
                           </td>
                         </tr>
                       );
@@ -908,20 +953,6 @@ export function PrintPreview({
                 ))
               )}
             </tbody>
-            <tbody><tr><td colSpan={4} className="lis-clinical-ending-cell">
-          <div className="lis-clinical-ending">
-          {/* Clinical note */}
-          <p className="mt-[3mm] text-[8pt]">
-            Note : Please Correlate Clinically if necessary kindly discuss.
-          </p>
-          <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} />
-
-          </div>
-            </td></tr></tbody>
-          </table>
-        </div>
-      )}
-    </section>
   );
 }
 

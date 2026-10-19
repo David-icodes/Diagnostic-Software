@@ -22,6 +22,7 @@ import { BillPageHeader } from "@/components/billing/bill-page-header";
 import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { cancelLabBill, fetchLabBillByBillNumber } from "@/services/billing";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { formatPatientDisplayName } from "@/lib/patient-title";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import type { BillPatient, LabBill } from "@/types/billing";
 
@@ -355,7 +356,7 @@ export function CancelLabBill() {
               <div className="flex items-center justify-between px-3 py-2">
                 <span className="text-muted-foreground">Patient</span>
                 <span className="font-medium text-slate-800">
-                  {patient?.fullName ?? "—"}
+                  {patient ? formatPatientDisplayName({ title: patient.title, displayName: patient.displayName, fullName: patient.fullName }) : "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between px-3 py-2">

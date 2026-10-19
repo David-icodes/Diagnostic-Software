@@ -82,8 +82,9 @@ test("a binding with an unknown formula is not configured", () => {
   assert.equal(state.status, "unconfigured");
 });
 
-test("generic configured formulas are not name-eligible", () => {
-  for (const name of ["CHOL/HDL RATIO", "LDL/HDL RATIO", "CHOL/TGL RATIO"]) {
-    assert.equal(isCalculatorCandidate(param(name)), false, `${name} requires explicit configuration`);
+test("lipid derived targets are visible but remain pending until laboratory approval", () => {
+  for (const name of ["LDL Cholesterol", "VLDL", "CHOL/HDL RATIO", "LDL/HDL RATIO", "CHOL/TGL RATIO"]) {
+    assert.equal(isCalculatorCandidate(param(name)), true, `${name} should be a candidate`);
+    assert.deepEqual(calculatorControlState(param(name)), { status: "pending" }, `${name} requires approval`);
   }
 });

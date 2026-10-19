@@ -21,6 +21,7 @@ export type { PatientTitle };
 export interface PatientDetails {
   title: string;
   name: string;
+  surname: string;
   dateOfBirth: string;
   gender: string;
   ageYears: string;
@@ -35,6 +36,7 @@ export function emptyPatientDetails(): PatientDetails {
   return {
     title: "--Select--",
     name: "",
+    surname: "",
     dateOfBirth: "",
     gender: "",
     ageYears: "",
@@ -128,7 +130,9 @@ export function OspPatientDetails({
   mobileError,
   emailError,
   dobError,
+  ageError,
   updateAction,
+  doctorField,
 }: OspPatientDetailsProps) {
   const parsedDob = parseOspDob(compactOspDob(value.dateOfBirth));
   /**
@@ -240,9 +244,11 @@ export function OspPatientDetails({
           </Cell>
         }
         right={
-          <Cell label="Age">
+          <Cell label="Age *" error={ageError}>
             <Input
               aria-label="Age years"
+              aria-required="true"
+              aria-invalid={Boolean(ageError)}
               readOnly={Boolean(parsedDob.date)}
               type="number"
               inputMode="numeric"
@@ -321,7 +327,7 @@ export function OspPatientDetails({
             className={cn(leftColumnClass, lastRowClass)}
           >
             <div className="min-w-0 flex-1">
-              <ReferringDoctorField doctor={doctor} onSelect={onDoctorSelect} />
+              {doctorField ?? <ReferringDoctorField doctor={doctor} onSelect={onDoctorSelect} />}
             </div>
           </Cell>
         }
@@ -355,5 +361,7 @@ interface OspPatientDetailsProps {
   mobileError?: string;
   emailError?: string;
   dobError?: string;
+  ageError?: string;
   updateAction?: React.ReactNode;
+  doctorField?: React.ReactNode;
 }

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   GENDER_OPTIONS,
   PATIENT_TITLES,
+  formatPatientDisplayName,
   genderFromTitle,
   genderLabel,
   genderToStoredValue,
@@ -135,5 +136,38 @@ describe("title option list", () => {
   it("keeps the unselected option and both mapped genders", () => {
     assert.equal(PATIENT_TITLES[0], "--Select--");
     assert.deepEqual(GENDER_OPTIONS, ["", "Female", "Male"]);
+  });
+});
+
+describe("patient display name", () => {
+  const cases: Array<[string, Parameters<typeof formatPatientDisplayName>[0], string]> = [
+    ["title plus given name", { title: "Mr.", fullName: "PRAVEEN" }, "Mr. PRAVEEN"],
+    ["title plus given and surname", { title: "Mrs.", fullName: "T DEEPTHI PRASAD" }, "Mrs. T DEEPTHI PRASAD"],
+    ["surname is preserved", { title: "Mr.", firstName: "T DEVENDRA", lastName: "PRASAD" }, "Mr. T DEVENDRA PRASAD"],
+    ["legacy title in fullName is not duplicated", { title: "Mr.", fullName: "Mr. PRAVEEN" }, "Mr. PRAVEEN"],
+    ["only a legacy title in fullName", { fullName: "Baby Girl. ANANYA" }, "Baby Girl. ANANYA"],
+    ["placeholder title is ignored", { title: "--Select--", fullName: "ANANYA" }, "ANANYA"],
+    ["empty title and name", { title: "Dr.", fullName: "" }, "Dr."],
+    ["display name supplies a missing title", { displayName: "Mrs. ANANYA", fullName: "ANANYA" }, "Mrs. ANANYA"],
+  ];
+  for (const [name, input, expected] of cases) {
+    it(name, () => assert.equal(formatPatientDisplayName(input), expected));
+  }
+
+  it("can omit the surname for OSP bill summaries", () => {
+    assert.equal(
+      formatPatientDisplayName(
+        { title: "Mr.", firstName: "T DEVENDRA", lastName: "PRASAD" },
+        { omitSurname: true },
+      ),
+      "Mr. T DEVENDRA",
+    );
+  });
+
+  it("omits the surname from a legacy full name when no given name is stored", () => {
+    assert.equal(
+      formatPatientDisplayName({ title: "Mrs.", fullName: "T DEEPTHI PRASAD" }, { omitSurname: true }),
+      "Mrs. T",
+    );
   });
 });

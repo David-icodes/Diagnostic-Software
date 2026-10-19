@@ -1,5 +1,10 @@
 import { api } from "@/lib/api";
-import type { AuthResponse, LoginCredentials, User } from "@/types/auth";
+import type {
+  AuthResponse,
+  LoginCredentials,
+  User,
+  VendorLoginCredentials,
+} from "@/types/auth";
 
 export interface ChangePasswordInput {
   username?: string;
@@ -18,6 +23,13 @@ export async function loginRequest(
   credentials: LoginCredentials,
 ): Promise<{ user: User }> {
   return api.post<AuthResponse>("/auth/login", credentials);
+}
+
+/** Existing server-side vendor authentication: client code + client name + password. */
+export async function vendorLoginRequest(
+  credentials: VendorLoginCredentials,
+): Promise<{ user: User }> {
+  return api.post<AuthResponse>("/auth/vendor-login", credentials);
 }
 
 export async function logoutRequest(): Promise<{ success: boolean }> {

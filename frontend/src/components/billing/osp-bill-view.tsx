@@ -2,6 +2,7 @@
 import {PackageInvoiceDetails} from "./package-invoice-details";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { InvoicePrintDialog } from "@/components/test-result/invoice-print-dialog";
 import { groupedBillItems } from "@/lib/package-billing";
@@ -25,6 +26,8 @@ import { LoadingState } from "@/components/common/loading-state";
 import { fetchLabBill } from "@/services/billing";
 import { formatDate, formatGender, formatMoney } from "@/lib/utils";
 import type { BillPatient, BillDoctor } from "@/types/billing";
+import { formatPatientDisplayName } from "@/lib/patient-title";
+import { patientAgeYears } from "@/lib/patient-age";
 
 interface OspBillViewProps {
   billId: string;
@@ -91,6 +94,17 @@ export function OspBillView({ billId }: OspBillViewProps) {
     <div className="space-y-3">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
+          <div className="mb-1 flex items-center gap-2">
+            <Image
+              src="/Main logo.png"
+              alt="Anjali Diagnostics"
+              width={1254}
+              height={1254}
+              unoptimized
+              className="size-6 object-contain"
+            />
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Anjali Diagnostics</span>
+          </div>
           <Link
             href="/dashboard"
             className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
@@ -169,15 +183,23 @@ export function OspBillView({ billId }: OspBillViewProps) {
               {patient ? (
                 <>
                   <p className="text-base font-bold text-slate-800">
-                    {patient.fullName}
+                    {formatPatientDisplayName(
+                      {
+                        title: patient.title,
+                        displayName: patient.displayName,
+                        firstName: patient.firstName,
+                        lastName: patient.lastName,
+                        fullName: patient.fullName,
+                      },
+                    )}
                     <Badge variant="secondary" className="ml-2">
                       {patient.patientId}
                     </Badge>
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {formatGender(patient.gender)}
-                    {patient.age !== undefined
-                      ? ` · ${patient.age} yrs`
+                    {patientAgeYears(patient) !== undefined
+                      ? ` · ${patientAgeYears(patient)} yrs`
                       : ""}
                     {` · ${patient.mobile}`}
                   </p>

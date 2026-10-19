@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { ApiError } from "@/lib/api";
 import { GENDERS, BLOOD_GROUPS } from "@/types/patient";
+import { PATIENT_TITLES } from "@/lib/patient-title";
 import {
   patientFormSchema,
   toFormValues,
@@ -110,6 +111,17 @@ export function PatientForm({
             </h2>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <FormField
+                label="Title"
+                htmlFor="title"
+                error={errors.title?.message}
+              >
+                <Select id="title" aria-invalid={Boolean(errors.title)} {...register("title")}>
+                  {PATIENT_TITLES.map((title) => (
+                    <option key={title} value={title}>{title}</option>
+                  ))}
+                </Select>
+              </FormField>
               <FormField
                 label="First Name"
                 htmlFor="firstName"

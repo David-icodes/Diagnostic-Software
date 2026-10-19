@@ -23,6 +23,71 @@ export const PATIENT_TITLES = [
 
 export type PatientTitle = (typeof PATIENT_TITLES)[number];
 
+const TITLE_LOOKUP: Record<string, string> = {
+  mr: "Mr.",
+  mrs: "Mrs.",
+  ms: "Ms.",
+  miss: "Miss.",
+  dr: "Dr.",
+  master: "Master.",
+  babyboy: "Baby Boy.",
+  babygirl: "Baby Girl.",
+  babyof: "Baby Of.",
+  baby: "Baby.",
+};
+
+function titleLookupKey(value: string): string {
+  return value.trim().replace(/\.+$/, "").replace(/[_\s]+/g, "").toLowerCase();
+}
+
+/** Canonical stored title, or "" for the placeholder/unknown text. */
+export function normalizePatientTitle(value?: string | null): string {
+  const raw = (value ?? "").trim();
+  if (!raw || raw === "--Select--") return "";
+  return TITLE_LOOKUP[titleLookupKey(raw)] ?? raw.replace(/[_\s]+/g, " ").trim();
+}
+
+/** Splits a legacy full name that still begins with a salutation. */
+export function splitPatientTitle(fullName?: string | null): { title: string; name: string } {
+  const value = (fullName ?? "").trim();
+  if (!value) return { title: "", name: "" };
+  const match = value.match(/^(mr|mrs|ms|miss|dr|master|baby[ _-]?boy|baby[ _-]?girl|baby[ _-]?of|baby)\.?\s+/i);
+  if (!match) return { title: "", name: value };
+  return { title: normalizePatientTitle(match[1]), name: value.slice(match[0].length).trim() };
+}
+
+/**
+ * Display-only formatting shared by bills, reports and patient lists.
+ * The stored name is never changed and a title is only prefixed once.
+ *
+ * `displayName` is accepted as a fallback because API responses already carry
+ * the title-prefixed name. Tickets and reports can therefore show Mr./Mrs.
+ * even when the caller only received the display value.
+ */
+export function formatPatientDisplayName(
+  input: {
+    title?: string | null;
+    displayName?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    fullName?: string | null;
+  },
+  options: { omitSurname?: boolean } = {},
+): string {
+  const storedTitle = normalizePatientTitle(input.title);
+  const display = (input.displayName ?? "").trim();
+  const constructed = (input.fullName ?? [input.firstName, input.lastName].filter(Boolean).join(" ")).trim();
+  const full = display || constructed;
+  const legacy = splitPatientTitle(full);
+  let name = legacy.title ? legacy.name : full;
+  if (options.omitSurname) {
+    name = (input.firstName ?? "").trim() || name.split(/\s+/)[0] || name;
+  }
+  const title = storedTitle || legacy.title;
+  if (!name) return title;
+  return title ? `${title} ${name}`.trim() : name;
+}
+
 /** Gender values as they are displayed in the form controls. */
 export const GENDER_OPTIONS = ["", "Female", "Male"] as const;
 

@@ -1,10 +1,10 @@
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { ChangePasswordForm } from "@/components/auth/change-password-form";
+import { PasswordConfiguration } from "@/components/auth/password-configuration";
 
 export default function ChangePasswordPage() {
   return (
     <DashboardLayout>
-      <ChangePasswordForm />
+      <PasswordConfiguration />
     </DashboardLayout>
   );
 }

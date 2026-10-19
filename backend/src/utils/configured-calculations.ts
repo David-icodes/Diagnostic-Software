@@ -51,6 +51,21 @@ export const CALCULATION_FORMULAS: Formula[] = [
  {id:"configured-difference",label:"Configured difference = A − B",sources:["A","B"],aliases:[],targets:[],units:["same","same"],outputUnit:"same",compute:v=>v[0]-v[1]},
  {id:"configured-ratio",label:"Configured ratio = A ÷ B",sources:["A","B"],aliases:[],targets:[],units:["same","same"],outputUnit:"ratio",denominator:1,compute:v=>v[0]/v[1]},
 
+ /**
+  * Lipid-derived parameters. Both conventional unit systems are explicit
+  * formulas, never an implicit conversion: a result is only accepted when the
+  * source and output units match the selected formula. The Friedewald LDL
+  * formulas fail closed above the conventional 400 mg/dL (4.52 mmol/L)
+  * triglyceride limit and require laboratory approval before clinical use.
+  */
+ {id:"ldl-friedewald",expression:"S1 - S2 - S3 / 5",label:"LDL = Total cholesterol − HDL − Triglycerides ÷ 5 (Friedewald, mg/dL)",method:"Friedewald estimate; valid only with triglycerides ≤ 400 mg/dL and all inputs in mg/dL. Require laboratory approval.",sources:["Total cholesterol","HDL","Triglycerides"],aliases:[["total cholesterol","cholesterol total","cholesterol total serum","serum cholesterol","s cholesterol","tc"],["hdl","hdl cholesterol","hdl c","hdl-c","high density lipoprotein","high density lipoprotein cholesterol"],["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["LDL","LDL Cholesterol","LDL-C","LDL C","Calculated LDL","LDL (Calculated)"],units:["mg/dl","mg/dl","mg/dl"],outputUnit:"mg/dl",validate:v=>v[2]>400?"Friedewald LDL is not valid when triglycerides exceed 400 mg/dL.":undefined,compute:v=>v[0]-v[1]-v[2]/5},
+ {id:"ldl-friedewald-mmol",expression:"S1 - S2 - S3 / 2.2",label:"LDL = Total cholesterol − HDL − Triglycerides ÷ 2.2 (Friedewald, mmol/L)",method:"Friedewald estimate; valid only with triglycerides ≤ 4.52 mmol/L and all inputs in mmol/L. Require laboratory approval.",sources:["Total cholesterol","HDL","Triglycerides"],aliases:[["total cholesterol","cholesterol total","cholesterol total serum","serum cholesterol","s cholesterol","tc"],["hdl","hdl cholesterol","hdl c","hdl-c","high density lipoprotein","high density lipoprotein cholesterol"],["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["LDL","LDL Cholesterol","LDL-C","LDL C","Calculated LDL","LDL (Calculated)"],units:["mmol/l","mmol/l","mmol/l"],outputUnit:"mmol/l",validate:v=>v[2]>4.52?"Friedewald LDL is not valid when triglycerides exceed 4.52 mmol/L.":undefined,compute:v=>v[0]-v[1]-v[2]/2.2},
+ {id:"vldl",expression:"S1 / 5",label:"VLDL ≈ Triglycerides ÷ 5 (mg/dL)",method:"Triglyceride-based VLDL estimate; all inputs in mg/dL. Require laboratory approval.",sources:["Triglycerides"],aliases:[["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["VLDL","VLDL Cholesterol","VLDL-C","VLDL C"],units:["mg/dl"],outputUnit:"mg/dl",compute:v=>v[0]/5},
+ {id:"vldl-mmol",expression:"S1 / 2.2",label:"VLDL ≈ Triglycerides ÷ 2.2 (mmol/L)",method:"Triglyceride-based VLDL estimate; all inputs in mmol/L. Require laboratory approval.",sources:["Triglycerides"],aliases:[["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["VLDL","VLDL Cholesterol","VLDL-C","VLDL C"],units:["mmol/l"],outputUnit:"mmol/l",compute:v=>v[0]/2.2},
+ {id:"chol-hdl-ratio",expression:"S1 / S2",label:"Total cholesterol / HDL ratio",method:"Calculated ratio from total cholesterol and HDL in the same unit. Require laboratory approval.",sources:["Total cholesterol","HDL"],aliases:[["total cholesterol","cholesterol total","cholesterol total serum","serum cholesterol","s cholesterol","tc"],["hdl","hdl cholesterol","hdl c","hdl-c","high density lipoprotein","high density lipoprotein cholesterol"]],targets:["CHOL/HDL RATIO","CHOL HDL RATIO","TC/HDL Ratio","TC HDL Ratio","Total Cholesterol HDL Ratio","Cholesterol HDL Ratio"],units:["same","same"],outputUnit:"ratio",denominator:1,compute:v=>v[0]/v[1]},
+ {id:"ldl-hdl-ratio",expression:"S1 / S2",label:"LDL / HDL ratio",method:"Calculated ratio from LDL and HDL in the same unit. Require laboratory approval.",sources:["LDL","HDL"],aliases:[["ldl","ldl cholesterol","ldl c","ldl-c","low density lipoprotein","low density lipoprotein cholesterol","calculated ldl"],["hdl","hdl cholesterol","hdl c","hdl-c","high density lipoprotein","high density lipoprotein cholesterol"]],targets:["LDL/HDL RATIO","LDL HDL RATIO","LDL/HDL Ratio","LDL HDL Ratio"],units:["same","same"],outputUnit:"ratio",denominator:1,compute:v=>v[0]/v[1]},
+ {id:"chol-tgl-ratio",expression:"S1 / S2",label:"Total cholesterol / triglyceride ratio",method:"Calculated ratio from total cholesterol and triglycerides in the same unit. Require laboratory approval.",sources:["Total cholesterol","Triglycerides"],aliases:[["total cholesterol","cholesterol total","cholesterol total serum","serum cholesterol","s cholesterol","tc"],["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["CHOL/TGL RATIO","CHOL TGL RATIO","TC/TG Ratio","TC TG Ratio","Cholesterol Triglyceride Ratio","Total Cholesterol Triglycerides Ratio"],units:["same","same"],outputUnit:"ratio",denominator:1,compute:v=>v[0]/v[1]},
+
  {id:"pcv",expression:"S1 * S2 / 10",label:"PCV = RBC × MCV ÷ 10",sources:["RBC","MCV"],aliases:[["rbc","rbc count","red cell count","red blood cell count"],["mcv","mean corpuscular volume","mean corpuscular volume mcv"]],targets:["PCV","Hematocrit","Hematocrit (PCV)","Hematocrit ( PCV )","Packed Cell Volume","P C V","HCT"],units:["million/ul","fl"],outputUnit:"%",compute:v=>v[0]*v[1]/10},
  {id:"mcv",expression:"S1 * 10 / S2",label:"MCV = PCV × 10 ÷ RBC",sources:["PCV","RBC"],aliases:[["pcv","hematocrit","hematocrit pcv","packed cell volume"],["rbc","rbc count","red cell count","red blood cell count"]],targets:["MCV","Mean Corpuscular Volume","Mean Corpuscular Volume (MCV)","Mean Corpuscular Volume(MCV)","Mean Cell Volume","M C V","M.C.V"],units:["%","million/ul"],outputUnit:"fl",denominator:1,compute:v=>v[0]*10/v[1]},
  {id:"mch",expression:"S1 * 10 / S2",label:"MCH = Hb × 10 ÷ RBC",sources:["Hb","RBC"],aliases:[["hb","hemoglobin","haemoglobin","hemoglobin hb"],["rbc","rbc count","red cell count","red blood cell count"]],targets:["MCH","Mean Corpuscular Hemoglobin","Mean Corpuscular Haemoglobin","Mean Corpuscular Hemoglobin (MCH)","Mean Corpuscular Hemoglobin(MCH)","Mean Corpuscular Haemoglobin (MCH)","Mean Cell Hemoglobin","Mean Cell Haemoglobin","M C H","M.C.H"],units:["g/dl","million/ul"],outputUnit:"pg",denominator:1,compute:v=>v[0]*10/v[1]},
@@ -78,6 +93,15 @@ export const FORMULA_APPROVAL: Record<string, FormulaApproval> = {
   mch: "APPROVED",
   mchc: "APPROVED",
   pcv: "APPROVED",
+  // Lipid formulas are implemented but intentionally not clinically executable
+  // until the laboratory approves the method, unit system and Friedewald limit.
+  "ldl-friedewald": "PENDING",
+  "ldl-friedewald-mmol": "PENDING",
+  vldl: "PENDING",
+  "vldl-mmol": "PENDING",
+  "chol-hdl-ratio": "PENDING",
+  "ldl-hdl-ratio": "PENDING",
+  "chol-tgl-ratio": "PENDING",
 };
 export function formulaApproval(formulaId: string): FormulaApproval {
   return FORMULA_APPROVAL[formulaId] ?? "BLOCKED";
@@ -121,16 +145,30 @@ export function calculatorControlState(parameter: CalculationParameter): Calcula
   if (parameter.calculation && CALCULATION_FORMULAS.some(formula => formula.id === parameter.calculation!.formulaId)) {
     return parameter.calculationStatus === "PENDING" ? { status: "pending" } : { status: "configured" };
   }
-  return isCalculatorCandidate(parameter) ? { status: "unconfigured" } : { status: "ineligible" };
+  if (!isCalculatorCandidate(parameter)) return { status: "ineligible" };
+  const candidateApprovals = targetFormulaIds(parameter).map(formulaApproval);
+  // Registry formulas that exist but are not approved are visible as pending,
+  // never as an executable/unconfigured calculation.
+  return candidateApprovals.length && candidateApprovals.every(status => status === "PENDING")
+    ? { status: "pending" }
+    : { status: "unconfigured" };
 }
 
-/** The predefined formula whose target aliases match this parameter (by name, never by fuzzy similarity). */
-export function targetFormulaId(target: CalculationParameter): string | undefined {
-  if (target.itemType === "SUBTITLE" || target.itemType === "TEXT_AREA") return undefined;
+/** Every predefined formula whose target aliases match this parameter, in
+ * registry order. Unit-specific variants (mg/dL and mmol/L) share a target name;
+ * execution picks the variant whose units match, never a silent conversion. */
+export function targetFormulaIds(target: CalculationParameter): string[] {
+  if (target.itemType === "SUBTITLE" || target.itemType === "TEXT_AREA") return [];
   const name = calculatorNameKey(target.parameterName);
-  if (!name) return undefined;
-  return CALCULATION_FORMULAS.find(formula =>
-    (formula.targets ?? []).some(candidate => calculatorNameKey(candidate) === name))?.id;
+  if (!name) return [];
+  return CALCULATION_FORMULAS
+    .filter(formula => (formula.targets ?? []).some(candidate => calculatorNameKey(candidate) === name))
+    .map(formula => formula.id);
+}
+
+/** The first predefined formula whose target aliases match this parameter. */
+export function targetFormulaId(target: CalculationParameter): string | undefined {
+  return targetFormulaIds(target)[0];
 }
 
 /** Ordered source IDs from the formula's approved name aliases. Requires exactly
@@ -168,16 +206,21 @@ export function resolveTestCalculations(parameters: CalculationParameter[]): Map
     // a numeric calculated result.
     if (target.active === false || target.itemType === "SUBTITLE" || target.itemType === "TEXT_AREA"
       || (target.resultType !== undefined && !["NUMBER", "RANGE"].includes(target.resultType))) continue;
-    const formulaId = targetFormulaId(target);
-    if (!formulaId || formulaApproval(formulaId) === "BLOCKED") continue;
-    const formula = CALCULATION_FORMULAS.find(row => row.id === formulaId);
-    if (!formula) continue;
-    const dependencyIds = resolveSourcesByName(parameters, formula);
-    if (!dependencyIds || hasDuplicateCalculationSources(dependencyIds)) continue;
-    if (dependencyIds.includes(target.parameterId)) continue;
-    const sourceUnits = dependencyIds.map(id => normalizeCalculationUnit(byId.get(id)?.unit));
-    if (!calculationUnitsMatch(formula, sourceUnits, normalizeCalculationUnit(target.unit))) continue;
-    resolved.set(target.parameterId, { config: { formulaId, dependencyIds, precision: formula.precision ?? 2, overwrite: "CONFIRM" }, status: formulaApproval(formulaId) });
+    const candidates = targetFormulaIds(target)
+      .map(id => CALCULATION_FORMULAS.find(row => row.id === id))
+      .filter((formula): formula is Formula => formula !== undefined && formulaApproval(formula.id) !== "BLOCKED");
+    for (const formula of candidates) {
+      const dependencyIds = resolveSourcesByName(parameters, formula);
+      if (!dependencyIds || hasDuplicateCalculationSources(dependencyIds)) continue;
+      if (dependencyIds.includes(target.parameterId)) continue;
+      const sourceUnits = dependencyIds.map(id => normalizeCalculationUnit(byId.get(id)?.unit));
+      if (!calculationUnitsMatch(formula, sourceUnits, normalizeCalculationUnit(target.unit))) continue;
+      resolved.set(target.parameterId, {
+        config: { formulaId: formula.id, dependencyIds, precision: formula.precision ?? 2, overwrite: "CONFIRM" },
+        status: formulaApproval(formula.id),
+      });
+      break;
+    }
   }
   return resolved;
 }

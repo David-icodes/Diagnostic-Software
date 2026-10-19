@@ -124,8 +124,13 @@ export interface LabBillPayment {
 export interface BillPatient {
   id: string;
   patientId: string;
+  title?: string;
+  displayName?: string;
+  firstName?: string;
+  lastName?: string;
   fullName: string;
   gender: string;
+  dateOfBirth?: string;
   age?: number;
   mobile: string;
 }
@@ -204,6 +209,8 @@ export interface BillItemsRequest {
   outsideLabId?: string | null;
   testId: string;
   quantity: number;
+  /** Administrator-only bill-level price override; never a master tariff write. */
+  unitPrice?: number;
 }
 
 export interface CreateLabBillRequest {
@@ -223,6 +230,8 @@ export interface CreateLabBillRequest {
 }
 
 export interface ModifyLabBillRequest {
+  payment?: {requestId:string;amount:number};
+  clientId?: string;
   referringDoctorId?: string;
   items: BillItemsRequest[];
   discountPercent: number;

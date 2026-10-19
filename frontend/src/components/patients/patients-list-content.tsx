@@ -13,6 +13,7 @@ import { ErrorState } from "@/components/common/error-state";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchPatients } from "@/services/patients";
 import { formatGender } from "@/lib/utils";
+import { formatPatientDisplayName } from "@/lib/patient-title";
 import type { Patient } from "@/types/patient";
 
 const PAGE_SIZE = 20;
@@ -67,7 +68,7 @@ export function PatientsListContent() {
       key: "fullName",
       label: "Patient Name",
       render: (row) => (
-        <span className="font-medium text-slate-800">{row.fullName}</span>
+        <span className="font-medium text-slate-800">{formatPatientDisplayName({ title: row.title, displayName: row.displayName, fullName: row.fullName })}</span>
       ),
     },
     {

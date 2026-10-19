@@ -26,6 +26,7 @@ import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { LabBillPlaceholder } from "@/components/billing/lab-bill-placeholder";
 import { collectLabDue, fetchLabBill, fetchDueBills, type BillListResult, type DueBillsParams } from "@/services/billing";
 import { cn, formatDate, formatMoney } from "@/lib/utils";
+import { formatPatientDisplayName } from "@/lib/patient-title";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { PAYMENT_MODES, type PaymentMode } from "@/types/billing";
 import type { BillPatient, LabBill } from "@/types/billing";
@@ -493,7 +494,7 @@ function DuesForm({ initialBill }: { initialBill?: LabBill }) {
                           {rowPatient?.patientId ?? "—"}
                         </td>
                         <td className="px-2 py-1.5 font-medium text-slate-800">
-                          {rowPatient?.fullName ?? "—"}
+                          {rowPatient ? formatPatientDisplayName({ title: rowPatient.title, displayName: rowPatient.displayName, fullName: rowPatient.fullName }) : "—"}
                         </td>
                         <td className="px-2 py-1.5 text-slate-700">
                           {bill.patientType.toUpperCase()}
@@ -565,7 +566,7 @@ function DuesForm({ initialBill }: { initialBill?: LabBill }) {
             </div>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
               <span className="font-medium text-slate-800">
-                {selectedPatient?.fullName ?? "—"}
+                {selectedPatient ? formatPatientDisplayName({ title: selectedPatient.title, displayName: selectedPatient.displayName, fullName: selectedPatient.fullName }) : "—"}
               </span>
               <span className="font-mono text-xs text-muted-foreground">
                 {selectedPatient?.patientId ?? ""}
@@ -781,7 +782,7 @@ function DuesForm({ initialBill }: { initialBill?: LabBill }) {
               <div className="flex items-center justify-between px-3 py-2">
                 <span className="text-muted-foreground">Patient</span>
                 <span className="font-medium text-slate-800">
-                  {selectedPatient?.fullName ?? "—"}
+                  {selectedPatient ? formatPatientDisplayName({ title: selectedPatient.title, displayName: selectedPatient.displayName, fullName: selectedPatient.fullName }) : "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between px-3 py-2">

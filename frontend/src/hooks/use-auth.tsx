@@ -8,8 +8,13 @@ import {
 } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { getMe, loginRequest, logoutRequest } from "@/services/auth";
-import type { LoginCredentials, User } from "@/types/auth";
+import {
+  getMe,
+  loginRequest,
+  logoutRequest,
+  vendorLoginRequest,
+} from "@/services/auth";
+import type { LoginCredentials, User, VendorLoginCredentials } from "@/types/auth";
 
 const ME_QUERY_KEY = ["auth", "me"] as const;
 
@@ -21,6 +26,7 @@ interface AuthContextValue {
   isLoggingIn: boolean;
   loginError: Error | null;
   login: (credentials: LoginCredentials) => Promise<User | void>;
+  loginVendor: (credentials: VendorLoginCredentials) => Promise<User | void>;
   logout: () => Promise<void>;
   clearLoginError: () => void;
 }
@@ -41,6 +47,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     mutationFn: loginRequest,
   });
 
+  const vendorLoginMutation = useMutation({
+    mutationFn: vendorLoginRequest,
+  });
+
   const logoutMutation = useMutation({
     mutationFn: logoutRequest,
     onSuccess: () => {
@@ -58,10 +68,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // actually established before we enter the dashboard.
       await queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
 
-      router.push(response.user.role === "vendor" ? "/vendor-dashboard" : "/dashboard");
+      router.push(response.user.role === "vendor" ? "/vendor-portal" : "/dashboard");
       return response.user;
     },
     [loginMutation, queryClient, router],
+  );
+
+  const loginVendor = useCallback(
+    async (credentials: VendorLoginCredentials) => {
+      const response = await vendorLoginMutation.mutateAsync(credentials);
+      await queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
+      // The returned role comes from the server's vendor lookup; the browser
+      // never chooses or sends an application role.
+      router.push(response.user.role === "vendor" ? "/vendor-portal" : "/dashboard");
+      return response.user;
+    },
+    [vendorLoginMutation, queryClient, router],
   );
 
   const logout = useCallback(async () => {
@@ -77,20 +99,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: Boolean(meQuery.data),
       isLoading: meQuery.isPending,
       sessionError: meQuery.error ?? null,
-      isLoggingIn: loginMutation.isPending,
-      loginError: loginMutation.error ?? null,
+      isLoggingIn: loginMutation.isPending || vendorLoginMutation.isPending,
+      loginError: loginMutation.error ?? vendorLoginMutation.error ?? null,
       login,
+      loginVendor,
       logout,
-      clearLoginError: loginMutation.reset,
+      clearLoginError: () => {
+        loginMutation.reset();
+        vendorLoginMutation.reset();
+      },
     }),
     [
       meQuery.data,
       meQuery.isPending,
       meQuery.error,
-      loginMutation.isPending,
-      loginMutation.error,
-      loginMutation.reset,
+      loginMutation,
+      vendorLoginMutation,
       login,
+      loginVendor,
       logout,
     ],
   );

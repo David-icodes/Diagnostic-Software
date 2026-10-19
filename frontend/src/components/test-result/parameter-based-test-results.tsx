@@ -49,7 +49,9 @@ import { usesClinicalReference } from "@/lib/parameter-reference-eligibility";
 import { applyCalculationProposals, type CalculationProposal } from "@/lib/calculation-proposal";
 import { calculateImmediately } from "@/lib/immediate-calculation";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
-import { submittedForTest, printableForTest, requireReportEligibility, type ResultPrintMode } from "@/lib/result-workflow";
+import { submittedForTest, printableForTest, requireReportEligibility } from "@/lib/result-workflow";
+import { formatPatientDisplayName } from "@/lib/patient-title";
+import { patientAgeYears } from "@/lib/patient-age";
 import { REFERENCE_MAPPING_LABELS } from "@/types/lab-masters";
 import type { BillListParams } from "@/services/billing";
 import type { LabBill } from "@/types/billing";
@@ -119,11 +121,8 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
   const [printMarked, setPrintMarked] = useState<Record<string, boolean>>({});
   const [printOpen, setPrintOpen] = useState(false);
   const [whatsAppOpen, setWhatsAppOpen] = useState(false);
-  const [onlyEntered, setOnlyEntered] = useState(false);
-  const [printMode, setPrintMode] = useState<ResultPrintMode>("continuous");
   const [checkingPrint, setCheckingPrint] = useState(false);
   const [unconfirmedTests, setUnconfirmedTests] = useState<Record<string, boolean>>({});
-  const [signatureId, setSignatureId] = useState<string>("");
   const [actionError, setActionError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -174,6 +173,15 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
   const testSubmitted = (testId: string) => printableForTest(workflowQuery.data, selectedBill?.id, testId) &&
     (Boolean(workflowQuery.data?.tests.find(row=>row.testId===testId)?.uploadedReportId) || !unconfirmedTests[`${selectedBill?.id}-${testId}`]);
   const printIds = orderedPrintIds(selectedBillTests, printMarked).filter(testSubmitted);
+  const printEligibleIds = [...new Set(selectedBillTests.filter((item) => testSubmitted(item.testId)).map((item) => item.testId))];
+  const allEligibleMarked = printEligibleIds.length > 0 && printEligibleIds.every((testId) => Boolean(printMarked[testId]));
+  const toggleAllForIndividualPrinting = (checked: boolean) => {
+    setPrintMarked((current) => {
+      const next = { ...current };
+      for (const testId of printEligibleIds) next[testId] = checked;
+      return next;
+    });
+  };
 
   const selectedTest = selectedTestId
     ? selectedBillTests.find((item) => item.testId === selectedTestId) ?? null
@@ -466,11 +474,11 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
                             {patient?.patientId ?? "—"}
                           </td>
                           <td className="px-3 py-1.5 font-medium text-slate-800">
-                            {patient?.fullName ?? "—"}
+                            {patient ? formatPatientDisplayName({ title: patient.title, displayName: patient.displayName, fullName: patient.fullName }) : "—"}
                           </td>
                           <td className="px-3 py-1.5 text-slate-700">
                             {patient
-                              ? `${formatGender(patient.gender)}${patient.age !== undefined && patient.age !== null ? ` / ${patient.age}` : ""}`
+                              ? `${formatGender(patient.gender)}${patientAgeYears(patient) !== undefined ? ` / ${patientAgeYears(patient)}` : ""}`
                               : "—"}
                           </td>
                           <td className="px-3 py-1.5 text-slate-700">
@@ -502,7 +510,20 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
               <table className="min-w-full text-xs">
                 <thead>
                   <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    <th className="px-3 py-1.5">Print</th>
+                    <th className="px-3 py-1.5">
+                      <label className="inline-flex cursor-pointer items-center gap-1 whitespace-nowrap">
+                        <input
+                          type="checkbox"
+                          aria-label="Select all eligible tests for printing"
+                          title="Select all eligible tests; choose department or individual layout in Print All"
+                          checked={allEligibleMarked}
+                          disabled={!printEligibleIds.length || submitMutation.isPending || workflowQuery.isFetching}
+                          onChange={(event) => toggleAllForIndividualPrinting(event.target.checked)}
+                          className="size-3.5 accent-primary"
+                        />
+                        <span>Print</span>
+                      </label>
+                    </th>
                     <th className="px-3 py-1.5">Dept Name</th>
                     <th className="px-3 py-1.5">Test Name</th>
                     <th className="px-3 py-1.5">Sample</th>
@@ -560,7 +581,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
                               <SampleCollectionControl sample={sampleRow} testName={item.testName} />}
                           </td>
                           {sampleRow && !billSamplesQuery.isError ? <SampleOutsideControl key={`${sampleRow.id}-${sampleRow.outsideLabId === undefined ? item.outsideLabId ?? "" : sampleRow.outsideLabId ?? ""}-${sampleRow.sentOutAt ?? ""}`} sample={sampleRow} item={item} /> : <><td>—</td><td /></>}
-                          <td><ResultReportUpload key={`${selectedBill.id}-${item.testId}`} billId={selectedBill.id} testId={item.testId} testName={item.testName} billNumber={selectedBill.billNumber} patientLabel={toPatientBill(selectedBill)?.fullName} /></td>
+                          <td><ResultReportUpload key={`${selectedBill.id}-${item.testId}`} billId={selectedBill.id} testId={item.testId} testName={item.testName} billNumber={selectedBill.billNumber} patientLabel={(() => { const p = toPatientBill(selectedBill); return p ? formatPatientDisplayName({ title: p.title, displayName: p.displayName, fullName: p.fullName }) : undefined; })()} /></td>
                         </tr>
                       );
                     })
@@ -568,8 +589,9 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
                 </tbody>
               </table>
             </div>
-            {printIds.length > 0 && <div className="flex justify-end border-t border-border p-3">
-              <Button type="button" disabled={checkingPrint || submitMutation.isPending} onClick={openPrint}><Printer />{checkingPrint ? "Checking…" : "Print"}</Button>
+            {selectedBill && <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border p-3">
+              <span className="mr-auto text-xs text-muted-foreground">{printIds.length} selected · Print All combines only checked, eligible tests by department.</span>
+              <Button type="button" disabled={checkingPrint || submitMutation.isPending || !printIds.length} onClick={openPrint}><Printer />{checkingPrint ? "Checking…" : "Print All"}</Button>
             </div>}
           </CardContent>
         </Card>
@@ -579,32 +601,6 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
       <div className="flex justify-end">
         <Button type="button" variant="outline" disabled={!selectedBill || !toPatientBill(selectedBill)?.mobile?.trim() || submitMutation.isPending} onClick={() => setWhatsAppOpen(true)}>Send WhatsApp</Button>
       </div>
-
-      {(
-        <div className="lis-result-print-settings flex flex-wrap items-center gap-3">
-          <Label htmlFor="signatureSelect" className="text-sm">
-            Select Signature to print :
-          </Label>
-          <Select
-            id="signatureSelect"
-            value={signatureId}
-            onChange={(event) => setSignatureId(event.target.value)}
-            className="h-8 w-72"
-          >
-            <option value="">Lab Technician</option>
-            {(techniciansQuery.data ?? []).map((technician) => (
-              <option key={technician.id} value={technician.id}>
-                {technician.name} — {technician.designation}
-                {technician.qualification ? ` (${technician.qualification})` : ""}
-              </option>
-            ))}
-          </Select>
-          <label><input type="checkbox" checked={onlyEntered} onChange={(event) => setOnlyEntered(event.target.checked)} />Print ONLY Entered Params</label>
-          <Select aria-label="Print layout" value={printMode} onChange={(event) => setPrintMode(event.target.value as ResultPrintMode)}>
-            <option value="continuous">Continuous Print</option><option value="department">Dept wise Print</option><option value="test">Test wise Print</option>
-          </Select>
-        </div>
-      )}
 
       {!selectedBill && (
         <div className="lis-empty-result-grid overflow-x-auto" aria-label="Parameter results">
@@ -639,7 +635,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
 
       {selectedBill && selectedTest && !billEntryQuery.isError && (
         <ResultEntryTable
-          key={`${selectedBill.id}-${selectedTestId}-${billEntryQuery.dataUpdatedAt ?? 0}-${existingResultsQuery.dataUpdatedAt ?? 0}`}
+          key={`${selectedBill.id}-${selectedTestId}-${JSON.stringify([selectedEntryParameters,existingResultsQuery.data ?? []])}`}
           parameters={selectedEntryParameters}
           existingResults={existingResultsQuery.data ?? []}
           patient={patientContext}
@@ -665,13 +661,11 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
       )}
       {printOpen && selectedBill && printIds.length > 0 && <ResultPrintDialog
         bill={selectedBill} testIds={printIds}
-        technician={techniciansQuery.data?.find((row) => row.id === signatureId) ?? null}
-        initialOnlyEntered={onlyEntered} printMode={printMode}
+        technicians={techniciansQuery.data ?? []} printMode="department"
         onClose={() => setPrintOpen(false)} />}
       {whatsAppOpen && selectedBill && <LisSendDialog key={selectedBill.id} input={{
         patientId: typeof selectedBill.patientId === "object" ? selectedBill.patientId.id : selectedBill.patientId,
-        billId: selectedBill.id, testIds: printIds,
-        ...(signatureId ? { technicianId: signatureId } : {}), onlyEntered, printMode,
+        billId: selectedBill.id, testIds: printIds, onlyEntered: false, printMode: "test",
       }} onClose={() => setWhatsAppOpen(false)} />}
     </div>
   );

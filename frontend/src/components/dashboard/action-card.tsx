@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -7,7 +8,9 @@ import { cn } from "@/lib/utils";
 
 interface ActionCardProps {
   title: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  /** Optional brand image shown instead of the icon. */
+  imageSrc?: string;
   hint?: string;
   href: string;
 }
@@ -19,6 +22,7 @@ interface ActionCardProps {
 export function ActionCard({
   title,
   icon: Icon,
+  imageSrc,
   hint,
   href,
 }: ActionCardProps) {
@@ -32,7 +36,18 @@ export function ActionCard({
         )}
       >
         <span className="flex size-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <Icon className="size-6" aria-hidden />
+          {imageSrc ? (
+            <Image
+              src={imageSrc}
+              alt=""
+              width={1254}
+              height={1254}
+              unoptimized
+              className="size-9 object-contain"
+            />
+          ) : (
+            Icon && <Icon className="size-6" aria-hidden />
+          )}
         </span>
         <span className="text-[13px] font-semibold leading-tight text-slate-800">
           {title}

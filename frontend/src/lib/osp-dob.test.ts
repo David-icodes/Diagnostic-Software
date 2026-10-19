@@ -16,3 +16,9 @@ test('OSP age uses the business calendar across birthdays and year boundaries',(
  assert.equal(ospBirthAge('2002-10-13',now).years,24);
  assert.equal(ospBirthAge('2002-12-31',new Date('2026-01-01T12:00:00Z')).years,23);
 });
+
+test('DOB remains valid after the shared field stores its canonical date',()=>{
+ const saved=parseOspDob('07092002',now).date;
+ assert.deepEqual(parseOspDob(saved,now),{date:'2002-09-07'});
+ for(const value of ['2023-02-29','2002-04-31','2026-10-14']) assert.ok(parseOspDob(value,now).error);
+});

@@ -79,7 +79,7 @@ export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
         </Button>
 
         <div className="ml-1 flex min-w-0 items-center border-l border-border pl-3">
-          <span className="lis-header-name">ANJALI DIAGNOSTICS</span>
+          <span className="lis-header-name">Anjali Diagnostics</span>
         </div>
       </div>
 
@@ -90,7 +90,7 @@ export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
             <p className="text-[11px] uppercase tracking-wide text-slate-400">
               {APP_CONFIG.supportLabel}
             </p>
-            <p className="text-[13px] font-medium text-[#76321f]">
+            <p className="text-[13px] font-medium text-[#28566d]">
               {APP_CONFIG.supportEmail}
             </p>
           </div>

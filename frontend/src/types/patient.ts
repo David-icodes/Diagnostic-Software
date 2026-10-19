@@ -19,6 +19,9 @@ export type PatientStatus = "active" | "inactive";
 export interface Patient {
   id: string;
   patientId: string;
+  title?: string;
+  /** Server-formatted title + name; fall back to fullName when absent. */
+  displayName?: string;
   firstName: string;
   lastName?: string;
   fullName: string;

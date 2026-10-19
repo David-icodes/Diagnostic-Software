@@ -71,9 +71,9 @@
 .lis-invoice-paper table tbody :is(td,th) { border-left: 0; border-right: 0; border-top: 0; border-bottom: 0; }
 .lis-invoice-paper table { border: 1px solid black; }
 .lis-invoice-paper table th { border-left: 0; border-right: 0; }
-.lis-invoice-paper { font-size: 10pt; line-height: 13pt; }
-.lis-invoice-paper :is(th,td) { font-size: 10pt; padding: .5mm; }
-.lis-invoice-logo { width: 23mm; height: 23mm; }
+.lis-invoice-paper { font-size: 9.5pt; line-height: 12pt; }
+.lis-invoice-paper :is(th,td) { font-size: 9pt; padding: 2px 3px; }
+.lis-invoice-logo { width: 18mm; height: 18mm; }
 @media print {
   .lis-report-paper thead { display: table-header-group; break-inside: avoid; }
   .lis-clinical-repeat-header { break-inside: avoid; }

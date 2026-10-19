@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { FlaskConical, ReceiptIndianRupee, SquareCheck, SquareMinus, UserRoundPlus } from "lucide-react";
+import { FlaskConical, ReceiptIndianRupee, SquareCheck, SquareMinus } from "lucide-react";
 import { ActionCard } from "@/components/dashboard/action-card";
 import { DashboardFooter } from "@/components/dashboard/dashboard-footer";
 import { DueBillsPanel } from "@/components/dashboard/due-bills-panel";
@@ -46,7 +46,7 @@ export function DashboardContent() {
       >
         <ActionCard
           title="New OSP Bill"
-          icon={UserRoundPlus}
+          imageSrc="/Main logo.png"
           href="/billing/osp/new"
         />
         <ActionCard

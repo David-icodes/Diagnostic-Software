@@ -29,6 +29,7 @@ interface BillingPaymentSectionProps {
   paidAmountInput: string;
   onPaidAmountInputChange: (value: string) => void;
   paidExceedsNet: boolean;
+  paymentErrorMessage?: string;
   discountPercentInput: string;
   onDiscountPercentChange: (value: string) => void;
   discountAmountInput: string;
@@ -51,6 +52,7 @@ export function BillingPaymentSection({
   paidAmountInput,
   onPaidAmountInputChange,
   paidExceedsNet,
+  paymentErrorMessage,
   discountPercentInput,
   onDiscountPercentChange,
   discountAmountInput,
@@ -205,7 +207,7 @@ export function BillingPaymentSection({
                 />
               </div>
               <FieldError
-                message={paidExceedsNet ? "Cannot exceed the net amount" : undefined}
+                message={paidExceedsNet ? paymentErrorMessage??"Cannot exceed the net amount" : undefined}
               />
             </div>
 

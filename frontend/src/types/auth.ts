@@ -18,6 +18,13 @@ export interface LoginCredentials {
   password: string;
 }
 
+/** Vendor identity is verified from the client record on the server, never from a browser role flag. */
+export interface VendorLoginCredentials {
+  clientCode: string;
+  clientName: string;
+  password: string;
+}
+
 export interface AuthResponse {
   user: User;
 }

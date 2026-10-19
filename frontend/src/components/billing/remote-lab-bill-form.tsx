@@ -26,6 +26,9 @@ import {
   PATIENT_TITLES,
   genderLabel,
   genderToStoredValue,
+  normalizePatientTitle,
+  splitPatientTitle,
+  formatPatientDisplayName,
 } from "@/lib/patient-title";
 import { OspPatientSearch } from "@/components/billing/osp-patient-search";
 import { ClientPicker } from "@/components/billing/client-picker";
@@ -47,6 +50,7 @@ import { toDateInputValue } from "@/lib/utils";
 import { patientNameForUpdate } from "@/lib/lab-workflows";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { patientFormSchema, type PatientFormValues } from "@/validations/patient";
+import { validateOspAge } from "@/lib/patient-age";
 import type { Patient } from "@/types/patient";
 import {
   PATIENT_TYPES,
@@ -77,6 +81,7 @@ interface FieldErrors {
   mobile?: string;
   email?: string;
   dob?: string;
+  age?: string;
   address?: string;
 }
 
@@ -94,24 +99,27 @@ function patientToDetails(patient: Patient): PatientDetails {
     years = patient.age;
   }
 
-  // The title is an entry-time courtesy, not stored identity data, so it is only
-  // recognised when a legacy record happens to carry one inside the full name.
-  const words = (patient.fullName ?? "").trim().split(/\s+/);
-  let title = "--Select--";
-  let name = (patient.fullName ?? "").trim();
-  if (words.length > 1 && (PATIENT_TITLES as readonly string[]).includes(words[0])) {
-    title = words[0];
-    name = words.slice(1).join(" ");
-  }
+  // Prefer the stored title. Legacy records may instead carry the salutation
+  // inside fullName, which is recognised without rewriting the saved name.
+  const legacy = splitPatientTitle(patient.fullName);
+  const storedTitle = normalizePatientTitle(patient.title)
+    || (PATIENT_TITLES as readonly string[]).find((option) => normalizePatientTitle(option) === legacy.title)
+    || "";
+  const title = storedTitle || "--Select--";
+  const storedSurname = (patient.lastName ?? "").trim();
+  const name = storedSurname
+    ? (patient.firstName ?? "").trim()
+    : legacy.title ? legacy.name : (patient.fullName ?? "").trim();
 
   return {
     title,
     name: name.toUpperCase(),
+    surname: storedSurname.toUpperCase(),
     dateOfBirth: dob,
     gender: genderLabel(patient.gender),
-    ageYears: String(years || ""),
-    ageMonths: String(months || ""),
-    ageDays: String(days || ""),
+    ageYears: dob || years > 0 ? String(years) : "",
+    ageMonths: dob ? String(months) : "",
+    ageDays: dob ? String(days) : "",
     mobile: patient.mobile ?? "",
     email: patient.email ?? "",
     address: patient.address ?? "",
@@ -123,6 +131,7 @@ function detailsEqualToPatient(details: PatientDetails, patient: Patient): boole
   return (
     details.title === expected.title &&
     details.name === expected.name &&
+    details.surname === expected.surname &&
     details.dateOfBirth === expected.dateOfBirth &&
     details.gender === expected.gender &&
     details.ageYears === expected.ageYears &&
@@ -134,18 +143,27 @@ function detailsEqualToPatient(details: PatientDetails, patient: Patient): boole
   );
 }
 
+function patientNameUnchanged(details: PatientDetails, patient: Patient): boolean {
+  const expected = patientToDetails(patient);
+  return details.name.trim().toUpperCase() === expected.name
+    && details.surname.trim().toUpperCase() === expected.surname;
+}
+
 function detailsAgeYears(details: PatientDetails): number | undefined {
-  const years = Number(details.ageYears);
-  if (!Number.isFinite(years)) return undefined;
-  return Math.min(150, Math.max(0, Math.floor(years)));
+  const raw = details.ageYears.trim();
+  if (!raw) return undefined;
+  const years = Number(raw);
+  if (!Number.isInteger(years) || years < 0 || years > 150) return undefined;
+  return years;
 }
 
 function detailsToPatientValues(details: PatientDetails, existing?: Patient | null): PatientFormValues {
   const gender = genderToStoredValue(details.gender);
   const age = detailsAgeYears(details);
   return {
+    title: normalizePatientTitle(details.title) || "",
     firstName: details.name.trim().toUpperCase(),
-    lastName: "",
+    lastName: details.surname.trim().toUpperCase(),
     gender: gender as PatientFormValues["gender"],
     dateOfBirth: details.dateOfBirth,
     age: details.dateOfBirth ? undefined : age,
@@ -311,6 +329,11 @@ export function RemoteLabBillForm({
           400,
         );
       }
+      const ageError = validateOspAge(details);
+      if (ageError) {
+        setFieldErrors((current) => ({ ...current, age: ageError }));
+        throw new ApiError(ageError, 400);
+      }
 
       const existingPatient = patientOverride ?? selectedPatient;
       let patientForBill = existingPatient;
@@ -327,7 +350,7 @@ export function RemoteLabBillForm({
         patientForBill = existingPatient
           ? await updatePatient(existingPatient.id, {
               ...parsed.data,
-              ...patientNameForUpdate(parsed.data, existingPatient, details.name.trim() === patientToDetails(existingPatient).name),
+              ...patientNameForUpdate(parsed.data, existingPatient, patientNameUnchanged(details, existingPatient)),
             })
           : await createPatient(parsed.data);
         setSelectedPatient(patientForBill);
@@ -382,9 +405,14 @@ export function RemoteLabBillForm({
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!selectedPatient) throw new ApiError("Select an existing patient to update.");
+      const ageError = validateOspAge(details);
+      if (ageError) {
+        setFieldErrors((current) => ({ ...current, age: ageError }));
+        throw new ApiError(ageError, 400);
+      }
       const parsed = patientFormSchema.safeParse(detailsToPatientValues(details, selectedPatient));
       if (!parsed.success) { setFieldErrors(extractFieldErrors(parsed)); throw new ApiError("Please correct the highlighted patient details."); }
-      return updatePatient(selectedPatient.id, { ...parsed.data, ...patientNameForUpdate(parsed.data, selectedPatient, details.name.trim() === patientToDetails(selectedPatient).name) });
+      return updatePatient(selectedPatient.id, { ...parsed.data, ...patientNameForUpdate(parsed.data, selectedPatient, patientNameUnchanged(details, selectedPatient)) });
     },
     onSuccess: (patient) => { handlePatientSelect(patient); setFormError(null); setPatientNotice("Patient details updated successfully."); void invalidateRoots(queryClient, queryKeys.patients, queryKeys.labBills, queryKeys.dashboard); },
     onError: (error) => { setPatientNotice(null); setFormError(error.message); },
@@ -562,7 +590,12 @@ const saveDraft = () => {
         <section aria-label="Patient details">
           <OspPatientDetails
             value={details}
-            onChange={setDetails}
+            onChange={(next) => {
+              setDetails(next);
+              if (fieldErrors.age) {
+                setFieldErrors((current) => ({ ...current, age: undefined }));
+              }
+            }}
             doctor={doctor}
             onDoctorSelect={setDoctor}
             nameError={fieldErrors.name}
@@ -570,6 +603,7 @@ const saveDraft = () => {
             mobileError={fieldErrors.mobile}
             emailError={fieldErrors.email}
             dobError={fieldErrors.dob}
+            ageError={fieldErrors.age}
             updateAction={!isVendor ? <Button type="button" size="sm" disabled={!selectedPatient || createMutation.isPending || updateMutation.isPending} onClick={() => { setPatientNotice(null); updateMutation.mutate(); }}>{updateMutation.isPending ? "Updating…" : "Update OSP"}</Button> : undefined}
           />
         </section>
@@ -579,7 +613,7 @@ const saveDraft = () => {
             {selectedPatient ? (
               <>
                 <span className="font-medium text-slate-800">
-                  {selectedPatient.fullName.toUpperCase()}
+                  {formatPatientDisplayName({ title: selectedPatient.title, displayName: selectedPatient.displayName, fullName: selectedPatient.fullName })}
                 </span>
                 <span className="text-muted-foreground">
                   {" "}· {selectedPatient.patientId} · {selectedPatient.mobile}

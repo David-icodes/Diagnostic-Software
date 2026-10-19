@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -18,16 +18,19 @@ import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import {BillingPaymentSection} from "./billing-payment-section";
 import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { TestSelector, type OutsideChoice, type SelectedTestItem } from "@/components/billing/test-selector";
 import { groupedBillItems } from "@/lib/package-billing";
 import { LabBillPlaceholder } from "@/components/billing/lab-bill-placeholder";
 import { fetchLabBills, modifyLabBill } from "@/services/billing";
+import { useAuth } from "@/hooks/use-auth";
+import { formatPatientDisplayName } from "@/lib/patient-title";
+import { patientAgeYears } from "@/lib/patient-age";
 import { cn, formatDate, formatMoney } from "@/lib/utils";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { ApiError } from "@/lib/api";
-import { PAYMENT_MODES, type PaymentMode } from "@/types/billing";
+import { type PaymentMode } from "@/types/billing";
 import type { BillPatient, BillDoctor, LabBill, LabTest } from "@/types/billing";
 
 function round2(value: number): number {
@@ -46,13 +49,6 @@ function toDoctor(
   return referringDoctorId;
 }
 
-function paymentModeLabel(mode: PaymentMode): string {
-  return mode
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
 function resolveBillPrice(
   test: LabTest,
   patientType: LabBill["patientType"],
@@ -62,16 +58,23 @@ function resolveBillPrice(
   return test.price;
 }
 
-type EditableItem = SelectedTestItem;
+type EditableItem = SelectedTestItem & {
+  priceEdited?:boolean;
+  departmentId?: string;
+};
 
 export function ModifyLabBill() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const canEditPrices = user?.role === "admin";
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState(false);
 
   const [bill, setBill] = useState<LabBill | null>(null);
   const [items, setItems] = useState<EditableItem[]>([]);
+  const paymentRequestId=useRef<string|null>(null);
+  const [payingAmount,setPayingAmount]=useState("");
   const [discountPercent, setDiscountPercent] = useState("0");
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("cash");
   const [comments, setComments] = useState("");
@@ -110,7 +113,7 @@ export function ModifyLabBill() {
     const discountAmount = round2((totalAmount * discountCapped) / 100);
     const netAmount = round2(Math.max(0, totalAmount - discountAmount));
     const paidAmount = round2(Math.max(0, bill?.paidAmount ?? 0));
-    const balanceAmount = round2(Math.max(0, netAmount - paidAmount));
+    const balanceAmount = round2(Math.max(0, netAmount - paidAmount - Math.max(0,Number(payingAmount)||0)));
     const creditAmount = round2(Math.max(0, paidAmount - netAmount));
     return { totalAmount, discountAmount, netAmount, paidAmount, balanceAmount, creditAmount };
   })();
@@ -118,13 +121,14 @@ export function ModifyLabBill() {
 
   const isDirty = useMemo(() => {
     if (!bill) return false;
+    if(Number(payingAmount)!==0)return true;
     const originalItems=groupedBillItems(bill.items);
     if (items.length !== originalItems.length) return true;
     for (let index = 0; index < items.length; index += 1) {
       const left = items[index];
       const right = originalItems[index];
       if (!right) return true;
-      if (left.testId !== right.testId || left.quantity !== right.quantity || (left.outsideLabId ?? null) !== (right.outsideLabId ?? null) || Boolean(left.out) !== Boolean(right.outsideLabId)) {
+      if (left.testId !== right.testId || left.quantity !== right.quantity || Number(left.unitPrice) !== Number(right.unitPrice) || (left.outsideLabId ?? null) !== (right.outsideLabId ?? null) || Boolean(left.out) !== Boolean(right.outsideLabId)) {
         return true;
       }
     }
@@ -133,11 +137,11 @@ export function ModifyLabBill() {
     if (comments !== (bill.comments ?? "")) return true;
     if (displayOnBill !== Boolean(bill.displayComments)) return true;
     return false;
-  }, [bill, items, discountPercent, paymentMode, comments, displayOnBill]);
+  }, [bill, items, discountPercent, paymentMode, comments, displayOnBill, payingAmount]);
 
 
   const applyBillSelection = (candidate: LabBill) => {
-    setBill(candidate);
+    setBill(candidate);setPayingAmount("");paymentRequestId.current=null;
     setItems(
       groupedBillItems(candidate.items).map((item) => ({
         testId: item.testId,
@@ -145,6 +149,7 @@ export function ModifyLabBill() {
         testCode: item.testCode,
         testName: item.testName,
         departmentName: item.departmentName,
+        departmentId: item.departmentId,
         unitPrice: item.unitPrice,
         quantity: item.quantity,
         out: Boolean(item.outsideLabId),
@@ -182,6 +187,7 @@ export function ModifyLabBill() {
           testCode: test.testCode,
           testName: test.testName,
           departmentName,
+          departmentId: test.departmentId,
           unitPrice,
           quantity: 1,
           containerType: test.containerType,
@@ -205,10 +211,18 @@ export function ModifyLabBill() {
     );
   };
 
+  const handleUnitPriceChange=(testId:string,raw:string)=>{
+    if(!canEditPrices)return;
+    const price=Number(raw);
+    if(!raw.trim()||!Number.isFinite(price)||price<0||price>100_000_000){setFormError("Enter a valid non-negative test price.");return;}
+    setFormError(null);
+    setItems(rows=>rows.map(item=>item.testId===testId?{...item,unitPrice:round2(price),priceEdited:true}:item));
+  };
+
   const resetForm = () => {
     setSearchInput("");
     setSearch("");
-    setBill(null);
+    setBill(null);setPayingAmount("");paymentRequestId.current=null;
     setItems([]);
     setDiscountPercent("0");
     setPaymentMode("cash");
@@ -249,11 +263,28 @@ export function ModifyLabBill() {
       if (items.length === 0) {
         throw new ApiError("Add at least one test to the bill.");
       }
+      const patient=toPatient(bill.patientId);
+      if(bill.billType!=="vendor" && (!patient || patientAgeYears(patient)===undefined))throw new ApiError("Age is required. Update this patient's age before modifying the bill.");
       if (items.some((item) => (item.out ?? Boolean(item.outsideLabId)) && !item.outsideLabId)) {
         throw new ApiError("Select an outside lab for every test marked Out.");
       }
+      if (items.some((item) => !Number.isFinite(Number(item.unitPrice)) || Number(item.unitPrice) < 0)) {
+        throw new ApiError("Enter a valid non-negative price for every investigation.");
+      }
+      const payment=Number(payingAmount),dueBeforePayment=round2(Math.max(0,totals.netAmount-totals.paidAmount));
+      if(!Number.isFinite(payment)||payment<0||round2(payment)>dueBeforePayment)throw new ApiError("Paying amount cannot exceed the outstanding balance.");
+      if(!Number.isFinite(Number(discountPercent))||Number(discountPercent)<0||Number(discountPercent)>100)throw new ApiError("Discount must be between 0 and 100%.");
+      if(payment>0)paymentRequestId.current??=crypto.randomUUID();
       return modifyLabBill(bill.id, {
-        items: items.map((item) => ({ testId: item.testId, packageId:item.packageId, quantity: item.quantity, out: Boolean(item.out ?? item.outsideLabId), outsideLabId: item.outsideLabId ?? null })),
+        ...(payment>0?{payment:{requestId:paymentRequestId.current!,amount:round2(payment)}}:{}),
+        items: items.map((item) => ({
+          testId: item.testId,
+          packageId: item.packageId,
+          quantity: item.quantity,
+          out: Boolean(item.out ?? item.outsideLabId),
+          outsideLabId: item.outsideLabId ?? null,
+          ...(canEditPrices&&item.priceEdited?{unitPrice:item.unitPrice}:{}),
+        })),
         discountPercent: Number(discountPercent),
         paymentMode,
         comments: comments.trim() || undefined,
@@ -446,13 +477,13 @@ export function ModifyLabBill() {
                           {rowDoctor?.name ?? candidate.doctorName ?? "—"}
                         </td>
                         <td className="px-2 py-[5px] text-slate-800">
-                          {rowPatient?.fullName ?? "—"}
+                          {rowPatient ? formatPatientDisplayName({ title: rowPatient.title, displayName: rowPatient.displayName, fullName: rowPatient.fullName }) : "—"}
                         </td>
                         <td className="px-2 py-[5px] text-slate-700">
                           {rowPatient?.gender ?? "—"}
                         </td>
                         <td className="px-2 py-[5px] text-right text-slate-700">
-                          {rowPatient?.age ?? "—"}
+                          {rowPatient ? patientAgeYears(rowPatient) ?? "-" : "-"}
                         </td>
                         <td className="px-2 py-[5px] text-slate-700">
                           {rowPatient?.mobile ?? "—"}
@@ -472,6 +503,8 @@ export function ModifyLabBill() {
 
       {!bill && <LabBillPlaceholder mode="modify" />}
       {bill && (
+        <>
+        {bill.billType==="vendor"&&<div className="my-3 max-w-xl space-y-1"><Label htmlFor="modify-vendor-client">Billing vendor client</Label><Input id="modify-vendor-client" readOnly value={typeof bill.clientId==="object"?`${bill.clientId.name} (${bill.clientId.clientCode})`:bill.clientName??"Assigned vendor client"}/></div>}
         <section
           className={cn(
             "rounded-md border border-border/80 bg-white shadow-sm",
@@ -485,7 +518,7 @@ export function ModifyLabBill() {
                 Modify Bill
               </h2>
               <span className="text-[13px] font-medium text-slate-800">
-                {patient?.fullName ?? "—"}
+                {patient ? formatPatientDisplayName({ title: patient.title, displayName: patient.displayName, fullName: patient.fullName }) : "—"}
               </span>
               <Badge variant="secondary">{patient?.patientId ?? bill.billNumber}</Badge>
               <span className="font-mono text-[11px] text-muted-foreground">
@@ -527,127 +560,23 @@ export function ModifyLabBill() {
           <div className="space-y-3 p-2.5">
             <TestSelector key={bill.id} allowPackages={bill.billType!=="vendor"} items={items} onAdd={handleAddTest}
               onRemove={handleRemoveItem} onQuantityChange={handleQuantityChange}
-              disabled={lockEdits} selectedTitle="Existed Lab Tests" showSerial={false} />
+              onUnitPriceChange={canEditPrices?handleUnitPriceChange:undefined}
+              disabled={lockEdits} selectedTitle="Selected Lab Tests" showSerial={false} />
 
-            <div className="lis-modify-payment grid grid-cols-1 items-start gap-3 lg:grid-cols-3">
-              <div className="space-y-1">
-                <Label htmlFor="modifyPaymentMode" className="text-xs">
-                  Payment Mode
-                </Label>
-                <Select
-                  id="modifyPaymentMode"
-                  value={paymentMode}
-                  onChange={(event) =>
-                    setPaymentMode(event.target.value as PaymentMode)
-                  }
-                  disabled={lockEdits}
-                  className="h-8 text-xs"
-                >
-                  {PAYMENT_MODES.map((modeOption) => (
-                    <option key={modeOption} value={modeOption}>
-                      {paymentModeLabel(modeOption)}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="modifyComments" className="text-xs">
-                    Comments
-                  </Label>
-                  <label className="flex cursor-pointer items-center gap-1.5 text-xs text-slate-700">
-                    <input
-                      type="checkbox"
-                      checked={displayOnBill}
-                      onChange={(event) => setDisplayOnBill(event.target.checked)}
-                      disabled={lockEdits}
-                      className="size-3.5 accent-primary"
-                    />
-                    Display comments in Bill
-                  </label>
-                </div>
-                <Textarea
-                  id="modifyComments"
-                  rows={2}
-                  value={comments}
-                  onChange={(event) => setComments(event.target.value)}
-                  maxLength={500}
-                  disabled={lockEdits}
-                  className="h-[52px] resize-none text-xs"
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Remark shown on the printed bill when enabled.
-                </p>
-              </div>
-
-              <div className="space-y-1.5 rounded-md border border-border/80 p-2.5">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                  Amount Summary
-                </h3>
-                <div className="flex items-center justify-between gap-2">
-                  <Label className="text-xs">Total Amount</Label>
-                  <span className="text-sm font-medium text-slate-800">
-                    ₹{formatMoney(totals.totalAmount)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <Label htmlFor="modifyDiscountPercent" className="text-xs">
-                    Enter Discount : %
-                  </Label>
-                  <div className="flex items-center gap-1.5">
-                    <Input
-                      id="modifyDiscountPercent"
-                      type="number"
-                      inputMode="decimal"
-                      min={0}
-                      max={100}
-                      step="0.01"
-                      value={discountPercent}
-                      onChange={(event) => setDiscountPercent(event.target.value)}
-                      disabled={lockEdits}
-                      className="h-8 w-20 text-right text-xs"
-                    />
-                    <span className="w-8 text-right text-xs text-muted-foreground">
-                      ₹{formatMoney(totals.discountAmount)}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <Label className="text-xs">Net Amount</Label>
-                  <span className="text-sm font-semibold text-slate-900">
-                    ₹{formatMoney(totals.netAmount)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <Label className="text-xs">Paid Amount</Label>
-                  <span className="text-sm font-medium text-emerald-600">
-                    ₹{formatMoney(totals.paidAmount)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2 border-t border-border pt-1.5">
-                  <Label className="text-xs text-slate-700">Balance Amount</Label>
-                  <span
-                    className={cn(
-                      "text-sm font-semibold",
-                      totals.balanceAmount > 0
-                          ? "text-amber-600"
-                          : "text-emerald-600",
-                    )}
-                  >
-                    ₹{formatMoney(totals.balanceAmount)}
-                  </span>
-                </div>
-                {totals.creditAmount > 0 && (
-                  <p role="status" className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1.5 text-xs text-blue-800">
-                    Overpayment credit: ₹{formatMoney(totals.creditAmount)}. Recorded
-                    payments remain unchanged. No refund has been issued.
-                  </p>
-                )}
-              </div>
-            </div>
+            <fieldset disabled={lockEdits}>
+              <BillingPaymentSection paymentMode={paymentMode} onPaymentModeChange={setPaymentMode}
+                comments={comments} onCommentsChange={setComments} displayOnBill={displayOnBill} onDisplayOnBillChange={setDisplayOnBill}
+                totalAmount={totals.totalAmount} netAmount={totals.netAmount} balanceAmount={totals.balanceAmount}
+                paymentErrorMessage="Cannot exceed the outstanding balance" paidAmountInput={payingAmount} onPaidAmountInputChange={setPayingAmount}
+                paidExceedsNet={Number(payingAmount)>round2(Math.max(0,totals.netAmount-totals.paidAmount))}
+                discountPercentInput={discountPercent} onDiscountPercentChange={setDiscountPercent}
+                discountAmountInput={String(totals.discountAmount)} onDiscountAmountChange={raw=>{const amount=Number(raw);if(!Number.isFinite(amount)||amount<0||amount>totals.totalAmount){setFormError("Discount cannot exceed the total amount.");return;}setFormError(null);setDiscountPercent(String(totals.totalAmount?amount/totals.totalAmount*100:0));}}
+                discountInvalid={!Number.isFinite(Number(discountPercent))||Number(discountPercent)<0||Number(discountPercent)>100} discountSource="percent"
+                leftSecondary={<><label className="block text-sm">Patient Type<Select disabled value={bill.patientType}><option value={bill.patientType}>{bill.patientType.toUpperCase()}</option></Select></label><p className="text-sm">Previously paid: ₹{formatMoney(totals.paidAmount)}</p>{totals.creditAmount>0&&<p role="status">Existing credit: ₹{formatMoney(totals.creditAmount)}</p>}</>}/>
+            </fieldset>
           </div>
         </section>
+        </>
       )}
 
       {bill && groupedBillItems(bill.items).some(original => !items.some(item => item.testId === original.testId)) && (
