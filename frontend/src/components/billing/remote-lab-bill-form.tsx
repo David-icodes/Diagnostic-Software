@@ -41,7 +41,7 @@ import {
 import { BillActionBar } from "@/components/billing/bill-action-bar";
 import { BillingPaymentSection } from "@/components/billing/billing-payment-section";
 import { fetchClientTariffs } from "@/services/lab-masters";
-import { createLabBill, fetchLabTest, fetchDepartments } from "@/services/billing";
+import { createLabBill } from "@/services/billing";
 import {
   createPatient,
   updatePatient,
@@ -423,14 +423,8 @@ export function RemoteLabBillForm({
     if (test.packageId) {
       if (isVendor) { setFormError("Vendor package tariffs are not configured; select individually tariffed tests."); return; }
       try {
-        const [packages, departments] = await Promise.all([
-          api.get<{id:string;items:{testId:string}[]}[]>("/lab-tests/packages"), fetchDepartments({status:"active"}),
-        ]);
-        const pack = packages.find(row => row.id === test.packageId);
-        if (!pack?.items.length) throw new Error("This package no longer has eligible tests. Reload the catalogue.");
-        const members = await Promise.all(pack.items.map(item => fetchLabTest(item.testId)));
-        if (members.some(member => !member.active || !departments.some(dept => dept.id === member.departmentId))) throw new Error("This package contains an unavailable test or department. Review its configuration before billing.");
-        includedTests = members.map(member => ({testId:member.id,testName:member.testName,departmentName:departments.find(dept => dept.id === member.departmentId)!.name}));
+        const resolved = await api.get<{members:{testId:string;testName:string;departmentName:string}[]}>(`/lab-tests/packages/${encodeURIComponent(test.packageId)}/resolved`);
+        includedTests = resolved.members;
       } catch (error) { setFormError(error instanceof Error ? error.message : "Unable to load package tests."); return; }
     }
     let unitPrice=test.price;

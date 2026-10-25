@@ -1,3 +1,4 @@
+import { patientCodeAliases, patientCodePattern } from "../../utils/patient-code";
 import { Types, type FilterQuery } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { Patient, type IPatient, type PatientDoc } from "../../models/patient.model";
@@ -107,7 +108,7 @@ export async function listPatients({
   if (keyword) {
     const escaped = escapeRegExp(keyword);
     filter.$or = [
-      { patientId: { $regex: escaped, $options: "i" } },
+      { patientId: { $regex: patientCodePattern(keyword), $options: "i" } },
       { fullName: { $regex: escaped, $options: "i" } },
       { mobile: { $regex: escaped, $options: "i" } },
     ];
@@ -142,7 +143,7 @@ export async function getPatient(
 ): Promise<PatientDoc> {
   const query = Types.ObjectId.isValid(idOrPatientId)
     ? { _id: idOrPatientId }
-    : { patientId: idOrPatientId };
+    : { patientId: { $in: patientCodeAliases(idOrPatientId) } };
 
   const patient = await Patient.findOne(query);
   if (!patient) {

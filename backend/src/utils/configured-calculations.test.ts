@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CALCULATION_FORMULAS, recalculateConfigured, type CalculationParameter } from "./configured-calculations";
+import { CALCULATION_FORMULAS, recalculateConfigured, resolveTestCalculations, type CalculationParameter } from "./configured-calculations";
 
 const source = (id: string, name: string, unit: string): CalculationParameter => ({parameterId:id,parameterName:name,unit});
 const cases: Array<[string, string[], number[], string, number]> = [
@@ -39,7 +39,7 @@ test("missing, ambiguous, narrative and incompatible dependencies fail closed",(
  const valid=[source("a","PCV","%"),source("b","RBC count","million/µL"),target];
  assert.equal(recalculateConfigured(valid,{a:36,b:4}).values.c,90);
  assert.equal(recalculateConfigured(valid.map(p=>({...p,unit:"display only"})),{a:36,b:4}).values.c,90);
- for(const params of [valid.slice(1),[source("a","Protein","g/dl"),source("b","Albumin","mg/dl"),{...source("c","Globulin","g/dl"),calculation:{formulaId:"globulin",dependencyIds:["a","b"]}}],valid.map(p=>p.parameterId==="a"?{...p,itemType:"TEXT_AREA"}:p),valid.map(p=>p.parameterId==="c"?{...p,calculation:{formulaId:"mcv",dependencyIds:["missing","b"]}}:p)]) {
+ for(const params of [valid.slice(1),[source("a","Protein","g/dl"),source("b","Albumin","mmol/l"),{...source("c","Globulin","g/dl"),calculation:{formulaId:"globulin",dependencyIds:["a","b"]}}],valid.map(p=>p.parameterId==="a"?{...p,itemType:"TEXT_AREA"}:p),valid.map(p=>p.parameterId==="c"?{...p,calculation:{formulaId:"mcv",dependencyIds:["missing","b"]}}:p)]) {
   const result=recalculateConfigured(params,{a:36,b:4,c:123});assert.equal(result.values.c,""); assert.ok(result.errors.c);
  }
 });
@@ -53,12 +53,12 @@ test("absolute counts preserve configured WBC units and reject invalid different
  const params=[source("a","WBC","10^9/L"),source("b","Neutrophils","%"),{...source("c","ANC","10^9/L"),calculation:{formulaId:"absolute-neutrophil",dependencyIds:["a","b"]}}];
  assert.equal(recalculateConfigured(params,{a:8,b:60}).values.c,4.8);
  assert.equal(recalculateConfigured(params,{a:8,b:101,c:999}).values.c,"");
- assert.equal(recalculateConfigured(params.map(p=>p.parameterId==="c"?{...p,unit:"cells/µL"}:p),{a:8,b:60}).values.c,"");
+ assert.equal(recalculateConfigured(params.map(p=>p.parameterId==="c"?{...p,unit:"cells/µL"}:p),{a:8,b:60}).values.c,4800);
 });
 test("measured/manual results and narrative content remain unchanged without explicit configuration",()=>{
  const params=[source("hb","Hemoglobin","g/dL"),source("rbc","RBC","million/µL"),source("platelets","Platelet count","cells/µL"),source("mcv","MCV","fL")];
  const entered={hb:12,rbc:4,platelets:250000,mcv:90,narrative:"Synthetic text\nSecond line"};
- assert.deepEqual(recalculateConfigured(params,entered),{values:entered,errors:{}}); assert.equal(CALCULATION_FORMULAS.length,22);
+ assert.deepEqual(recalculateConfigured(params,entered),{values:entered,errors:{}}); assert.equal(CALCULATION_FORMULAS.length,29);
  assert.deepEqual(CALCULATION_FORMULAS.find(formula=>formula.id==='pcv-hb-approx')?.targets,[]);
 });
 
@@ -66,6 +66,67 @@ const crossCategoryCases: Array<[string,string[],number[],string,number]>=[
  ['indirect-bilirubin',['mg/dl','mg/dl'],[1.2,.3],'mg/dl',.9],['globulin',['g/dl','g/dl'],[7,4],'g/dl',3],['ag-ratio',['g/dl','g/dl'],[4,3],'ratio',1.33],['non-hdl',['mg/dl','mg/dl'],[200,50],'mg/dl',150],['bun-from-urea',['mg/dl'],[30],'mg/dl',14],['urea-from-bun',['mg/dl'],[14],'mg/dl',30],['eag',['%'],[7],'mg/dl',154.2],['anion-gap',['mmol/l','mmol/l','mmol/l'],[140,104,24],'mmol/l',12],['urine-acr',['mg/dl','mg/dl'],[3,100],'mg/g',30],['configured-difference',['u/l','u/l'],[100,20],'u/l',80],['configured-ratio',['ng/ml','ng/ml'],[10,4],'ratio',2.5]
  ];
 for(const [formulaId,units,inputs,unit,expected]of crossCategoryCases)test('universal '+formulaId+' uses explicit bindings and units',()=>{const params=units.map((unit,index)=>source(String(index),'Source '+index,unit));params.push({...source('out','Output',unit),calculation:{formulaId,dependencyIds:units.map((_,index)=>String(index))}});const entered=Object.fromEntries(inputs.map((value,index)=>[String(index),value]));const result=recalculateConfigured(params,entered);assert.deepEqual(result.errors,{});assert.equal(result.values.out,expected);});
-test('universal differences reject negative output, wrong units and absent bindings',()=>{const params=[source('a','A','g/dl'),source('b','B','g/dl'),{...source('out','Globulin','g/dl'),calculation:{formulaId:'globulin',dependencyIds:['a','b']}}];assert.match(recalculateConfigured(params,{a:3,b:4}).errors.out,/nonnegative/);params[1].unit='mg/dl';assert.match(recalculateConfigured(params,{a:7,b:4}).errors.out,/units/);params[2].calculation={formulaId:'globulin'};assert.match(recalculateConfigured(params,{a:7,b:4}).errors.out,/missing/);});
+test('universal differences reject negative output, wrong units and absent bindings',()=>{const params=[source('a','A','g/dl'),source('b','B','g/dl'),{...source('out','Globulin','g/dl'),calculation:{formulaId:'globulin',dependencyIds:['a','b']}}];assert.match(recalculateConfigured(params,{a:3,b:4}).errors.out,/nonnegative/);params[1].unit='mmol/l';assert.match(recalculateConfigured(params,{a:7,b:4}).errors.out,/units/);params[2].calculation={formulaId:'globulin'};assert.match(recalculateConfigured(params,{a:7,b:4}).errors.out,/missing/);});
 
 test('configured precision is applied centrally without changing sources',()=>{const parameters=[source('a','Albumin','g/dl'),source('b','Globulin','g/dl'),{...source('out','A/G','ratio'),calculation:{formulaId:'ag-ratio',dependencyIds:['a','b'],precision:3}}];const result=recalculateConfigured(parameters,{a:4,b:3});assert.equal(result.values.out,1.333);assert.equal(result.values.a,4);});
+
+test('lipid formulas use explicit mg/dL and mmol/L variants without silent conversion',()=>{
+  const mgdl=[
+    source('tc','Total Cholesterol','mg/dL'),source('hdl','HDL Cholesterol','mg/dL'),
+    source('tg','Triglycerides','mg/dL'),source('ldl','LDL Cholesterol','mg/dL'),
+    source('vldl','VLDL','mg/dL'),source('cholhdl','CHOL/HDL RATIO','ratio'),
+    source('ldlhdl','LDL/HDL RATIO','ratio'),source('choltg','CHOL/TGL RATIO','ratio'),
+  ];
+  const resolved=resolveTestCalculations(mgdl);
+  assert.equal(resolved.get('ldl')?.config.formulaId,'ldl-friedewald');
+  assert.equal(resolved.get('vldl')?.config.formulaId,'vldl');
+  assert.equal(resolved.get('cholhdl')?.config.formulaId,'chol-hdl-ratio');
+  assert.equal(resolved.get('ldlhdl')?.config.formulaId,'ldl-hdl-ratio');
+  assert.equal(resolved.get('choltg')?.config.formulaId,'chol-tgl-ratio');
+  for(const id of ['ldl','vldl','cholhdl','ldlhdl','choltg'])assert.equal(resolved.get(id)?.status,'PENDING');
+
+  const result=recalculateConfigured([...mgdl,...mgdl.filter(p=>['ldl','vldl','cholhdl','ldlhdl','choltg'].includes(p.parameterId)).map(p=>({...p,calculation:resolved.get(p.parameterId)?.config}))],{tc:200,hdl:50,tg:100,ldl:999});
+  assert.deepEqual(result.errors,{});
+  assert.equal(result.values.ldl,130);
+  assert.equal(result.values.vldl,20);
+  assert.equal(result.values.cholhdl,4);
+  assert.equal(result.values.ldlhdl,2.6);
+  assert.equal(result.values.choltg,2);
+
+  const mmol=[
+    source('tc','Total Cholesterol','mmol/L'),source('hdl','HDL Cholesterol','mmol/L'),
+    source('tg','Triglycerides','mmol/L'),source('ldl','LDL Cholesterol','mmol/L'),
+    source('vldl','VLDL','mmol/L'),
+  ];
+  const mmolResolved=resolveTestCalculations(mmol);
+  assert.equal(mmolResolved.get('ldl')?.config.formulaId,'ldl-friedewald-mmol');
+  assert.equal(mmolResolved.get('vldl')?.config.formulaId,'vldl-mmol');
+  const mmolResult=recalculateConfigured([...mmol,...mmol.filter(p=>['ldl','vldl'].includes(p.parameterId)).map(p=>({...p,calculation:mmolResolved.get(p.parameterId)?.config}))],{tc:5.2,hdl:1.3,tg:1.1});
+  assert.equal(mmolResult.values.ldl,3.4);
+  assert.equal(mmolResult.values.vldl,0.5);
+});
+
+test('lipid calculations fail closed on missing, zero and incompatible units or an ineligible Friedewald triglyceride',()=>{
+  const params=[
+    source('tc','Total Cholesterol','mg/dL'),source('hdl','HDL Cholesterol','mg/dL'),
+    source('tg','Triglycerides','mg/dL'),source('ldl','LDL Cholesterol','mg/dL'),
+    source('vldl','VLDL','mg/dL'),source('cholhdl','CHOL/HDL RATIO','ratio'),source('choltg','CHOL/TGL RATIO','ratio'),
+    {...source('ldlOut','LDL Cholesterol','mg/dL'),calculation:{formulaId:'ldl-friedewald',dependencyIds:['tc','hdl','tg']}},
+    {...source('vldlOut','VLDL','mg/dL'),calculation:{formulaId:'vldl',dependencyIds:['tg']}},
+    {...source('cholhdlOut','CHOL/HDL RATIO','ratio'),calculation:{formulaId:'chol-hdl-ratio',dependencyIds:['tc','hdl']}},
+    {...source('choltgOut','CHOL/TGL RATIO','ratio'),calculation:{formulaId:'chol-tgl-ratio',dependencyIds:['tc','tg']}},
+  ];
+  const highTg=recalculateConfigured(params,{tc:200,hdl:50,tg:401,ldlOut:999});
+  assert.match(highTg.errors.ldlOut,/exceed 400 mg\/dL/);
+  assert.equal(highTg.values.ldlOut,'');
+  assert.equal(highTg.values.vldlOut,80.2);
+
+  assert.match(recalculateConfigured(params,{tc:200,hdl:50,tg:"",ldlOut:999}).errors.ldlOut,/valid nonnegative/);
+  assert.equal(recalculateConfigured(params,{tc:200,hdl:50,tg:100,ldlOut:999,cholhdlOut:1}).values.cholhdlOut,4);
+  assert.match(recalculateConfigured(params,{tc:200,hdl:0,tg:100,cholhdlOut:999}).errors.cholhdlOut,/denominator/);
+  assert.match(recalculateConfigured(params,{tc:200,hdl:50,tg:0,choltgOut:999}).errors.choltgOut,/denominator/);
+
+  const wrongUnit=params.map(p=>p.parameterId==='tc'?{...p,unit:'mmol/L'}:p);
+  assert.match(recalculateConfigured(wrongUnit,{tc:5.2,hdl:50,tg:100,ldlOut:999}).errors.ldlOut,/units/);
+  assert.equal(recalculateConfigured(params,{tc:200,hdl:50,tg:100,ldlOut:999}).values.ldlOut,130);
+});

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { VendorSubmission } from "../../models/vendor-submission.model";
 import { LabTest } from "../../models/lab-test.model";
 import { ApiError } from "../../utils/api-error";
-import { createPatientSchema } from "../../validations/patient";
+import { vendorPatientSchema } from "../../validations/patient";
 import { createLabBillSchema } from "../../validations/lab-bill";
 import { createPatient } from "../patients/patient.service";
 import { createLabBill,buildSnapshotItems } from "../lab-bills/lab-bill.service";
@@ -11,7 +11,7 @@ import { Doctor } from "../../models/doctor.model";
 import { vendorClientId } from "../../utils/vendor-access";
 import type { AuthUser } from "../../types/auth";
 const orderSchema=createLabBillSchema.pick({items:true,referringDoctorId:true,comments:true}).superRefine((order,context)=>{if(order.items.some(item=>item.packageId||item.out!==undefined||item.outsideLabId!==undefined))context.addIssue({code:z.ZodIssueCode.custom,path:["items"],message:"Vendor requests select individually tariffed tests; laboratory staff control outside assignments"});});
-export const vendorSubmissionSchema=z.object({requestKey:z.string().uuid(),patient:createPatientSchema.omit({status:true}),order:orderSchema}).strict();
+export const vendorSubmissionSchema=z.object({requestKey:z.string().uuid(),patient:vendorPatientSchema,order:orderSchema}).strict();
 export async function submitVendorPatient(user:AuthUser,input:z.infer<typeof vendorSubmissionSchema>){
  const clientId=vendorClientId(user);const fingerprint=createHash("sha256").update(JSON.stringify({patient:input.patient,order:input.order})).digest("hex");
  const existing=await VendorSubmission.findOne({clientId,requestKey:input.requestKey}).exec();

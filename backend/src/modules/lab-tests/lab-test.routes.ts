@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { resolveBillingPackage } from "./package-resolution";
 import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
 import { requireUserId } from "../../utils/require-user-id";
@@ -29,6 +30,7 @@ router.use(authenticate);
 // Test lookup is needed by billing and results flows (including operators),
 // so it stays authenticate-only like GET /departments.
 router.get("/", listTests);
+router.get("/packages/:id/resolved",requirePermission("billing.create"),asyncHandler(async(req,res)=>sendSuccess(res,await resolveBillingPackage(req.params.id))));
 router.get("/packages",asyncHandler(async(req,res)=>{
   const search=typeof req.query.search==="string"?req.query.search.trim():"";
   const escaped=search.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");

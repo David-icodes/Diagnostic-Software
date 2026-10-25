@@ -16,11 +16,11 @@ export interface PackageItemInput {
 
 export type CreatePackageInput = Omit<
   ILabPackage,
-  "createdBy" | "createdAt" | "updatedAt" | "seedKey"
+  "createdBy" | "createdAt" | "updatedAt" | "seedKey" | "deletedAt" | "deletedBy"
 >;
 
 export type UpdatePackageInput = Partial<
-  Omit<ILabPackage, "createdBy" | "createdAt" | "updatedAt" | "seedKey">
+  Omit<ILabPackage, "createdBy" | "createdAt" | "updatedAt" | "seedKey" | "deletedAt" | "deletedBy">
 >;
 
 export interface PackageItemView {
@@ -107,7 +107,7 @@ export async function listPackages({
   search,
   status,
 }: ListPackagesParams = {}): Promise<PaginatedResult<PackageView>> {
-  const filter: FilterQuery<ILabPackage> = {};
+  const filter: FilterQuery<ILabPackage> = {deletedAt:{$exists:false}};
   if (status === "active" || status === "inactive") {
     filter.active = status === "active";
   }
@@ -147,7 +147,7 @@ export async function getPackage(id: string): Promise<PackageView> {
     throw new ApiError(400, "Invalid package ID");
   }
   const doc = await LabPackage.findById(id).exec();
-  if (!doc) {
+  if (!doc || doc.deletedAt) {
     throw new ApiError(404, "Package not found");
   }
   return toView(doc);
@@ -186,7 +186,7 @@ export async function updatePackage(
   input: UpdatePackageInput,
 ): Promise<PackageView> {
   const doc = await LabPackage.findById(id).exec();
-  if (!doc) {
+  if (!doc || doc.deletedAt) {
     throw new ApiError(404, "Package not found");
   }
   const changes: Record<string, unknown> = {
@@ -214,11 +214,19 @@ export async function setPackageActive(
   active: boolean,
 ): Promise<PackageView> {
   const doc = await LabPackage.findById(id).exec();
-  if (!doc) {
+  if (!doc || doc.deletedAt) {
     throw new ApiError(404, "Package not found");
   }
   doc.active = active;
   doc.updatedBy = new Types.ObjectId(userId);
   await doc.save();
   return toView(doc);
+}
+/** Catalogue deletion retains package identity for historical bill snapshots. */
+export async function deletePackage(id:string,userId:string):Promise<void>{
+ if(!Types.ObjectId.isValid(id))throw new ApiError(400,"Invalid package ID");
+ const doc=await LabPackage.findById(id).exec();
+ if(!doc||doc.deletedAt)throw new ApiError(404,"Package not found");
+ doc.active=false;doc.deletedAt=new Date();doc.deletedBy=new Types.ObjectId(userId);doc.updatedBy=new Types.ObjectId(userId);
+ await doc.save();
 }

@@ -35,7 +35,7 @@ export function ActionCard({
           "rounded-lg focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
         )}
       >
-        <span className="flex size-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <span className={cn("flex items-center justify-center rounded-lg text-primary",imageSrc?"size-16":"size-11 bg-primary/10")}>
           {imageSrc ? (
             <Image
               src={imageSrc}
@@ -43,7 +43,7 @@ export function ActionCard({
               width={1254}
               height={1254}
               unoptimized
-              className="size-9 object-contain"
+              className="size-16 object-contain"
             />
           ) : (
             Icon && <Icon className="size-6" aria-hidden />

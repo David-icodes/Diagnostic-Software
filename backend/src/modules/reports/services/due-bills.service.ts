@@ -1,3 +1,6 @@
+import { displayPatientCode } from "../../../utils/patient-code";
+import { formatPatientDisplayName } from "../../../utils/patient-name";
+import { patientCodePattern } from "../../../utils/patient-code";
 import type { FilterQuery } from "mongoose";
 import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
 import { LabBillPayment } from "../../../models/lab-bill-payment.model";
@@ -5,7 +8,7 @@ import { Patient } from "../../../models/patient.model";
 import { User } from "../../../models/user.model";
 import { isValidObjectId } from "../../../utils/object-id";
 import type { DueBillsQuery } from "../validations/due-bills";
-import { dayRange, emptyPagination, escapeRegExp, EXPORT_LIMIT, round2, splitCsv } from "../utils/report-core";
+import { dayRange, emptyPagination, EXPORT_LIMIT, round2, splitCsv } from "../utils/report-core";
 import { payModeLabel, patientTypeLabel } from "../utils/report-labels";
 import type { DueBillReportRow, DueBillsResult, DueBillsSummary } from "../types/due-bills";
 
@@ -29,7 +32,7 @@ export async function listDueBills(input: DueBillsQuery): Promise<DueBillsResult
   const patientKeyword = input.patientId?.trim();
   if (patientKeyword) {
     const patients = await Patient.find({
-      patientId: { $regex: escapeRegExp(patientKeyword), $options: "i" },
+      patientId: { $regex: patientCodePattern(patientKeyword), $options: "i" },
     })
       .select("_id")
       .exec();
@@ -79,7 +82,7 @@ export async function listDueBills(input: DueBillsQuery): Promise<DueBillsResult
       .sort({ createdAt: -1 })
       .limit(isExport ? EXPORT_LIMIT : limit)
       .skip(isExport ? 0 : (page - 1) * limit)
-      .populate("patientId", "patientId fullName")
+      .populate("patientId", "patientId title firstName lastName fullName")
       .exec(),
   ]);
 
@@ -95,8 +98,8 @@ export async function listDueBills(input: DueBillsQuery): Promise<DueBillsResult
       billNumber: bill.billNumber,
       billDate: (bill.createdAt ?? new Date()).toISOString(),
       billFor: patientTypeLabel(bill.patientType),
-      patientId: patient?.patientId ?? "—",
-      patientName: patient?.fullName ?? "—",
+      patientId: displayPatientCode(patient?.patientId ?? "—"),
+      patientName: patient ? formatPatientDisplayName(patient) : "—",
       totalAmount: round2(bill.totalAmount),
       discountAmount: round2(bill.discountAmount),
       netAmount: round2(bill.netAmount),

@@ -1,3 +1,4 @@
+import { patientCodePattern } from "../../utils/patient-code";
 import { recollectSample } from "./recollection.service";
 import { businessDateInput, businessDayStart } from "../../utils/business-date";
 import { localDayRange } from "../../utils/date-range";
@@ -229,7 +230,7 @@ export async function listLabSamples({
   if (patientKeyword || patientNameKeyword) {
     const patientFilter: FilterQuery<IPatient> = {};
     if (patientKeyword) {
-      patientFilter.patientId = { $regex: escapeRegExp(patientKeyword), $options: "i" };
+      patientFilter.patientId = { $regex: patientCodePattern(patientKeyword), $options: "i" };
     }
     if (patientNameKeyword) {
       patientFilter.fullName = { $regex: escapeRegExp(patientNameKeyword), $options: "i" };

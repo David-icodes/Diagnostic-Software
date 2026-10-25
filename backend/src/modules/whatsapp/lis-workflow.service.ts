@@ -1,3 +1,4 @@
+import { displayPatientCode } from "../../utils/patient-code";
 import { createHash, randomUUID } from "node:crypto";
 import type { Request } from "express";
 import { env } from "../../config/env";
@@ -76,12 +77,12 @@ export async function loadLisContext(input: ReviewLisMessageInput, printedBy: st
   }) : [];
   const newest = results.reduce((latest, row) => Math.max(latest, new Date(row.enteredAt).getTime()), 0);
   const variables = templateVariables(input.templateName, {
-    patientName: patient.fullName, centreName, patientCode: patient.patientId, billNumber: bill.billNumber,
+    patientName: patient.fullName, centreName, patientCode: displayPatientCode(patient.patientId), billNumber: bill.billNumber,
     billDate: dateLabel(bill.createdAt!), reportDate: isReport ? dateLabel(new Date(newest)) : undefined,
     net: bill.netAmount, paid: bill.paidAmount, balance: bill.dueAmount,
   });
   return json({
-    patientName: patient.fullName, patientCode: patient.patientId, mobile, centreName,
+    patientName: patient.fullName, patientCode: displayPatientCode(patient.patientId), mobile, centreName,
     billNumber: bill.billNumber, billDate: dateLabel(bill.createdAt!), variables,
     document: { bill: populatedBill, reports, technician, printedBy, onlyEntered: input.onlyEntered, printMode: input.printMode },
   });

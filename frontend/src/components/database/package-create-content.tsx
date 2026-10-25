@@ -10,12 +10,12 @@ import { FormActions } from "@/components/database/form-actions";
 import { FormField } from "@/components/database/form-field";
 import { FormSection } from "@/components/database/form-section";
 import { PageHeader } from "@/components/database/page-header";
-import { SearchInput } from "@/components/database/search-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { fetchLabTests } from "@/services/billing";
 import {
+  deletePackage,
   createPackage,
   fetchDatabaseDepartments,
   fetchPackages,
@@ -60,6 +60,7 @@ export function PackageCreateContent() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [deleting,setDeleting]=useState<LabPackage|null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [successDialog, setSuccessDialog] = useState<string | null>(null);
 
@@ -92,6 +93,7 @@ export function PackageCreateContent() {
     void invalidateMasterData(queryClient,"packages");
   };
 
+  const deleteMutation=useMutation({mutationFn:(id:string)=>deletePackage(id),onSuccess:()=>{if(editingId===deleting?.id){setEditingId(null);setForm(EMPTY_FORM);setItems([]);}setDeleting(null);invalidate();setFeedback("Package deleted from catalogue.");},onError:(error:Error)=>setFeedback(error.message)});
   const saveMutation = useMutation({
     mutationFn: () => {
       const payload = packageDraftPayload(form, items);
@@ -205,10 +207,10 @@ export function PackageCreateContent() {
     },
     {
       key: "actions",
-      header: "Edit",
+      header: "Actions",
       align: "center" as const,
       render: (row: LabPackage) => (
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-4">
           <Button
             type="button"
             variant="ghost"
@@ -218,6 +220,7 @@ export function PackageCreateContent() {
           >
             <Pencil className="size-4" />
           </Button>
+          <Button type="button" variant="ghost" size="icon-sm" aria-label={`Delete ${row.name}`} title="Delete package" onClick={()=>setDeleting(row)}><Trash2 className="size-4"/></Button>
         </div>
       ),
     },
@@ -225,6 +228,7 @@ export function PackageCreateContent() {
 
   return (
     <div className="lis-dm lis-package space-y-3">
+      <Dialog open={Boolean(deleting)} onOpenChange={open=>{if(!open&&!deleteMutation.isPending)setDeleting(null);}} title="Delete package"><p>Delete {deleting?.name} from the catalogue? Existing bills and results will be preserved.</p><div className="flex gap-2"><Button disabled={deleteMutation.isPending} onClick={()=>deleting&&deleteMutation.mutate(deleting.id)}>Delete</Button><Button variant="outline" disabled={deleteMutation.isPending} onClick={()=>setDeleting(null)}>Cancel</Button></div></Dialog>
       <Dialog open={Boolean(successDialog)} onOpenChange={open=>{if(!open)setSuccessDialog(null);}} title="Package saved">
         <p role="status">{successDialog}</p><Button onClick={()=>setSuccessDialog(null)}>OK</Button>
       </Dialog>
@@ -251,10 +255,9 @@ export function PackageCreateContent() {
         <div className="lis-package-list">
           <label htmlFor="pkg-dept">* Departments</label>
           <Input aria-label="Search package departments" placeholder="Search..." value={departmentSearch} onChange={(event) => setDepartmentSearch(event.target.value)} disabled={saveMutation.isPending} />
-          <Select id="pkg-dept" size={10} value={selectedDepartmentId} disabled={saveMutation.isPending} onChange={(event) => { setSelectedDepartmentId(event.target.value); setSelectedTestId(""); setTestSearch(""); }}>
-            <option value="">Select--</option><option value="all">ALL</option>
-            {departments.filter((record) => record.id === selectedDepartmentId || record.name.toLowerCase().includes(departmentSearch.toLowerCase())).map((record) => <option key={record.id} value={record.id}>{record.name}</option>)}
-          </Select>
+          <div id="pkg-dept" role="listbox" aria-label="Package departments" className="lis-package-department-options">
+            {[{id:"all",name:"ALL"},...departments.filter(record=>record.id===selectedDepartmentId||record.name.toLowerCase().includes(departmentSearch.toLowerCase()))].map(record=><button key={record.id} type="button" role="option" aria-selected={record.id===selectedDepartmentId} disabled={saveMutation.isPending} onClick={()=>{setSelectedDepartmentId(record.id);setSelectedTestId("");setTestSearch("");}}>{record.name}</button>)}
+          </div>
         </div>
         <div className="lis-package-list">
           <label htmlFor="pkg-test">* Lab Tests</label>
@@ -297,7 +300,7 @@ export function PackageCreateContent() {
       <FormSection
         title="Package List"
         description="All configured packages"
-        actions={<SearchInput value={search} onChange={setSearch} placeholder="Search packages..." />}
+        actions={<Input type="search" aria-label="Search packages" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Search packages..." />}
       >
         <DataTable
           data={packagesQuery.data?.data ?? []}

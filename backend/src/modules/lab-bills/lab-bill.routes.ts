@@ -1,3 +1,5 @@
+import {z} from "zod";
+import {browserInvoicePdf} from "../test-results/report-pdf.service";
 import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
 import { assertBillDocumentAllowed, assertInvoicePrintAllowed } from "../test-results/result-workflow.service";
@@ -35,12 +37,17 @@ router.get(
 );
 router.post("/", requirePermission("billing.create"), validate(createLabBillSchema), createLabBill);
 router.get("/:id/document-eligibility", requirePermission("billing.view"), asyncHandler(async(req,res)=>sendSuccess(res,await assertBillDocumentAllowed(req.params.id))));
+router.get("/:id/invoice.pdf",requirePermission("billing.view"),asyncHandler(async(req,res)=>{
+ const header=z.enum(["true","false"]).default("true").parse(req.query.includeHeader);
+ const result=await browserInvoicePdf(req.params.id,header==="true",req);
+ res.set({"Content-Type":"application/pdf","Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff","Content-Disposition":`inline; filename*=UTF-8''${encodeURIComponent(result.filename)}`});res.send(result.bytes);
+}));
 router.get("/:id/invoice-print-eligibility", requirePermission("billing.view"), asyncHandler(async(req,res)=>sendSuccess(res,await assertInvoicePrintAllowed(req.params.id))));
 router.get("/:id", requirePermission("billing.view"), getLabBill);
 router.put(
   "/:id",
   requirePermission("billing.modify"),
-  validate(modifyLabBillSchema),
+  validate(modifyLabBillSchema.omit({clientId:true})),
   modifyLabBill,
 );
 router.post(

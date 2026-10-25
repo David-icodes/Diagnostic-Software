@@ -14,3 +14,12 @@ test("vendor scope requires stable configured client ID; names are not identitie
   assert.throws(()=>vendorClientId({...user,clientId:undefined}),/assignment/);
   assert.throws(()=>vendorClientId({...user,clientId:"display name"}),/assignment/);
 });
+
+
+test("an assigned hydrated vendor account retains scope through authentication serialization", async()=>{
+ const {User}=await import('../models/user.model.js');
+ const clientId='507f1f77bcf86cd799439011';
+ const account=new User({username:'synthetic-vendor',name:'Synthetic',role:'vendor',status:'active',clientId});
+ assert.equal(vendorClientId(account.toJSON() as never),clientId);
+ assert.throws(()=>vendorClientId({...account.toJSON(),role:'admin'} as never),/Sign in with a Vendor Client account/);
+});

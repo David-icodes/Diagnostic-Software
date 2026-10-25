@@ -1,3 +1,19 @@
+/** Exact metric scale conversions only. No analyte-specific mass/molar conversion. */
+const scales: Record<string, [dimension: string, factor: number]> = {
+  "g/l": ["mass-concentration", 1], "g/dl": ["mass-concentration", 10],
+  "mg/l": ["mass-concentration", .001], "mg/dl": ["mass-concentration", .01],
+  "ug/ml": ["mass-concentration", .001], "ng/ml": ["mass-concentration", .000001],
+  "mmol/l": ["amount-concentration", 1], "umol/l": ["amount-concentration", .001],
+  "cells/ul": ["cell-concentration", 1], "thousand/ul": ["cell-concentration", 1000],
+  "million/ul": ["cell-concentration", 1000000],
+};
+export function unitScale(from: string, to: string): number | undefined {
+  if (!from || !to) return undefined;
+  if (from === to) return 1;
+  const a = Object.hasOwn(scales,from) ? scales[from] : undefined, b = Object.hasOwn(scales,to) ? scales[to] : undefined;
+  return a && b && a[0] === b[0] ? a[1] / b[1] : undefined;
+}
+
 /** Explicit configured calculations shared with the frontend. No clinical defaults or string evaluation. */
 export interface CalculationConfig { enabled?:boolean; formulaId: string; dependencyIds?: string[]; precision?: number; overwrite?: string; sourceVerification?:string; expression?:string }
 export interface CalculationParameter { parameterId: string; parameterName: string; unit?: string; itemType?: string; active?: boolean; resultType?: string; calculationStatus?: FormulaApproval; calculation?: CalculationConfig | null }
@@ -54,7 +70,7 @@ export const CALCULATION_FORMULAS: Formula[] = [
  /**
   * Lipid-derived parameters. Both conventional unit systems are explicit
   * formulas, never an implicit conversion: a result is only accepted when the
-  * source and output units match the selected formula. The Friedewald LDL
+  * source and output units normalize to the selected formula. The Friedewald LDL
   * formulas fail closed above the conventional 400 mg/dL (4.52 mmol/L)
   * triglyceride limit and require laboratory approval before clinical use.
   */
@@ -245,11 +261,20 @@ export function resolveCalculationDependencyIds(_parameters:CalculationParameter
 export function normalizeCalculationUnit(value?:string): string { const unit=(value??"").toLowerCase().replace(/[µμ]/g,"u").replace(/\s+/g,""); return ({"×10⁶/ul":"million/ul","×10³/ul":"thousand/ul","millions/ul":"million/ul","million/cumm":"million/ul","10^6/ul":"million/ul","cells/cumm":"cells/ul","/ul":"cells/ul","10^3/ul":"thousand/ul","10^9/l":"thousand/ul", "":"","1":"ratio","gm/dl":"g/dl","gms/dl":"g/dl"} as Record<string,string>)[unit]??unit; }
 /** CBP units remain display metadata, never arithmetic operands. */
 export function isNumericOnlyCalculation(id:string):boolean { return ["pcv-hb-approx","mch","mcv","mchc"].includes(id); }
-export function calculationUnitsMatch(formula:Formula, sourceUnits:string[], outputUnit:string):boolean {
-
- const units=sourceUnits.map(normalizeCalculationUnit),out=normalizeCalculationUnit(outputUnit);const counts=["cells/ul","thousand/ul"];
- return formula.units.every((unit,index)=>unit==="same"?!!units[index]&&units[index]===units[0]:unit==="count"?counts.includes(units[index]):units[index]===unit)&&(formula.outputUnit==="same"||formula.outputUnit==="count"?out===units[0]:out===formula.outputUnit);
+/** Describe normalization without changing the persisted binding or source values. */
+export function calculationUnitPlan(formula:Formula, sourceUnits:string[], outputUnit:string) {
+ const units=sourceUnits.map(normalizeCalculationUnit),out=normalizeCalculationUnit(outputUnit);
+ const canonical=formula.units.map(unit=>unit==="same"?units[0]:unit==="count"?"cells/ul":unit);
+ const factors=units.map((unit,index)=>unitScale(unit,canonical[index]));
+ const resultUnit=formula.outputUnit==="same"?canonical[0]:formula.outputUnit==="count"?"cells/ul":formula.outputUnit;
+ const outputFactor=unitScale(resultUnit,out);
+ if(units.length!==formula.sources.length || factors.some(f=>f===undefined) || outputFactor===undefined)return undefined;
+ return {factors:factors as number[],outputFactor,units:canonical};
 }
+export function calculationUnitsMatch(formula:Formula, sourceUnits:string[], outputUnit:string):boolean {
+ return Boolean(calculationUnitPlan(formula,sourceUnits,outputUnit));
+}
+
 function numeric(value:CalculationValues[string]) { if(typeof value!=="number"&&typeof value!=="string")return undefined;if(typeof value==="string"&&!value.trim())return undefined;const number=Number(value);return Number.isFinite(number)&&number>=0?number:undefined; }
 /** Decimal shifting avoids 1.005 * 100 becoming 100.49999999999999. */
 export function roundCalculationValue(value:number,precision:number):number {
@@ -275,14 +300,15 @@ export function recalculateConfigured(parameters: CalculationParameter[], entere
    for(const dependency of dependencies)visit(dependency!.parameterId);
    const sourceUnits=isNumericOnlyCalculation(formula.id)?[]:dependencies.map(p=>normalizeCalculationUnit(p!.unit));const outputUnit=isNumericOnlyCalculation(formula.id)?"":normalizeCalculationUnit(target.unit);
    const unitMatch=isNumericOnlyCalculation(formula.id)||calculationUnitsMatch(formula,sourceUnits,outputUnit);
-   const inputs=dependencies.map(p=>numeric(values[p!.parameterId]));
+   const plan=isNumericOnlyCalculation(formula.id)?undefined:calculationUnitPlan(formula,sourceUnits,outputUnit);
+   const inputs=dependencies.map((p,index)=>{const value=numeric(values[p!.parameterId]);return value===undefined?undefined:value*(plan?.factors[index]??1);});
    if(errors[id]||dependencies.some(p=>errors[p!.parameterId]))fail(errors[id]||"A source calculation is unavailable.");
    else if(!unitMatch)fail("Configure compatible source and output units.");
    else if(inputs.some(value=>value===undefined))fail("Enter valid nonnegative source values.");
    else if(formula.denominator!==undefined&&inputs[formula.denominator]===0)fail("Cannot calculate: denominator is zero.");
    else if(formula.id.startsWith("absolute-")&&inputs[1]!>100)fail("Differential percentage must be between 0 and 100.");
    else if(formula.validate?.(inputs as number[]))fail(formula.validate(inputs as number[])!);
-   else {try {const raw=target.calculation.expression ? (isNumericOnlyCalculation(formula.id) ? evaluateFormulaExpression(target.calculation.expression,inputs as number[],[],true).value : evaluateProposedExpression(target.calculation.expression,formula.expression??"",inputs as number[],sourceUnits)) : formula.compute(inputs as number[]);const calculated=roundCalculationValue(raw,target.calculation.precision??formula.precision??2);if(!Number.isFinite(calculated)||(!formula.allowNegative&&calculated<0))fail("Calculated result is not a valid nonnegative number.");else values[id]=calculated;}catch(error){fail(error instanceof Error?error.message:"Invalid formula expression.");}}
+   else {try {const raw=target.calculation.expression ? (isNumericOnlyCalculation(formula.id) ? evaluateFormulaExpression(target.calculation.expression,inputs as number[],[],true).value : evaluateProposedExpression(target.calculation.expression,formula.expression??"",inputs as number[],plan?.units??sourceUnits)) : formula.compute(inputs as number[]);const calculated=roundCalculationValue(raw*(plan?.outputFactor??1),target.calculation.precision??formula.precision??2);if(!Number.isFinite(calculated)||(!formula.allowNegative&&calculated<0))fail("Calculated result is not a valid nonnegative number.");else values[id]=calculated;}catch(error){fail(error instanceof Error?error.message:"Invalid formula expression.");}}
   }
  }
  visiting.delete(id);done.add(id);};for(const p of parameters)if(p.calculation)visit(p.parameterId);return {values,errors};

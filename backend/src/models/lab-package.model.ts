@@ -12,6 +12,8 @@ export interface ILabPackage {
   amount: number;
   insAmount?: number;
   active: boolean;
+  deletedAt?: Date;
+  deletedBy?: Types.ObjectId;
   items: IPackageItem[];
   seedKey?: string;
   createdBy: Types.ObjectId;
@@ -35,6 +37,8 @@ const labPackageSchema = new Schema<ILabPackage>(
     amount: { type: Number, required: true, min: 0 },
     insAmount: { type: Number, min: 0 },
     active: { type: Boolean, default: true },
+    deletedAt: Date,
+    deletedBy: {type:Schema.Types.ObjectId,ref:"User"},
     items: { type: [packageItemSchema], default: [] },
     seedKey: { type: String, trim: true, sparse: true, unique: true, maxlength: 80 },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },

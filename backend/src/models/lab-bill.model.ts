@@ -26,6 +26,8 @@ export interface IBillItem {
 
 export interface ILabBill {
   amendments?: Array<{
+    paymentRequestId?: string;
+    paymentFingerprint?: string;
     changedBy: Types.ObjectId;
     changedAt: Date;
     removedItems: IBillItem[];
@@ -93,6 +95,8 @@ const billItemSchema = new Schema<IBillItem>(
 const labBillSchema = new Schema<ILabBill>(
   {
     amendments: { type: [new Schema({
+      paymentRequestId: String,
+      paymentFingerprint: String,
       changedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
       changedAt: { type: Date, required: true },
       removedItems: { type: [billItemSchema], required: true },

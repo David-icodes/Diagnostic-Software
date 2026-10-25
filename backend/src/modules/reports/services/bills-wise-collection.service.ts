@@ -1,3 +1,6 @@
+import { displayPatientCode } from "../../../utils/patient-code";
+import { formatPatientDisplayName } from "../../../utils/patient-name";
+import { patientCodePattern } from "../../../utils/patient-code";
 import type { FilterQuery } from "mongoose";
 import { LabBill, type ILabBill, PAYMENT_MODES } from "../../../models/lab-bill.model";
 import { LabBillPayment, type ILabBillPayment } from "../../../models/lab-bill-payment.model";
@@ -7,7 +10,6 @@ import type { BillsWiseCollectionQuery } from "../validations/bills-wise-collect
 import {
   dayRange,
   emptyPagination,
-  escapeRegExp,
   round2,
   slicePage,
   splitCsv,
@@ -55,7 +57,7 @@ export async function listBillsWiseCollection(
   const patientKeyword = input.patientId?.trim();
   if (patientKeyword) {
     const patients = await Patient.find({
-      patientId: { $regex: escapeRegExp(patientKeyword), $options: "i" },
+      patientId: { $regex: patientCodePattern(patientKeyword), $options: "i" },
     })
       .select("_id")
       .exec();
@@ -93,7 +95,7 @@ export async function listBillsWiseCollection(
     .populate({
       path: "billId",
       select: "billNumber billType patientType doctorName",
-      populate: { path: "patientId", select: "patientId fullName" },
+      populate: { path: "patientId", select: "patientId title firstName lastName fullName" },
     })
     .populate("collectedBy", "name")
     .exec();
@@ -118,8 +120,8 @@ export async function listBillsWiseCollection(
       billTime: (payment.collectedAt as Date).toISOString(),
       billNumber: bill?.billNumber ?? "—",
       billFor: patientTypeLabel(bill?.patientType),
-      patientId: bill?.patientId?.patientId ?? "—",
-      patientName: bill?.patientId?.fullName ?? "—",
+      patientId: displayPatientCode(bill?.patientId?.patientId ?? "—"),
+      patientName: bill?.patientId ? formatPatientDisplayName(bill.patientId) : "—",
       refDoctor: bill?.doctorName ?? "—",
       paidAmount: round2(payment.amount),
       modeBreakdown,

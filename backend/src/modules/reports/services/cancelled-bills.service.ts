@@ -1,3 +1,5 @@
+import { displayPatientCode } from "../../../utils/patient-code";
+import { formatPatientDisplayName } from "../../../utils/patient-name";
 import type { FilterQuery } from "mongoose";
 import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
 import { isValidObjectId } from "../../../utils/object-id";
@@ -56,7 +58,7 @@ export async function listCancelledBills(
       .sort({ cancelledAt: -1 })
       .limit(isExport ? EXPORT_LIMIT : limit)
       .skip(isExport ? 0 : (page - 1) * limit)
-      .populate("patientId", "patientId fullName")
+      .populate("patientId", "patientId title firstName lastName fullName")
       .populate("cancelledBy", "name")
       .exec(),
   ]);
@@ -77,8 +79,8 @@ export async function listCancelledBills(
       cancelledAt: bill.cancelledAt?.toISOString() ?? "",
       billFor: patientTypeLabel(bill.patientType),
       billType: billTypeLabel(bill.billType),
-      patientId: patient?.patientId ?? "—",
-      patientName: patient?.fullName ?? "—",
+      patientId: displayPatientCode(patient?.patientId ?? "—"),
+      patientName: patient ? formatPatientDisplayName(patient) : "—",
       tests: bill.items.map((item) => item.testName),
       netAmount: round2(bill.netAmount),
       payMode: payModeLabel(bill.paymentMode),

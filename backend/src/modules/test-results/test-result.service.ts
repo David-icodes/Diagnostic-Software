@@ -1,4 +1,5 @@
 import { displayPatientCode } from "../../utils/patient-code";
+import { formatPatientDisplayName } from "../../utils/patient-name";
 import { cbcCountValueOnly } from "../../utils/cbc-report-display";
 import { validNumericDisplay } from "../../utils/result-display";
 import { withSampleResultWrite } from "../lab-samples/recollection.service";
@@ -215,21 +216,22 @@ export async function getBillResultEntry(
     );
   }
 
-  const patient = await Patient.findById(bill.patientId).exec();
+  // These reads depend only on the verified bill, not on one another. Keep
+  // them fresh while avoiding three serial database round trips per snapshot.
+  const [patient, parameters, savedRows] = await Promise.all([
+    Patient.findById(bill.patientId).exec(),
+    bill.items.length
+      ? LabTestParameter.find({testId: {$in: bill.items.map(item => item.testId)}})
+          .sort({displayOrder: 1, parameterName: 1}).exec()
+      : Promise.resolve([]),
+    LabTestResult.find({billId: bill._id}).exec(),
+  ]);
   const patientContext = {
     dateOfBirth: patient?.dateOfBirth ?? null,
     age: patient?.age ?? null,
     gender: patient?.gender ?? null,
   };
 
-  const parameters = bill.items.length
-    ? await LabTestParameter.find({
-        testId: { $in: bill.items.map((item) => item.testId) },
-      })
-        .sort({ displayOrder: 1, parameterName: 1 })
-        .exec()
-    : [];
-  const savedRows = await LabTestResult.find({billId:bill._id}).exec();
   const pinnedIds=bill.items.flatMap(item=>item.parameterVersionIds??[]);
   if(pinnedIds.some(id=>!parameters.some(p=>String(p._id)===id)))parameters.push(...await ParameterVersion.find({_id:{$in:pinnedIds},testId:{$in:bill.items.map(item=>item.testId)}}).exec());
   const byTest = new Map<string, typeof parameters>();
@@ -327,7 +329,7 @@ export async function getBillResultEntry(
     billNumber: bill.billNumber,
     patientId: String(bill.patientId),
     ...(patient ? { patientCode: displayPatientCode(patient.patientId) } : {}),
-    ...(patient ? { patientName: patient.fullName } : {}),
+    ...(patient ? { patientName: formatPatientDisplayName(patient) } : {}),
     ...(patient?.gender ? { patientGender: patient.gender } : {}),
     ...(patient?.dateOfBirth ? { patientDateOfBirth: patient.dateOfBirth } : {}),
     ...(patient?.age !== undefined && patient.age !== null

@@ -7,6 +7,9 @@ test("submission rejects spoofed client/payment fields and repeated checkpoint n
  const input={requestKey:"f8f9536f-42a1-4b89-a705-0b5a2b8ea222",patient:{firstName:"Synthetic",age:30,gender:"female",mobile:"0000000000"},order:{items:[{testId:"507f1f77bcf86cd799439011",quantity:1}]}};
  assert.equal(vendorSubmissionSchema.safeParse({...input,clientId:"spoof"}).success,false);assert.equal(vendorSubmissionSchema.safeParse({...input,order:{...input.order,paidAmount:100}}).success,false);
  assert.equal(vendorSubmissionSchema.safeParse({...input,patient:{...input.patient,status:"inactive"}}).success,false);
+ assert.equal(vendorSubmissionSchema.safeParse({...input,patient:{...input.patient,age:undefined}}).success,false);
+ assert.equal(vendorSubmissionSchema.safeParse({...input,patient:{...input.patient,age:0}}).success,false);
+ assert.equal(vendorSubmissionSchema.safeParse({...input,patient:{...input.patient,age:0,dateOfBirth:"2026-10-10"}}).success,true);
  assert.equal(vendorSubmissionSchema.safeParse({...input,order:{items:[{...input.order.items[0],out:true,outsideLabId:"507f1f77bcf86cd799439012"}]}}).success,false);
  assert.equal(vendorSubmissionSchema.safeParse({...input,order:{items:[{...input.order.items[0],packageId:input.order.items[0].testId}]}}).success,false);
  t.mock.method(VendorSubmission,"findOne",()=>({exec:async()=>({fingerprint:"other",state:"completed"})}) as any);

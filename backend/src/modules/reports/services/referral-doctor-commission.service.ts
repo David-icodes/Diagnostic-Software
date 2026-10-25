@@ -1,3 +1,6 @@
+import { displayPatientCode } from "../../../utils/patient-code";
+import { formatPatientDisplayName } from "../../../utils/patient-name";
+import { patientCodePattern } from "../../../utils/patient-code";
 import type { FilterQuery } from "mongoose";
 import { DoctorCommission, type IDoctorCommission } from "../../../models/doctor-commission.model";
 import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
@@ -8,7 +11,7 @@ import type {
   ReferralDoctorCommissionRow,
 } from "../types/referral-doctor-commission";
 import type { ReferralDoctorCommissionQuery } from "../validations/referral-doctor-commission";
-import { dayRange, emptyPagination, escapeRegExp, round2, slicePage } from "../utils/report-core";
+import { dayRange, emptyPagination, round2, slicePage } from "../utils/report-core";
 
 /**
  * Claim types are not modeled anywhere in the LIS yet. The filter therefore
@@ -96,7 +99,7 @@ export async function listReferralDoctorCommission(
   const patientIdKeyword = input.patientId?.trim();
   if (patientIdKeyword) {
     const patients = await Patient.find({
-      patientId: { $regex: escapeRegExp(patientIdKeyword), $options: "i" },
+      patientId: { $regex: patientCodePattern(patientIdKeyword), $options: "i" },
     })
       .select("_id")
       .exec();
@@ -154,9 +157,9 @@ export async function listReferralDoctorCommission(
 
   const patientIds = bills.map((b) => b.patientId);
   const patients = await Patient.find({ _id: { $in: patientIds } })
-    .select("patientId fullName")
+    .select("patientId title firstName lastName fullName")
     .exec();
-  const patientMap = new Map<string, { patientId?: string; fullName?: string }>();
+  const patientMap = new Map<string, { patientId?: string; title?: string; firstName?: string; lastName?: string; fullName?: string }>();
   for (const patient of patients) {
     patientMap.set(String(patient._id), patient);
   }
@@ -219,8 +222,8 @@ export async function listReferralDoctorCommission(
       segmentDiscount: round2(segmentTotal - segmentNet),
       billNumber: bill.billNumber,
       billDate: (bill.createdAt ?? new Date()).toISOString(),
-      patientId: patient?.patientId ?? "—",
-      patientName: patient?.fullName ?? "—",
+      patientId: displayPatientCode(patient?.patientId ?? "—"),
+      patientName: patient ? formatPatientDisplayName(patient) : "—",
       patientType: bill.patientType,
       doctorName: bill.doctorName || doctorNames.get(String(bill.referringDoctorId)) || "—",
       tests: matchedItems.map((item) => item.testName).join(", "),

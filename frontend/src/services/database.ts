@@ -317,3 +317,5 @@ export function setDoctorActive(
 export function deleteDatabaseDepartment(id: string): Promise<{ deleted: boolean }> {
   return api.delete(`/departments/${encodeURIComponent(id)}`);
 }
+
+export function deletePackage(id:string):Promise<{deleted:boolean}>{return api.delete(`/database/packages/${encodeURIComponent(id)}`);}

@@ -118,7 +118,7 @@ test("patient dues and successful/failed/partial submissions are verified from s
  t.mock.method(LabTestResult,"create",async (data:any)=>{const row={...data,_id:data._id??new Types.ObjectId(),save:async()=>row};rows.push(row);return row;});
  t.mock.method(AuditLog,"create",async (data:any)=>{const row={...data,_id:new Types.ObjectId(),save:async()=>row};audits.push(row);return row;});
  const input={billId:String(billId),testId:String(testId),acceptedCalculationIds:[String(pcvId)],acceptedCalculationRevisions:{[String(pcvId)]:1},entries:[{parameterId:String(rbcId),result:4},{parameterId:String(mcvId),result:90},{parameterId:String(pcvId),result:36}]};
-  const sourceUnit=parameters[0].unit;parameters[0].unit="cells/µL";
+  const sourceUnit=parameters[0].unit;parameters[0].unit="mmol/L";
   await assert.rejects(submitTestResults(String(userId),input),/compatible source/);
   parameters[0].unit=sourceUnit;
   // Submitting a matching value without accepting the calculation is allowed (manual entry)

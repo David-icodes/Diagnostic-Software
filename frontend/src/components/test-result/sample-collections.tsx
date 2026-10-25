@@ -10,6 +10,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
+  Maximize2, ChevronDown, X,
   AlertCircle,
   CheckCircle2,
   ChevronLeft,
@@ -27,11 +28,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { BillPageHeader } from "@/components/billing/bill-page-header";
+
 import { fetchLabSamples, updateSampleStatus } from "@/services/test-results";
 import { businessDateInput, businessTimeInput } from "@/lib/business-date";
 import { isSampleTransitionAllowed } from "../../../../backend/src/utils/sample-lifecycle.ts";
-import { formatDate } from "@/lib/utils";
+
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { matchesSampleContext, resultContextHref, type SampleContext } from "@/lib/lab-workflows";
 import {
@@ -62,15 +63,17 @@ const STATUS_STYLES: Record<SampleStatus, { chip: string; row: string; label: st
   // untouched row is a neutral dark grey. White text keeps the chip readable,
   // and the status word is always shown as well as the colour.
   SELECT: { chip: "bg-slate-600 text-white", row: "bg-white", label: "Not Updated" },
-  COLLECTED: { chip: "bg-green-800 text-white", row: "bg-green-200", label: "Collected" },
-  RECEIVED: { chip: "bg-green-800 text-white", row: "bg-green-100/70", label: "Received" },
-  PROCESSED: { chip: "bg-green-900 text-white", row: "bg-green-200/60", label: "Processed" },
-  RECOLLECTED: { chip: "bg-emerald-900 text-white", row: "bg-emerald-300", label: "Recollected" },
-  REJECTED: { chip: "bg-red-800 text-white", row: "bg-red-100/70", label: "Rejected" },
+  COLLECTED: { chip: "bg-green-500", row: "bg-green-200", label: "Collected" },
+  RECEIVED: { chip: "bg-purple-400", row: "bg-purple-200", label: "Received" },
+  PROCESSED: { chip: "bg-indigo-400", row: "bg-indigo-200", label: "Processed" },
+  RECOLLECTED: { chip: "bg-yellow-300", row: "bg-yellow-200", label: "Recollected" },
+  REJECTED: { chip: "bg-red-500", row: "bg-red-100/70", label: "Rejected" },
 };
 
 export function SampleCollections({ context }: { context?: SampleContext }) {
   const queryClient = useQueryClient();
+  const panelRef=useRef<HTMLDivElement>(null);
+  const [collapsed,setCollapsed]=useState(false);
   const [activeContext, setActiveContext] = useState(context);
   const [mode, setMode] = useState<SampleListMode>(context ? "criteria" : "today");
   const [billNumber, setBillNumber] = useState(context?.billNumber ?? "");
@@ -191,18 +194,13 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
   };
 
   return (
-    <div className="lis-samples space-y-3">
-      <BillPageHeader
-        icon={FlaskConical}
-        title="Lab Sample Collection Status"
-        subtitle="Track collection, receipt, processing and rejection of lab samples"
-        actions={
-          <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
-            <FlaskConical className="size-3" />
-            Test Result
-          </Badge>
-        }
-      />
+    <div ref={panelRef} className="lis-samples lis-samples-reference" data-collapsed={collapsed}>
+      <header className="lis-sample-page-title"><h1>Lab Sample Collection Status</h1><div>
+        <Button variant="ghost" size="icon" aria-label="Expand sample collection" onClick={()=>{void panelRef.current?.requestFullscreen?.().catch(()=>{});}}><Maximize2/></Button>
+        <Button variant="ghost" size="icon" aria-label="Refresh samples" onClick={()=>void samplesQuery.refetch()} disabled={samplesQuery.isFetching}><RotateCcw/></Button>
+        <Button variant="ghost" size="icon" aria-label="Toggle sample collection" aria-expanded={!collapsed} onClick={()=>setCollapsed(!collapsed)}><ChevronDown/></Button>
+        <Button variant="ghost" size="icon" asChild><Link href="/dashboard" aria-label="Close sample collection"><X/></Link></Button>
+      </div></header>
 
 
 
@@ -238,14 +236,11 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
       <div className="lis-sample-legend flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
         {EDITABLE_STATUSES.map((status) => (
           <span key={status} className="flex items-center gap-1.5">
-            <span className={`size-2.5 rounded-full ${STATUS_STYLES[status].chip}`} />
+            <span className={`size-3.5 ${STATUS_STYLES[status].chip}`} />
             {STATUS_STYLES[status].label}
           </span>
         ))}
-        <span className="flex items-center gap-1.5">
-          <span className="size-2.5 rounded-full bg-slate-600" />
-          Not Updated
-        </span>
+
       </div>
           <fieldset>
             <legend className="sr-only">Sample collection filter</legend>
@@ -330,7 +325,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
             </div>
           )}
 
-          <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
+          <div className="lis-sample-search-actions flex flex-wrap items-center gap-2 border-t border-border pt-3" hidden={mode!=="criteria"}>
             <Button
               type="button"
               onClick={runSearch}
@@ -353,7 +348,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
 
       <Card className="border-border shadow-sm">
         <CardContent className="p-0">
-          <div className="flex items-center justify-between border-b border-border px-3 py-2">
+          <div className="lis-sample-table-caption flex items-center justify-between border-b border-border px-3 py-2">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-600">
               Lab Samples
             </h3>
@@ -366,7 +361,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-0 table-fixed text-xs [&_th]:whitespace-nowrap">
-              <colgroup>{[3,9,8,9,10,8,11,7,10,10,8,7].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
+              <colgroup>{[3,9,8,10,12,8,10,8,10,7,10,5].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
               <thead>
                 <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-3 py-1.5">S.No</th>
@@ -446,7 +441,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
   );
 }
 
-function SampleRow({
+export function SampleRow({
   row,
   index,
   isSaving,
@@ -478,7 +473,7 @@ function SampleRow({
       <td className="px-3 py-1.5 text-slate-500">{index + 1}</td>
       <td className="px-2 py-1.5 whitespace-nowrap font-mono font-medium text-slate-800">{row.billNumber}</td>
       <td className="px-2 py-1.5 whitespace-nowrap text-slate-600">
-        {row.billDate ? formatDate(row.billDate) : "—"}
+        {row.billDate ? businessDateInput(new Date(row.billDate)).split("-").reverse().join("-") : "—"}
       </td>
       <td className="px-3 py-1.5 font-mono text-slate-700">{row.patientCode ?? "—"}</td>
       <td className="px-3 py-1.5 font-medium text-slate-800">{row.patientName ?? "—"}</td>
@@ -512,7 +507,7 @@ function SampleRow({
               : "border-slate-200 bg-slate-50 text-slate-600"
           }
         >
-          {row.testStatus}
+          {row.testStatus === "CLOSED" ? "Closed" : "Open"}
         </Badge>
       </td>
       <td className="px-3 py-1.5">
@@ -566,7 +561,7 @@ function SampleRow({
           {isThisSaving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />}
           Save
         </Button>
-        <Button type="button" size="sm" variant="outline" className="mt-1 w-full min-w-0 px-1 text-[11px]" onClick={()=>setHistoryOpen(true)}>History</Button>
+        <button type="button" className="lis-sample-history" onClick={()=>setHistoryOpen(true)}>History</button>
         {draft.status==="RECOLLECTED"&&<p className="text-xs">Enter a recollection reason. Previous results will be retained in history.</p>}
         {historyOpen&&<Dialog open onOpenChange={setHistoryOpen} title="Sample collection history" size="lg">
           {history.isError&&<p role="alert">Unable to load collection history.</p>}

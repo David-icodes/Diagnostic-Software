@@ -5,6 +5,7 @@ import {
   type PatientBloodGroup,
   type PatientGender,
 } from "../models/patient.model";
+import { hasRecordedPatientAge } from "../utils/patient-age";
 
 const MOBILE_REGEX = /^[6-9]\d{9}$/;
 const PINCODE_REGEX = /^\d{6}$/;
@@ -37,6 +38,13 @@ const dateOfBirthSchema = z
 
 const basePatientSchema = z
   .object({
+    title: z
+      .string()
+      .trim()
+      .max(20, "Title is too long")
+      .or(z.literal(""))
+      .optional()
+      .transform((value) => value || undefined),
     firstName: z
       .string()
       .trim()
@@ -84,6 +92,31 @@ const basePatientSchema = z
   .strict(); // Rejects unknown keys (e.g. patientId) so it can never be spoofed.
 
 export const createPatientSchema = basePatientSchema;
+
+/**
+ * OSP registration/billing requires a usable age. The general patient registry
+ * keeps age optional for legacy imports, but a new OSP bill or vendor
+ * submission must not proceed with a blank or ambiguous zero-only age.
+ */
+const requireOspAge = (
+  value: { dateOfBirth?: Date; age?: number },
+  context: z.RefinementCtx,
+): void => {
+  if (hasRecordedPatientAge(value)) return;
+  context.addIssue({
+    code: z.ZodIssueCode.custom,
+    path: ["age"],
+    message:
+      "Age is required for an OSP patient. Enter a valid age (1-150 years) or a date of birth for a patient under one year.",
+  });
+};
+
+export const ospPatientSchema = createPatientSchema.superRefine(requireOspAge);
+
+/** Vendor submissions cannot choose status, but obey the same age rule. */
+export const vendorPatientSchema = createPatientSchema
+  .omit({ status: true })
+  .superRefine(requireOspAge);
 
 export const updatePatientSchema = basePatientSchema.partial();
 

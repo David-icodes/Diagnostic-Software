@@ -3,6 +3,7 @@ import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
 import { requireUserId } from "../../utils/require-user-id";
 import {
+  deletePackage as deleteService,
   createPackage as createService,
   getPackage as getService,
   listPackages as listService,
@@ -53,3 +54,4 @@ export const deactivatePackage = asyncHandler(async (req: Request, res: Response
   const pkg = await setActiveService(req.params.id, userId, false);
   return sendSuccess(res, { package: pkg });
 });
+export const deletePackage=asyncHandler(async(req:Request,res:Response)=>{await deleteService(req.params.id,requireUserId(req));return sendSuccess(res,{deleted:true});});

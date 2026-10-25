@@ -13,7 +13,7 @@ test("review refuses missing, inactive and cross-test source IDs",()=>{
 });
 test("CBP display units are independent; self references and PCV-MCV cycles remain blocked",()=>{
   assert.deepEqual(reviewCalculationBinding(sources,{...target,unit:"%"}),[]);
-  assert.match(reviewCalculationBinding([{id:"a",resultType:"NUMBER",unit:"g/dl"},{id:"b",resultType:"NUMBER",unit:"mg/dl"}],{id:"out",unit:"g/dl",resultType:"NUMBER",calculation:{formulaId:"globulin",dependencyIds:["a","b"]}}).join(),/units/);
+  assert.match(reviewCalculationBinding([{id:"a",resultType:"NUMBER",unit:"g/dl"},{id:"b",resultType:"NUMBER",unit:"mmol/l"}],{id:"out",unit:"g/dl",resultType:"NUMBER",calculation:{formulaId:"globulin",dependencyIds:["a","b"]}}).join(),/units/);
   assert.match(reviewCalculationBinding(sources,{...target,calculation:{formulaId:"mch",dependencyIds:["mch","rbc"]}}).join(),/itself/);
   const pcv={id:"pcv",unit:"%",resultType:"NUMBER",calculation:{formulaId:"pcv",dependencyIds:["rbc","mcv"]}};
   const mcv={id:"mcv",unit:"fL",resultType:"NUMBER",calculation:{formulaId:"mcv",dependencyIds:["pcv","rbc"]}};

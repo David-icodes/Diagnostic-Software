@@ -1,3 +1,5 @@
+import { displayPatientCode } from "../utils/patient-code";
+import { formatPatientDisplayName, normalizePatientTitle } from "../utils/patient-name";
 import { Schema, model, type HydratedDocument } from "mongoose";
 
 export const GENDERS = ["male", "female", "other"] as const;
@@ -19,6 +21,10 @@ export type PatientStatus = "active" | "inactive";
 
 export interface IPatient {
   patientId: string;
+  /** Salutation stored separately so it can never rewrite the registered name. */
+  title?: string;
+  /** Display-only value produced by `toJSON`; never persisted. */
+  displayName?: string;
   firstName: string;
   lastName: string;
   fullName: string;
@@ -48,6 +54,11 @@ const patientSchema = new Schema<IPatient>(
       unique: true,
       immutable: true,
       trim: true,
+    },
+    title: {
+      type: String,
+      trim: true,
+      maxlength: 20,
     },
     firstName: {
       type: String,
@@ -103,6 +114,14 @@ const patientSchema = new Schema<IPatient>(
     versionKey: false,
     toJSON: {
       transform(_doc: unknown, ret: Record<string, unknown>) {
+        if (typeof ret.patientId === "string") ret.patientId = displayPatientCode(ret.patientId);
+        if (typeof ret.title === "string") ret.title = normalizePatientTitle(ret.title);
+        ret.displayName = formatPatientDisplayName({
+          title: typeof ret.title === "string" ? ret.title : undefined,
+          firstName: typeof ret.firstName === "string" ? ret.firstName : undefined,
+          lastName: typeof ret.lastName === "string" ? ret.lastName : undefined,
+          fullName: typeof ret.fullName === "string" ? ret.fullName : undefined,
+        });
         ret.id = String(ret._id);
         delete ret._id;
         return ret;

@@ -28,7 +28,7 @@ test("patient modification saves without reading or enforcing bill dues", async 
 });
 
 test("OSP and Vendor bill creation remain available with outstanding patient balances", async (t) => {
-  t.mock.method(Patient, "findById", () => q({ _id: patientId, status: "active" }));
+  t.mock.method(Patient, "findById", () => q({ _id: patientId, status: "active", age: 30 }));
   t.mock.method(LabBill, "find", () => { throw new Error("New bills must not query previous balances"); });
   t.mock.method(LabTest, "find", () => q([{ _id: testId, departmentId, active: true, price: 100, testName: "Test", testCode: "TEST" }]));
   t.mock.method(Department, "find", () => q([{ _id: departmentId, name: "Department" }]));

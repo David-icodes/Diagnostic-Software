@@ -1,0 +1,34 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+process.env.MONGODB_URI="mongodb://127.0.0.1:1/vendor_credentials_no_connection";
+process.env.JWT_SECRET="synthetic-credentials-test-secret";
+for(const key of ["CLOUDINARY_CLOUD_NAME","CLOUDINARY_API_KEY","CLOUDINARY_API_SECRET"])process.env[key]="";
+
+test("admin edits only existing vendor credentials; blank passwords, session revocation and isolation",async t=>{
+ const [{default:app},{User,hashPassword,verifyPassword},{AuditLog},{signAuthToken}]=await Promise.all([import("../../app.js"),import("../../models/user.model.js"),import("../../models/audit-log.model.js"),import("../../utils/jwt.js")]);
+ const id="507f1f77bcf86cd799439011",accountId="507f1f77bcf86cd799439012",clientId="507f1f77bcf86cd799439013";
+ let actor={id,username:"synthetic-admin",name:"Synthetic",role:"admin",status:"active",sessionVersion:0};
+ const {LabClient}=await import("../../models/lab-client.model.js");
+ t.mock.method(LabClient,"findById",(value:unknown)=>({exec:async()=>value===clientId?{_id:clientId}:null}) as never);
+ const original=await hashPassword("synthetic-old-password");let saves=0;const audits:unknown[]=[];
+ const account={_id:accountId,username:"synthetic-vendor",clientId,role:"vendor",passwordHash:original,sessionVersion:0,save:async()=>{saves++;}};
+ t.mock.method(User,"findById",async()=>({...actor,toJSON:()=>actor}) as never);
+ t.mock.method(User,"findOne",(filter:Record<string,unknown>)=>({exec:async()=>filter.clientId===clientId&&filter.role==="vendor"?account:null}) as never);
+ t.mock.method(User,"exists",async()=>null);
+ t.mock.method(AuditLog,"create",async(row:unknown)=>{audits.push(row);return {} as never;});
+ const server=(app as unknown as import("express").Express).listen(0,"127.0.0.1");await new Promise<void>(resolve=>server.once("listening",resolve));t.after(()=>new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve())));
+ const origin=`http://127.0.0.1:${(server.address() as {port:number}).port}`;
+ const request=(body:unknown,target=clientId,authenticated=true)=>fetch(`${origin}/api/v1/auth/vendor-users/clients/${target}/credentials`,{method:"PATCH",headers:{"Content-Type":"application/json",...(authenticated?{cookie:`diagnostic_token=${signAuthToken({sub:id,username:actor.username,role:actor.role as "admin"|"staff",sessionVersion:0})}`}:{})},body:JSON.stringify(body)});
+ let response=await request({username:"Dr. SYNTHETIC'S CLINIC",password:""});assert.equal(response.status,200);assert.equal(account.username,"dr. synthetic's clinic");assert.equal(account.passwordHash,original);assert.equal(account.sessionVersion,1);assert.equal(account.clientId,clientId);
+ response=await request({username:"dr. synthetic's clinic",password:"synthetic-new-password"});assert.equal(response.status,200);assert.equal(await verifyPassword("synthetic-new-password",account.passwordHash),true);assert.equal(account.sessionVersion,2);
+ const payload=await response.json() as {data:Record<string,unknown>};
+ assert.deepEqual(Object.keys(payload.data).sort(),["id","username"]);assert.equal(JSON.stringify(audits).includes("synthetic-new-password"),false);assert.equal(audits.length,2);
+ assert.equal((await request({username:"dr. synthetic's clinic"})).status,200);assert.equal(saves,2);
+ assert.equal((await request({username:"x",password:"short"})).status,400);
+ assert.equal((await request({username:"valid-user",clientId})).status,400);
+ assert.equal((await request({username:"valid-user"},"not-an-id")).status,404);
+ assert.equal((await request({username:"valid-user"},"507f1f77bcf86cd799439099")).status,404);
+ assert.equal((await request({username:"valid-user"},accountId,false)).status,401);
+ assert.equal((await request({username:"valid-user"},accountId)).status,404);
+ actor={...actor,role:"staff"};assert.equal((await request({username:"valid-user"})).status,403);assert.equal(saves,2);
+});

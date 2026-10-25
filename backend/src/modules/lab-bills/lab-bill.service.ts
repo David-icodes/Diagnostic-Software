@@ -1,7 +1,10 @@
+import {createHash} from "node:crypto";
+import { patientCodePattern } from "../../utils/patient-code";
 import mongoose, { Types, type FilterQuery } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { parseLocalDayStart } from "../../utils/date-range";
 import { generateBillNumber } from "../../utils/id-generator";
+import { hasRecordedPatientAge } from "../../utils/patient-age";
 import {
   LabBill,
   type IBillItem,
@@ -129,7 +132,7 @@ export async function buildSnapshotItems(
   const testIds = items.map((item) => new Types.ObjectId(item.testId));
   const [tests, departments] = await Promise.all([
     LabTest.find({ _id: { $in: testIds } }).exec(),
-    Department.find().select("name").exec(),
+    Department.find().select("name active").exec(),
   ]);
 
   const clientTariffs = clientId ? await LabClientTariff.find({clientId, testId:{$in:testIds},active:true}).exec() : [];
@@ -145,7 +148,8 @@ export async function buildSnapshotItems(
     throw new ApiError(422, "One or more selected tests no longer exist");
   }
 
-  const inactive = items.filter((item) => !testMap.get(item.testId)?.active);
+  // Active packages authorize their explicit saved membership; individual selection still requires active tests.
+  const inactive = items.filter((item) => !packageMap.has(item.testId) && !testMap.get(item.testId)?.active);
   if (inactive.length > 0) {
     const names = inactive.map((item) => testMap.get(item.testId)?.testName ?? item.testId);
     throw new ApiError(422, `Inactive tests cannot be billed: ${names.join(", ")}`);
@@ -167,6 +171,7 @@ export async function buildSnapshotItems(
     const tariff = tariffMap.get(item.testId);
     if(tariff && String(tariff.departmentId)!==String(test.departmentId))throw new ApiError(422,"Client tariff department does not match the selected test");
     const packageEntry=packageMap.get(item.testId);
+    if (packageEntry && !departments.some(department => String(department._id) === String(test.departmentId))) throw new ApiError(422, "A package test has a missing department");
     const unitPrice = packageEntry ? packageEntry.price : tariff ? tariff.price : resolveBillPrice(test, patientType);
     const quantity = item.quantity;
     const old = previousMap.get(item.testId);
@@ -222,6 +227,15 @@ export async function createLabBill(
   }
   if (patient.status !== "active") {
     throw new ApiError(422, "Billing is not allowed for an inactive patient");
+  }
+  // OSP/vendor registration is age-bearing. Reject at the billing boundary as
+  // well as in the form so an API caller cannot bypass the mandatory field.
+  // A valid DOB is accepted for infants whose completed years are zero.
+  if (!hasRecordedPatientAge(patient)) {
+    throw new ApiError(
+      422,
+      "Age is required for an OSP patient. Enter a valid age (1-150 years) or a date of birth for a patient under one year.",
+    );
   }
 
   const billType = input.billType ?? "osp";
@@ -322,6 +336,7 @@ export async function modifyLabBill(
   userId: string,
   billId: string,
   input: ModifyLabBillInput,
+  options: { allowPaymentCollection?: boolean; allowPriceOverride?: boolean; allowClientChange?: boolean; requireRecordedAge?: boolean; vendorClientId?: string } = {},
 ): Promise<ILabBill> {
   if (!Types.ObjectId.isValid(billId)) {
     throw new ApiError(400, "Invalid bill ID");
@@ -332,8 +347,36 @@ export async function modifyLabBill(
     if (!bill) {
       throw new ApiError(404, "Bill not found");
     }
+    if(options.vendorClientId){
+      if(bill.billType!=="vendor" || String(bill.clientId)!==options.vendorClientId)throw new ApiError(404,"Bill not found");
+      // Vendors amend investigations, never the laboratory's financial settings.
+      input={...input,discountPercent:bill.discountPercent,discountAmount:undefined,paymentMode:bill.paymentMode,comments:bill.comments,displayComments:bill.displayComments};
+    }
+    if(input.payment){
+      if(bill.status!=="generated")throw new ApiError(422,"Only a generated, non-cancelled bill can receive payment.");
+      if(options.vendorClientId || !options.allowPaymentCollection)throw new ApiError(403,"Permission denied: billing.collect_due");
+      const previous=bill.amendments?.find(row=>row.paymentRequestId===input.payment!.requestId);
+      if(previous){
+        const fingerprint=createHash("sha256").update(JSON.stringify(input)).digest("hex");
+        if(String(previous.changedBy)!==userId||previous.paymentFingerprint!==fingerprint)throw new ApiError(409,"Payment request was already used. Reload the bill before making further changes.");
+        return;
+      }
+    }
     if (bill.status === "cancelled") {
       throw new ApiError(422, "A cancelled bill cannot be modified");
+    }
+    if(options.requireRecordedAge && bill.billType!=="vendor"){
+      const patient=await Patient.findById(bill.patientId).session(session).exec();
+      if(!patient || !hasRecordedPatientAge(patient))throw new ApiError(422,"Age is required for an OSP patient before modifying a bill.");
+    }
+    let clientChange:{previousClientId:string;previousClientName?:string;clientId:string;clientName:string}|undefined;
+    if(input.clientId!==undefined && input.clientId!==String(bill.clientId)){
+      if(!options.allowClientChange)throw new ApiError(403,"Only an administrator may change a bill's vendor client");
+      if(bill.billType!=="vendor")throw new ApiError(422,"Only vendor bills have an editable vendor client");
+      const client=await LabClient.findById(input.clientId).session(session).exec();
+      if(!client || client.active===false)throw new ApiError(422,"Select an active vendor client");
+      clientChange={previousClientId:String(bill.clientId),previousClientName:bill.clientName,clientId:input.clientId,clientName:client.name};
+      bill.clientId=new Types.ObjectId(input.clientId);bill.clientName=client.name;
     }
 
     if (input.referringDoctorId !== undefined) {
@@ -351,7 +394,40 @@ export async function modifyLabBill(
     }
 
     await hydrateOutsideAssignments([bill]);
+
+    const priceOverrides = new Map<string, number>();
+    for (const item of input.items) {
+      if (item.unitPrice === undefined) continue;
+      if (!options.allowPriceOverride) {
+        throw new ApiError(403, "Only an administrator may change an individual bill price");
+      }
+      if (item.packageId) {
+        throw new ApiError(422, "A package price cannot be overridden on its own; edit the package or price its tests individually");
+      }
+      priceOverrides.set(item.testId, round2(item.unitPrice));
+    }
+
     const snapshotItems = await buildSnapshotItems(input.items, bill.patientType, bill.items, bill.billType === "vendor" ? String(bill.clientId) : undefined);
+    const previousPriceByTest = new Map(bill.items.map(item => [String(item.testId), item.unitPrice]));
+    for (const item of snapshotItems) {
+      const override = priceOverrides.get(String(item.testId));
+      const retainedPrice = !clientChange && !item.packageId ? previousPriceByTest.get(String(item.testId)) : undefined;
+      const effectivePrice = override ?? retainedPrice;
+      if (effectivePrice === undefined) continue;
+      item.unitPrice = effectivePrice;
+      item.total = round2(effectivePrice * item.quantity);
+    }
+    const priceChanges = snapshotItems
+      .filter(item => priceOverrides.has(String(item.testId)))
+      .map(item => ({
+        testId: String(item.testId),
+        testName: item.testName,
+        previousUnitPrice: previousPriceByTest.get(String(item.testId)) ?? null,
+        newUnitPrice: item.unitPrice,
+        quantity: item.quantity,
+        previousTotal: bill.items.find(previous=>String(previous.testId)===String(item.testId))?.total ?? null,
+        newTotal: item.total,
+      }));
 
     // A removed investigation remains in clinical storage and in the amendment.
     // Re-adding requires a fresh-order lifecycle; never reactivate old results.
@@ -364,6 +440,7 @@ export async function modifyLabBill(
     const changedAt = new Date();
     bill.amendments ??= [];
     bill.amendments.push({
+      ...(input.payment?{paymentRequestId:input.payment.requestId,paymentFingerprint:createHash("sha256").update(JSON.stringify(input)).digest("hex")} : {}),
       changedBy: new Types.ObjectId(userId), changedAt,
       removedItems, previousItems: bill.items,
       previousTotals: {
@@ -381,6 +458,14 @@ export async function modifyLabBill(
       true, // Modification preserves receipts even when the revised net is lower.
     );
 
+    if(input.payment){
+      const amount=round2(input.payment.amount);
+      if(!Number.isFinite(amount)||amount<=0||amount>totals.dueAmount)throw new ApiError(422,"Paying amount cannot exceed the outstanding balance.");
+      await LabBillPayment.create([{billId:bill._id,amount,discountAmount:0,paymentMode:input.paymentMode??bill.paymentMode,collectedAt:changedAt,collectedBy:userId}],{session});
+      bill.paidAmount=round2(bill.paidAmount+amount);
+      totals.dueAmount=round2(Math.max(0,totals.netAmount-bill.paidAmount));
+      await AuditLog.create([{user:userId,action:"lab_bill.payment_collected",entityType:"LabBill",entity:bill._id,timestamp:changedAt,details:{amount,requestId:input.payment.requestId}}],{session});
+    }
     bill.items = snapshotItems;
     bill.totalAmount = totals.totalAmount;
     bill.discountPercent = totals.discountPercent;
@@ -403,12 +488,23 @@ export async function modifyLabBill(
     await AuditLog.create([{
       user: userId, action: "lab_bill.modified", entityType: "LabBill",
       entity: bill._id, timestamp: changedAt,
-      details: { removedTestIds: removedItems.map(item => String(item.testId)), amendmentCount: bill.amendments.length },
+      details: {
+        removedTestIds: removedItems.map(item => String(item.testId)),
+        amendmentCount: bill.amendments.length,
+        priceChanges,
+        clientChange,
+        previousTotals: bill.amendments[bill.amendments.length - 1]?.previousTotals,
+        revisedTotals: {
+          totalAmount: bill.totalAmount, discountPercent: bill.discountPercent,
+          discountAmount: bill.discountAmount, netAmount: bill.netAmount,
+          paidAmount: bill.paidAmount, dueAmount: bill.dueAmount,
+        },
+      },
     }], { session });
   });
 
   return LabBill.findById(billId)
-    .populate("patientId", "patientId fullName gender dateOfBirth age mobile")
+    .populate("patientId", "patientId title firstName lastName fullName gender dateOfBirth age mobile")
     .populate("referringDoctorId", "name qualification specialization")
     .populate("clientId", "clientCode name")
     .exec() as Promise<ILabBill>;
@@ -437,7 +533,7 @@ export async function getLabBill(id: string): Promise<ILabBill> {
     throw new ApiError(400, "Invalid bill ID");
   }
   const bill = await LabBill.findById(id)
-    .populate("patientId", "patientId fullName gender dateOfBirth age mobile")
+    .populate("patientId", "patientId title firstName lastName fullName gender dateOfBirth age mobile")
     .populate("referringDoctorId", "name qualification specialization")
     .populate("clientId", "clientCode name")
     .exec();
@@ -526,7 +622,8 @@ export async function listLabBills({
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(safeLimit)
-      .populate("patientId", "patientId fullName gender dateOfBirth age mobile")
+      .populate("patientId", "patientId title firstName lastName fullName gender dateOfBirth age mobile")
+      .populate("referringDoctorId", "name qualification specialization")
       .exec(),
   ]);
 
@@ -552,7 +649,7 @@ export async function getLabBillByBillNumber(billNumber: string): Promise<ILabBi
     throw new ApiError(400, "Bill number is required");
   }
   const bill = await LabBill.findOne({ billNumber: escapeRegExp(keyword) })
-    .populate("patientId", "patientId fullName gender dateOfBirth age mobile")
+    .populate("patientId", "patientId title firstName lastName fullName gender dateOfBirth age mobile")
     .populate("referringDoctorId", "name qualification specialization")
     .populate("clientId", "clientCode name")
     .populate({ path: "payments", select: "amount discountAmount paymentMode comments collectedAt collectedBy", options: { sort: { collectedAt: 1 } } })
@@ -651,7 +748,7 @@ export async function listDueBills({
   if (patientKeyword || patientNameKeyword) {
     const patientFilter: FilterQuery<IPatient> = {};
     if (patientKeyword) {
-      patientFilter.patientId = { $regex: escapeRegExp(patientKeyword), $options: "i" };
+      patientFilter.patientId = { $regex: patientCodePattern(patientKeyword), $options: "i" };
     }
     if (patientNameKeyword) {
       patientFilter.fullName = { $regex: escapeRegExp(patientNameKeyword), $options: "i" };
@@ -673,7 +770,7 @@ export async function listDueBills({
       .sort({ createdAt: -1 })
       .skip((safePage - 1) * safeLimit)
       .limit(safeLimit)
-      .populate("patientId", "patientId fullName gender dateOfBirth age mobile")
+      .populate("patientId", "patientId title firstName lastName fullName gender dateOfBirth age mobile")
       .exec(),
   ]);
 
@@ -771,7 +868,7 @@ export async function collectLabDue(
   });
 
   return LabBill.findById(bill._id)
-    .populate("patientId", "patientId fullName gender dateOfBirth age mobile")
+    .populate("patientId", "patientId title firstName lastName fullName gender dateOfBirth age mobile")
     .populate("referringDoctorId", "name qualification specialization")
     .populate("clientId", "clientCode name")
     .populate({ path: "payments", options: { sort: { collectedAt: 1 } } })

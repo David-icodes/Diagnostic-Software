@@ -80,7 +80,7 @@ export async function listTests({
   const skip = (page - 1) * limit;
   const filter: FilterQuery<ILabTest> = {};
 
-  if (departmentId) {
+  if (departmentId && !["ALL", "all", "__all"].includes(departmentId)) {
     filter.departmentId = isValidObjectId(departmentId)
       ? new Types.ObjectId(departmentId)
       : new Types.ObjectId("000000000000000000000000"); // force empty result

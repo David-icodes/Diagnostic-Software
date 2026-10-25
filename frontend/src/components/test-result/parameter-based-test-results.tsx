@@ -1,4 +1,5 @@
 "use client";
+import { initialResultText, initialResultBoolean } from "@/lib/result-entry-default";
 import {automaticLft,refreshLftDependents} from "@/lib/lft-dependent-values";
 
 import { businessDateInput } from "@/lib/business-date";
@@ -671,7 +672,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
   );
 }
 
-function ResultEntryTable({
+export function ResultEntryTable({
   parameters,
   existingResults,
   testLinked,
@@ -692,28 +693,26 @@ function ResultEntryTable({
 }) {
   const [textValues, setTextValues] = useState<Record<string, string>>(() => {
     const existing = new Map(
-      existingResults.map((result) => [result.parameterId, result.resultDisplay ?? result.result]),
+      existingResults.map((result) => [result.parameterId, result]),
     );
     const text: Record<string, string> = {};
     for (const parameter of parameters) {
       const value = existing.get(parameter.parameterId);
       if (parameter.resultType === "BOOLEAN") continue;
       text[parameter.parameterId] =
-        typeof value === "string" || typeof value === "number" ? String(value) : "";
+        initialResultText(parameter, value);
     }
     return text;
   });
 
   const [boolValues, setBoolValues] = useState<Record<string, boolean>>(() => {
     const existing = new Map(
-      existingResults.map((result) => [result.parameterId, result.result]),
+      existingResults.map((result) => [result.parameterId, result]),
     );
     const bool: Record<string, boolean> = {};
     for (const parameter of parameters) {
       if (parameter.resultType === "BOOLEAN") {
-        bool[parameter.parameterId] = typeof existing.get(parameter.parameterId) === "boolean"
-          ? Boolean(existing.get(parameter.parameterId))
-          : false;
+        bool[parameter.parameterId] = initialResultBoolean(parameter.defaultValue, existing.get(parameter.parameterId));
       }
     }
     return bool;
@@ -816,7 +815,7 @@ function ResultEntryTable({
     // still pending approval stays a normal editable parameter.
     const disabled = (Boolean(parameter.calculation) && parameter.calculation?.enabled !== false && parameter.calculationStatus !== "PENDING") || submitting;
     const flagClasses = abnormal
-      ? "border-red-400 bg-red-50/50 text-xs font-bold text-red-600"
+      ? "border-slate-500 text-xs font-black text-black"
       : "";
     switch (parameter.resultType) {
       case "BOOLEAN":
@@ -993,7 +992,7 @@ function ResultEntryTable({
                         data-calculator-state={control.status}
                         className={cn(
                           "border-t border-border align-top",
-                          abnormal && "bg-red-50/40",
+                          abnormal && "bg-slate-50",
                         )}
                       >
                         <td className="px-2 py-1 text-slate-400">
@@ -1019,16 +1018,8 @@ function ResultEntryTable({
                                  Calculate
                               </Button></div>
                             ) : null}
-                            {abnormal ? (
-                              <span
-                                role="status"
-                                className="rounded bg-red-100 px-1 py-0.5 text-[13px] font-bold text-red-700"
-                              >
-                                Abnormal
-                              </span>
-                            ) : null}
+
                           </div>
-                          {parameter.defaultValue !== undefined && parameter.defaultValue !== "" && <p className="whitespace-pre-wrap break-words text-xs text-muted-foreground">Configured default: {parameter.defaultValue}</p>}
                           {calculationErrors[parameter.parameterId] && <p role="status" className={calculatorStyles.validation}>{calculationErrors[parameter.parameterId]}</p>}
                         </td>
                         <td className="px-2 py-1 text-slate-600">

@@ -1,4 +1,6 @@
+import {invoicePdfWorkflow} from "./invoice-pdf-workflow";
 import {reportTimings,type ReportTimings} from "./report-timings";
+import {departmentOrderedItems,reportSectionCount} from "../../utils/report-departments";
 import { reportHeaderVersion } from "./report-header-asset";
 import { recordAudit } from "../audit/audit.service";
 import { createHash, randomUUID } from "node:crypto";
@@ -10,7 +12,7 @@ import { getLabBill } from "../lab-bills/lab-bill.service";
 import { getBillResultEntry } from "./test-result.service";
 import { roleHasPermission } from "../../middleware/require-permission";
 import { mergePrintedReports } from "./report-pdf-merge";
-import { assertPrintableReportAllowed } from "./result-workflow.service";
+import { assertInvoicePrintAllowed, assertPrintableReportAllowed } from "./result-workflow.service";
 import { LabTestResult } from "../../models/lab-test-result.model";
 import { LabSample } from "../../models/lab-sample.model";
 import { LabTechnician } from "../../models/lab-technician.model";
@@ -47,7 +49,7 @@ async function snapshot(input:Input,printedBy:string) {
   }));
   return JSON.parse(JSON.stringify({headerAssetVersion:input.includeHeader==="true"?await reportHeaderVersion():undefined,bill,reports,externalReports,technician,printedBy,onlyEntered:input.onlyEntered==="true",includeHeader:input.includeHeader==="true",letterhead:input.letterhead==="true",printMode:input.printMode}));
 }
-type RenderSnapshot = Awaited<ReturnType<typeof snapshot>> & { externalReport?: {testName:string;fileName:string} };
+type RenderSnapshot = Awaited<ReturnType<typeof snapshot>> & { invoice?:boolean; externalReport?: {testName:string;fileName:string} };
 const jobs=new Map<string,{owner:string;expires:number;data:RenderSnapshot}>();
 export function reportRenderData(jobId:string,owner:string) {
   const job=jobs.get(jobId);
@@ -64,29 +66,38 @@ async function render(data:RenderSnapshot,req:Request,timing:ReportTimings=repor
   try{
     context=await timing.measure("context_setup",()=>lease.browser.newContext({viewport:{width:1280,height:900}}));
     await context.addCookies([{name:env.COOKIE_NAME,value:cookie,url:api,httpOnly:true,secure:api.startsWith("https:"),sameSite:env.COOKIE_SAMESITE==="none"?"None":env.COOKIE_SAMESITE==="strict"?"Strict":"Lax"}]);
-    await context.route("**/*",route=>{const url=new URL(route.request().url());return [frontend,api].includes(url.origin)||["data:","blob:"].includes(url.protocol)?route.continue():route.abort();});
+    await context.route("**/*",route=>{
+      const request=route.request(),url=new URL(request.url());
+      // Vendor sessions cannot call administrator APIs. Only this private renderer
+      // receives its existing owner-scoped snapshot; no public permission changes.
+      if((req.user!.role==="vendor" || data.invoice) && url.origin===api && url.pathname===`/api/v1/lab-test-results/render-data/${jobId}` && ["GET","OPTIONS"].includes(request.method()))return route.fulfill({status:request.method()==="OPTIONS"?204:200,contentType:"application/json",headers:{"Cache-Control":"private, no-store","Access-Control-Allow-Origin":frontend,"Access-Control-Allow-Credentials":"true","Access-Control-Allow-Methods":"GET, OPTIONS","Access-Control-Allow-Headers":"Content-Type"},body:request.method()==="OPTIONS"?undefined:JSON.stringify({success:true,data:reportRenderData(jobId,req.user!.id)})});
+      return [frontend,api].includes(url.origin)||["data:","blob:"].includes(url.protocol)?route.continue():route.abort();
+    });
     const page=await context.newPage();
     await timing.measure("navigation",()=>page.goto(new URL(`/reports/document?jobId=${jobId}`,frontend).href,{waitUntil:"domcontentloaded",timeout:30000}));
     await timing.measure("readiness",()=>page.waitForSelector('[data-report-document="ready"], [data-report-document="error"]',{timeout:30000}));
     if(await page.locator('[data-report-document="error"]').count())throw new ApiError(502,"Authenticated report layout could not be loaded");
     await timing.measure("asset_readiness",()=>page.evaluate("async () => { await document.fonts.ready; await Promise.all([...document.images].map(image => image.decode())); }"));
-    const expected=data.externalReport?1:data.reports.length;
-    const contentReady=await page.locator('.lis-report-paper').evaluateAll((sections,expected)=>sections.length>=expected&&sections.every(section=>(section.textContent??'').trim().length>0||section.querySelector('img')),expected);
+    const expected=data.invoice?1:reportSectionCount(data);
+    const contentReady=await page.locator(data.invoice?'.lis-invoice-paper':'.lis-report-paper').evaluateAll((sections,expected)=>sections.length>=expected&&sections.every(section=>(section.textContent??'').trim().length>0||section.querySelector('img')),expected);
     if(!expected||!contentReady)throw new ApiError(502,"The report document has no printable content");
     const pdf=await timing.measure("pdf_creation",()=>page.pdf({format:"A4",preferCSSPageSize:true,printBackground:true,displayHeaderFooter:false}));await timing.measure("integrity",()=>validatePdf(pdf,"report"));return pdf;
   }finally{jobs.delete(jobId);try{await context?.close();}catch{await lease.discard();}finally{lease.release();}}
 }
 
-export async function browserReportPdf(input:Input,req:Request,timing:ReportTimings=reportTimings()) {
-  const data=await timing.measure("lookup",()=>snapshot(input,req.user!.name));const version=digest(data);const key=digest({owner:req.user!.id,version});
+export async function browserReportPdf(input:Input,req:Request,timing:ReportTimings=reportTimings(),vendorScope?:{clientId:string}) {
+  const data=await timing.measure("lookup",()=>snapshot(input,req.user!.name));
+  if(vendorScope && (req.user!.role!=="vendor" || String(data.bill.clientId?.id??data.bill.clientId?._id??data.bill.clientId)!==vendorScope.clientId))throw new ApiError(404,"Bill not found");
+  const version=digest(data);const key=digest({owner:req.user!.id,version});
   let result:{bytes:Buffer;status:string};
   if(data.externalReports.length) {
-    if(!roleHasPermission(req.user!.role,"reports.print"))throw new ApiError(403,"Permission denied: external report printing requires reports.print");
+    if(!vendorScope && !roleHasPermission(req.user!.role,"reports.print"))throw new ApiError(403,"Permission denied: external report printing requires reports.print");
     // Fetch each source afresh: do not cache away ownership, collection or provider-integrity checks.
     const {printExternalReport}=await import("./external-report-print.js");
     const parts:Buffer[]=[];let group:typeof data.reports=[];
     const flush=async()=>{if(group.length){parts.push(await render({...data,reports:group},req,timing));group=[];}};
-    for(const item of data.bill.items.filter((item:{testId:string})=>input.testIds.includes(String(item.testId)))) {
+    const selectedItems=data.bill.items.filter((item:{testId:string})=>input.testIds.includes(String(item.testId)));
+    for(const item of input.printMode==="department"?departmentOrderedItems(selectedItems):selectedItems) {
       const external=data.externalReports.find((row:{testId:string})=>row.testId===String(item.testId));
       if(external){await flush();parts.push(await printExternalReport(input.billId,String(item.testId),external.uploadId,
         input.letterhead==="true"?"letterhead":input.includeHeader==="true"?"header":"none",req));}
@@ -106,4 +117,12 @@ export async function renderExternalReportHeader(billId:string,testId:string,fil
   if(!item?.outsideLabId)throw new ApiError(422,"This test is not assigned to an outside laboratory");
   return render(JSON.parse(JSON.stringify({bill,reports:[],technician:null,printedBy:req.user!.name,
     includeHeader,letterhead,onlyEntered:false,printMode:"continuous",externalReport:{testName:item.testName,fileName}})),req);
+}
+
+/** Same authenticated renderer, with PDF browser headers disabled for invoices too. */
+export async function browserInvoicePdf(billId:string,includeHeader:boolean,req:Request,vendorScope?:{clientId:string}){
+ return invoicePdfWorkflow({user:req.user,canViewBilling:Boolean(req.user&&roleHasPermission(req.user.role,"billing.view")),vendorClientId:vendorScope?.clientId},{
+  getBill:()=>getLabBill(billId),assertAllowed:()=>assertInvoicePrintAllowed(billId),
+  render:bill=>render({invoice:true,bill,reports:[],externalReports:[],technician:null,printedBy:req.user!.name,onlyEntered:false,includeHeader,letterhead:false,printMode:"continuous"},req),
+ });
 }

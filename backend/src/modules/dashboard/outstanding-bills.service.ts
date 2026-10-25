@@ -1,3 +1,4 @@
+import { displayPatientCode } from "../../utils/patient-code";
 import {Types, type PipelineStage} from "mongoose";
 import {LabBill} from '../../models/lab-bill.model';
 import {ApiError} from '../../utils/api-error';
@@ -21,5 +22,5 @@ export async function getOutstandingBills(page=1,limit=20,cursorMode=false,befor
  {$lookup:{from:'patients',localField:'patientId',foreignField:'_id',as:'patient'}},{$unwind:{path:'$patient',preserveNullAndEmptyArrays:true}},
  {$project:{_id:0,id:{$toString:'$_id'},billNo:'$billNumber',billDate:'$createdAt',patientId:{$ifNull:['$patient.patientId','—']},patientName:{$ifNull:['$patient.fullName','—']},net:'$netAmount',paid:'$paidAmount',due:'$outstanding'}},
  ]}}]).exec();
- const total=result?.summary[0]?.total??0;const found=result?.items??[];const items=cursorMode?found.slice(0,limit):found;return {items,...(cursorMode?{nextCursor:found.length>limit?items.at(-1)?.id:undefined}:{}),totalDue:Math.round((result?.summary[0]?.totalDue??0)*100)/100,pagination:{page,limit,total,totalPages:Math.max(1,Math.ceil(total/limit))}};
+ const total=result?.summary[0]?.total??0;const found=result?.items??[];const items=cursorMode?found.slice(0,limit):found;return {items:items.map((row:any)=>typeof row.patientId === "string" ? {...row,patientId:displayPatientCode(row.patientId)} : row),...(cursorMode?{nextCursor:found.length>limit?items.at(-1)?.id:undefined}:{}),totalDue:Math.round((result?.summary[0]?.totalDue??0)*100)/100,pagination:{page,limit,total,totalPages:Math.max(1,Math.ceil(total/limit))}};
 }

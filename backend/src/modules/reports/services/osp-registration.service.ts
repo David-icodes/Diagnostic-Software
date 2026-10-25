@@ -1,3 +1,5 @@
+import { displayPatientCode } from "../../../utils/patient-code";
+import { formatPatientDisplayName } from "../../../utils/patient-name";
 import type { FilterQuery } from "mongoose";
 import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
 import { Patient, type IPatient } from "../../../models/patient.model";
@@ -125,8 +127,8 @@ export async function listOspRegistration(
     const billFor = billForByPatient.get(String(patient._id)) ?? [];
     return {
       id: patient.id,
-      patientId: patient.patientId,
-      patientName: patient.fullName,
+      patientId: displayPatientCode(patient.patientId),
+      patientName: formatPatientDisplayName(patient),
       registrationDate: (patient.createdAt ?? new Date()).toISOString(),
       dateOfBirth: patient.dateOfBirth ? new Date(patient.dateOfBirth).toISOString() : null,
       age: typeof patient.age === "number" ? patient.age : null,

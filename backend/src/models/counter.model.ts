@@ -2,7 +2,7 @@ import { model, Schema } from "mongoose";
 
 /**
  * Monotonic per-key counter used to generate human-readable IDs
- * (e.g. Patient IDs like GP202600001) in a concurrency-safe way.
+ * (e.g. Patient IDs like GP20260001) in a concurrency-safe way.
  */
 export interface ICounter {
   key: string;

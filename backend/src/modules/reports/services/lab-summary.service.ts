@@ -1,3 +1,5 @@
+import { displayPatientCode } from "../../../utils/patient-code";
+import { formatPatientDisplayName } from "../../../utils/patient-name";
 import type { FilterQuery } from "mongoose";
 import { billFinancialSummary } from "../utils/bill-financial-summary";
 import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
@@ -126,9 +128,9 @@ export async function listLabSummary(input: LabSummaryQuery): Promise<LabSummary
 
   const patientIds = bills.map((b) => b.patientId);
   const patients = await Patient.find({ _id: { $in: patientIds } })
-    .select("patientId fullName")
+    .select("patientId title firstName lastName fullName")
     .exec();
-  const patientMap = new Map<string, { patientId?: string; fullName?: string }>();
+  const patientMap = new Map<string, { patientId?: string; title?: string; firstName?: string; lastName?: string; fullName?: string }>();
   for (const patient of patients) {
     patientMap.set(String(patient._id), patient);
   }
@@ -167,8 +169,8 @@ export async function listLabSummary(input: LabSummaryQuery): Promise<LabSummary
         id: `${bill.id}-${item.testId}`,
         billNumber: bill.billNumber,
         reportDate: billCreatedAt.toISOString(),
-        patientId: patient?.patientId ?? "—",
-        patientName: patient?.fullName ?? "—",
+        patientId: displayPatientCode(patient?.patientId ?? "—"),
+        patientName: patient ? formatPatientDisplayName(patient) : "—",
         patientType: bill.patientType,
         departmentName: item.departmentName,
         testName: item.testName,

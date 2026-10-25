@@ -7,6 +7,7 @@ import {
   updatePackageSchema,
 } from "../../validations/package";
 import {
+  deletePackage,
   activatePackage,
   createPackage,
   deactivatePackage,
@@ -43,5 +44,7 @@ router.patch(
   requirePermission("database.package.write"),
   deactivatePackage,
 );
+
+router.delete("/:id",requirePermission("database.package.write"),deletePackage);
 
 export default router;

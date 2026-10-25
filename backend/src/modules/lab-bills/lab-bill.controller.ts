@@ -1,3 +1,4 @@
+import {roleHasPermission} from "../../middleware/require-permission";
 import type { Request, Response } from "express";
 import { asyncHandler } from "../../utils/async-handler";
 import { sendSuccess } from "../../utils/http";
@@ -114,6 +115,7 @@ export const modifyLabBill = asyncHandler(async (req: Request, res: Response) =>
     userId,
     req.params.id,
     req.body as ModifyLabBillInput,
+    { allowPaymentCollection: Boolean(req.user && roleHasPermission(req.user.role,"billing.collect_due")), allowPriceOverride: req.user?.role === "admin", allowClientChange: false, requireRecordedAge: true },
   );
   return res.status(200).json({
     success: true,

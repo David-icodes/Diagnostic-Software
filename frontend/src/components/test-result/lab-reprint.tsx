@@ -1,4 +1,5 @@
 "use client";
+import {smearReportText,repeatedSmearLabel,compactSmearParameters,compactSmearValue} from "@/lib/smear-report-text";
 import { cbcCountValueOnly, cbcSmearEmptyCells, reportCellText } from "../../../../backend/src/utils/cbc-report-display";
 import { resultDisplay } from "../../../../backend/src/utils/result-display";
 import { ReportLetterhead } from "./report-letterhead";
@@ -673,9 +674,9 @@ function formatReportDateTime(value?: string | Date | null): string {
 
 function ReportInfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div data-patient-name={label === "Name" || undefined} className="grid grid-cols-[74pt_1fr] text-[8.5pt] leading-[13pt]">
+    <div data-patient-name={label === "Name" || undefined} data-info-label={label} className="grid grid-cols-[74pt_1fr] text-[8.5pt] leading-[13pt]">
       <span className="font-bold uppercase">{label}</span>
-      <span>: {value}</span>
+      <span className="lis-info-value"><span aria-hidden="true">:</span><span>{value || "—"}</span></span>
     </div>
   );
 }
@@ -798,9 +799,7 @@ export function PrintPreview({
           <p className="mt-[2mm] text-center text-[10pt] font-bold uppercase">
             Department of {departmentName || "—"}
           </p>
-          <p className="mt-[1.5mm] text-center text-[11pt] font-bold uppercase">
-            {reportTests ? "Selected investigations" : testName || "—"}
-          </p>
+          {!reportTests && <p className="mt-[1.5mm] text-center text-[11pt] font-bold uppercase">{testName || "—"}</p>}
 
               </td></tr>
               <tr className="border-t border-black text-[8.5pt] font-bold">
@@ -855,7 +854,7 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
   // the real data instead of being hardcoded.
   const groups: { subtitle: string; rows: LabTestParameter[] }[] = [];
   const ordered=[...parameters].sort((a,b)=>a.displayOrder-b.displayOrder);
-  for (const parameter of onlyEntered?enteredReportParameters(ordered,results):ordered) {
+  for (const parameter of compactSmearParameters(onlyEntered?enteredReportParameters(ordered,results):ordered)) {
     const subtitle = (parameter.subtitle ?? "").trim();
     const last = groups[groups.length - 1];
     if (!last || last.subtitle !== subtitle) {
@@ -889,9 +888,11 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                     {group.rows.map((parameter) => {
                       if(parameter.itemType === "SUBTITLE")return <tr key={parameter.id}><th colSpan={4} className="py-[1mm] text-left font-bold">{parameter.parameterName}</th></tr>;
                       if (isReportNarrative(parameter)) {
-                        const narrative = reportNarrative(parameter, resultByParameter.get(parameter.id));
+                        const smear = /peripheral\s*smear/i.test(parameter.subtitle??group.subtitle) || cbcSmearEmptyCells(parameter);
+                        const rawNarrative = reportNarrative(parameter, resultByParameter.get(parameter.id));
+                        const narrative = smear ? smearReportText(rawNarrative) : rawNarrative;
                         return <tr key={parameter.id}><td colSpan={4} className="py-[1mm] text-left">
-                          <strong className="block">{parameter.parameterName}</strong>
+                          {(!smear || !repeatedSmearLabel(parameter.parameterName,narrative)) && <strong className="block">{parameter.parameterName}</strong>}
                           {narrative !== "" && <div className="mt-[1mm] whitespace-pre-wrap break-words">{narrative}</div>}
                         </td></tr>;
                       }
@@ -899,6 +900,8 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                       const blankMissing=cbcSmearEmptyCells(parameter);
                       const result = resultByParameter.get(parameter.id);
                       const value = result?.result;
+                      const smear = blankMissing || /peripheral\s*smear/i.test(parameter.subtitle??group.subtitle);
+                      const display = smear ? compactSmearValue(parameter.parameterName,resultDisplay(value,result?.resultDisplay)) : resultDisplay(value,result?.resultDisplay);
                       const method = result?.method ?? parameter.method;
                       const reference = referenceResolutions?.[parameter.id];
                       const numericValue = !usesClinicalReference(parameter) ? undefined : typeof value === "number" ? value : enteredNumber(typeof value === "string" ? value : undefined);
@@ -908,11 +911,12 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                       return (
                         <tr
                           key={parameter.id}
+                          data-smear-row={smear || undefined}
                           className="break-inside-avoid align-top"
                         >
                           <td className="py-[0.7mm] pr-[2mm]">
                             <span className="font-bold">
-                              {parameter.parameterName}
+                              {smear && repeatedSmearLabel(parameter.parameterName,display) ? "" : parameter.parameterName}
                             </span>
                             {method ? (
                               <span className="block text-[7.5pt] italic leading-[10pt]">
@@ -924,10 +928,10 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                             className={cn(
                               "py-[0.7mm] pr-[2mm] whitespace-pre-wrap",
                               abnormal && "lis-abnormal-result font-bold",
-                              valueOnly && "lis-cbc-count-result font-bold",
+                              valueOnly && "lis-cbc-count-result",
                             )}
                           >
-                            {resultDisplay(value, result?.resultDisplay)}
+                            {display}
                           </td>
                           <td className="py-[0.7mm] pr-[2mm]">
                             {blankMissing

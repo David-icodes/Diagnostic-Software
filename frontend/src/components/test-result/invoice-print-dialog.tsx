@@ -11,7 +11,7 @@ import { formatDateTime, formatGender, formatMoney } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { rupeesInWords } from "@/lib/amount-words";
 import { checkInvoicePrintEligibility } from "@/services/test-results";
-import { printDocument } from "@/lib/print-document";
+import {openAuthorizedReportPdf} from "@/lib/browser-report";
 import type { LabBill } from "@/types/billing";
 import { selectedColumns } from "@/lib/catalogue-selection";
 import { groupedBillItems } from "@/lib/package-billing";
@@ -38,7 +38,9 @@ export function InvoicePrintDialog({ bill, onClose, autoPrint = false }: { bill:
       flushSync(() => setIncludeHeader(withHeader));
       if(user?.role==="vendor") await api.get(`/vendor-portal/bills/${encodeURIComponent(bill.id)}/invoice-print-eligibility`);
       else await checkInvoicePrintEligibility(bill.id);
-      await printDocument(documentRef.current);
+      const base=(process.env.NEXT_PUBLIC_API_URL??"http://localhost:5000/api/v1").replace(/\/$/,"");
+      const path=user?.role==="vendor"?`/vendor-portal/bills/${encodeURIComponent(bill.id)}/invoice.pdf`:`/lab-bills/${encodeURIComponent(bill.id)}/invoice.pdf`;
+      await openAuthorizedReportPdf(`${base}${path}?includeHeader=${withHeader}`);
     } catch (error) { setPrintError(error instanceof Error ? error.message : "Unable to print this bill."); }
     finally { printing.current = false; setBusy(false); }
   }, [bill.id, patient, user]);
@@ -94,7 +96,7 @@ export function InvoiceDocument({ bill, printedBy, includeHeader = true }: { bil
         <div className={`lis-invoice-tests mt-2 grid gap-2 ${bill.billType !== "vendor" && groupedBillItems(bill.items).length > 5 ? "grid-cols-2" : "grid-cols-1"}`}>
           {(bill.billType !== "vendor" ? selectedColumns(groupedBillItems(bill.items)) : [groupedBillItems(bill.items)]).map((column,columnIndex) => (
         <table key={columnIndex} className="w-full table-fixed"><thead><tr><th className="w-8 text-left">SNo</th><th className="text-left">INVESTIGATIONS</th><th className="w-24 text-right">AMOUNT</th></tr></thead>
-          <tbody>{column.map((item,index) => <Fragment key={item.testId}><tr><td>{columnIndex * 5 + index+1}</td><td className="lis-invoice-test-name break-words whitespace-normal">{item.testCode && item.testCode !== "INVG2044" ? `${item.testCode} - ` : ""}{item.testName}{item.quantity !== 1 ? ` × ${item.quantity}` : ""}</td><td className="lis-invoice-amount text-right font-bold">{item.includedTests?"":formatMoney(item.total)}</td></tr>
+          <tbody>{column.map((item,index) => <Fragment key={item.testId}><tr><td>{columnIndex * 5 + index+1}</td><td className="lis-invoice-test-name break-words whitespace-normal">{item.testCode && item.testCode !== "INVG2044" && !item.includedTests ? `${item.testCode} - ` : ""}{item.testName}{item.includedTests ? ":" : ""}{item.quantity !== 1 ? ` × ${item.quantity}` : ""}</td><td className="lis-invoice-amount text-right font-bold">{item.includedTests?"":formatMoney(item.total)}</td></tr>
             {item.includedTests && <tr><td colSpan={3}><PackageInvoiceDetails members={item.includedTests} total={item.total}/></td></tr>}</Fragment>)}</tbody>
         </table>
           ))}

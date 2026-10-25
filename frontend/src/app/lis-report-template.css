@@ -95,3 +95,7 @@
 
 /* Keep the complete repeated header below Chromium's page-fragment limit. */
 .lis-report-paper .lis-clinical-repeat-header > p { margin-top: 1mm; margin-bottom: 0; }
+
+/* Colon/value columns and the same reserved stationery height in both modes. */
+.lis-clinical-info .lis-info-value { display:grid; grid-template-columns:7pt minmax(0,1fr); column-gap:2pt; min-width:0; }
+.lis-clinical-repeat-header .lis-clinical-letterhead, .lis-clinical-letterhead { height:22mm; }

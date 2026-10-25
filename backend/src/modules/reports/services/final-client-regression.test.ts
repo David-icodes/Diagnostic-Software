@@ -28,13 +28,13 @@ test("referral columns use historical gross, discount, paid and configured commi
   const bill = { id: "fixture", patientId: patient, referringDoctorId: doctor, createdAt: new Date("2026-10-09T06:00:00Z"), billNumber: "FIXTURE", patientType: "osp", totalAmount: 200, netAmount: 180, paidAmount: 80,
     items: [{ testId: testA, departmentId: dept, testName: "First", total: 100 }, { testId: testB, departmentId: dept, testName: "Second", total: 100 }] };
   t.mock.method(LabBill, "find", (filter: Record<string, unknown>) => { assert.deepEqual(filter.referringDoctorId, { $in: [String(doctor)] }); assert.equal(filter.status, "generated"); return q([bill]); });
-  t.mock.method(Patient, "find", () => q([{ _id: patient, patientId: "GP-FIXTURE", fullName: "Synthetic Patient" }]));
+  t.mock.method(Patient, "find", () => q([{ _id: patient, patientId: "GP-FIXTURE", title: "Mr.", firstName: "Synthetic", lastName: "Patient", fullName: "Synthetic Patient" }]));
   t.mock.method(Doctor, "find", () => q([{ _id: doctor, name: "Configured Doctor" }]));
   t.mock.method(DoctorCommission, "find", async () => [{ scope: "test", doctorId: doctor, testId: testA, commissionPercent: 10 }]);
   const base = { doctorIds: String(doctor), testIds: String(testA), departmentIds: String(dept) };
   const net = await listReferralDoctorCommission(referralDoctorCommissionQuerySchema.parse(base));
   assert.equal(net.data.length, 1); const row = net.data[0];
-  assert.equal(row.sNo, 1); assert.equal(row.patientId, "GP-FIXTURE"); assert.equal(row.doctorName, "Configured Doctor"); assert.equal(row.tests, "First");
+  assert.equal(row.sNo, 1); assert.equal(row.patientId, "GP-FIXTURE"); assert.equal(row.patientName, "Mr. Synthetic Patient"); assert.equal(row.doctorName, "Configured Doctor"); assert.equal(row.tests, "First");
   assert.equal(row.segmentTotal, 100); assert.equal(row.segmentDiscount, 10); assert.equal(row.segmentNet, 90); assert.equal(row.segmentPaid, 40); assert.equal(row.commissionAmount, 9);
   const paid = await listReferralDoctorCommission(referralDoctorCommissionQuerySchema.parse({ ...base, amountBasis: "paid" }));
   assert.equal(paid.data[0].commissionAmount, 4); assert.equal(paid.summary.totalCommission, 4);

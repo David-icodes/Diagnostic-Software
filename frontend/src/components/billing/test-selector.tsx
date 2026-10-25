@@ -330,7 +330,6 @@ export function TestSelector({
                       <p className="break-words text-xs font-medium text-slate-800">
                         {item.testName}
                       </p>
-                      {item.includedTests && <ul className="mt-1 space-y-0.5 text-[11px] text-slate-600">{item.includedTests.map(member => <li key={member.testId}>{member.testName}</li>)}</ul>}
                       <p className="font-mono text-[11px] text-muted-foreground">
                         {item.testCode === "INVG2044" ? "" : item.testCode}
                       </p>

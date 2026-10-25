@@ -1,0 +1,33 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import mongoose,{Types} from "mongoose";
+import {LabBill} from "../../models/lab-bill.model";
+import {LabClient} from "../../models/lab-client.model";
+import {LabClientTariff} from "../../models/lab-client-tariff.model";
+import {Patient} from "../../models/patient.model";
+import {LabTest} from "../../models/lab-test.model";
+import {Department} from "../../models/department.model";
+import {LabSample} from "../../models/lab-sample.model";
+import {AuditLog} from "../../models/audit-log.model";
+import {modifyLabBill} from "./lab-bill.service";
+const query=(value:unknown)=>{const q={exec:async()=>value,session:()=>q,select:()=>q,populate:()=>q,sort:()=>q,lean:()=>q};return q;};
+test("admin client amendment uses new assigned tariffs, retains receipts, and audits both client references",async t=>{
+ const actor=new Types.ObjectId(),oldClient=new Types.ObjectId(),newClient=new Types.ObjectId(),testId=new Types.ObjectId(),dept=new Types.ObjectId();
+ const bill=new LabBill({billNumber:"SYNTHETIC-CLIENT-AMENDMENT",billType:"vendor",patientType:"osp",patientId:new Types.ObjectId(),clientId:oldClient,clientName:"Synthetic old",items:[{testId,testCode:"SYN",testName:"Synthetic test",departmentId:dept,departmentName:"Synthetic",unitPrice:100,quantity:1,total:100}],totalAmount:100,discountPercent:0,discountAmount:0,netAmount:100,paidAmount:50,dueAmount:50,createdBy:actor,status:"generated"});
+ t.mock.method(mongoose.connection,"transaction",async(callback:any)=>callback({}));t.mock.method(LabBill,"findById",()=>query(bill) as any);t.mock.method(bill,"save",async()=>bill);
+ t.mock.method(LabSample,"find",()=>query([]) as any);t.mock.method(LabClient,"findById",()=>query({_id:newClient,name:"Synthetic new",active:true}) as any);
+ const master={_id:testId,testCode:"SYN",testName:"Synthetic test",departmentId:dept,active:true,price:999};
+ t.mock.method(LabTest,"find",()=>query([master]) as any);t.mock.method(Department,"find",()=>query([{_id:dept,name:"Synthetic"}]) as any);
+ t.mock.method(LabClientTariff,"find",(filter:any)=>{assert.equal(String(filter.clientId),String(newClient));return query([{testId,departmentId:dept,price:115}]) as any;});
+ let audit:any;t.mock.method(AuditLog,"create",async(rows:any)=>{audit=rows[0];return rows;});
+ const input={clientId:String(newClient),items:[{testId:String(testId),quantity:1}]};
+ await assert.rejects(modifyLabBill(String(actor),String(bill._id),input),/Only an administrator/);
+ await modifyLabBill(String(actor),String(bill._id),input,{allowClientChange:true});
+ assert.equal(String(bill.clientId),String(newClient));assert.equal(bill.clientName,"Synthetic new");assert.equal(bill.netAmount,115);assert.equal(bill.paidAmount,50);assert.equal(bill.dueAmount,65);assert.equal(master.price,999);
+ assert.equal(audit.details.clientChange.previousClientId,String(oldClient));assert.equal(audit.details.clientChange.clientId,String(newClient));assert.equal(bill.amendments?.[0].previousTotals.netAmount,100);
+});
+test("API modification age gate rejects an OSP patient without recorded age before financial changes",async t=>{
+ const actor=new Types.ObjectId(),testId=new Types.ObjectId();const bill=new LabBill({billNumber:"SYNTHETIC-AGE",billType:"osp",patientId:new Types.ObjectId(),createdBy:actor,status:"generated"});
+ t.mock.method(mongoose.connection,"transaction",async(callback:any)=>callback({}));t.mock.method(LabBill,"findById",()=>query(bill) as any);t.mock.method(Patient,"findById",()=>query({age:0}) as any);
+ await assert.rejects(modifyLabBill(String(actor),String(bill._id),{items:[{testId:String(testId),quantity:1}]},{requireRecordedAge:true}),/Age is required/);
+});

@@ -1,0 +1,51 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import mongoose from "mongoose";
+import {LabBill} from "../../models/lab-bill.model";
+import {Patient} from "../../models/patient.model";
+import {LabReportUpload} from "../../models/lab-report-upload.model";
+import {LabTestResult} from "../../models/lab-test-result.model";
+import {AuditLog} from "../../models/audit-log.model";
+import {editVendorPatient,vendorPatientEditSchema} from "./patient-edit.service";
+import {modifyLabBill} from "../lab-bills/lab-bill.service";
+
+test("vendor patient edits enforce ownership, shared records, stale revisions and clinical history",async t=>{
+ const clientId="507f1f77bcf86cd799439011",billId="507f1f77bcf86cd799439012",patientId="507f1f77bcf86cd799439013";
+ const actor={id:"507f1f77bcf86cd799439014",role:"vendor",clientId} as import("../../types/auth").AuthUser;
+ const bill={_id:billId,patientId,clientId,billType:"vendor",status:"generated"};let shared=false,clinical=false,uploaded=false,found=true,saves=0;const audits:unknown[]=[];
+ const patient={_id:patientId,firstName:"Synthetic",age:30,mobile:"9999999999",address:"Preserve this synthetic address" as string|undefined,updatedAt:new Date("2026-10-19T00:00:00Z"),get(key:string){return (this as Record<string,unknown>)[key];},save:async()=>{saves++;}};
+ const query=(value:unknown)=>{const q:any={session:()=>q,exec:async()=>value,then:(resolve:any,reject:any)=>Promise.resolve(value).then(resolve,reject)};return q;};
+ t.mock.method(mongoose.connection,"transaction",async(callback:any)=>callback({}));
+ t.mock.method(LabBill,"findOne",(filter:any)=>{assert.equal(filter.clientId,clientId);assert.equal(filter.billType,"vendor");return query(found?bill:null) as never;});
+ t.mock.method(LabBill,"exists",()=>query(shared?{_id:billId}:null) as never);
+ t.mock.method(Patient,"findById",()=>query(patient) as never);
+ t.mock.method(LabTestResult,"exists",()=>query(clinical?{_id:billId}:null) as never);
+ t.mock.method(LabReportUpload,"exists",()=>query(uploaded?{_id:billId}:null) as never);
+ t.mock.method(AuditLog,"create",async(rows:any)=>{audits.push(rows);return [] as never;});
+ const input={mobile:"9888888888",expectedUpdatedAt:patient.updatedAt.toISOString()};
+ await editVendorPatient(actor,billId,vendorPatientEditSchema.parse(input));assert.equal(patient.address,"Preserve this synthetic address");assert.equal(patient.mobile,input.mobile);assert.equal(saves,1);assert.equal(audits.length,1);
+ shared=true;await assert.rejects(editVendorPatient(actor,billId,input),/Shared patient/);shared=false;
+ await assert.rejects(editVendorPatient(actor,billId,{...input,expectedUpdatedAt:"2026-10-18T00:00:00Z"}),/Reload/);
+ clinical=true;await assert.rejects(editVendorPatient(actor,billId,{...input,age:31}),/after results/);assert.equal(patient.age,30);
+ clinical=false;uploaded=true;await assert.rejects(editVendorPatient(actor,billId,{...input,age:31}),/uploaded reports/);
+ found=false;await assert.rejects(editVendorPatient(actor,billId,input),/Bill not found/);assert.equal(saves,1);
+ found=true;await editVendorPatient(actor,billId,vendorPatientEditSchema.parse({address:"",expectedUpdatedAt:input.expectedUpdatedAt}));assert.equal(patient.address,undefined);
+ assert.equal(vendorPatientEditSchema.safeParse({...input,patientId}).success,false);
+ t.mock.method(LabBill,"findById",()=>query({...bill,clientId:"507f1f77bcf86cd799439099"}) as never);
+ await assert.rejects(modifyLabBill(actor.id,billId,{items:[]},{vendorClientId:clientId}),/Bill not found/);
+});
+
+test("vendor test amendments use assigned tariff and preserve receipts, discounts and laboratory notes",async t=>{
+ const {Types}=await import("mongoose");
+ const [{LabTest},{Department},{LabClientTariff},{LabSample}]=await Promise.all([import("../../models/lab-test.model.js"),import("../../models/department.model.js"),import("../../models/lab-client-tariff.model.js"),import("../../models/lab-sample.model.js")]);
+ const userId=new Types.ObjectId(),clientId=new Types.ObjectId(),testId=new Types.ObjectId(),departmentId=new Types.ObjectId();
+ const bill=new LabBill({billNumber:"SYNTHETIC-VENDOR-AMENDMENT",billType:"vendor",patientType:"osp",patientId:new Types.ObjectId(),clientId,createdBy:userId,status:"generated",items:[{testId,testName:"Synthetic",testCode:"SYN",departmentId,departmentName:"Synthetic",unitPrice:100,quantity:1,total:100,outsideLabId:null}],totalAmount:100,discountPercent:10,discountAmount:10,netAmount:90,paidAmount:50,dueAmount:40,paymentMode:"cash",comments:"Synthetic private laboratory note",displayComments:"Synthetic bill remark"});
+ const chain=(value:unknown)=>{const q:any={exec:async()=>value,session:()=>q,select:()=>q,lean:()=>q,populate:()=>q};return q;};
+ t.mock.method(mongoose.connection,"transaction",async(callback:any)=>callback({}));
+ t.mock.method(LabBill,"findById",()=>chain(bill));t.mock.method(bill,"save",async()=>bill);
+ t.mock.method(LabSample,"find",()=>chain([]));t.mock.method(LabTest,"find",()=>chain([{_id:testId,testName:"Synthetic",testCode:"SYN",departmentId,active:true,price:999}]));
+ t.mock.method(Department,"find",()=>chain([{_id:departmentId,name:"Synthetic"}]));t.mock.method(LabClientTariff,"find",()=>chain([{testId,departmentId,price:100}]));
+ let audit:any;t.mock.method(AuditLog,"create",async(rows:any)=>{audit=rows[0];return rows;});
+ await modifyLabBill(String(userId),String(bill._id),{items:[{testId:String(testId),quantity:2}],discountPercent:90,paymentMode:"card",comments:"Injected"},{vendorClientId:String(clientId)});
+ assert.equal(bill.totalAmount,200);assert.equal(bill.discountPercent,10);assert.equal(bill.netAmount,180);assert.equal(bill.paidAmount,50);assert.equal(bill.dueAmount,130);assert.equal(bill.paymentMode,"cash");assert.equal(bill.comments,"Synthetic private laboratory note");assert.equal(bill.displayComments,"Synthetic bill remark");assert.equal(audit.action,"lab_bill.modified");assert.equal(bill.amendments?.length,1);
+});

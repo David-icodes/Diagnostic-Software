@@ -1,3 +1,4 @@
+import { displayPatientCode } from "../../utils/patient-code";
 /**
  * Dashboard data.
  *
@@ -195,7 +196,7 @@ export async function getTodayBills({
       id: String(bill._id),
       billNo: bill.billNumber,
       ...(bill.billType === "vendor" ? { vendorName: bill.clientName ?? "Vendor client" } : {}),
-      patientId: patient?.patientId ?? "—",
+      patientId: displayPatientCode(patient?.patientId ?? "—"),
       patientName: patient?.fullName ?? "—",
       age: patient ? ageLabel(patient) : "—",
       gender: genderLabel(patient?.gender),
@@ -224,7 +225,7 @@ export async function getDueBills({
     return {
       id: String(bill._id),
       billNo: bill.billNumber,
-      patientId: patient?.patientId ?? "—",
+      patientId: displayPatientCode(patient?.patientId ?? "—"),
       patientName: patient?.fullName ?? "—",
       net: bill.netAmount,
       paid: bill.paidAmount,
@@ -263,7 +264,7 @@ export async function getRecentPatients({
     .exec();
 
   return patients.map((patient) => ({
-    patientId: patient.patientId,
+    patientId: displayPatientCode(patient.patientId),
     patientName: patient.fullName,
     age: ageLabel(patient),
     gender: genderLabel(patient.gender),

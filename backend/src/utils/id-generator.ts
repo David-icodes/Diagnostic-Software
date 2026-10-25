@@ -1,3 +1,5 @@
+import { Patient } from "../models/patient.model";
+import { patientCodeAliases } from "./patient-code";
 import { Counter } from "../models/counter.model";
 
 const MAX_SEQUENCE_RETRIES = 3;
@@ -33,14 +35,19 @@ export async function nextSequence(key: string): Promise<number> {
 }
 
 /**
- * Generates a human-readable Patient ID: `GP<YYYY><5-digit sequence>`.
+ * Generates a human-readable Patient ID: `GP<YYYY><minimum 4-digit sequence>`.
  * The sequence resets implicitly each year through a distinct counter key.
  * Patient IDs are always generated server-side.
  */
 export async function generatePatientId(): Promise<string> {
   const year = new Date().getFullYear();
-  const sequence = await nextSequence(`patient:${year}`);
-  return `GP${year}${String(sequence).padStart(5, "0")}`;
+  for (let attempt=0;attempt<100;attempt++) {
+    const sequence = await nextSequence(`patient:${year}`);
+    const candidate=`GP${year}${String(sequence).padStart(4,"0")}`;
+    // Keep the original atomic counter and skip any legacy spelling of this code.
+    if (!(await Patient.exists({patientId:{$in:patientCodeAliases(candidate)}}))) return candidate;
+  }
+  throw new Error("Unable to allocate a unique patient ID.");
 }
 
 /**

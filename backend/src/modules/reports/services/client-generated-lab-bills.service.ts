@@ -1,3 +1,5 @@
+import { displayPatientCode } from "../../../utils/patient-code";
+import { formatPatientDisplayName } from "../../../utils/patient-name";
 import type { FilterQuery } from "mongoose";
 import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
 import type {
@@ -38,7 +40,7 @@ export async function listClientGeneratedLabBills(
   const sortDir = input.orderBy === "date_asc" ? 1 : -1;
   const bills = await LabBill.find(filter)
     .sort({ createdAt: sortDir })
-    .populate("patientId", "patientId fullName")
+    .populate("patientId", "patientId title firstName lastName fullName")
     .exec();
 
   if (bills.length === 0) {
@@ -85,8 +87,8 @@ export async function listClientGeneratedLabBills(
       billNumber: bill.billNumber,
       billDate: (bill.createdAt ?? new Date()).toISOString(),
       clientName: bill.clientName ?? "—",
-      patientId: patient?.patientId ?? "—",
-      patientName: patient?.fullName ?? "—",
+      patientId: displayPatientCode(patient?.patientId ?? "—"),
+      patientName: patient ? formatPatientDisplayName(patient) : "—",
       refDoctor: bill.doctorName ?? "—",
       tests: bill.items.map((item) => item.testName).join(", "),
       totalAmount: round2(bill.totalAmount),

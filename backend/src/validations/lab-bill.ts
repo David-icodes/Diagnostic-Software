@@ -7,7 +7,7 @@ import {
   BILL_TYPES,
 } from "../models/lab-bill.model";
 
-const itemSchema = z
+const itemBaseSchema = z
   .object({
     testId: z.string().refine(isValidObjectId, "Invalid test ID"),
     packageId: z.string().refine(isValidObjectId,"Invalid package ID").optional(),
@@ -15,12 +15,34 @@ const itemSchema = z
     outsideLabId: z.string().refine(isValidObjectId, "Invalid outside lab ID").nullable().optional(),
     quantity: z.number().int("Quantity must be a whole number").min(1, "Quantity must be at least 1").max(100, "Quantity is too large"),
   })
+  .strict();
+
+type BillItemInputShape = z.infer<typeof itemBaseSchema>;
+
+const refineBillItem = (item: BillItemInputShape, context: z.RefinementCtx) => {
+  if(item.packageId && (item.packageId!==item.testId || item.out || item.outsideLabId))context.addIssue({code:z.ZodIssueCode.custom,message:"Package selections must use their own ID and cannot be sent outside as a group"});
+  if (item.out === true && !item.outsideLabId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["outsideLabId"], message: "Select an outside lab for this test" });
+  if (item.out === false && item.outsideLabId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["outsideLabId"], message: "In-house tests cannot have an outside lab" });
+};
+
+const itemSchema = itemBaseSchema.superRefine(refineBillItem);
+
+/**
+ * Modification may carry an explicit bill-level price for an individual item.
+ * This never changes the master tariff; the controller additionally requires
+ * the administrator role before applying it.
+ */
+const modifyItemSchema = itemBaseSchema
+  .extend({
+    unitPrice: z
+      .number()
+      .finite("Price must be a finite number")
+      .min(0, "Price cannot be negative")
+      .max(100_000_000, "Price is too large")
+      .optional(),
+  })
   .strict()
-  .superRefine((item, context) => {
-    if(item.packageId && (item.packageId!==item.testId || item.out || item.outsideLabId))context.addIssue({code:z.ZodIssueCode.custom,message:"Package selections must use their own ID and cannot be sent outside as a group"});
-    if (item.out === true && !item.outsideLabId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["outsideLabId"], message: "Select an outside lab for this test" });
-    if (item.out === false && item.outsideLabId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["outsideLabId"], message: "In-house tests cannot have an outside lab" });
-  });
+  .superRefine(refineBillItem);
 
 const billingInputSchema = z
   .object({
@@ -78,6 +100,11 @@ export type CreateLabBillInput = z.infer<typeof createLabBillSchema>;
  */
 export const modifyLabBillSchema = billingInputSchema
   .omit({ patientId: true, patientType: true })
+  .extend({
+    clientId: z.string().refine(isValidObjectId,"Invalid client ID").optional(),
+    payment: z.object({requestId:z.string().uuid(),amount:z.number().finite().positive().max(100_000_000)}).strict().optional(),
+    items: z.array(modifyItemSchema).min(1, "At least one test is required").max(100, "Too many tests"),
+  })
   .strict();
 
 export type ModifyLabBillInput = z.infer<typeof modifyLabBillSchema>;

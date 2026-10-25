@@ -1,3 +1,6 @@
+import { displayPatientCode } from "../../../utils/patient-code";
+import { formatPatientDisplayName } from "../../../utils/patient-name";
+import { patientCodePattern } from "../../../utils/patient-code";
 import type { FilterQuery } from "mongoose";
 import { LabBill, type ILabBill } from "../../../models/lab-bill.model";
 import { Patient, type IPatient } from "../../../models/patient.model";
@@ -127,7 +130,7 @@ export async function listGeneratedLabBills(
   if (patientIdKeyword || patientNameKeyword) {
     const patientFilter: FilterQuery<IPatient> = {};
     if (patientIdKeyword) {
-      patientFilter.patientId = { $regex: escapeRegExp(patientIdKeyword), $options: "i" };
+      patientFilter.patientId = { $regex: patientCodePattern(patientIdKeyword), $options: "i" };
     }
     if (patientNameKeyword) {
       patientFilter.fullName = { $regex: escapeRegExp(patientNameKeyword), $options: "i" };
@@ -183,7 +186,7 @@ export async function listGeneratedLabBills(
       .sort(orderBy === "date_asc" ? { createdAt: 1, _id: 1 } : { createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(safeLimit)
-      .populate("patientId", "patientId fullName")
+      .populate("patientId", "patientId title firstName lastName fullName")
       .populate("createdBy", "name")
       .exec(),
     LabBill.aggregate<import("../types/generated-lab-bills").RevenueAnalytics>([
@@ -225,8 +228,8 @@ export async function listGeneratedLabBills(
       id: bill.id,
       billNumber: bill.billNumber,
       billDate: (bill.createdAt ?? new Date()).toISOString(),
-      patientId: patient?.patientId ?? "—",
-      patientName: patient?.fullName ?? "—",
+      patientId: displayPatientCode(patient?.patientId ?? "—"),
+      patientName: patient ? formatPatientDisplayName(patient) : "—",
       patientType: bill.patientType,
       tests: bill.items.map((item) => item.testName),
       departments,
