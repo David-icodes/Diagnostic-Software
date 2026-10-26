@@ -1,5 +1,6 @@
 "use client";
 
+import {ClientActions} from "./client-actions";
 import { ClientCreateDialog } from "@/components/billing/client-create-dialog";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -114,7 +115,7 @@ export function ClientPicker({ selected, onSelect }: ClientPickerProps) {
           ) : (
             <ul className="divide-y divide-border/70 rounded-lg border border-border">
               {rows.map((client) => (
-                <li key={client.id}>
+                <li key={client.id} className="flex items-center">
                   <button
                     type="button"
                     className="flex w-full items-center justify-between gap-3 px-2.5 py-1.5 text-left transition-colors hover:bg-muted"
@@ -140,6 +141,7 @@ export function ClientPicker({ selected, onSelect }: ClientPickerProps) {
                       Select
                     </span>
                   </button>
+                  <ClientActions client={client} deletionDisabled={selected?.id===client.id} onChanged={updated=>{if(selected?.id===client.id)onSelect(updated);}}/>
                 </li>
               ))}
             </ul>

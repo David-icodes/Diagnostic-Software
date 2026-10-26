@@ -9,7 +9,7 @@ import { ReportLetterhead } from "./report-letterhead";
 import { ReportPageFooter } from "./report-page-footer";
 
 import { isReportNarrative, reportNarrative } from "@/lib/report-narrative";
-import { Fragment, useEffect, useRef, useMemo, useState } from "react";
+import { type ReactNode, Fragment, useEffect, useRef, useMemo, useState } from "react";
 import { businessDateInput, businessTimeInput } from "@/lib/business-date";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -688,10 +688,10 @@ function ReportInfoRow({ label, value }: { label: string; value: string }) {
 }
 
 export function PrintPreview({
+  shareQrDataUrl,
   bill,
   testName,
   departmentName,
-  collectedOn,
   parameters,
   results,
   technician,
@@ -726,18 +726,16 @@ export function PrintPreview({
   referenceResolutions?: Record<string, ReferenceResolution>;
   /** Department consolidation reuses the exact individual parameter rows. */
   reportTests?: ReportTestContent[];
+  reportNote1?:string;reportNote2?:string;shareQrDataUrl?:string;
 }) {
   const patient = bill ? toPatientBill(bill) : null;
-  const reportEnding = (<tbody><tr><td colSpan={4} className="lis-clinical-ending-cell">
-          <div className="lis-clinical-ending">
-          {/* Clinical note */}
-          <p className="mt-[3mm] text-[8pt]">
-            Note : Please Correlate Clinically if necessary kindly discuss.
-          </p>
-          <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} />
-
-          </div>
-            </td></tr></tbody>);
+  const reportEnding = (includeQr = true) => (
+    <tr><td colSpan={4} className="lis-clinical-ending-cell">
+      <div className="lis-clinical-ending">
+        <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} reportQrDataUrl={includeQr ? shareQrDataUrl : undefined} />
+      </div>
+    </td></tr>
+  );
 
   // "REPORTED ON" is the newest entry across the test's results.
   const reportedOn = (reportTests ? reportTests.flatMap(test=>test.results) : results).reduce<string | undefined>((latest, result) => {
@@ -770,8 +768,8 @@ export function PrintPreview({
               <tr><td colSpan={4} className="lis-clinical-repeat-header">
           {/* Letterhead */}
           <ReportLetterhead includeHeader={includeHeader} letterhead={letterhead} />
+          <div className="mt-[2mm] h-px" aria-hidden="true"/>
 
-          <div className="mt-[2mm] border-t border-black" />
 
           {/* Patient / bill information */}
           <div className="lis-clinical-info mt-[1.5mm] grid grid-cols-2 gap-x-[6mm]">
@@ -795,10 +793,7 @@ export function PrintPreview({
                 label="Bill Date"
                 value={formatReportDateTime(bill.createdAt)}
               />
-              <ReportInfoRow
-                label="Collected On"
-                value={formatReportDateTime(collectedOn)}
-              />
+
               <ReportInfoRow
                 label="Reported On"
                 value={formatReportDateTime(reportedOn)}
@@ -835,10 +830,10 @@ export function PrintPreview({
             </thead>
             {reportTests ? reportTests.map((test,index)=><Fragment key={index}>
               <tbody data-report-test={test.testName}><tr><th colSpan={4} className="pt-[2mm] pb-[1mm] text-center font-bold uppercase">{test.testName}</th></tr>
-                {test.collectedOn && <tr><td colSpan={4} className="text-[8pt]">Collected on: {formatReportDateTime(test.collectedOn)}</td></tr>}
+
               </tbody>
-              <ReportParameterRows {...test} onlyEntered={onlyEntered}/>{reportEnding}
-            </Fragment>) : <><ReportParameterRows parameters={parameters} results={results} onlyEntered={onlyEntered} resolvedReferences={resolvedReferences} referenceResolutions={referenceResolutions}/>{reportEnding}</>}
+              <ReportParameterRows {...test} onlyEntered={onlyEntered} ending={reportEnding(index===reportTests.length-1)}/>
+            </Fragment>) : <><ReportParameterRows parameters={parameters} results={results} onlyEntered={onlyEntered} resolvedReferences={resolvedReferences} referenceResolutions={referenceResolutions} ending={reportEnding()}/></>}
 
 
           </table>
@@ -849,10 +844,11 @@ export function PrintPreview({
 }
 
 type ReportTestContent = {
+  reportNote1?:string;reportNote2?:string;
   testName: string; collectedOn?: string; parameters: LabTestParameter[]; results: LabTestResult[];
   resolvedReferences?: Record<string,string>; referenceResolutions?: Record<string,ReferenceResolution>;
 };
-function ReportParameterRows({parameters,results,onlyEntered=false,resolvedReferences,referenceResolutions}:Omit<ReportTestContent,"testName">&{onlyEntered?:boolean}) {
+function ReportParameterRows({parameters,results,onlyEntered=false,resolvedReferences,referenceResolutions,ending}:Omit<ReportTestContent,"testName">&{onlyEntered?:boolean;ending?:ReactNode}) {
   const resultByParameter = new Map(
     results.map((result) => [result.parameterId, result] as const),
   );
@@ -872,9 +868,7 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
     }
   }
 
-  return (
-            <tbody>
-              {groups.length === 0 ? (
+  const rows = groups.length === 0 ? (
                 <tr className="border-b border-black">
                   <td colSpan={4} className="py-[1mm]">
                     No results entered for this test.
@@ -882,9 +876,8 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                 </tr>
               ) : (
                 groups.map((group) => (
-                  <Fragment key={`group-${group.subtitle || "main"}`}>
-                    {group.subtitle && (
-                      <tr className="break-inside-avoid">
+                  [group.subtitle && (
+                      <tr key={`group-${group.subtitle}`} className="break-inside-avoid">
                         <td
                           colSpan={4}
                           className="pb-[0.5mm] pt-[2mm] font-bold uppercase"
@@ -892,8 +885,8 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                           {group.subtitle}
                         </td>
                       </tr>
-                    )}
-                    {group.rows.map((parameter) => {
+                    ),
+                    ...group.rows.map((parameter) => {
                       if(parameter.itemType === "SUBTITLE")return <tr key={parameter.id}><th colSpan={4} className="py-[1mm] text-left font-bold">{parameter.parameterName}</th></tr>;
                       if (isReportNarrative(parameter)) {
                         const smear = /peripheral\s*smear/i.test(parameter.subtitle??group.subtitle) || cbcSmearEmptyCells(parameter);
@@ -942,9 +935,7 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                             {display}
                           </td>
                           <td className="py-[0.7mm] pr-[2mm]">
-                            {blankMissing
-                              ? reportCellText(result?.unit ?? parameter.unit, true)
-                              : result?.unit ?? parameter.unit ?? "—"}
+                            {reportCellText(result?.unit ?? parameter.unit, true).trim().replace(/^[-–—]$/, "")}
                           </td>
                           <td className="py-[0.7mm]">
                             {blankMissing
@@ -960,12 +951,13 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                           </td>
                         </tr>
                       );
-                    })}
-                  </Fragment>
-                ))
-              )}
-            </tbody>
-  );
+                    })]
+                )).flat());
+  const renderedRows = (Array.isArray(rows) ? rows : [rows]).filter(Boolean);
+  // Keep the last clinical rows with the signatures and QR on the final page.
+  const tailStart = Math.max(0, renderedRows.length - 3);
+  return <><tbody>{renderedRows.slice(0, tailStart)}</tbody>
+    <tbody className="lis-report-final-rows">{renderedRows.slice(tailStart)}{ending}</tbody></>;
 }
 
 export default LabReprint;

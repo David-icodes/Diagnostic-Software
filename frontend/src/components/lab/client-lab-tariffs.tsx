@@ -1,5 +1,6 @@
 "use client";
 
+import {ClientActions} from "@/components/billing/client-actions";
 import { ClientCreateDialog } from "@/components/billing/client-create-dialog";
 import { selectTariffScope, selectedTariffRows } from "@/lib/tariff-selection";
 import { useMemo, useState } from "react";
@@ -238,26 +239,12 @@ export function ClientLabTariffsContent() {
             <div className="lis-master-listbox">
             <ClientCreateDialog onCreated={client=>{setClientId(client.id);setClientSearch("");setDrafts({});setSelected({});setOverwrite(false);}} />
             <Input aria-label="Search clients" placeholder="Search Client..." value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} />
-            <Select
-              id="client-tariff-client"
-              size={10}
-              className="h-8"
-              value={clientId}
-              onChange={(event) => {
-                setClientId(event.target.value);
-                setSelected({});
-                setDrafts({});
-                setOverwrite(false);
-                setNotice(null);
-              }}
-            >
-              <option value="">--Select--</option>
-              {clients.filter((client) => client.id === clientId || client.name.toLowerCase().includes(clientSearch.toLowerCase())).map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </Select>
+            <div id="client-tariff-client" role="listbox" aria-label="Select Client Name" className="max-h-64 overflow-y-auto rounded border bg-white">
+              {clients.filter(client=>client.name.toLowerCase().includes(clientSearch.toLowerCase())).map(client=><div key={client.id} className="flex items-center border-b last:border-b-0">
+                <button type="button" role="option" aria-selected={clientId===client.id} className={cn("min-w-0 flex-1 px-2 py-2 text-left",clientId===client.id&&"bg-primary text-primary-foreground")} onClick={()=>{setClientId(client.id);setSelected({});setDrafts({});setOverwrite(false);setNotice(null);}}>{client.name}</button>
+                <ClientActions client={client} onDeleted={()=>{if(clientId===client.id){setClientId("");setDrafts({});setSelected({});setOverwrite(false);}}}/>
+              </div>)}
+            </div>
             </div>
           </FormField>
           <FormField id="client-tariff-dept" label="Select Department" required>

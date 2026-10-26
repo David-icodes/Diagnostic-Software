@@ -111,7 +111,7 @@
 .lis-report-paper td.lis-abnormal-result { color:#000 !important; font-weight:900 !important; }
 .lis-report-paper td.lis-manually-edited { font-weight:700 !important; }
 @media print {
- @page lab-report-artwork { size:A4; margin:42mm 11mm 16mm; }
+ @page lab-report-artwork { size:A4; margin:42mm 7mm 16mm 15mm; }
  .lis-report-artwork { width:188mm; padding:0; min-height:0; background:transparent; }
  .lis-report-stationery { display:none !important; }
  .lis-result-print-document .lis-clinical-page-watermark { display:none !important; }

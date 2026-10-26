@@ -7,7 +7,7 @@ import {
   useMemo,
 } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { usePathname,useRouter } from "next/navigation";
 import {
   getMe,
   loginRequest,
@@ -35,11 +35,13 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname=usePathname();
   const queryClient = useQueryClient();
 
   const meQuery = useQuery({
     queryKey: ME_QUERY_KEY,
     queryFn: getMe,
+    enabled:pathname!=="/shared-report",
     retry: false,
   });
 

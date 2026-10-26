@@ -147,7 +147,7 @@ export function CreateLabTestContent() {
   });
 
   const invalidate = () => {
-    void invalidateMasterData(queryClient, "lab-tests");
+    return invalidateMasterData(queryClient, "lab-tests");
   };
 
   const saveMutation = useMutation({
@@ -157,32 +157,32 @@ export function CreateLabTestContent() {
         testCode: form.testCode.trim().toUpperCase(),
         testName: form.testName.trim(),
         shortName: form.shortName.trim(),
-        testType: form.testType.trim() || undefined,
-        sampleType: form.sampleType.trim() || undefined,
-        containerType: form.containerType.trim() || undefined,
-        description: form.description.trim() || undefined,
-        reportNote1: form.reportNote1.trim() || undefined,
-        reportNote2: form.reportNote2.trim() || undefined,
-        comments: form.comments.trim() || undefined,
+        testType: form.testType.trim(),
+        sampleType: form.sampleType.trim(),
+        containerType: form.containerType.trim(),
+        description: form.description.trim(),
+        reportNote1: form.reportNote1.trim(),
+        reportNote2: form.reportNote2.trim(),
+        comments: form.comments.trim(),
         resultMode: form.resultMode as LabTestRow["resultMode"],
         active: form.active,
         price: toNum(form.price) ?? 0,
-        priceIp: toNum(form.priceIp),
-        priceInsIp: toNum(form.priceInsIp),
-        priceEr: toNum(form.priceEr),
-        doctorPrice: toNum(form.doctorPrice),
-        referralPercent: toNum(form.referralPercent),
-        cghsCode: form.cghsCode.trim() || undefined,
-        nimsCode: form.nimsCode.trim() || undefined,
-        railwayCode: form.railwayCode.trim() || undefined,
-        nfcCode: form.nfcCode.trim() || undefined,
+        priceIp: toNum(form.priceIp) ?? (editingId ? null : undefined),
+        priceInsIp: toNum(form.priceInsIp) ?? (editingId ? null : undefined),
+        priceEr: toNum(form.priceEr) ?? (editingId ? null : undefined),
+        doctorPrice: toNum(form.doctorPrice) ?? (editingId ? null : undefined),
+        referralPercent: toNum(form.referralPercent) ?? (editingId ? null : undefined),
+        cghsCode: form.cghsCode.trim(),
+        nimsCode: form.nimsCode.trim(),
+        railwayCode: form.railwayCode.trim(),
+        nfcCode: form.nfcCode.trim(),
       };
       return editingId
         ? updateLabMasterTest(editingId, payload)
-        : createLabMasterTest(payload);
+        : createLabMasterTest({...payload,priceIp:payload.priceIp??undefined,priceInsIp:payload.priceInsIp??undefined,priceEr:payload.priceEr??undefined,doctorPrice:payload.doctorPrice??undefined,referralPercent:payload.referralPercent??undefined});
     },
-    onSuccess: () => {
-      invalidate();
+    onSuccess: async () => {
+      await invalidate();
       setEditingId(null);
       setForm(EMPTY_FORM);
       setFeedback(
@@ -317,6 +317,7 @@ export function CreateLabTestContent() {
               type="button"
               variant="ghost"
               size="icon-sm"
+              disabled={saveMutation.isPending}
               aria-label={`Edit ${row.testName}`}
               onClick={() => handleEdit(row)}
             >
@@ -327,7 +328,7 @@ export function CreateLabTestContent() {
         ),
       },
     ],
-    [pagination, handleEdit],
+    [pagination, handleEdit,saveMutation.isPending],
   );
 
   const saveError = saveMutation.error instanceof Error
@@ -343,7 +344,7 @@ export function CreateLabTestContent() {
       />
 
       <FormSection
-        title={editingId ? "Update Lab Test" : "Add New Lab Test"}
+        title={editingId ? `Update Lab Test · ${form.testCode}` : "Add New Lab Test"}
         description={
           editingId ? "Update the details and save" : "Enter the details and save"
         }
@@ -557,13 +558,13 @@ export function CreateLabTestContent() {
                 />
               </FormField>
               <FormField id="test-sample" label="Sample Name">
-                <div className="flex items-center gap-1"><Select id="test-sample" value={form.sampleType} disabled={saveMutation.isPending} onChange={(event) => update({ sampleType: event.target.value })}>
+                <div className="lis-specimen-control"><Select id="test-sample" value={form.sampleType} disabled={saveMutation.isPending} onChange={(event) => update({ sampleType: event.target.value })}>
                   <option value="">--Select--</option>
                   {Array.from(new Set(["EDTA", "PLASMA", "SERUM", "Stool", "URINE", ...(specimenQuery.data?.sampleTypes ?? []), ...(form.sampleType ? [form.sampleType] : [])])).map((value) => <option key={value} value={value}>{value}</option>)}
                 </Select><Button type="button" variant="outline" size="sm" onClick={() => { setOptionKind("sample"); optionMutation.reset(); }}>+ Add Sample</Button></div>
               </FormField>
               <FormField id="test-container" label="Tube Container">
-                <div className="flex items-center gap-1"><Select id="test-container" value={form.containerType} disabled={saveMutation.isPending} onChange={(event) => update({ containerType: event.target.value })}>
+                <div className="lis-specimen-control"><Select id="test-container" value={form.containerType} disabled={saveMutation.isPending} onChange={(event) => update({ containerType: event.target.value })}>
                   <option value="">--Select--</option>
                   {Array.from(new Set(["Lavander", "Red", ...(specimenQuery.data?.containerTypes ?? []), ...(form.containerType ? [form.containerType] : [])])).map((value) => <option key={value} value={value}>{value}</option>)}
                 </Select><Button type="button" variant="outline" size="sm" onClick={() => { setOptionKind("tube"); optionMutation.reset(); }}>+ Add Tube</Button></div>

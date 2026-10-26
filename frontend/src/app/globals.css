@@ -195,7 +195,7 @@
 .lis-clinical-info{padding:2mm!important;column-gap:4mm;}
 .lis-clinical-info > div > div{grid-template-columns:80pt minmax(0,1fr);font-size:10pt;line-height:13pt;overflow-wrap:anywhere;}
 .lis-clinical-info > div:first-child > div:first-child{font-size:11pt;font-weight:bold;}
-.lis-report-paper tbody td:nth-child(2){font-size:11pt;font-weight:600;}
+.lis-report-paper tbody td:nth-child(2){font-size:11pt;font-weight:400;}
 .lis-report-paper .lis-abnormal-result{font-size:inherit;line-height:inherit;font-weight:700;color:#000000;print-color-adjust:exact;}
 .lis-invoice-paper{font-size:9.5pt;line-height:12pt;}
 .lis-invoice-paper :is(th,td){font-size:9pt;padding:2px 3px;}
@@ -444,7 +444,7 @@
 @media print { .lis-report-paper.lis-report-artwork { width:188mm; padding:0; min-height:0; } }
 
 .lis-report-paper.lis-report-artwork { max-width:210mm; }
-@media print { @page lab-report-artwork {size:A4 portrait; margin:42mm 11mm 16mm; @bottom-right {content:"Page " counter(page) " of " counter(pages);font:8pt Arial;}} .lis-report-paper.lis-report-artwork {max-width:188mm;} }
+@media print { @page lab-report-artwork {size:A4 portrait; margin:42mm 7mm 16mm 15mm; @bottom-right {content:"Page " counter(page) " of " counter(pages);font:8pt Arial;}} .lis-report-paper.lis-report-artwork {max-width:188mm;} }
 
 :is(input,select,textarea).lis-abnormal-result { color:#b91c1c !important; font-weight:900 !important; }
 :is(input,select,textarea).lis-manually-edited { font-weight:700 !important; }
@@ -508,3 +508,27 @@
 .lis-dashboard .lis-bills-panel.lis-today-reference {height:clamp(440px,52vh,560px);}
 .lis-dashboard .lis-bills-panel h2 {font-size:22px;}
 html[data-action-feedback="active"] [data-action-success] {display:none!important;}
+
+/* Leave enough text space beside specimen creation actions. */
+.lis-lab-test .lis-specimen-control {display:flex;flex-wrap:wrap;align-items:center;gap:6px;}
+.lis-lab-test .lis-specimen-control select {flex:0 1 170px;min-width:150px;width:170px;max-width:100%;}
+.lis-lab-test .lis-specimen-control button {flex:none;white-space:nowrap;}
+
+/* Override desktop master-field limits as well as generic control widths. */
+.lis-content .lis-dm.lis-lab-test .lis-form-field > .lis-specimen-control {max-width:100%;min-width:0;display:flex;flex-wrap:wrap;gap:6px;}
+.lis-content .lis-dm.lis-lab-test .lis-specimen-control select[data-slot="select"] {width:170px;min-width:170px;max-width:100%;flex:0 1 170px;padding-right:34px;}
+.lis-content .lis-commission table thead th {font-size:15px;line-height:21px;padding:8px 6px;font-weight:700;white-space:normal;}
+
+.lis-report-qr {break-inside:avoid;display:flex;flex-direction:column;align-items:center;margin:2mm auto 0;padding:0;font:8pt Arial;color:#000;}
+.lis-report-qr img {width:23mm;height:23mm;background:white;object-fit:contain;}
+
+/* Compact final report row: QR shares the signature row instead of adding a block. */
+.lis-report-paper .lis-clinical-info {position:relative;border-top:1px solid transparent;}
+.lis-report-paper .lis-clinical-info::before {content:"";position:absolute;top:-1px;left:-1px;right:-1px;border-top:1px solid #000;transform:scaleY(.5);transform-origin:top;pointer-events:none;}
+.lis-clinical-ending > .lis-report-page-footer {margin-top:2mm;}
+.lis-clinical-ending > p:first-child {margin-top:1mm;}
+.lis-report-signatories[data-has-qr="true"] {display:grid;grid-template-columns:minmax(0,1fr) 23mm minmax(0,1fr);column-gap:3mm;align-items:center;margin:1mm 0 0;}
+.lis-report-page-footer .lis-report-qr {margin:0;}
+.lis-results .lis-result-bill-list tbody td:not(:nth-child(3)) {font-size:15px;line-height:21px;}
+
+.lis-report-final-rows { break-inside: avoid; page-break-inside: avoid; }

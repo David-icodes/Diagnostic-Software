@@ -42,13 +42,7 @@ export function formatDateTime(value?: string | Date | null): string {
   });
 }
 
-export function formatMoney(value?: number): string {
-  if (value === undefined || value === null || Number.isNaN(value)) return "0.00";
-  return value.toLocaleString("en-IN", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
+export {formatMoney} from "./money-display";
 
 export function formatAgeYearsMonthsDays(dateOfBirth?: string | Date | null): string {
   if (!dateOfBirth) return "";

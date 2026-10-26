@@ -19,10 +19,10 @@ export async function validatedReportPdf(response: Response): Promise<Blob> {
 /** Keep progress on the current screen; open only a finished, validated PDF. */
 export async function generateBrowserReport(options: ReportOptions) {
   const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
-  return openAuthorizedReportPdf(browserReportUrl(base, options));
+  return openAuthorizedReportPdf(browserReportUrl(base, options), options.download);
 }
 
-export async function openAuthorizedReportPdf(url: string) {
+export async function openAuthorizedReportPdf(url: string, download = false) {
   performance.mark("lis-report-request-start");
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), 90000);
@@ -34,20 +34,35 @@ export async function openAuthorizedReportPdf(url: string) {
     performance.mark("lis-report-bytes-ready");
     performance.measure("lis-report-request", "lis-report-request-start", "lis-report-response-headers");
     performance.measure("lis-report-download", "lis-report-response-headers", "lis-report-bytes-ready");
-    objectUrl = URL.createObjectURL(pdf);
-    const tab = window.open(objectUrl, "_blank");
-    // Browsers may block a new tab after a long request. Open the ready PDF in
-    // this tab instead, without making the user click Generate a second time.
-    if (!tab) { window.location.assign(objectUrl); return; }
+    if (download || new URL(url, "http://localhost").searchParams.get("download") === "true") {
+      objectUrl = URL.createObjectURL(pdf);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = reportDownloadFilename(response.headers.get("content-disposition"));
+      link.click();
+      const retainedUrl = objectUrl;
+      window.setTimeout(() => URL.revokeObjectURL(retainedUrl), 60000);
+      return;
+    }
+    // Native PDF viewers derive Save As from Content-Disposition only when the
+    // document has its authenticated server URL, not a generated blob UUID.
+    // The viewer's fresh request repeats authorization and report-freshness checks.
+    const tab = window.open(url, "_blank");
+    if (!tab) { window.location.assign(url); return; }
     tab.opener = null;
     performance.mark("lis-report-viewer-handoff");
-    const retainedUrl = objectUrl;
-    const release = () => { URL.revokeObjectURL(retainedUrl); window.clearInterval(timer); window.removeEventListener("pagehide", release); };
-    const timer = window.setInterval(() => { if (tab.closed) release(); }, 10000);
-    window.addEventListener("pagehide", release, { once: true });
   } catch (error) {
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     if (controller.signal.aborted) throw new Error("Report generation timed out. Please retry.");
     throw error;
   } finally { window.clearTimeout(timeout); }
+}
+
+/** Use only the server-authorized document name, never a path from a header. */
+export function reportDownloadFilename(disposition: string | null): string {
+  const encoded = disposition?.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+  const plain = disposition?.match(/filename="?([^";]+)/i)?.[1];
+  let name = "report.pdf";
+  try { name = encoded ? decodeURIComponent(encoded) : plain ?? name; } catch { /* safe fallback */ }
+  return name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 150).replace(/(?:\.pdf)?$/i, ".pdf");
 }

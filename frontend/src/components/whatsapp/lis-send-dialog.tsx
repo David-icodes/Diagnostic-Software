@@ -10,12 +10,13 @@ import { LIS_WHATSAPP_TEMPLATES, reviewLisWhatsApp, sendLisWhatsApp, type LisWha
 
 export function LisSendDialog({ input, onClose, onLegacyReportReady }: { input: Omit<LisWhatsAppInput, "templateName">; onClose: () => void; onLegacyReportReady?: () => void }) {
   const [template, setTemplate] = useState<LisWhatsAppTemplate>("lab_report_ready");
+  const [includeHeader, setIncludeHeader] = useState(true);
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
   const retryRef = useRef(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const query = useQuery({ queryKey: ["whatsapp-review", input, template], queryFn: () => reviewLisWhatsApp({ ...input, templateName: template }),
+  const query = useQuery({ queryKey: ["whatsapp-review", input, template, includeHeader], queryFn: () => reviewLisWhatsApp({ ...input, includeHeader, templateName: template }),
     retry: false, gcTime: 0, staleTime: Infinity, refetchOnWindowFocus: false });
   const review = query.isError ? undefined : query.data;
   const attachmentReady = whatsappAttachmentReady(template, review);
@@ -34,6 +35,11 @@ export function LisSendDialog({ input, onClose, onLegacyReportReady }: { input: 
           {onLegacyReportReady && <option value="report_ready">Existing report_ready workflow</option>}
         </Select>
       </label>
+      {template === "lab_report_ready" && <label className="block">Report header
+        <Select aria-label="Report header" value={includeHeader ? "header" : "none"} disabled={sending} onChange={event => setIncludeHeader(event.target.value === "header")}>
+          <option value="header">With Header</option><option value="none">Without Header</option>
+        </Select>
+      </label>}
       {query.isPending && <p role="status">Preparing patient information and document…</p>}
       {query.isError && <div className="space-y-2"><p role="alert">{query.error.message}</p>
         <Button variant="outline" disabled={query.isFetching || sending} onClick={async () => { if (retryRef.current || sendingRef.current) return; retryRef.current = true; try { await query.refetch(); } finally { retryRef.current = false; } }}>{query.isFetching ? "Preparing…" : "Retry"}</Button></div>}

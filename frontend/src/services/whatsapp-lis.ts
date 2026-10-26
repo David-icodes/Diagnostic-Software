@@ -12,7 +12,7 @@ export type LisWhatsAppTemplate = keyof typeof LIS_WHATSAPP_TEMPLATES;
 export interface LisWhatsAppInput {
   patientId: string; billId: string; templateName: LisWhatsAppTemplate;
   workflow?: "parameter-results" | "lab-reprint";
-  testIds: string[]; technicianId?: string; onlyEntered: boolean; printMode: ResultPrintMode;
+  testIds: string[]; technicianId?: string; includeHeader?: boolean; onlyEntered: boolean; printMode: ResultPrintMode;
 }
 export interface LisWhatsAppReview {
   reviewId: string; templateName: LisWhatsAppTemplate; languageCode: string | null;
@@ -21,10 +21,10 @@ export interface LisWhatsAppReview {
   attachment: { filename: string; base64: string; mimeType: string } | null;
 }
 export interface LisWhatsAppDocument {
-  templateName: LisWhatsAppTemplate; bill: LabBill; printedBy: string;
-  technician: LabTechnician | null; onlyEntered: boolean; printMode: ResultPrintMode;
+  shareQrDataUrl?:string;templateName: LisWhatsAppTemplate; bill: LabBill; printedBy: string;
+  technician: LabTechnician | null; includeHeader?: boolean; onlyEntered: boolean; printMode: ResultPrintMode;
   reports: Array<{
-    item: LabBill["items"][number]; parameters: LabTestParameter[]; results: LabTestResult[];
+    reportNote1?:string;reportNote2?:string;item: LabBill["items"][number]; parameters: LabTestParameter[]; results: LabTestResult[];
     resolvedReferences: Record<string, string>; referenceResolutions: Record<string, ReferenceResolution>;
     collectedOn?: string;
   }>;

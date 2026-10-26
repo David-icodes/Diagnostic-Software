@@ -53,7 +53,7 @@ export function createLabMasterTest(body: LabTestPayload): Promise<LabTestRow> {
 
 export function updateLabMasterTest(
   id: string,
-  body: Partial<LabTestPayload>,
+  body: Omit<Partial<LabTestPayload>,"priceIp"|"priceInsIp"|"priceEr"|"doctorPrice"|"referralPercent"> & {priceIp?:number|null;priceInsIp?:number|null;priceEr?:number|null;doctorPrice?:number|null;referralPercent?:number|null},
 ): Promise<LabTestRow> {
   return api
     .put<LabTestResponse>(`/lab-tests/${encodeURIComponent(id)}`, body)
@@ -120,7 +120,7 @@ export function createLabParameter(body: ParameterPayload): Promise<ParameterRow
 
 export function updateLabParameter(
   id: string,
-  body: Partial<ParameterPayload>,
+  body: Omit<Partial<ParameterPayload>,"rangeFrom"|"rangeTo"> & {rangeFrom?:number|null;rangeTo?:number|null},
 ): Promise<ParameterRow> {
   return api
     .put<ParameterResponse>(`/lab-test-parameters/${encodeURIComponent(id)}`, body)

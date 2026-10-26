@@ -22,11 +22,11 @@ export function LisDocument({ reviewId }: { reviewId: string }) {
       : <div className="lis-print-document lis-result-print-document" data-print-mode={data.printMode} aria-label="Selected report preview">
         <div className="lis-clinical-page-watermark" aria-hidden="true"><Image src="/Main logo.png" alt="" width={1254} height={1254} unoptimized loading="eager" /></div>
         {data.reports.map((report, index) => <div key={report.item.testId} className="lis-result-print-part" data-new-page={reportStartsPage(data.printMode, index, report.item.departmentName, data.reports[index - 1]?.item.departmentName)}>
-          <PrintPreview bill={data.bill} testName={report.item.testName} departmentName={report.item.departmentName}
+          <PrintPreview bill={data.bill} reportNote1={report.reportNote1} reportNote2={report.reportNote2} testName={report.item.testName} departmentName={report.item.departmentName}
             collectedOn={report.collectedOn} parameters={report.parameters} results={report.results}
             resolvedReferences={report.resolvedReferences} referenceResolutions={report.referenceResolutions}
             technician={data.technician} signatureNote={data.technician?.signatureNote}
-            documentTitle={`${data.bill.billNumber}-${report.item.testCode}`} visible includeHeader onlyEntered={data.onlyEntered} />
+            documentTitle={`${data.bill.billNumber}-${report.item.testCode}`} visible includeHeader={data.includeHeader !== false} onlyEntered={data.onlyEntered} />
         </div>)}
       </div>}
   </main>;

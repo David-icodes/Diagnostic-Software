@@ -258,7 +258,7 @@ export function resolveCalculationDependencyIds(_parameters:CalculationParameter
  if(!ids.length)return [];
  return hasDuplicateCalculationSources(ids)?[]:ids;
 }
-export function normalizeCalculationUnit(value?:string): string { const unit=(value??"").toLowerCase().replace(/[µμ]/g,"u").replace(/\s+/g,""); return ({"×10⁶/ul":"million/ul","×10³/ul":"thousand/ul","millions/ul":"million/ul","million/cumm":"million/ul","10^6/ul":"million/ul","cells/cumm":"cells/ul","/ul":"cells/ul","10^3/ul":"thousand/ul","10^9/l":"thousand/ul", "":"","1":"ratio","gm/dl":"g/dl","gms/dl":"g/dl"} as Record<string,string>)[unit]??unit; }
+export function normalizeCalculationUnit(value?:string): string { const unit=(value??"").toLowerCase().replace(/[µμ]/g,"u").replace(/\s+/g,""); return ({"×10⁶/ul":"million/ul","×10³/ul":"thousand/ul","millions/ul":"million/ul","million/cumm":"million/ul","10^6/ul":"million/ul","cells/cumm":"cells/ul","/ul":"cells/ul","10^3/ul":"thousand/ul","10^9/l":"thousand/ul", "":"","1":"ratio","gm/dl":"g/dl","gms/dl":"g/dl","mgs/dl":"mg/dl","mg%":"mg/dl","mgs%":"mg/dl"} as Record<string,string>)[unit]??unit; }
 /** CBP units remain display metadata, never arithmetic operands. */
 export function isNumericOnlyCalculation(id:string):boolean { return ["pcv-hb-approx","mch","mcv","mchc"].includes(id); }
 /** Describe normalization without changing the persisted binding or source values. */

@@ -310,11 +310,10 @@ export function LabTestParameterContent() {
     enabled: testId.trim().length > 0,
   });
 
-  const invalidate = () => {
-    void queryClient.invalidateQueries({ queryKey: ["lab-test-parameters"] });
-    // Result entry has its own 30-second cache of parameter bindings and ranges.
-    void queryClient.invalidateQueries({ queryKey: ["test-results", "bill-entry"] });
-  };
+  const invalidate = () => Promise.all([
+    queryClient.invalidateQueries({queryKey:["lab-test-parameters"]}),
+    queryClient.invalidateQueries({queryKey:["test-results","bill-entry"]}),
+  ]);
 
   const refreshAll = useCallback(() => {
     void queryClient.invalidateQueries();
@@ -339,15 +338,15 @@ export function LabTestParameterContent() {
         testId,
         parameterName: form.parameterName.trim(),
         itemType:form.itemType,
-        subtitle: form.subtitle.trim() || undefined,
+        subtitle: form.subtitle.trim(),
         displayOrder: Number(form.displayOrder) || 0,
         resultType: form.resultType as ParameterRow["resultType"],
         // Preserved rather than dropped: the layout has no field for it, but an
         // edit must not clear a value the user cannot see.
-        parameterType: form.parameterType.trim() || undefined,
+        parameterType: form.parameterType.trim(),
         defaultValue: parameterTextDraft(form.defaultValue, form.rangeText).defaultValue,
         unit: form.unit.trim(),
-        method: form.method.trim() || undefined,
+        method: form.method.trim(),
         options:
           form.resultType === "SELECT"
             ? form.options
@@ -380,11 +379,11 @@ export function LabTestParameterContent() {
       };
       if(form.itemType !== "PARAMETER")Object.assign(payload,{resultType:form.itemType === "SUBTITLE"?"TEXT":"TEXTAREA",unit:undefined,method:undefined,options:undefined,rangeFrom:undefined,rangeTo:undefined,rangeText:undefined,referenceType:"GENERAL",referenceScope:"GENERIC",onlyReferenceRange:false,genderRanges:[],...(form.itemType === "SUBTITLE"?{defaultValue:undefined}:{})});
       return editingId
-        ? updateLabParameter(editingId, payload)
+        ? updateLabParameter(editingId, {...payload,...(!form.legacyLocked&&form.referenceType!=="GENDER_WISE"?{rangeFrom:toNum(form.rangeFrom)??null,rangeTo:toNum(form.rangeTo)??null}:{})})
         : createLabParameter(payload);
     },
-    onSuccess: () => {
-      invalidate();
+    onSuccess: async () => {
+      await invalidate();
       setEditingId(null);
       setEditingRow(null);
       setForm(EMPTY_FORM);
@@ -658,6 +657,7 @@ export function LabTestParameterContent() {
             type="button"
             variant="ghost"
             size="icon-sm"
+            disabled={saveMutation.isPending}
             aria-label={`Edit ${row.parameterName}`}
             onClick={() => handleEdit(row)}
           >
@@ -686,7 +686,7 @@ export function LabTestParameterContent() {
         ),
       },
     ],
-    [pagination, handleEdit],
+    [pagination, handleEdit,saveMutation.isPending],
   );
 
   const saveError =

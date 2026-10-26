@@ -25,7 +25,7 @@ export function ResultPrintDialog({ bill, testIds, technicians = [], onClose, in
   const ids = orderedPrintIds(bill.items, Object.fromEntries(testIds.map(id => [id, true])));
   const technician = technicians.find((row) => row.id === technicianId) ?? null;
 
-  const generate = async () => {
+  const generate = async (download = false) => {
     if (generating.current) return;
     setPrintError(null);
     if (!ids.length || !bill.patientId) { setPrintError("Select a patient and submitted tests to print."); return; }
@@ -33,7 +33,7 @@ export function ResultPrintDialog({ bill, testIds, technicians = [], onClose, in
     setChecking(true);
     try {
       await generateBrowserReport({ billId: bill.id, testIds: ids, technicianId: technician?.id,
-        onlyEntered, includeHeader, letterhead: !includeHeader, printMode: layout });
+        onlyEntered, includeHeader, download, letterhead: !includeHeader, printMode: layout });
     } catch (error) {
       setPrintError(error instanceof Error ? error.message : "Unable to generate this report.");
     } finally { generating.current=false; setChecking(false); }
@@ -74,7 +74,8 @@ export function ResultPrintDialog({ bill, testIds, technicians = [], onClose, in
       {printError && <p role="alert">{printError}</p>}
       {checking && <p role="status">Generating report…</p>}
       <div className="flex justify-end gap-2 pb-3">
-        <Button disabled={!ids.length || checking} onClick={generate}>{checking ? "Generating…" : "Generate Report"}</Button>
+        <Button disabled={!ids.length || checking} onClick={() => void generate()}>{checking ? "Generating…" : "Generate Report"}</Button>
+        <Button variant="secondary" disabled={!ids.length || checking} onClick={() => void generate(true)}>Download PDF</Button>
         <Button variant="outline" disabled={checking} onClick={onClose}>Close</Button>
       </div>
     </div>

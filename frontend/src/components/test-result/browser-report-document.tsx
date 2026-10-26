@@ -30,16 +30,17 @@ export function ReportDocumentContent({data}:{data:BrowserReportData}) {
     </main>;
   }
 
+  const groups=data.printMode === "department"?groupDepartmentReports(data.reports):[];
   return <main data-report-document="ready"><div className="lis-print-document lis-result-print-document" data-print-mode={data.printMode}>
     <div className="lis-clinical-page-watermark" aria-hidden="true"><Image src="/report-watermark-optimized.png" alt="" width={600} height={600} unoptimized loading="eager"/></div>
-    {data.printMode === "department" ? groupDepartmentReports(data.reports).map((group,index)=>{
+    {data.printMode === "department" ? groups.map((group,index)=>{
       const first=group.reports[0];
       return <div key={group.key} className="lis-result-print-part" data-new-page={index>0} data-report-department={group.name}>
-        <PrintPreview bill={data.bill} testName="Selected investigations" departmentName={group.name} collectedOn={first.collectedOn} parameters={first.parameters} results={first.results} technician={data.technician} signatureNote={data.technician?.signatureNote} documentTitle={`${data.bill.billNumber}-department-${index+1}`} visible includeHeader={data.includeHeader} letterhead={data.letterhead} onlyEntered={data.onlyEntered}
-          reportTests={group.reports.map(report=>({testName:report.item.testName,collectedOn:report.collectedOn,parameters:report.parameters,results:report.results,resolvedReferences:report.resolvedReferences,referenceResolutions:report.referenceResolutions}))}/>
+        <PrintPreview bill={data.bill} shareQrDataUrl={index===groups.length-1?data.shareQrDataUrl:undefined} testName="Selected investigations" departmentName={group.name} collectedOn={first.collectedOn} parameters={first.parameters} results={first.results} technician={data.technician} signatureNote={data.technician?.signatureNote} documentTitle={`${data.bill.billNumber}-department-${index+1}`} visible includeHeader={data.includeHeader} letterhead={data.letterhead} onlyEntered={data.onlyEntered}
+          reportTests={group.reports.map(report=>({testName:report.item.testName,reportNote1:report.reportNote1,reportNote2:report.reportNote2,collectedOn:report.collectedOn,parameters:report.parameters,results:report.results,resolvedReferences:report.resolvedReferences,referenceResolutions:report.referenceResolutions}))}/>
       </div>;
     }) : data.reports.map((report,index)=><div key={report.item.testId} className="lis-result-print-part" data-new-page={reportStartsPage(data.printMode,index,report.item.departmentName,data.reports[index-1]?.item.departmentName)}>
-      <PrintPreview bill={data.bill} testName={report.item.testName} departmentName={report.item.departmentName} collectedOn={report.collectedOn} parameters={report.parameters} results={report.results} resolvedReferences={report.resolvedReferences} referenceResolutions={report.referenceResolutions} technician={data.technician} signatureNote={data.technician?.signatureNote} documentTitle={`${data.bill.billNumber}-${report.item.testCode}`} visible includeHeader={data.includeHeader} letterhead={data.letterhead} onlyEntered={data.onlyEntered}/>
+      <PrintPreview bill={data.bill} shareQrDataUrl={index===data.reports.length-1?data.shareQrDataUrl:undefined} reportNote1={report.reportNote1} reportNote2={report.reportNote2} testName={report.item.testName} departmentName={report.item.departmentName} collectedOn={report.collectedOn} parameters={report.parameters} results={report.results} resolvedReferences={report.resolvedReferences} referenceResolutions={report.referenceResolutions} technician={data.technician} signatureNote={data.technician?.signatureNote} documentTitle={`${data.bill.billNumber}-${report.item.testCode}`} visible includeHeader={data.includeHeader} letterhead={data.letterhead} onlyEntered={data.onlyEntered}/>
     </div>)}
   </div></main>;
 }

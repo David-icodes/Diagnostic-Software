@@ -2,7 +2,7 @@
 .lis-invoice-paper { width: 190mm; max-width: 100%; box-sizing: border-box; }
 .lis-invoice-paper :is(header, .lis-invoice-info, table, td, th, p, span) { min-width: 0; overflow-wrap: anywhere; }
 @media print {
-  @page lab-invoice { size: A4 portrait; margin: 8mm; }
+  @page lab-invoice { size: A4 portrait; margin: 8mm 4mm 8mm 12mm; }
   body:has(.lis-invoice-paper) { page: lab-invoice; }
   .lis-invoice-paper { width: 100%; max-width: 194mm; padding: 0; margin: 0; page: lab-invoice; }
   .lis-invoice-paper table { width: 100%; table-layout: fixed; }

@@ -19,7 +19,7 @@ test("PDF response validation rejects HTML, server failure and corrupt bytes",as
 test("Generate keeps the current screen while pending and opens only validated PDF bytes",async t=>{
  const previous=Object.getOwnPropertyDescriptor(globalThis,"window");const events:string[]=[];
  const tab={opener:{} as unknown,closed:false};
- Object.defineProperty(globalThis,"window",{configurable:true,value:{open:(url:string)=>{assert.ok(url.startsWith('blob:'));events.push('open-pdf');return tab;},setTimeout,clearTimeout,setInterval:()=>0,clearInterval:()=>{},addEventListener:()=>{},removeEventListener:()=>{}}});
+ Object.defineProperty(globalThis,"window",{configurable:true,value:{open:(url:string)=>{assert.match(url,/lab-test-results\/report\.pdf/);assert.ok(!url.startsWith('blob:'));events.push('open-pdf');return tab;},setTimeout,clearTimeout,setInterval:()=>0,clearInterval:()=>{},addEventListener:()=>{},removeEventListener:()=>{}}});
  t.after(()=>{if(previous)Object.defineProperty(globalThis,"window",previous);else Reflect.deleteProperty(globalThis,"window");});
  let finish!:(response:Response)=>void;
  t.mock.method(globalThis,'fetch',async(_url:unknown,options?:RequestInit)=>{assert.equal(options?.credentials,'include');events.push('fetch');return new Promise<Response>(resolve=>{finish=resolve;});});
@@ -40,5 +40,22 @@ test("a blocked popup opens the finished PDF in the current tab without another 
  Object.defineProperty(globalThis,"window",{configurable:true,value:{open:()=>null,location:{assign:(url:string)=>{navigated=url;}},setTimeout,clearTimeout}});
  t.after(()=>{if(previous)Object.defineProperty(globalThis,"window",previous);else Reflect.deleteProperty(globalThis,"window");});
  t.mock.method(globalThis,'fetch',async()=>new Response('%PDF-synthetic',{headers:{'content-type':'application/pdf'}}));
- await generateBrowserReport({billId:'synthetic',testIds:['test']});assert.ok(navigated.startsWith('blob:'));
+ await generateBrowserReport({billId:'synthetic',testIds:['test']});assert.match(navigated,/lab-test-results\/report\.pdf/);assert.ok(!navigated.startsWith('blob:'));
+});
+
+import {reportDownloadFilename} from './browser-report.ts';
+test('report downloads retain the authorized patient ID filename and sanitize unsafe paths',()=>{
+ assert.equal(reportDownloadFilename("attachment; filename*=UTF-8''GP-SYN001-report.pdf"),'GP-SYN001-report.pdf');
+ assert.equal(reportDownloadFilename('inline; filename="../bad/report.pdf"'),'.._bad_report.pdf');
+ assert.equal(reportDownloadFilename(null),'report.pdf');
+});
+
+test('explicit download uses the authorized filename without opening a blank tab',async t=>{
+ const oldWindow=Object.getOwnPropertyDescriptor(globalThis,'window'),oldDocument=Object.getOwnPropertyDescriptor(globalThis,'document');let clicked=false;
+ const link={href:'',download:'',click:()=>{clicked=true;}};
+ Object.defineProperty(globalThis,'window',{configurable:true,value:{setTimeout:()=>0,clearTimeout:()=>{},open:()=>{throw Error('download must not open a tab');}}});
+ Object.defineProperty(globalThis,'document',{configurable:true,value:{createElement:()=>link}});
+ t.after(()=>{for(const [key,old] of [['window',oldWindow],['document',oldDocument]] as const){if(old)Object.defineProperty(globalThis,key,old);else Reflect.deleteProperty(globalThis,key);}});
+ t.mock.method(globalThis,'fetch',async()=>new Response('%PDF-synthetic',{headers:{'content-type':'application/pdf','content-disposition':"attachment; filename*=UTF-8''GP-SYN001-report.pdf"}}));
+ await generateBrowserReport({billId:'synthetic',testIds:['test'],download:true});assert.equal(clicked,true);assert.equal(link.download,'GP-SYN001-report.pdf');URL.revokeObjectURL(link.href);
 });
