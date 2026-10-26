@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  FlaskConical,
   Loader2,
   RotateCcw,
   Save,
@@ -212,8 +211,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
         </div>
       </div>}
       {successMessage && (
-        <div
-          role="status"
+        <div data-action-success role="status"
           className="flex items-start gap-2 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
         >
           <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
@@ -361,7 +359,7 @@ export function SampleCollections({ context }: { context?: SampleContext }) {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-0 table-fixed text-xs [&_th]:whitespace-nowrap">
-              <colgroup>{[3,9,8,10,12,8,10,8,10,7,10,5].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
+              <colgroup>{[3,9,8,9,12,9,12,6,10,8,9,5].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
               <thead>
                 <tr className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <th className="px-3 py-1.5">S.No</th>
@@ -542,6 +540,9 @@ export function SampleRow({
         <Input
           type="text"
           aria-label={`Comments for ${row.sampleId}`}
+          placeholder={draft.status === "RECOLLECTED" ? "Recollection reason" : ""}
+          required={draft.status === "RECOLLECTED"}
+          title={draft.status === "RECOLLECTED" ? "A recollection reason is required; previous results remain in history." : "Comments"}
           maxLength={500}
           value={draft.comments}
           onChange={(event) => editDraft({ comments: event.target.value })}
@@ -562,7 +563,7 @@ export function SampleRow({
           Save
         </Button>
         <button type="button" className="lis-sample-history" onClick={()=>setHistoryOpen(true)}>History</button>
-        {draft.status==="RECOLLECTED"&&<p className="text-xs">Enter a recollection reason. Previous results will be retained in history.</p>}
+
         {historyOpen&&<Dialog open onOpenChange={setHistoryOpen} title="Sample collection history" size="lg">
           {history.isError&&<p role="alert">Unable to load collection history.</p>}
           {history.data?.map(collection=><section key={collection._id} className="border p-2"><h3>{collection.supersededAt?"Superseded collection":"Active collection"}</h3><p>{collection.reason} · {new Date(collection.createdAt).toLocaleString()}</p>{collection.resultSnapshots.map((result,i)=><p key={i}>{result.parameterName}: {String(result.result)} {result.unit}</p>)}</section>)}

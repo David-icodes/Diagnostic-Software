@@ -333,7 +333,7 @@ export function Sidebar({
     const placeAbove = spaceBelow < 220 && spaceAbove > spaceBelow;
     const maxHeight = Math.max(
       160,
-      Math.min(FLYOUT_MAX_HEIGHT, placeAbove ? spaceAbove : spaceBelow),
+      Math.min(FLYOUT_MAX_HEIGHT, window.innerHeight - 2 * FLYOUT_VIEWPORT_EDGE),
     );
     return {
       top: placeAbove
@@ -457,7 +457,7 @@ export function Sidebar({
   }, [flyoutSection, flyoutEligible, closeFlyoutNow]);
 
   const topBtnBase = cn(
-    "lis-nav-top flex min-h-10 w-full items-center gap-3 rounded-none text-[13px] font-medium text-sidebar-foreground/90 transition-colors",
+    "lis-nav-top flex min-h-10 w-full items-center gap-3 rounded-none text-[13px] font-medium text-white/95 transition-colors",
     "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
   );
@@ -468,7 +468,7 @@ export function Sidebar({
   );
 
   const groupHeading = cn(
-    "lis-nav-heading select-none px-3 pb-0.5 pt-2.5 text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/55",
+    "lis-nav-heading select-none px-3 pb-0.5 pt-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-200/90",
   );
 
   const renderLeaf = (leaf: SidebarLeaf, index: number) => {
@@ -476,7 +476,7 @@ export function Sidebar({
     const key = `${leaf.label}-${index}`;
     const classes = cn(
       leafBase,
-      "text-sidebar-foreground/85",
+      "text-white/95",
       "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
       active && "bg-primary font-medium text-primary-foreground",
     );

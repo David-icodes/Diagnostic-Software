@@ -143,6 +143,7 @@ export function VendorSubmissionForm() {
           {feedback && (
             <p
               role={feedbackTone === "error" ? "alert" : "status"}
+              data-action-success={feedbackTone !== "error" || undefined}
               className={
                 feedbackTone === "error"
                   ? "rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"

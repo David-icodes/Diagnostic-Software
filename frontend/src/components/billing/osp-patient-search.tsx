@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect,useRef,useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Search, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,8 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
   const [open, setOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const resultTable=useRef<HTMLTableElement>(null);
+  const [listHeight,setListHeight]=useState<number>();
 
   const searchQuery = useQuery({
     queryKey: ["patients", "osp-search", search, page],
@@ -51,6 +53,12 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
   const runSearch = (raw: string) => { setSearch(raw.trim()); setPage(1); setOpen(true); };
 
   const rows = searchQuery.data?.data ?? [];
+  useEffect(()=>{
+    const table=resultTable.current;if(!open||!table)return;
+    table.parentElement?.scrollTo({top:0});
+    const measure=()=>{const first=Array.from(table.tBodies[0]?.rows??[]).slice(0,5);setListHeight((table.tHead?.offsetHeight??0)+first.reduce((height,row)=>height+row.offsetHeight,0)+2);};
+    measure();const resize=new ResizeObserver(measure);resize.observe(table);return()=>resize.disconnect();
+  },[open,searchQuery.data]);
 
   return (
     <>
@@ -107,8 +115,8 @@ export function OspPatientSearch({ selected, onSelect }: OspPatientSearchProps) 
               <span>{searchQuery.isFetching ? "Searching…" : `Patient List (${searchQuery.data?.pagination.total ?? 0})`}</span>
               <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Close</Button>
             </div>
-            <div className="max-h-[260px] overflow-auto">
-              <table className="w-full min-w-[800px] table-fixed text-xs lis-patient-table">
+            <div className="lis-osp-search-scroll overflow-auto" style={{maxHeight:listHeight??260}}>
+              <table ref={resultTable} className="w-full min-w-[800px] table-fixed text-xs lis-patient-table">
                 <colgroup>{[6,6,14,22,11,9,13,19].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
                 <thead className="sticky top-0 bg-slate-100"><tr>{["Select","S.No","Pat Id","Patient Name","Age","Gender","Mobile No","Reg Date"].map(label=><th key={label} className="px-2 py-1 text-left whitespace-nowrap">{label}</th>)}</tr></thead>
                 <tbody>

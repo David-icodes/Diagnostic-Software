@@ -9,7 +9,8 @@ import {PrintPreview} from "./lab-reprint";
 import {reportStartsPage} from "@/lib/result-workflow";
 import {groupDepartmentReports} from "@/lib/report-departments";
 
-export type BrowserReportData=LisWhatsAppDocument&{includeHeader:boolean;letterhead:boolean;invoice?:boolean;externalReport?:{testName:string;fileName:string}};
+import type {DueReceipt} from "@/types/billing";
+export type BrowserReportData=LisWhatsAppDocument&{includeHeader:boolean;letterhead:boolean;invoice?:boolean;paymentReceipt?:DueReceipt;externalReport?:{testName:string;fileName:string}};
 
 export function BrowserReportDocument({jobId}:{jobId:string}) {
   const query=useQuery({queryKey:["browser-report-document",jobId],queryFn:()=>api.get<BrowserReportData>(`/lab-test-results/render-data/${encodeURIComponent(jobId)}`),enabled:Boolean(jobId),retry:false,gcTime:0,refetchOnWindowFocus:false});
@@ -20,7 +21,7 @@ export function BrowserReportDocument({jobId}:{jobId:string}) {
 
 /** Presentation of the authorized snapshot; shared by individual and Print All. */
 export function ReportDocumentContent({data}:{data:BrowserReportData}) {
-  if(data.invoice)return <main data-report-document="ready"><InvoiceDocument bill={data.bill} printedBy={data.printedBy} includeHeader={data.includeHeader}/></main>;
+  if(data.invoice)return <main data-report-document="ready"><InvoiceDocument bill={data.bill} printedBy={data.printedBy} includeHeader={data.includeHeader} paymentReceipt={data.paymentReceipt}/></main>;
   if(data.externalReport) {
     return <main data-report-document="ready" className="lis-print-document lis-result-print-document">
       <section className="lis-report-paper mx-auto w-[188mm] bg-white font-serif text-black">

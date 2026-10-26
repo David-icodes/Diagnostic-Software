@@ -346,7 +346,7 @@ export function LabTestParameterContent() {
         // edit must not clear a value the user cannot see.
         parameterType: form.parameterType.trim() || undefined,
         defaultValue: parameterTextDraft(form.defaultValue, form.rangeText).defaultValue,
-        unit: form.unit.trim() || undefined,
+        unit: form.unit.trim(),
         method: form.method.trim() || undefined,
         options:
           form.resultType === "SELECT"
@@ -787,7 +787,7 @@ export function LabTestParameterContent() {
         {!collapsed ? (
           <div className="space-y-3">
             {feedback && (
-              <p className="rounded-md bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20">
+              <p data-action-success={/\b(?:successfully|saved|created|updated|deleted|registered|deactivated)\b/i.test(feedback??"")||undefined} className="rounded-md bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20">
                 {feedback}
               </p>
             )}

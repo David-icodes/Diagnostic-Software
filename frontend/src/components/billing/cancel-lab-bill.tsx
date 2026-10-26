@@ -141,8 +141,7 @@ export function CancelLabBill() {
       />
 
       {successMessage && (
-        <div
-          role="status"
+        <div data-action-success role="status"
           className="flex items-start gap-2 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
         >
           <CheckCircle2 className="mt-0.5 size-4 shrink-0" />

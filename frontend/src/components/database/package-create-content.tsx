@@ -62,7 +62,6 @@ export function PackageCreateContent() {
   const [search, setSearch] = useState("");
   const [deleting,setDeleting]=useState<LabPackage|null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [successDialog, setSuccessDialog] = useState<string | null>(null);
 
   const departmentsQuery = useQuery({
     queryKey: ["departments", "database", "all"],
@@ -93,21 +92,18 @@ export function PackageCreateContent() {
     void invalidateMasterData(queryClient,"packages");
   };
 
-  const deleteMutation=useMutation({mutationFn:(id:string)=>deletePackage(id),onSuccess:()=>{if(editingId===deleting?.id){setEditingId(null);setForm(EMPTY_FORM);setItems([]);}setDeleting(null);invalidate();setFeedback("Package deleted from catalogue.");},onError:(error:Error)=>setFeedback(error.message)});
+  const deleteMutation=useMutation({mutationFn:(id:string)=>deletePackage(id),onSuccess:()=>{if(editingId===deleting?.id){setEditingId(null);setForm(EMPTY_FORM);setItems([]);}setDeleting(null);invalidate();setFeedback(null);},onError:(error:Error)=>setFeedback(error.message)});
   const saveMutation = useMutation({
     mutationFn: () => {
       const payload = packageDraftPayload(form, items);
       return editingId ? updatePackage(editingId, payload) : createPackage(payload);
     },
     onSuccess: () => {
-      setSuccessDialog(editingId ? "Package updated successfully." : "Package registered successfully.");
       invalidate();
       setEditingId(null);
       setForm(EMPTY_FORM);
       setItems([]);
-      setFeedback(
-        editingId ? "Package updated successfully" : "Package created successfully",
-      );
+      setFeedback(null);
       window.setTimeout(() => setFeedback(null), 2500);
     },
   });
@@ -229,9 +225,6 @@ export function PackageCreateContent() {
   return (
     <div className="lis-dm lis-package space-y-3">
       <Dialog open={Boolean(deleting)} onOpenChange={open=>{if(!open&&!deleteMutation.isPending)setDeleting(null);}} title="Delete package"><p>Delete {deleting?.name} from the catalogue? Existing bills and results will be preserved.</p><div className="flex gap-2"><Button disabled={deleteMutation.isPending} onClick={()=>deleting&&deleteMutation.mutate(deleting.id)}>Delete</Button><Button variant="outline" disabled={deleteMutation.isPending} onClick={()=>setDeleting(null)}>Cancel</Button></div></Dialog>
-      <Dialog open={Boolean(successDialog)} onOpenChange={open=>{if(!open)setSuccessDialog(null);}} title="Package saved">
-        <p role="status">{successDialog}</p><Button onClick={()=>setSuccessDialog(null)}>OK</Button>
-      </Dialog>
       <PageHeader
         icon={Package}
         title="Create Package"

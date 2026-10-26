@@ -1,4 +1,7 @@
 "use client";
+import {fetchLabBill} from "@/services/billing";
+import {resultPresentation} from "@/lib/result-presentation";
+import {ReportStationery} from "./report-stationery";
 import {smearReportText,repeatedSmearLabel,compactSmearParameters,compactSmearValue} from "@/lib/smear-report-text";
 import { cbcCountValueOnly, cbcSmearEmptyCells, reportCellText } from "../../../../backend/src/utils/cbc-report-display";
 import { resultDisplay } from "../../../../backend/src/utils/result-display";
@@ -6,7 +9,7 @@ import { ReportLetterhead } from "./report-letterhead";
 import { ReportPageFooter } from "./report-page-footer";
 
 import { isReportNarrative, reportNarrative } from "@/lib/report-narrative";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useRef, useMemo, useState } from "react";
 import { businessDateInput, businessTimeInput } from "@/lib/business-date";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -71,7 +74,7 @@ function toPhoneDigits(value: string): string {
   return value.replace(/\D/g, "");
 }
 
-export function LabReprint() {
+export function LabReprint({initialBillId}:{initialBillId?:string}={}) {
   const router = useRouter();
   const [mode, setMode] = useState<BillMode>("today");
   const [fromDate, setFromDate] = useState(todayInput);
@@ -86,6 +89,9 @@ export function LabReprint() {
   });
 
   const [selectedBill, setSelectedBill] = useState<LabBill | null>(null);
+  const initialApplied=useRef(false);
+  const initialBill=useQuery({queryKey:["lab-bills","history-reprint",initialBillId],queryFn:()=>fetchLabBill(initialBillId!),enabled:Boolean(initialBillId)});
+  useEffect(()=>{if(initialBill.data&&!initialApplied.current){initialApplied.current=true;setSelectedBill(initialBill.data);setBillNumber(initialBill.data.billNumber);setMode("criteria");setBillParams({status:"generated",search:initialBill.data.billNumber,limit:50});}},[initialBill.data]);
   const [selectedTestId, setSelectedTestId] = useState<string | null>(null);
   const [signatureId, setSignatureId] = useState<string>("");
   const [notice, setNotice] = useState<string | null>(null);
@@ -722,6 +728,16 @@ export function PrintPreview({
   reportTests?: ReportTestContent[];
 }) {
   const patient = bill ? toPatientBill(bill) : null;
+  const reportEnding = (<tbody><tr><td colSpan={4} className="lis-clinical-ending-cell">
+          <div className="lis-clinical-ending">
+          {/* Clinical note */}
+          <p className="mt-[3mm] text-[8pt]">
+            Note : Please Correlate Clinically if necessary kindly discuss.
+          </p>
+          <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} />
+
+          </div>
+            </td></tr></tbody>);
 
   // "REPORTED ON" is the newest entry across the test's results.
   const reportedOn = (reportTests ? reportTests.flatMap(test=>test.results) : results).reduce<string | undefined>((latest, result) => {
@@ -740,7 +756,8 @@ export function PrintPreview({
       data-print-title={documentTitle}
     >
       {bill && patient && (
-        <div className="lis-report-paper mx-auto w-[186mm] bg-white font-serif text-[9pt] leading-[13pt] text-black">
+        <div className="lis-report-paper lis-report-artwork mx-auto w-[186mm] bg-white font-serif text-[9pt] leading-[13pt] text-black">
+          <ReportStationery includeHeader={includeHeader && !letterhead}/>
           {/* Results */}
           <table className="mt-[2mm] w-full table-fixed border-collapse text-left align-top">
             <colgroup>
@@ -820,19 +837,10 @@ export function PrintPreview({
               <tbody data-report-test={test.testName}><tr><th colSpan={4} className="pt-[2mm] pb-[1mm] text-center font-bold uppercase">{test.testName}</th></tr>
                 {test.collectedOn && <tr><td colSpan={4} className="text-[8pt]">Collected on: {formatReportDateTime(test.collectedOn)}</td></tr>}
               </tbody>
-              <ReportParameterRows {...test} onlyEntered={onlyEntered}/>
-            </Fragment>) : <ReportParameterRows parameters={parameters} results={results} onlyEntered={onlyEntered} resolvedReferences={resolvedReferences} referenceResolutions={referenceResolutions}/>}
+              <ReportParameterRows {...test} onlyEntered={onlyEntered}/>{reportEnding}
+            </Fragment>) : <><ReportParameterRows parameters={parameters} results={results} onlyEntered={onlyEntered} resolvedReferences={resolvedReferences} referenceResolutions={referenceResolutions}/>{reportEnding}</>}
 
-            <tbody><tr><td colSpan={4} className="lis-clinical-ending-cell">
-          <div className="lis-clinical-ending">
-          {/* Clinical note */}
-          <p className="mt-[3mm] text-[8pt]">
-            Note : Please Correlate Clinically if necessary kindly discuss.
-          </p>
-          <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} />
 
-          </div>
-            </td></tr></tbody>
           </table>
         </div>
       )}
@@ -893,7 +901,7 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                         const narrative = smear ? smearReportText(rawNarrative) : rawNarrative;
                         return <tr key={parameter.id}><td colSpan={4} className="py-[1mm] text-left">
                           {(!smear || !repeatedSmearLabel(parameter.parameterName,narrative)) && <strong className="block">{parameter.parameterName}</strong>}
-                          {narrative !== "" && <div className="mt-[1mm] whitespace-pre-wrap break-words">{narrative}</div>}
+                          {narrative !== "" && <div className={cn("mt-[1mm] whitespace-pre-wrap break-words",resultPresentation(false,resultByParameter.get(parameter.id)?.editMetadata?.manuallyChanged,"report"))}>{narrative}</div>}
                         </td></tr>;
                       }
                       const valueOnly = cbcCountValueOnly(parameter);
@@ -927,7 +935,7 @@ function ReportParameterRows({parameters,results,onlyEntered=false,resolvedRefer
                           <td
                             className={cn(
                               "py-[0.7mm] pr-[2mm] whitespace-pre-wrap",
-                              abnormal && "lis-abnormal-result font-bold",
+                              resultPresentation(abnormal,result?.editMetadata?.manuallyChanged,"report"),
                               valueOnly && "lis-cbc-count-result",
                             )}
                           >

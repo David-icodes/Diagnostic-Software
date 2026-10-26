@@ -314,7 +314,7 @@ export function LabTariffsContent() {
       >
         <div className="space-y-3">
           {notice && (
-            <p
+            <p data-action-success={notice.kind === "success" || undefined}
               className={cn(
                 "rounded-md px-3 py-2 text-xs font-medium ring-1",
                 notice.kind === "success" &&

@@ -1,3 +1,4 @@
+import {announceActionSuccess} from './action-feedback.ts';
 export interface ApiEnvelope<T> {
   success: boolean;
   message?: string;
@@ -76,6 +77,7 @@ async function requestEnvelope<T>(
     throw new ApiError(message, response.status, envelope?.details);
   }
 
+  if(envelope?.success===true||response.status===204)announceActionSuccess(options.method??'GET',path);
   return envelope ?? { success: response.ok };
 }
 

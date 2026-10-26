@@ -46,7 +46,7 @@ export function NewPatientContent() {
         </Link>
       </header>
 
-      {registered && <p role="status" className="text-sm text-emerald-700">Patient registered successfully</p>}
+      {registered && <p data-action-success role="status" className="text-sm text-emerald-700">Patient registered successfully</p>}
 
       <PatientForm
         key={createMutation.data?.id ?? "new-registration"}

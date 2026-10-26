@@ -45,8 +45,8 @@ describe("focused lab workflows", () => {
     for (const value of [0, false, "0", "Negative", 12]) assert.equal(hasEnteredResult(value), true);
   });
   it("distinguishes collected status from rejected and untouched samples", () => {
-    for (const value of ["COLLECTED", "RECEIVED", "PROCESSED"]) assert.equal(sampleIsCollected(value), true);
-    for (const value of [undefined, "SELECT", "REJECTED", "RECOLLECTED"]) assert.equal(sampleIsCollected(value), false);
+    for (const value of ["COLLECTED", "RECEIVED", "PROCESSED", "RECOLLECTED"]) assert.equal(sampleIsCollected(value), true);
+    for (const value of [undefined, "SELECT", "REJECTED"]) assert.equal(sampleIsCollected(value), false);
   });
   it("preserves and strictly matches bill, test and sample IDs in navigation", () => {
     const context = { billId: "bill-1", testId: "test-1", billNumber: "OSP/1 & 2", sampleId: "sample-1" };

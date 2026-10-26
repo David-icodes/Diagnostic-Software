@@ -350,7 +350,7 @@ export function CreateLabTestContent() {
       >
         <div className="space-y-3">
           {feedback && (
-            <p className="rounded-md bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20">
+            <p data-action-success={/\b(?:successfully|saved|created|updated|deleted|registered|deactivated)\b/i.test(feedback??"")||undefined} className="rounded-md bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20">
               {feedback}
             </p>
           )}

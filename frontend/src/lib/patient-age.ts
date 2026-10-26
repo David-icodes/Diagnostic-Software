@@ -133,3 +133,10 @@ export function validateOspAge(input: OspAgeInput, now = new Date()): string | u
 
   return undefined;
 }
+
+export function patientAgeDetailedLabel(patient:PatientAgeSource,now=new Date()):string {
+ const years=patientAgeYears(patient,now);if(years===undefined)return "";
+ const birth=dateParts(patient.dateOfBirth),today=todayParts(now);if(!birth)return `${years} years`;
+ const months=((today.year-birth.year)*12+today.month-birth.month-(today.day<birth.day?1:0))%12;
+ return `${years} years, ${months} months`;
+}

@@ -1,5 +1,6 @@
 import { openAuthorizedReportPdf } from "@/lib/browser-report";
 import { api, ApiError } from "@/lib/api";
+import {announceActionSuccess} from '@/lib/action-feedback';
 
 export interface UploadedResultReport { id: string; fileName: string; size: number; createdAt: string; external?: boolean }
 const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
@@ -16,6 +17,7 @@ export async function uploadResultReport(billId: string, testId: string, file: F
   catch { throw new Error("Unable to reach the server. Please check your connection."); }
   const envelope = await response.json().catch(() => null);
   if (!response.ok || !envelope?.success || !envelope.data) throw new ApiError(envelope?.message || "Unable to upload report.", response.status);
+  announceActionSuccess('POST','/lab-test-results/report-uploads');
   return envelope.data;
 }
 export async function downloadResultUpload(billId: string, testId: string, report: UploadedResultReport) {

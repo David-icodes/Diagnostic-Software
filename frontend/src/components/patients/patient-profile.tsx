@@ -1,5 +1,6 @@
 "use client";
 
+import {PatientHistory} from "./patient-history";
 import { useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -65,14 +66,7 @@ function toProfileFormValues(patient: Patient): PatientFormValues {
   };
 }
 
-const FUTURE_SECTIONS = [
-  { label: "Visits", icon: Activity },
-  { label: "Bills", icon: FlaskConical },
-  { label: "Tests", icon: FlaskConical },
-  { label: "Samples", icon: FlaskConical },
-  { label: "Results", icon: FlaskConical },
-  { label: "Reports", icon: FlaskConical },
-];
+
 
 export function PatientProfile({ patientId }: PatientProfileProps) {
   const queryClient = useQueryClient();
@@ -283,27 +277,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
         </Card>
       </section>
 
-      <section aria-label="Coming soon">
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Coming Soon
-        </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-          {FUTURE_SECTIONS.map(({ label, icon: Icon }) => (
-            <div
-              key={label}
-              className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border bg-muted/30 py-3 text-center"
-            >
-              <Icon className="size-4 text-muted-foreground" aria-hidden />
-              <span className="text-xs font-medium text-muted-foreground">
-                {label}
-              </span>
-              <span className="text-[10px] text-muted-foreground/70">
-                Coming Soon
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
+      <PatientHistory patientId={patientId}/>
     </div>
   );
 }

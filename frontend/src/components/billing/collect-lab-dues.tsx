@@ -1,7 +1,10 @@
 "use client";
 
 import { businessDateInput } from "@/lib/business-date";
-import { useState } from "react";
+import {InvoicePrintDialog} from "@/components/test-result/invoice-print-dialog";
+import {duePaymentRequest} from "@/lib/due-payment-request";
+import type {DueReceipt} from "@/types/billing";
+import { useState,useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -76,6 +79,8 @@ export function CollectLabDues({ billId = "" }: { billId?: string }) {
 
 function DuesForm({ initialBill }: { initialBill?: LabBill }) {
   const queryClient = useQueryClient();
+  const pending=useRef(false);
+  const [receipt,setReceipt]=useState<{bill:LabBill;payment:DueReceipt}|null>(null);
   const [mode, setMode] = useState<DuesMode>(initialBill ? "bill" : "days");
   const [fromDate, setFromDate] = useState(todayInput);
   const [toDate, setToDate] = useState(todayInput);
@@ -112,14 +117,18 @@ function DuesForm({ initialBill }: { initialBill?: LabBill }) {
   });
 
   const collectMutation = useMutation({
-    mutationFn: (input: { billId: string; amount: number; discountAmount: number }) =>
+    onSettled:()=>{pending.current=false;},
+    mutationFn: (input: { billId: string; amount: number; discountAmount: number;requestId:string;expectedDueAmount:number }) =>
       collectLabDue(input.billId, {
+        requestId:input.requestId,expectedDueAmount:input.expectedDueAmount,
         amount: input.amount,
         discountAmount: input.discountAmount,
         paymentMode,
         comments: comments.trim() || undefined,
       }),
     onSuccess: (updated, input) => {
+      const payment=updated.dueCollections?.find(row=>row.requestId===input.requestId);
+      if(payment){setReceipt({bill:updated,payment});try{sessionStorage.removeItem(`lis-due-request:${input.billId}`);}catch{}}
       setSelectedBill(updated);
       setConfirmOpen(false);
       setPayingInput("");
@@ -407,8 +416,7 @@ function DuesForm({ initialBill }: { initialBill?: LabBill }) {
       </header>
 
       {successMessage && (
-        <div
-          role="status"
+        <div data-action-success role="status"
           className="flex items-start gap-2 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
         >
           <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
@@ -815,13 +823,11 @@ function DuesForm({ initialBill }: { initialBill?: LabBill }) {
               </Button>
               <Button
                 type="button"
-                onClick={() =>
-                  collectMutation.mutate({
-                    billId: selectedBill.id,
-                    amount: parsedPaying,
-                    discountAmount: discount,
-                  })
-                }
+                onClick={() => {
+                  if(pending.current)return;
+                  try{const requestId=duePaymentRequest(sessionStorage,selectedBill.id);pending.current=true;collectMutation.mutate({billId:selectedBill.id,amount:parsedPaying,discountAmount:discount,requestId,expectedDueAmount:currentBalance});}
+                  catch{setActionError("Session storage is unavailable. Payment was not sent; enable storage to retain a safe retry key.");}
+                }}
                 disabled={collectMutation.isPending}
               >
                 {collectMutation.isPending && (
@@ -833,6 +839,7 @@ function DuesForm({ initialBill }: { initialBill?: LabBill }) {
           </div>
         )}
       </Dialog>
+      {receipt&&<InvoicePrintDialog bill={receipt.bill} paymentReceipt={receipt.payment} onClose={()=>setReceipt(null)}/>}
     </div>
   );
 }

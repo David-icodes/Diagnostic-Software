@@ -42,7 +42,7 @@ export function ResultReportUpload({ billId, testId, testName, billNumber, patie
       <p className="mb-1 text-sm">Bill: {billNumber ?? billId}</p><p className="mb-3 text-sm">Test: {testName}</p>
       <label className="block text-sm">PDF report (up to 5 MB)<input ref={fileInput} type="file" accept="application/pdf,.pdf" disabled={upload.isPending}
         onChange={event => { setFile(event.target.files?.[0] ?? null); setSuccess(false); setError(null); }} className="my-2 block w-full" /></label>
-      {error && <p role="alert">{error}</p>}{success && <p role="status">Report uploaded successfully.</p>}
+      {error && <p role="alert">{error}</p>}{success && <p data-action-success role="status">Report uploaded successfully.</p>}
       {reports.isPending && <p role="status">Loading uploaded reports…</p>}
       {reports.isError && <p role="alert">Unable to load reports: {reports.error.message} <button onClick={()=>void reports.refetch()}>Retry</button></p>}
       {(reports.data ?? []).some(report=>report.external) && <label className="my-2 block text-sm">External report print header

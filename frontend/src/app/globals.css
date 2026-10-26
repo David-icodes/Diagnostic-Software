@@ -412,3 +412,99 @@
 
 /* Keep the spaced heading within Chromium's repeating-table-header limit. */
 .lis-report-paper .lis-clinical-info { padding-top:1mm !important; padding-bottom:1mm !important; }
+
+/* 26 October: compact reference tables with readable, unclipped headings. */
+.lis-samples-reference table { min-width:0; table-layout:fixed; }
+.lis-samples-reference table :is(th,td) { padding:4px 5px; font:14px/18px Arial,sans-serif; overflow-wrap:break-word; word-break:normal; }
+.lis-samples-reference table th { font:700 15px/20px Georgia,serif !important; white-space:nowrap; color:#404040; }
+.lis-samples-reference .lis-sample-row :is(p,span) { font-size:14px; line-height:18px; }
+.lis-samples-reference table :is(input,select,button) { height:32px; font:14px/18px Arial,sans-serif; padding:3px 5px; min-width:0; max-width:100%; }
+.lis-samples-reference .lis-sample-legend { font:15px/22px Arial,sans-serif; gap:14px; flex-wrap:wrap; }
+.lis-samples-reference .lis-sample-filters label { font-size:16px; }
+.lis-samples-reference .lis-sample-history { height:18px; font-size:11px; line-height:16px; padding:0; }
+.lis-samples-reference table tbody tr.lis-sample-row[data-sample-status="COLLECTED"] { background:#85e187; }
+.lis-sample-row td:nth-child(4),.lis-sample-row td:nth-child(6) { overflow-wrap:normal; }
+.lis-results .lis-result-select-modules { column-gap:24px; row-gap:18px; }
+.lis-results table thead th { font-size:14px; line-height:20px; padding-top:7px; padding-bottom:7px; }
+.lis-test-selector table thead th { font-size:14px; line-height:19px; padding-top:7px; padding-bottom:7px; }
+.lis-sidebar .lis-nav-leaf { color:#f1f5f9; font-size:14px; line-height:20px; padding-top:7px; padding-bottom:7px; }
+.lis-sidebar .lis-nav-leaf:hover { background:#40576a; color:white; }
+.lis-sidebar .lis-nav-leaf[aria-current="page"] { color:white; background:#316b95; box-shadow:inset 3px 0 #b9e5ff; }
+.lis-report-paper td.lis-abnormal-result { color:#000 !important; font-weight:900 !important; }
+.lis-results .lis-abnormal-result { color:#b91c1c !important; font-weight:900 !important; }
+.lis-report-paper td.lis-manually-edited { font-weight:700 !important; }
+.lis-report-paper td:not(.lis-abnormal-result):not(.lis-manually-edited).lis-cbc-count-result { font-weight:400 !important; }
+@media(max-width:1100px) { .lis-samples-reference .overflow-x-auto { overflow-x:auto; } .lis-samples-reference table { min-width:1050px; } }
+
+.lis-selected-tests-table thead th { font-size:14px !important; line-height:20px; padding:6px 4px; white-space:normal; }
+
+.lis-report-paper.lis-report-artwork { width:210mm; padding:42mm 11mm 16mm; min-height:297mm; }
+.lis-report-paper.lis-report-artwork td.lis-abnormal-result { color:#000 !important; font-weight:900 !important; }
+.lis-report-paper tbody td:not(.lis-abnormal-result):not(.lis-manually-edited) { font-weight:400; }
+@media print { .lis-report-paper.lis-report-artwork { width:188mm; padding:0; min-height:0; } }
+
+.lis-report-paper.lis-report-artwork { max-width:210mm; }
+@media print { @page lab-report-artwork {size:A4 portrait; margin:42mm 11mm 16mm; @bottom-right {content:"Page " counter(page) " of " counter(pages);font:8pt Arial;}} .lis-report-paper.lis-report-artwork {max-width:188mm;} }
+
+:is(input,select,textarea).lis-abnormal-result { color:#b91c1c !important; font-weight:900 !important; }
+:is(input,select,textarea).lis-manually-edited { font-weight:700 !important; }
+
+@media print {
+ html:has(.lis-report-artwork),body:has(.lis-report-artwork) {background:transparent!important;}
+ body:has(.lis-report-artwork):not(:has(.lis-invoice-paper)),.lis-report-paper.lis-report-artwork {page:lab-report-artwork;}
+ .lis-report-stationery {display:none!important;}
+}
+.lis-samples-reference .overflow-x-auto {max-height:calc(100vh - 250px);}
+
+/* Report follow-up: clinical print is monochrome; entry alerts stay red. */
+.lis-report-paper .lis-abnormal-result {color:#000!important;font-weight:900!important;}
+.lis-report-paper tbody td:first-child:not([colspan]) {padding-right:3mm;}
+.lis-results .lis-result-bill-list thead th {
+ background:#e8edf3; color:#263d53; font-family:Georgia,"Times New Roman",serif;
+ font-size:15px; font-weight:700; border-top:1px solid #c5ced8; border-bottom:2px solid #a8b6c4;
+}
+.lis-invoice-compact-header {align-items:center;gap:6mm;}
+.lis-invoice-compact-header .lis-invoice-address {max-width:90mm;font-size:9pt;line-height:12pt;text-align:right;padding-right:2mm;}
+.lis-sidebar .lis-nav-groups,.lis-nav-flyout .lis-nav-groups {background:#000;}
+.lis-sidebar .lis-nav-groups .lis-nav-leaf,.lis-nav-flyout .lis-nav-leaf {
+ color:#fff!important;font-size:14px;line-height:21px;padding:6px 8px 6px 14px;text-transform:uppercase;
+}
+.lis-sidebar .lis-nav-heading,.lis-nav-flyout .lis-nav-heading {color:#9bb3c7;font-size:12px;font-weight:700;letter-spacing:0;}
+.lis-nav-flyout .lis-nav-flyout-title {background:#2e4050;color:#fff;}
+.lis-nav-flyout .lis-nav-flyout-title span {color:#fff;font-size:18px;font-weight:400;}
+.lis-nav-flyout .lis-nav-leaf:hover,.lis-sidebar .lis-nav-groups .lis-nav-leaf:hover {background:#263f52!important;}
+.lis-nav-flyout .lis-nav-leaf[aria-current="page"],.lis-sidebar .lis-nav-groups .lis-nav-leaf[aria-current="page"] {background:#316b95!important;box-shadow:inset 3px 0 #b9e5ff;}
+.lis-nav-flyout .lis-nav-caret,.lis-sidebar .lis-nav-groups .lis-nav-caret {color:#fff;}
+
+/* Compact flyouts fit their complete menu instead of enlarging each entry. */
+.lis-nav-flyout .lis-nav-leaf,.lis-sidebar .lis-nav-groups .lis-nav-leaf {
+ font:13px/18px Arial,sans-serif;padding:4px 6px 4px 10px;
+}
+.lis-nav-flyout .lis-nav-heading,.lis-sidebar .lis-nav-heading {font:700 11px/16px Arial,sans-serif;padding-top:6px;padding-bottom:2px;}
+.lis-nav-flyout .lis-nav-flyout-title {padding:7px 12px;}
+.lis-nav-flyout .lis-nav-flyout-title span {font-size:16px;}
+.lis-nav-flyout .lis-nav-groups {padding-top:3px;padding-bottom:3px;}
+@media(max-height:700px) {
+ .lis-nav-flyout .lis-nav-leaf {font-size:12px;line-height:16px;padding-top:2px;padding-bottom:2px;}
+}
+/* Keep the original artwork continuous beneath the patient detail rows. */
+.lis-result-print-document {background:transparent!important;}
+.lis-report-paper.lis-report-artwork,
+.lis-report-artwork :is(table,thead,tbody,tr,th,td,.lis-clinical-info) {background:transparent!important;}
+.lis-report-paper .lis-abnormal-result {font-family:"Arial Black","DejaVu Sans",Arial,sans-serif!important;font-weight:900!important;}
+/* Independent columns must not stretch short invoice tables to match long ones. */
+.lis-invoice-tests {align-items:start;row-gap:2px;column-gap:5mm;}
+.lis-invoice-tests table {align-self:start;}
+.lis-invoice-tests tbody td {padding:1px 3px;line-height:10pt;vertical-align:top;}
+.lis-invoice-paper .lis-invoice-test-name {line-height:10pt;}
+.lis-invoice-paper .lis-package-invoice-details {margin:1px 0;}
+.lis-invoice-paper .lis-package-member-list li {padding:1px 0;line-height:10pt;}
+
+/* Equal invoice frames; row heights remain natural inside each frame. */
+.lis-invoice-tests {align-items:stretch;}
+.lis-invoice-test-box {border:1px solid #000;min-width:0;}
+.lis-invoice-tests .lis-invoice-test-box table {border:0;}
+.lis-invoice-tests .lis-invoice-test-box table th {border-top:0;border-left:0;border-right:0;}
+.lis-dashboard .lis-bills-panel.lis-today-reference {height:clamp(440px,52vh,560px);}
+.lis-dashboard .lis-bills-panel h2 {font-size:22px;}
+html[data-action-feedback="active"] [data-action-success] {display:none!important;}

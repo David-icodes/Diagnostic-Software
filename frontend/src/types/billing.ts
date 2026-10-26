@@ -160,6 +160,7 @@ export interface BillItem {
 }
 
 export interface LabBill {
+  dueCollections?:DueReceipt[];
   id: string;
   billNumber: string;
   billType?: BillType;
@@ -196,7 +197,11 @@ export interface CancelLabBillRequest {
   cancellationRemarks: string;
 }
 
+export interface DueReceipt {paymentMode?:PaymentMode;requestId:string;paymentId:string;amount:number;discountAmount:number;remainingBalance:number;collectedAt:string}
+
 export interface CollectDueRequest {
+  requestId?:string;
+  expectedDueAmount?:number;
   amount: number;
   discountAmount?: number;
   paymentMode: PaymentMode;

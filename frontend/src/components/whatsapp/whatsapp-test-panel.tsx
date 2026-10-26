@@ -113,8 +113,7 @@ export function WhatsAppTestPanel() {
           )}
 
           {result && (
-            <div
-              role="status"
+            <div data-action-success role="status"
               className="mb-3 space-y-1 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
             >
               <div className="flex items-center gap-2 font-medium">

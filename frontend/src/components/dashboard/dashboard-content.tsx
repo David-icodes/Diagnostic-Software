@@ -69,21 +69,21 @@ export function DashboardContent() {
         ) : (
           <>
             <StatisticCard
-              title="No of Lab Bills"
+              title="NO OF LAB BILLS"
               value={summary.data?.labBills ?? 0}
               hint={summary.data?.date || undefined}
               icon={FlaskConical}
               iconClassName="text-[#7aa244]"
             />
             <StatisticCard
-              title="Completed Bills"
+              title="COMPLETED BILLS"
               value={summary.data?.completedTests ?? 0}
               hint={summary.data?.date || undefined}
               icon={SquareCheck}
               iconClassName="text-[#337ab7]"
             />
             <StatisticCard
-              title="Pending Bills"
+              title="PENDING BILLS"
               value={summary.data?.pendingTests ?? 0}
               hint={summary.data?.date || undefined}
               icon={SquareMinus}

@@ -344,7 +344,7 @@ export function DoctorCommissionMappingContent() {
         <div className="space-y-3">
           <div className="lis-dm-table-search"><Input aria-label="Search lab tests" placeholder="Search Lab Tests..." value={testSearch} onChange={(event) => setTestSearch(event.target.value)} /></div>
           {notice && (
-            <p
+            <p data-action-success={notice.kind === "success" || undefined}
               className={cn(
                 "rounded-md px-3 py-2 text-xs font-medium ring-1",
                 notice.kind === "success" &&

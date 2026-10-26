@@ -1,7 +1,6 @@
 "use client";
 
 import { ConfirmDialog } from "@/components/database/confirm-dialog";
-import { Dialog } from "@/components/ui/dialog";
 
 import { useMemo, useState } from "react";
 import { invalidateMasterData } from "@/lib/master-data-cache";
@@ -56,7 +55,6 @@ export function DepartmentContent() {
 
   const [deleting, setDeleting] = useState<Department | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [successDialog, setSuccessDialog] = useState<string | null>(null);
   const [validationError,setValidationError]=useState<string|null>(null);
 
   const optionsQuery = useQuery({
@@ -92,7 +90,6 @@ export function DepartmentContent() {
       invalidate();
       setEditingId(null);
       setForm(EMPTY_FORM);
-      setSuccessDialog(editingId ? "Department updated successfully." : "Department registered successfully.");
       setFeedback(
         editingId
           ? "Department updated successfully"
@@ -229,9 +226,6 @@ export function DepartmentContent() {
 
   return (
     <div className="lis-dm lis-department space-y-3">
-      <Dialog open={Boolean(successDialog)} onOpenChange={open=>{if(!open)setSuccessDialog(null);}} title="Department saved">
-        <p role="status">{successDialog}</p><Button onClick={()=>setSuccessDialog(null)}>OK</Button>
-      </Dialog>
       <ConfirmDialog open={Boolean(deleting)} onOpenChange={(open) => { if (!open && !deleteMutation.isPending && !deactivateMutation.isPending) setDeleting(null); }}
         title="Delete Department" confirmLabel="Delete" loading={deleteMutation.isPending || deactivateMutation.isPending}
         secondaryLabel={deleteMutation.isError && deleting?.active !== false ? "Deactivate instead" : undefined}
@@ -256,7 +250,7 @@ export function DepartmentContent() {
           <div className="space-y-3">
             {validationError&&<p role="alert">{validationError}</p>}
             {feedback && (
-              <p className="rounded-md bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20">
+              <p data-action-success={/\b(?:successfully|saved|created|updated|deleted|registered|deactivated)\b/i.test(feedback??"")||undefined} className="rounded-md bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20">
                 {feedback}
               </p>
             )}

@@ -99,3 +99,20 @@
 /* Colon/value columns and the same reserved stationery height in both modes. */
 .lis-clinical-info .lis-info-value { display:grid; grid-template-columns:7pt minmax(0,1fr); column-gap:2pt; min-width:0; }
 .lis-clinical-repeat-header .lis-clinical-letterhead, .lis-clinical-letterhead { height:22mm; }
+
+/* The supplied A4 JPG is unchanged. Page margins keep body text off its logo/footer. */
+.lis-report-artwork { width:210mm; box-sizing:border-box; padding:42mm 11mm 16mm; min-height:297mm; }
+.lis-report-artwork::before { display:none; }
+.lis-report-artwork .lis-clinical-letterhead { display:none; }
+.lis-report-stationery { position:absolute; top:0; left:0; width:210mm; height:297mm; z-index:-1; pointer-events:none; }
+.lis-report-stationery img { width:100%; height:100%; object-fit:contain; }
+.lis-report-artwork .lis-clinical-info { border:1px solid #000; }
+.lis-report-paper :is(td,th) { overflow-wrap:break-word; }
+.lis-report-paper td.lis-abnormal-result { color:#000 !important; font-weight:900 !important; }
+.lis-report-paper td.lis-manually-edited { font-weight:700 !important; }
+@media print {
+ @page lab-report-artwork { size:A4; margin:42mm 11mm 16mm; }
+ .lis-report-artwork { width:188mm; padding:0; min-height:0; background:transparent; }
+ .lis-report-stationery { display:none !important; }
+ .lis-result-print-document .lis-clinical-page-watermark { display:none !important; }
+}

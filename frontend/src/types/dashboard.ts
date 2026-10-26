@@ -8,6 +8,7 @@ export interface DashboardSummary {
 }
 
 export interface TodayBill {
+  patientRecordId?:string;
   vendorName?: string;
   id: string;
   billNo: string;

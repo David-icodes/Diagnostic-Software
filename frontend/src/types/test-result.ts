@@ -185,6 +185,8 @@ export interface ReferenceResolution {
 
 /** One ordered test of a bill, with the reference resolved for its patient. */
 export interface BillTestParameter {
+  configuredUnit?:string;
+  unitSource?:"SAVED"|"CATALOGUE";
   reportValueOnly?: boolean;
   calculationEditingAllowed?:boolean;
   parameterId: string;
@@ -256,7 +258,10 @@ export interface ReferenceSnapshot {
 }
 
 export interface LabTestResult {
-  calculationSnapshot?:{definitionKind?:"DEVELOPMENT_ONE_TIME"|"DEVELOPMENT_CONFIGURED";expression?:string;dependencyIds?:string[];formulaId:string};
+  collectionId?:string;
+  superseded?:boolean;
+  editMetadata?:{origin:"DEFAULT"|"ENTERED"|"LEGACY"|"CALCULATED";defaultValue?:string;manuallyChanged:boolean;changedAt?:string;changedBy?:string};
+  calculationSnapshot?:{definitionKind?:"DEVELOPMENT_ONE_TIME"|"DEVELOPMENT_CONFIGURED"|"MANUAL_OVERRIDE";expression?:string;dependencyIds?:string[];formulaId:string};
   id: string;
   billId: string;
   patientId: string;
@@ -272,7 +277,7 @@ export interface LabTestResult {
   referenceSnapshot?: ReferenceSnapshot;
   method?: string;
   result: ResultValue;
-  resultDisplay?: string;
+  resultDisplay?: string; manuallyEdited?:boolean;
   enteredBy: string;
   enteredAt: string;
   version: number;
@@ -295,6 +300,7 @@ export interface SubmitResultsRequest {
     parameterId: string;
     result: ResultValue;
   resultDisplay?: string;
+    manuallyEdited?:boolean;calculationOverride?:boolean;
   }>;
 }
 

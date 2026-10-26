@@ -202,7 +202,7 @@ export function fetchDueBills(params: DueBillsParams = {}): Promise<BillListResu
 
 export function collectLabDue(id: string, body: CollectDueRequest): Promise<LabBill> {
   return api
-    .post<LabBillResponse>(`/lab-bills/${encodeURIComponent(id)}/collect-due`, body)
+    .post<LabBillResponse>(`/lab-bills/${encodeURIComponent(id)}/collect-due`, {...body,requestId:body.requestId??crypto.randomUUID()})
     .then((response) => response.bill);
 }
 

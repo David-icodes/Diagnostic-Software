@@ -1,4 +1,5 @@
 "use client";
+import {resultPresentation} from "@/lib/result-presentation";
 import { initialResultText, initialResultBoolean } from "@/lib/result-entry-default";
 import {automaticLft,refreshLftDependents} from "@/lib/lft-dependent-values";
 
@@ -52,7 +53,7 @@ import { calculateImmediately } from "@/lib/immediate-calculation";
 import { invalidateRoots, queryKeys } from "@/lib/query-keys";
 import { submittedForTest, printableForTest, requireReportEligibility } from "@/lib/result-workflow";
 import { formatPatientDisplayName } from "@/lib/patient-title";
-import { patientAgeYears } from "@/lib/patient-age";
+import { patientAgeYears, patientAgeDetailedLabel } from "@/lib/patient-age";
 import { REFERENCE_MAPPING_LABELS } from "@/types/lab-masters";
 import type { BillListParams } from "@/services/billing";
 import type { LabBill } from "@/types/billing";
@@ -236,10 +237,12 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
   const sampleByTest = useMemo(() => {
     const map = new Map<string, LabSampleRow>();
     for (const row of billSamplesQuery.data?.data ?? []) {
-      if (row.billId === selectedBill?.id) map.set(row.testId, row);
+      if(context?.sampleId&&context.billId===selectedBill?.id&&context.testId===row.testId&&row.id!==context.sampleId)continue;
+      const patientId=selectedBill?(typeof selectedBill.patientId === "object"?selectedBill.patientId.id:selectedBill.patientId):undefined;
+      if (row.billId === selectedBill?.id && row.patientId === patientId && selectedBill.items.some(item=>item.testId === row.testId)) map.set(row.testId, row);
     }
     return map;
-  }, [billSamplesQuery.data, selectedBill?.id]);
+  }, [billSamplesQuery.data, selectedBill, context]);
 
   const applyBillSearch = (next: BillListParams) => {
     setBillParams(next);
@@ -311,8 +314,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
       {contextBillId && contextBillQuery.isError && <p role="alert">Unable to restore the selected bill: {contextBillQuery.error.message}</p>}
 
       {successMessage && (
-        <div
-          role="status"
+        <div data-action-success role="status"
           className="flex items-start gap-2 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
         >
           <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
@@ -424,7 +426,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
             </div>
       </div>
 
-      <div className="lis-results-selection grid grid-cols-1 gap-3 xl:grid-cols-5">
+      <div className="lis-results-selection lis-result-select-modules grid grid-cols-1 gap-3 xl:grid-cols-5">
         <Card className="border-border shadow-sm xl:col-span-3">
           <CardContent className="p-0">
             <div className="lis-result-bill-list overflow-x-auto">
@@ -479,7 +481,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
                           </td>
                           <td className="px-3 py-1.5 text-slate-700">
                             {patient
-                              ? `${formatGender(patient.gender)}${patientAgeYears(patient) !== undefined ? ` / ${patientAgeYears(patient)}` : ""}`
+                              ? `${formatGender(patient.gender)}${patientAgeYears(patient) !== undefined ? ` / ${patientAgeDetailedLabel(patient)}` : ""}`
                               : "—"}
                           </td>
                           <td className="px-3 py-1.5 text-slate-700">
@@ -638,7 +640,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
         <ResultEntryTable
           key={`${selectedBill.id}-${selectedTestId}-${JSON.stringify([selectedEntryParameters,existingResultsQuery.data ?? []])}`}
           parameters={selectedEntryParameters}
-          existingResults={existingResultsQuery.data ?? []}
+          existingResults={(existingResultsQuery.data ?? []).filter(row=>row.superseded!==true&&String(row.collectionId??"")===String(selectedTestEntry?.collectionId??""))}
           patient={patientContext}
           bill={selectedBill}
           testName={selectedTest.testName}
@@ -689,7 +691,7 @@ export function ResultEntryTable({
   testLinked: boolean;
   loading: boolean;
   submitting: boolean;
-  onSubmit: (entries: Array<{ parameterId: string; result: ResultValue; resultDisplay?: string }>, acceptedCalculationIds: string[], calculationProposals:CalculationProposal[]) => void;
+  onSubmit: (entries: Array<{ parameterId: string; result: ResultValue; resultDisplay?: string; manuallyEdited?:boolean;calculationOverride?:boolean }>, acceptedCalculationIds: string[], calculationProposals:CalculationProposal[]) => void;
 }) {
   const [textValues, setTextValues] = useState<Record<string, string>>(() => {
     const existing = new Map(
@@ -718,7 +720,12 @@ export function ResultEntryTable({
     return bool;
   });
 
+  const manuallyEdited=useRef(new Set<string>());
+  const [editedFields,setEditedFields]=useState<Record<string,boolean>>({});
+  const initialText=useRef({...textValues});
+  const initialBool=useRef({...boolValues});
   const [proposals,setProposals]=useState<Record<string,CalculationProposal>>(()=>Object.fromEntries(existingResults.filter(result=>result.calculationSnapshot?.definitionKind==="DEVELOPMENT_ONE_TIME").map(result=>[result.parameterId,{parameterId:result.parameterId,formulaId:result.calculationSnapshot!.formulaId,expression:result.calculationSnapshot!.expression!,dependencyIds:result.calculationSnapshot!.dependencyIds!}])));
+  const [manualOverrides,setManualOverrides]=useState<Set<string>>(()=>new Set(existingResults.filter(row=>row.calculationSnapshot?.definitionKind==="MANUAL_OVERRIDE").map(row=>row.parameterId)));
   const acceptedCalculationIds=useRef(new Set<string>(existingResults.filter(result=>result.calculationSnapshot && parameters.some(p=>p.parameterId===result.parameterId && automaticLft(p) && p.calculation?.formulaId===result.calculationSnapshot?.formulaId)).map(result=>result.parameterId)));
   const latestTextValues=useRef(textValues);
 
@@ -735,7 +742,13 @@ export function ResultEntryTable({
     usesClinicalReference(parameter) ? previewFlag(enteredNumber(textValues[parameter.parameterId]), parameter.reference) : "not-comparable";
 
   const updateTextValue=(parameterId:string,value:string)=>{
-    const next=refreshLftDependents(effectiveParameters,latestTextValues.current,parameterId,value,acceptedCalculationIds.current);
+    const changed=value!==initialText.current[parameterId];
+    if(changed)manuallyEdited.current.add(parameterId);else manuallyEdited.current.delete(parameterId);
+    setEditedFields(current=>({...current,[parameterId]:changed}));
+    const manual=new Set(manualOverrides);const target=effectiveParameters.find(row=>row.parameterId===parameterId);
+    if(target?.calculation&&target.calculation.enabled!==false&&["APPROVED","DEVELOPMENT"].includes(target.calculationStatus??""))manual.add(parameterId);
+    setManualOverrides(manual);
+    const next=refreshLftDependents(effectiveParameters.map(row=>manual.has(row.parameterId)?{...row,calculation:undefined}:row),latestTextValues.current,parameterId,value,acceptedCalculationIds.current);
     acceptedCalculationIds.current.clear();
     for(const id of next.calculated)acceptedCalculationIds.current.add(id);
     latestTextValues.current=next.values;
@@ -747,12 +760,13 @@ export function ResultEntryTable({
   let effectiveParameters:CalculationParameter[]=parameters;
   let proposalError:string|undefined;
   if(!loading){try{effectiveParameters=applyCalculationProposals(parameters,Object.values(proposals));}catch(error){proposalError=error instanceof Error?error.message:"Invalid saved development proposal.";}}
-  const calculationErrors=recalculateConfigured(effectiveParameters.map(parameter=>parameter.calculationStatus==="PENDING"?{...parameter,calculation:undefined}:parameter),textValues).errors;
+  const calculationErrors=recalculateConfigured(effectiveParameters.map(parameter=>parameter.calculationStatus==="PENDING"||manualOverrides.has(parameter.parameterId)?{...parameter,calculation:undefined}:parameter),textValues).errors;
   const calculateParameter=(parameter:BillTestParameter)=>{
     setFieldError(null);
-    const result=calculateImmediately(effectiveParameters,latestTextValues.current,parameter.parameterId);
+    const result=calculateImmediately(effectiveParameters.map(row=>manualOverrides.has(row.parameterId)&&row.parameterId!==parameter.parameterId?{...row,calculation:undefined}:row),latestTextValues.current,parameter.parameterId);
     if(result.error){setFieldError(result.error);return;}
-    for(const id of result.changed)acceptedCalculationIds.current.add(id);
+    const manual=new Set(manualOverrides);for(const id of result.changed){acceptedCalculationIds.current.add(id);manual.delete(id);manuallyEdited.current.delete(id);}
+    setManualOverrides(manual);setEditedFields(current=>Object.fromEntries(Object.entries(current).filter(([id])=>!result.changed.includes(id))));
     latestTextValues.current=Object.fromEntries(Object.entries(result.values).map(([id,value])=>[id,String(value??"")]));
     setTextValues(latestTextValues.current);
   };
@@ -794,10 +808,12 @@ export function ResultEntryTable({
       return;
     }
     setFieldError(null);
-    onSubmit(entries, [...acceptedCalculationIds.current], Object.values(proposals).filter(proposal=>acceptedCalculationIds.current.has(proposal.parameterId)));
+    onSubmit(entries.map(entry=>({...entry,manuallyEdited:manuallyEdited.current.has(entry.parameterId),calculationOverride:manualOverrides.has(entry.parameterId)||undefined})), [...new Set([...acceptedCalculationIds.current,...manualOverrides])], Object.values(proposals).filter(proposal=>acceptedCalculationIds.current.has(proposal.parameterId)));
   };
 
   const handleClear = () => {
+    manuallyEdited.current.clear();
+    setEditedFields({});setManualOverrides(new Set());
     acceptedCalculationIds.current.clear();
     setProposals({});
     latestTextValues.current={};
@@ -811,12 +827,11 @@ export function ResultEntryTable({
   };
 
   const renderResultInput = (parameter: BillTestParameter, abnormal: boolean) => {
-    // Only an executable calculated target is read-only. A registry mapping that is
-    // still pending approval stays a normal editable parameter.
-    const disabled = (Boolean(parameter.calculation) && parameter.calculation?.enabled !== false && parameter.calculationStatus !== "PENDING") || submitting;
-    const flagClasses = abnormal
-      ? "border-slate-500 text-xs font-black text-black"
-      : "";
+    // Calculators suggest values; explicit manual edits are declared and audited by the server.
+    const disabled = submitting;
+    const saved=existingResults.find(row=>row.parameterId===parameter.parameterId);
+    const edited=Boolean(manualOverrides.has(parameter.parameterId)||saved?.editMetadata?.manuallyChanged||(editedFields[parameter.parameterId]&&(Boolean(saved)||Boolean(parameter.defaultValue))));
+    const flagClasses=resultPresentation(abnormal,edited);
     switch (parameter.resultType) {
       case "BOOLEAN":
         return (
@@ -824,16 +839,19 @@ export function ResultEntryTable({
             <input
               type="checkbox"
               checked={Boolean(boolValues[parameter.parameterId])}
-              onChange={(event) =>
+              onChange={(event) => {
+                const changed=event.target.checked!==initialBool.current[parameter.parameterId];
+                if(changed)manuallyEdited.current.add(parameter.parameterId);else manuallyEdited.current.delete(parameter.parameterId);
+                setEditedFields(current=>({...current,[parameter.parameterId]:changed}));
                 setBoolValues((current) => ({
                   ...current,
                   [parameter.parameterId]: event.target.checked,
-                }))
-              }
+                }));
+              }}
               disabled={disabled}
               className="size-4 accent-primary"
             />
-            <span className="text-sm text-slate-700">
+            <span className={cn("text-sm",flagClasses)}>
               {boolValues[parameter.parameterId] ? "Positive" : "Negative"}
             </span>
           </label>
@@ -1020,10 +1038,11 @@ export function ResultEntryTable({
                             ) : null}
 
                           </div>
-                          {calculationErrors[parameter.parameterId] && <p role="status" className={calculatorStyles.validation}>{calculationErrors[parameter.parameterId]}</p>}
+                          {calculationErrors[parameter.parameterId] && calculationErrors[parameter.parameterId] !== "Enter valid nonnegative source values." && <p role="status" className={calculatorStyles.validation}>{calculationErrors[parameter.parameterId]}</p>}
                         </td>
                         <td className="px-2 py-1 text-slate-600">
                           {sampleLabel(parameter.unit)}
+                          {parameter.unitSource === "SAVED" && parameter.configuredUnit !== parameter.unit && <small className="block text-[11px] text-slate-500">Saved unit retained; future: {parameter.configuredUnit || "none"}</small>}
                         </td>
                         <td className="px-2 py-1 break-words">
                           {!clinicalReference ? <span>—</span> : unresolved ? (

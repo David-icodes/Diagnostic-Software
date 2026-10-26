@@ -24,7 +24,7 @@ const columns: ColumnDef<TodayBill>[] = [
     ),
   },
   { key: "patientId", width: "20%", label: "Pat Id", className: "w-[20%] whitespace-nowrap" },
-  { key: "patientName", width: "30%", label: "Pat Name", className: "w-[27%] whitespace-normal", render: (bill) => <span title={bill.patientName}>{bill.patientName}{bill.vendorName&&<small className="block text-[11px] font-normal">Vendor: {bill.vendorName}</small>}</span> },
+  { key: "patientName", width: "30%", label: "Pat Name", className: "w-[27%] whitespace-normal", render: (bill) => <Link href={`/billing/osp/${bill.id}`} title={bill.patientName}>{bill.patientName}{bill.vendorName&&<small className="block text-[11px] font-normal">Vendor: {bill.vendorName}</small>}</Link> },
   { key: "age", width: "15%", label: "Age", className: "w-[20%] whitespace-normal" },
   { key: "gender", width: "15%", label: "Gender", className: "w-[12%]" },
 ];

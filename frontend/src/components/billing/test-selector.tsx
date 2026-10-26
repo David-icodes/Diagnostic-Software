@@ -180,16 +180,7 @@ export function TestSelector({
                       aria-pressed={active}
                     >
                       <span className="truncate">{department.name}</span>
-                      <span
-                        className={cn(
-                          "text-[11px]",
-                          active
-                            ? "text-slate-500"
-                            : "text-muted-foreground",
-                        )}
-                      >
-                        {department.testCount}
-                      </span>
+
                     </button>
                   </li>
                 );
@@ -278,7 +269,7 @@ export function TestSelector({
           </span>
         </div>
         <div className="min-h-0 flex-1 overflow-auto">
-          <table className="w-full min-w-0 table-fixed text-xs">
+          <table className="lis-selected-tests-table w-full min-w-0 table-fixed text-xs">
             <colgroup>{[10,18,29,12,19,12].map((width,index)=><col key={index} style={{width:width+"%"}} />)}</colgroup>
             <thead className="sticky top-0 z-10">
               <tr className="bg-slate-100 text-left text-xs font-semibold text-slate-500 [&>th]:whitespace-nowrap">
