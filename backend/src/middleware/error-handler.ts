@@ -21,6 +21,10 @@ export const errorHandler: ErrorRequestHandler = (
   ) {
     statusCode = 401;
     message = "Your session has expired. Please log in again.";
+  } else if (/^\/api\/v1\/report-shares(?:\/|$)/i.test(_req.originalUrl.split("?")[0])) {
+    // Body-parser errors may carry their raw request body. Never log a bearer token.
+    statusCode = err?.type === "entity.too.large" ? 413 : 400;
+    message = "Invalid report request";
   } else {
     console.error("[error]", err);
   }

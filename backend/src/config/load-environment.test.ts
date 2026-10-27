@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {loadEnvironment} from './load-environment';
+test('environment loading uses explicit module-relative path from another cwd and preserves injected settings',()=>{
+ const folder=fs.mkdtempSync(path.join(os.tmpdir(),'lis-env-synthetic-')),file=path.join(folder,'synthetic.env'),key='LIS_SYNTHETIC_ENV_TEST';const old=process.env[key],cwd=process.cwd();
+ try{fs.writeFileSync(file,key+'=synthetic-only\n');process.chdir(os.tmpdir());delete process.env[key];loadEnvironment(file);assert.equal(process.env[key],'synthetic-only');process.env[key]='injected';loadEnvironment(file);assert.equal(process.env[key],'injected');assert.doesNotThrow(()=>loadEnvironment(path.join(folder,'absent.env')));}finally{process.chdir(cwd);if(old===undefined)delete process.env[key];else process.env[key]=old;assert.ok(path.resolve(folder).startsWith(path.resolve(os.tmpdir())+path.sep));assert.ok(path.basename(folder).startsWith('lis-env-synthetic-'));fs.rmSync(folder,{recursive:true});}
+});

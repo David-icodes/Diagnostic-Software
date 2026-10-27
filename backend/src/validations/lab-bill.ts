@@ -78,6 +78,7 @@ const billingInputSchema = z
 
 export const createLabBillSchema = billingInputSchema
   .extend({
+    whatsappServiceOptIn:z.boolean().optional(),
     billType: z.enum(BILL_TYPES as [string, ...string[]]).default("osp").optional(),
     clientId: z
       .string()
@@ -123,6 +124,8 @@ export type CancelLabBillInput = z.infer<typeof cancelLabBillSchema>;
 
 export const collectLabDueSchema = z
   .object({
+    requestId:z.string().uuid().optional(),
+    expectedDueAmount:z.number().finite().min(0).optional(),
     amount: z
       .number()
       .finite("Amount must be a finite number")

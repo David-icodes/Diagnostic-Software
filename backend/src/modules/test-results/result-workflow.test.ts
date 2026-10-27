@@ -129,5 +129,10 @@ test("patient dues and successful/failed/partial submissions are verified from s
  await submitTestResults(String(userId),input);const pcv=rows.find(row=>String(row.parameterId)===String(pcvId));assert.equal(pcv.result,36);assert.equal(pcv.version,1);assert.equal(audits[0].action,SUBMISSION_CONFIRMED);
  input.entries[0].result=5;input.entries[2].result=45;await submitTestResults(String(userId),input);assert.equal(pcv.result,45);assert.equal(pcv.version,2);assert.equal(pcv.revisions[0].result,36);
  await assert.rejects(submitTestResults(String(userId),{...input,entries:input.entries.filter(entry=>entry.parameterId!==String(rbcId))}),/source values/);assert.equal(pcv.result,45);assert.equal(pcv.version,2);
+ const override={...input,entries:input.entries.map(entry=>entry.parameterId===String(pcvId)?{...entry,result:42,manuallyEdited:true,calculationOverride:true}:entry)};
+ await submitTestResults(String(userId),override);assert.equal(pcv.result,42);assert.equal(pcv.version,3);assert.equal(pcv.revisions[1].result,45);assert.equal(pcv.calculationSnapshot.definitionKind,'MANUAL_OVERRIDE');assert.equal(pcv.editMetadata.manuallyChanged,true);assert.ok(audits.some(a=>a.details?.manualOverrideIds?.includes(String(pcvId))));
+ await assert.rejects(submitTestResults(String(userId),{...override,acceptedCalculationRevisions:{[String(pcvId)]:0}}),/binding changed/);assert.equal(pcv.version,3);
+ await assert.rejects(submitTestResults(String(userId),{...override,entries:override.entries.map(entry=>entry.parameterId===String(pcvId)?{...entry,result:99,manuallyEdited:false}:entry)}),/explicitly entered/);assert.equal(pcv.result,42);
+ Object.assign(parameters[2].calculation!,{overwrite:'NEVER'});await assert.rejects(submitTestResults(String(userId),{...override,entries:override.entries.map(entry=>entry.parameterId===String(pcvId)?{...entry,result:43}:entry)}),/keeps the existing result/);assert.equal(pcv.result,42);assert.equal(pcv.version,3);
  assert.equal(bill.dueAmount,100);assert.equal(bill.paidAmount,0);
 });

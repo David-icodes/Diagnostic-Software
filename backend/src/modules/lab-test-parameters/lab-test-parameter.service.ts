@@ -1,4 +1,4 @@
-import { CALCULATION_FORMULAS, isNumericOnlyCalculation, evaluateFormulaExpression, evaluateProposedExpression, calculationUnitsMatch, normalizeCalculationUnit, hasDuplicateCalculationSources } from "../../utils/configured-calculations";
+import { CALCULATION_FORMULAS, isNumericOnlyCalculation, evaluateFormulaExpression, evaluateProposedExpression, calculationUnitsMatch, calculationUnitPlan, normalizeCalculationUnit, hasDuplicateCalculationSources } from "../../utils/configured-calculations";
 import { Types, type FilterQuery, type HydratedDocument } from "mongoose";
 import { ApiError } from "../../utils/api-error";
 import { isValidObjectId } from "../../utils/object-id";
@@ -393,7 +393,7 @@ async function validateCalculationBinding(testId: string, calculation: ILabTestP
  const visiting=new Set<string>(),done=new Set<string>();const visit=(key:string)=>{if(visiting.has(key))throw new ApiError(422,"Circular calculation dependency is not allowed");if(done.has(key))return;visiting.add(key);for(const next of edges.get(key)??[])visit(next);visiting.delete(key);done.add(key);};for(const key of edges.keys())visit(key);
  if (calculation.expression) {
   if (!formula.expression) throw new ApiError(422,"This registered formula does not support expression editing");
-  try { if(isNumericOnlyCalculation(formula.id)) evaluateFormulaExpression(calculation.expression,ordered.map(()=>1),[],true); else evaluateProposedExpression(calculation.expression,formula.expression,ordered.map(()=>1),ordered.map(row=>row!.unit??"")); } catch(error) { throw new ApiError(422,error instanceof Error?error.message:"Invalid formula expression"); }
+  try { if(isNumericOnlyCalculation(formula.id)) evaluateFormulaExpression(calculation.expression,ordered.map(()=>1),[],true); else evaluateProposedExpression(calculation.expression,formula.expression,ordered.map(()=>1),calculationUnitPlan(formula,ordered.map(row=>row!.unit??""),unit??"")?.units ?? ordered.map(row=>normalizeCalculationUnit(row!.unit))); } catch(error) { throw new ApiError(422,error instanceof Error?error.message:"Invalid formula expression"); }
  }
  const units = ordered.map(row => normalizeCalculationUnit(row!.unit));
  if (!isNumericOnlyCalculation(formula.id) && !calculationUnitsMatch(formula, units, unit ?? "")) throw new ApiError(422, "Configure compatible source and output units");
@@ -450,8 +450,9 @@ export async function configureCalculation(id:string,userId:string,calculation:N
  if (parameter.itemType && parameter.itemType!=="PARAMETER") throw new ApiError(422,"Only a result parameter can configure a calculation");
  await validateCalculationBinding(String(parameter.testId),calculation,unit,parameter.itemType,id);
  const normalized={...calculation,enabled:calculation.enabled!==false,precision:calculation.precision??CALCULATION_FORMULAS.find(f=>f.id===calculation.formulaId)?.precision??2,overwrite:calculation.overwrite??"CONFIRM"};
- const result=await LabTestParameter.updateOne({_id:parameter._id},{$set:{calculation:normalized,updatedBy:new Types.ObjectId(userId)},$unset:{pendingCalculation:1}}).exec();
- if (result.modifiedCount!==1) throw new ApiError(409,"The parameter changed during save. Reload and try again");
+ // Reuse the guarded master update: formula and unit are saved together,
+ // dependent bindings are checked, and historical result snapshots are untouched.
+ await updateParameter(id,userId,{calculation:normalized,unit});
  await recordAudit({user:userId,action:"lab.calculation_configured",entityType:"LabTestParameter",entity:id,details:{calculation:normalized,unit,direct:true}});
  return getParameter(id);
 }
@@ -484,6 +485,7 @@ export async function updateParameter(
   if (!parameter) {
     throw new ApiError(404, "Lab test parameter not found");
   }
+  const previousUnit=parameter.unit;
   const nextCalculation = input.calculation === undefined ? parameter.calculation : input.calculation;
   delete input.calculationApproved;
   if(input.itemType && input.itemType !== (parameter.itemType ?? "PARAMETER") && await LabTestResult.countDocuments({parameterId:parameter._id}))throw new ApiError(409,"An item with recorded results cannot change between Parameter, Subtitle and Text Area. Create a separate new item to preserve historical reports.");
@@ -502,6 +504,7 @@ export async function updateParameter(
   Object.assign(parameter, input, {
     updatedBy: new Types.ObjectId(userId),
   });
+  if (input.calculation !== undefined) parameter.pendingCalculation=undefined;
   if (input.calculation === null) parameter.calculationApproval=undefined;
   const hasRangeKey = (
     ["referenceType", "rangeFrom", "rangeTo", "rangeText", "genderRanges"] as const
@@ -531,6 +534,7 @@ export async function updateParameter(
   }
   try {
     const saved = await parameter.save();
+    if(input.unit!==undefined&&previousUnit!==saved.unit)await recordAudit({user:userId,action:"lab.parameter_unit_changed",entityType:"LabTestParameter",entity:id,details:{previousUnit:previousUnit??"",unit:saved.unit??"",historicalResultsChanged:false}});
     if(input.calculation !== undefined)await recordAudit({user:userId,action:"lab.calculation_updated",entityType:"LabTestParameter",entity:id,details:{calculation:nextCalculation,unit:parameter.unit,direct:true}});
     return saved;
   } catch (error) {

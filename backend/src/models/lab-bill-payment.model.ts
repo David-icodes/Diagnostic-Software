@@ -2,6 +2,8 @@ import { model, Schema, type Types } from "mongoose";
 import { PAYMENT_MODES, type PaymentMode } from "./lab-bill.model";
 
 export interface ILabBillPayment {
+  requestId?:string;
+  remainingBalance?:number;
   billId: Types.ObjectId;
   amount: number;
   discountAmount?: number;
@@ -15,6 +17,8 @@ export interface ILabBillPayment {
 
 const labBillPaymentSchema = new Schema<ILabBillPayment>(
   {
+    requestId:{type:String},
+    remainingBalance:{type:Number,min:0},
     billId: { type: Schema.Types.ObjectId, ref: "LabBill", required: true, index: true },
     amount: { type: Number, required: true, min: 0.01 },
     discountAmount: { type: Number, min: 0, default: 0 },

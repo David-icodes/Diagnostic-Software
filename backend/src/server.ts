@@ -1,4 +1,4 @@
-import "dotenv/config";
+import {startCommunicationWorker} from "./modules/whatsapp/communication-worker";
 import app from "./app";
 import { connectDB } from "./config/db";
 import { env } from "./config/env";
@@ -20,6 +20,7 @@ async function main(): Promise<void> {
       `[server] Diagnostic LIS API listening on port ${env.PORT} (${env.NODE_ENV})`,
     );
   });
+  const stopCommunications=startCommunicationWorker();
   let shuttingDown = false;
   const shutdown = () => {
     if (shuttingDown) return;
@@ -29,7 +30,7 @@ async function main(): Promise<void> {
     const drained = new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
     void (async () => {
       // Close renderer processes immediately, rather than waiting for a stalled report request.
-      try { await pdfBrowserPool.shutdown(); await drained; await mongoose.disconnect(); clearTimeout(deadline); }
+      try { await stopCommunications(); await pdfBrowserPool.shutdown(); await drained; await mongoose.disconnect(); clearTimeout(deadline); }
       catch { console.error("[server] Shutdown cleanup failed"); process.exitCode = 1; }
     })();
   };

@@ -15,15 +15,15 @@ export async function validatePdf(pdf: Buffer, kind: PdfKind): Promise<void> {
     for (const page of pages) {
       let { width, height } = page.getSize();
       if (Math.abs(page.getRotation().angle % 180) === 90) [width, height] = [height, width];
-      // External attachments may have legitimate non-A4 page sizes. Preserve their bytes.
-      if (kind === "attachment") {
+      // Uploaded reports and invoices may legitimately use different paper sizes. Preserve their bytes.
+      if (kind === "attachment" || kind === "invoice") {
         if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) throw new Error();
         continue;
       }
-      const expected = kind === "report" ? [595.28, 841.89] : [841.89, 595.28];
+      const expected = [595.28, 841.89];
       if (Math.abs(width - expected[0]) > 2 || Math.abs(height - expected[1]) > 2) throw new Error();
     }
   } catch {
-    throw new ApiError(422, `The generated ${kind} PDF is invalid, incomplete, oversized, or has incorrect A4 orientation`);
+    throw new ApiError(422, kind === "report" ? "The generated report PDF is invalid, incomplete, oversized, or has incorrect A4 orientation" : `The ${kind} PDF could not be verified. Please regenerate it.`);
   }
 }

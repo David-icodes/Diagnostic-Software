@@ -38,8 +38,8 @@ router.get(
 router.post("/", requirePermission("billing.create"), validate(createLabBillSchema), createLabBill);
 router.get("/:id/document-eligibility", requirePermission("billing.view"), asyncHandler(async(req,res)=>sendSuccess(res,await assertBillDocumentAllowed(req.params.id))));
 router.get("/:id/invoice.pdf",requirePermission("billing.view"),asyncHandler(async(req,res)=>{
- const header=z.enum(["true","false"]).default("true").parse(req.query.includeHeader);
- const result=await browserInvoicePdf(req.params.id,header==="true",req);
+ const options=z.object({includeHeader:z.enum(["true","false"]).default("true"),paymentId:z.string().regex(/^[a-f\d]{24}$/i).optional()}).strict().parse(req.query);
+ const result=await browserInvoicePdf(req.params.id,options.includeHeader==="true",req,undefined,options.paymentId);
  res.set({"Content-Type":"application/pdf","Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff","Content-Disposition":`inline; filename*=UTF-8''${encodeURIComponent(result.filename)}`});res.send(result.bytes);
 }));
 router.get("/:id/invoice-print-eligibility", requirePermission("billing.view"), asyncHandler(async(req,res)=>sendSuccess(res,await assertInvoicePrintAllowed(req.params.id))));

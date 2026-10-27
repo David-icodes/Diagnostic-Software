@@ -1,3 +1,6 @@
+import {loadEnvironment} from "./load-environment";
+// Tests supply synthetic settings and must not inherit local provider credentials.
+if (process.env.NODE_ENV !== "test") loadEnvironment();
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -14,6 +17,7 @@ const envSchema = z.object({
   // i.e. NODE_ENV=production) when the frontend and API are on different sites
   // and the browser must send the session cookie cross-site.
   COOKIE_SAMESITE: z.enum(["lax", "strict", "none"]).default("lax"),
+  REPORT_SHARE_PUBLIC_ORIGIN: z.string().url().default("https://diagnostic-software.vercel.app"),
   FRONTEND_URL: z.string().url().default("http://localhost:3000"),
   // Optional comma-separated allow-list. When set it takes precedence over
   // FRONTEND_URL, so a production origin can be configured without a wildcard.
@@ -25,6 +29,7 @@ const envSchema = z.object({
   // WhatsApp Cloud API. Kept optional so the server still starts before the
   // webhook is configured; the webhook itself refuses to verify without a token.
   WHATSAPP_PHONE_NUMBER_ID: z.string().optional().default(""),
+  WHATSAPP_CAMP_TEMPLATE_NAME: z.string().trim().regex(/^[a-z0-9_]+$/).default("special_camp_announcement"),
   WHATSAPP_WABA_ID: z.string().optional().default(""),
   WHATSAPP_ACCESS_TOKEN: z.string().optional().default(""),
   WHATSAPP_VERIFY_TOKEN: z.string().optional().default(""),

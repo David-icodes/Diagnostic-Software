@@ -1,3 +1,5 @@
+import {performance} from "node:perf_hooks";
+import type {ReportTimings} from "../test-results/report-timings";
 import {z} from "zod";
 import {browserInvoicePdf} from "../test-results/report-pdf.service";
 import {modifyLabBillSchema} from "../../validations/lab-bill";
@@ -92,9 +94,12 @@ router.patch("/bills/:id/patient",validate(vendorPatientEditSchema),asyncHandler
 router.get("/bills/:id/report.pdf",asyncHandler(async(req,res)=>{
   const parsed=reportPdfQuery.safeParse({...req.query,billId:req.params.id,testIds:req.query.testIds??res.locals.vendorBill.items.map((item:{testId:unknown})=>String(item.testId)).join(",")});
   if(!parsed.success)throw new ApiError(400,"Invalid report options");
-  const report=await browserReportPdf(parsed.data,req,undefined,{clientId:vendorClientId(req.user!)});
-  res.set({"Content-Type":"application/pdf","Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff","Content-Disposition":`${parsed.data.download==="true"?"attachment":"inline"}; filename*=UTF-8''${encodeURIComponent(report.filename)}`});
-  return res.send(report.bytes);
+  const timing=res.locals.reportTiming as ReportTimings;
+  timing.mark("authorization_validation",res.locals.reportAuthorizationStarted??performance.now());
+  const report=await browserReportPdf(parsed.data,req,timing,{clientId:vendorClientId(req.user!)});
+  res.set({"Content-Type":"application/pdf","Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff","Content-Disposition":`${parsed.data.download==="true"?"attachment":"inline"}; filename="${report.filename}"; filename*=UTF-8''${encodeURIComponent(report.filename)}`});
+  res.set({"X-Report-Cache":report.status,"Server-Timing":timing.header()});
+  res.locals.reportDeliveryStarted=performance.now();return res.send(report.bytes);
 }));
 router.get("/bills/:id/contact", asyncHandler(async (req,res)=>{
   const bill=res.locals.vendorBill;

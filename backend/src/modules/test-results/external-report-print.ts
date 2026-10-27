@@ -1,10 +1,12 @@
 import { PDFDocument, PDFName, degrees } from "pdf-lib";
 import type { Request } from "express";
 import { ApiError } from "../../utils/api-error";
+import { LabSample } from "../../models/lab-sample.model";
 import { LabBill } from "../../models/lab-bill.model";
 import { assertBillDocumentAllowed } from "./result-workflow.service";
 import { readReportUpload } from "./report-upload.service";
-import { sharedReportHeader } from "./report-header-asset";
+import {composeExternalStationery} from "./external-report-stationery";
+import { sharedReportStationery } from "./report-header-asset";
 import { validatePdf } from "../documents/pdf-integrity";
 
 /** Reserve new stationery space above the visible source page. Source content
@@ -36,17 +38,22 @@ export async function appendExternalPages(headerImage: Buffer, original: Buffer)
 }
 
 export async function printExternalReport(billId: string, testId: string, id: string,
-  header: "header" | "none" | "letterhead", _req: Request) {
+  header: "header" | "none" | "letterhead", _req: Request, qrDataUrl?:string) {
   const row = await readReportUpload(billId, testId, id);
   const bill = await LabBill.findById(billId).exec();
   if (!bill?.items.some(item => String(item.testId) === testId && item.outsideLabId))
     throw new ApiError(422, "Only an outside-laboratory test can use external report printing.");
   const collectionId = bill.items.find(item => String(item.testId) === testId)?.activeCollectionId;
-  const bytes = header === "header" ? await appendExternalPages(
-    await sharedReportHeader(), row.content!) : row.content!;
+  const sample = header === 'header' ? await LabSample.findOne({billId,testId,patientId:bill.patientId,...(collectionId?{activeCollectionId:collectionId}:{})}).exec() : null;
+  const bytes = header === "header" || qrDataUrl ? await composeExternalStationery(
+    row.content!, header === "header" ? await sharedReportStationery() : undefined, qrDataUrl, sample?.collectedAt) : row.content!;
   const current = await LabBill.findById(billId).exec();
   if (!current?.items.some(item => String(item.testId) === testId && item.outsideLabId && String(item.activeCollectionId ?? "") === String(collectionId ?? "")))
     throw new ApiError(409, "The outside order changed. Reload before printing.");
+  if(sample){
+    const latest=await LabSample.findOne({_id:sample._id,activeCollectionId:sample.activeCollectionId}).exec();
+    if(!latest||String(latest.collectedAt??'')!==String(sample.collectedAt??''))throw new ApiError(409,'Sample collection changed. Reload before printing.');
+  }
   await assertBillDocumentAllowed(billId);
   return bytes;
 }

@@ -1,4 +1,5 @@
-import {reportTimings,type ReportTimings} from "./report-timings";
+import {reportRequestTiming,timedReportAuthentication} from "./report-request-timing";
+import {type ReportTimings} from "./report-timings";
 import { recordAudit } from "../audit/audit.service";
 import { printExternalReport } from "./external-report-print";
 import { Router, raw } from "express";
@@ -22,21 +23,18 @@ import {
 } from "./test-result.controller";
 
 const router = Router();
+router.use(reportRequestTiming);
 
 router.use((req, res, next) => {
-  if(req.method==="GET" && req.path==="/report.pdf"){
-    const timing=reportTimings();res.locals.reportTiming=timing;
-    res.once("finish",()=>{timing.mark("response_delivery",res.locals.reportDeliveryStarted??performance.now());console.info("[report-timing]",JSON.stringify({requestId:timing.id,status:res.statusCode,bytes:Number(res.getHeader("Content-Length")??0),cache:res.getHeader("X-Report-Cache")??"NONE",stages:timing.stages,totalMs:timing.elapsed()}));});
-  }
   if (req.method === "GET" && /^\/report-uploads\/[^/]+$/.test(req.path)) res.locals.reportAuthStarted = performance.now();
   next();
 });
-router.use(authenticate);
-router.get("/report.pdf",requirePermission("test_results.view"),asyncHandler(async(req,res)=>{
+router.use(timedReportAuthentication(authenticate));
+router.get("/report.pdf",(_req,res,next)=>{res.locals.reportAuthorizationStarted=performance.now();next();},requirePermission("test_results.view"),asyncHandler(async(req,res)=>{
   const parsed=reportPdfQuery.safeParse(req.query);if(!parsed.success)throw new ApiError(400,"Invalid report viewing options");
-  const timing=res.locals.reportTiming as ReportTimings;timing.mark("authorization_validation",performance.now()-timing.elapsed());
+  const timing=res.locals.reportTiming as ReportTimings;timing.mark("authorization_validation",res.locals.reportAuthorizationStarted??performance.now());
   const report=await browserReportPdf(parsed.data,req,timing);
-  res.set({"Content-Type":"application/pdf","Content-Disposition":`${parsed.data.download==="true"?"attachment":"inline"}; filename*=UTF-8''${encodeURIComponent(report.filename)}`,
+  res.set({"Content-Type":"application/pdf","Content-Disposition":`${parsed.data.download==="true"?"attachment":"inline"}; filename="${report.filename}"; filename*=UTF-8''${encodeURIComponent(report.filename)}`,
     "Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff","Referrer-Policy":"no-referrer","X-Report-Cache":report.status,"X-Report-Request-Id":timing.id,"Server-Timing":timing.header()});
   res.locals.reportDeliveryStarted=performance.now();return res.send(report.bytes);
 }));

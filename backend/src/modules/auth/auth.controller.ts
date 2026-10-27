@@ -1,3 +1,4 @@
+import {requestSession,sessionCookieName} from "../../utils/session-scope";
 import type { Request, Response } from "express";
 import { env } from "../../config/env";
 import { asyncHandler } from "../../utils/async-handler";
@@ -40,19 +41,19 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     `[auth] session cookie configured name=${env.COOKIE_NAME} secure=${cookieOptions.secure} sameSite=${String(cookieOptions.sameSite)} httpOnly=${cookieOptions.httpOnly} path=${cookieOptions.path} maxAge=${cookieOptions.maxAge}`,
   );
 
-  res.cookie(env.COOKIE_NAME, token, cookieOptions);
+  res.cookie(sessionCookieName(user.role === "vendor" ? "vendor" : "admin"), token, cookieOptions);
 
   return sendSuccess(res, { user });
 });
 
 export const logout = asyncHandler(async (req: Request, res: Response) => {
-  const token=req.cookies?.[env.COOKIE_NAME];
+  const {token,name}=requestSession(req);
   if(typeof token==="string") {
     let subject:string|undefined;
     try { const payload=verifyAuthToken(token); if(payload.role==="vendor")subject=payload.sub; } catch { /* Expired/invalid sessions can still clear their cookie. */ }
     if(subject) await User.updateOne({_id:subject,role:"vendor"},{$inc:{sessionVersion:1}}).exec();
   }
-  res.clearCookie(env.COOKIE_NAME, baseCookieOptions());
+  res.clearCookie(name, baseCookieOptions());
   return sendMessage(res, "Logged out successfully");
 });
 

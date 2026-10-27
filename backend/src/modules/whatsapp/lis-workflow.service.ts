@@ -1,3 +1,6 @@
+import {readReportNotes} from "../test-results/report-notes";
+import {applyReportStationery, clinicalReportPrintCss} from "../test-results/report-stationery";
+import {sharedReportStationery} from "../test-results/report-header-asset";
 import { displayPatientCode } from "../../utils/patient-code";
 import { createHash, randomUUID } from "node:crypto";
 import type { Request } from "express";
@@ -55,12 +58,13 @@ export async function loadLisContext(input: ReviewLisMessageInput, printedBy: st
   if (isReport) await assertResultReportAllowed(input.billId, testIds, input.workflow !== "lab-reprint");
   if (LIS_TEMPLATES[input.templateName].document) await assertBillDocumentAllowed(input.billId);
   const centreName = await deploymentCentre();
-  const [populatedBill, entry, results, samples, technician] = await Promise.all([
+  const [populatedBill, entry, results, samples, technician,notes] = await Promise.all([
     getLabBill(input.billId),
     isReport ? getBillResultEntry(input.billId) : null,
     isReport ? LabTestResult.find({ billId: bill._id, patientId: patient._id, testId: { $in: testIds } }).sort({ enteredAt: -1 }).exec() : [],
     isReport ? LabSample.find({ billId: bill._id, testId: { $in: testIds }, sampleStatus: { $in: ["COLLECTED", "RECOLLECTED"] } }).exec() : [],
     isReport && input.technicianId ? LabTechnician.findOne({ _id: input.technicianId, active: true }).exec() : null,
+    isReport ? readReportNotes(testIds) : new Map(),
   ]);
   if (isReport && input.technicianId && !technician) throw new ApiError(422, "Selected technician is unavailable");
   const reports = isReport ? entry!.tests.filter((test) => testIds.includes(test.testId)).map((test) => {
@@ -68,11 +72,11 @@ export async function loadLisContext(input: ReviewLisMessageInput, printedBy: st
     const saved = results.filter((row) => String(row.testId) === test.testId);
     if (!test.testLinked || !saved.length || !test.parameters.length) throw new ApiError(422, "The selected laboratory report is unavailable");
     return {
-      item: json(item), results: json(saved),
+      ...notes.get(test.testId),item: json(item), results: json(saved),
       parameters: test.parameters.map((parameter) => ({ ...parameter, id: parameter.parameterId, testId: test.testId, active: true, referenceRange: parameter.reference.displayValue })),
       resolvedReferences: Object.fromEntries(test.parameters.map((parameter) => [parameter.parameterId, parameter.reference.displayValue ?? ""])),
       referenceResolutions: Object.fromEntries(test.parameters.map((parameter) => [parameter.parameterId, parameter.reference])),
-      collectedOn: samples.find((row) => String(row.testId) === test.testId)?.history.at(-1)?.changedAt,
+      collectedOn: samples.find((row) => String(row.testId) === test.testId)?.collectedAt,
     };
   }) : [];
   const newest = results.reduce((latest, row) => Math.max(latest, new Date(row.enteredAt).getTime()), 0);
@@ -84,7 +88,7 @@ export async function loadLisContext(input: ReviewLisMessageInput, printedBy: st
   return json({
     patientName: patient.fullName, patientCode: displayPatientCode(patient.patientId), mobile, centreName,
     billNumber: bill.billNumber, billDate: dateLabel(bill.createdAt!), variables,
-    document: { bill: populatedBill, reports, technician, printedBy, onlyEntered: input.onlyEntered, printMode: input.printMode },
+    document: { bill: populatedBill, reports, technician, printedBy, includeHeader: input.includeHeader !== false, onlyEntered: input.onlyEntered, printMode: input.printMode },
   });
 }
 
@@ -221,11 +225,14 @@ async function renderPdf(reviewId: string, req: Request): Promise<Buffer> {
     // background. Keep the PDF page white and omit development overlays.
     await page.addStyleTag({ content: "@media print { html, body { background: white !important; height: auto !important; min-height: 0 !important; } nextjs-portal { display: none !important; } }" });
     stage = "A4 PDF rendering";
-    const pdf = await timedPipeline("PDF rendering", () => page!.pdf({ format: "A4", preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false }));
+    if (reviews.get(reviewId)?.input.templateName === "lab_report_ready") await page.addStyleTag({content:clinicalReportPrintCss});
+    let pdf = await timedPipeline("PDF rendering", () => page!.pdf({ format: "A4", preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false }));
     if (pdf.length > 16 * 1024 * 1024 || !pdf.subarray(0, 5).equals(Buffer.from("%PDF-"))) throw new Error("Invalid generated PDF");
     console.info("[WhatsApp PDF]", { diagnosticId, stage, outcome: "generated", bytes: pdf.length,
       target: rendererTarget(target, origins), apiOrigin, pageState, documentStatus, documentCookiePresent,
       elapsedMs: Date.now() - started, events });
+    const reportInput = reviews.get(reviewId)?.input;
+    if (reportInput?.templateName === "lab_report_ready" && reportInput.includeHeader !== false) pdf = await applyReportStationery(pdf, await sharedReportStationery());
     return pdf;
   } catch (error) {
     const diagnostic = pdfFailure(stage, error);
@@ -260,7 +267,12 @@ export async function reviewLisMessage(input: ReviewLisMessageInput, req: Reques
     if (needsPdf) {
       activeRenderers++;
       let pdf: Buffer;
-      try { pdf = await renderPdf(id, req); }
+      try {
+        if(input.templateName==="lab_report_ready"){
+          const {browserReportPdf}=await import("../test-results/report-pdf.service.js");
+          pdf=(await browserReportPdf({billId:input.billId,testIds:input.testIds,technicianId:input.technicianId,onlyEntered:String(input.onlyEntered) as "true"|"false",includeHeader:input.includeHeader===false?"false":"true",letterhead:"false",printMode:input.printMode,download:"false"},req)).bytes;
+        }else pdf=await renderPdf(id, req);
+      }
       finally { activeRenderers--; }
       const scope = pdfScope(review);
       await timedPipeline("PDF validation", () => validatePdf(pdf, scope.kind));
@@ -269,7 +281,7 @@ export async function reviewLisMessage(input: ReviewLisMessageInput, req: Reques
       const retainedBytes = [...reviews.values()].reduce((sum, row) => sum + (row.pdf?.length ?? 0), 0);
       if (retainedBytes + pdf.length > 64 * 1024 * 1024) throw new ApiError(429, "Document review capacity reached. Wait for an existing review to expire.");
       review.pdf = pdf;
-      review.filename = `${context.billNumber}-${input.templateName === "lab_report_ready" ? "report" : "invoice"}.pdf`.replace(/[^a-zA-Z0-9._-]/g, "_");
+      review.filename = `${context.patientCode}-${input.templateName === "lab_report_ready" ? "report" : "invoice"}.pdf`.replace(/[^a-zA-Z0-9._-]/g, "_");
     }
     if (needsPdf) {
       const latest = await loadLisContext(input, req.user!.name);
@@ -291,7 +303,7 @@ export async function lisDocumentData(reviewId: string, userId: string) {
   return { ...review.context.document, templateName: review.input.templateName };
 }
 
-export async function sendLisReview(reviewId: string, req: Request) {
+export async function sendLisReview(reviewId: string, req: Request, beforeDispatch?:()=>Promise<void>) {
   const review = findLisReview(reviewId, req.user!.id);
   if (review.state === "sent") return review.result!;
   if (review.state !== "review" || review.rendering) throw new ApiError(409, "This send is already in progress or has been attempted. Do not submit it again.");
@@ -315,7 +327,13 @@ export async function sendLisReview(reviewId: string, req: Request) {
     if (attachment) await validatePdf(attachment, pdfScope(review).kind);
     const mediaId = attachment ? await timedPipeline("Meta media upload", () => uploadLisPdf(attachment, review.filename!)) : undefined;
     // Recheck report availability and dues after PDF upload as well.
+    if (LIS_TEMPLATES[review.input.templateName].document) {
+      await assertBillDocumentAllowed(review.input.billId);
+      const dispatchContext=await loadLisContext(review.input,review.printedBy);
+      if(fingerprint(dispatchContext)!==review.digest)throw new ApiError(409,"Patient, bill or result information changed before dispatch. Review it again.");
+    }
     if (review.input.templateName === "lab_report_ready") await assertResultReportAllowed(review.input.billId, review.input.testIds, review.input.workflow !== "lab-reprint");
+    await beforeDispatch?.();
     attempted = true;
     const result = await timedPipeline("Meta template request", () => sendWhatsAppTemplateMessage({ to: latest.mobile, templateName: review.input.templateName,
       languageCode: languageFor(review.input.templateName, env),
@@ -343,7 +361,7 @@ export async function sendLisReview(reviewId: string, req: Request) {
         workflow: review.input.workflow ?? "parameter-results", templateName: review.input.templateName, centreName: review.context.centreName, messageType: "template",
         errorCode: metaErrorCode, status: metaErrorCode === "131049" ? "failed" : attempted ? "failed_or_unconfirmed" : "blocked", errorMessage: error instanceof Error ? error.message.slice(0, 1000) : "Unknown error" } });
     if (metaErrorCode === "131049") throw error;
-    if (attempted && error instanceof ApiError) throw new ApiError(error.statusCode, `${error.message} Check template approval/availability in Meta. No fallback template was used; verify message status before retrying.`);
+    if (attempted && error instanceof ApiError) throw new ApiError(error.statusCode, `${error.message} Check template approval/availability in Meta. No fallback template was used; verify message status before retrying.`,metaErrorCode?{metaErrorCode}:undefined);
     throw error;
   }
 }

@@ -26,14 +26,14 @@ const optionalText = (max: number, message: string) =>
     .max(max, message)
     .or(z.literal(""))
     .optional()
-    .transform((value) => value?.trim() || undefined);
+    .transform((value) => value === undefined ? undefined : value.trim());
 
 const optionalRangeNumber = z
   .number()
   .finite()
   .min(-9999999, "Range value is invalid")
   .max(9999999, "Range value is too large")
-  .optional();
+  .nullable().optional().transform(value=>value===null?undefined:value);
 
 const genderRangeSchema = z
   .object({
@@ -48,7 +48,7 @@ const genderRangeSchema = z
       .max(80, "Range text is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value?.trim() || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
   })
   .strict();
 
@@ -91,7 +91,7 @@ const referenceMappingBase = z
       .max(200, "Display value is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value?.trim() || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     /**
      * Legacy Status (Y/N). Accepted so old records keep their value and the
      * screen can show it; a mapping that is no longer wanted is deleted instead
@@ -224,7 +224,7 @@ const baseFields = {
     .default("TEXT"),
   parameterType: optionalText(50, "Parameter type is too long"),
   defaultValue: z.string().max(2000, "Default value is too long").optional(),
-  unit: optionalText(50, "Unit is too long"),
+  unit: z.string().trim().max(50,"Unit is too long").optional(),
   method: optionalText(120, "Method name is too long"),
   referenceType: z
     .enum(PARAMETER_REFERENCE_TYPES as unknown as [ParameterReferenceType, ...ParameterReferenceType[]])

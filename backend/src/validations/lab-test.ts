@@ -24,28 +24,28 @@ export const createLabTestSchema = z
       .max(1000, "Description is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     sampleType: z
       .string()
       .trim()
       .max(50, "Sample type is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     containerType: z
       .string()
       .trim()
       .max(50, "Container type is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     testType: z
       .string()
       .trim()
       .max(50, "Test type is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     price: z.number().finite().min(0, "Price cannot be negative").max(9_999_999, "Price is too large"),
     priceIp: z
       .number()
@@ -77,35 +77,35 @@ export const createLabTestSchema = z
       .max(30, "CGHS code is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value?.trim() || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     nimsCode: z
       .string()
       .trim()
       .max(30, "NIMS code is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value?.trim() || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     railwayCode: z
       .string()
       .trim()
       .max(30, "Railway code is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value?.trim() || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     nfcCode: z
       .string()
       .trim()
       .max(30, "NFC code is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value?.trim() || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     comments: z
       .string()
       .trim()
       .max(1000, "Comments are too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value?.trim() || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     referralPercent: z
       .number()
       .finite()
@@ -118,14 +118,14 @@ export const createLabTestSchema = z
       .max(500, "Report note is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value?.trim() || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     reportNote2: z
       .string()
       .trim()
       .max(500, "Report note is too long")
       .or(z.literal(""))
       .optional()
-      .transform((value) => value?.trim() || undefined),
+      .transform((value) => value === undefined ? undefined : value.trim()),
     active: z.boolean().default(true).optional(),
     resultMode: z
       .enum(LAB_TEST_RESULT_MODES as unknown as [LabTestResultMode, ...LabTestResultMode[]])
@@ -134,6 +134,7 @@ export const createLabTestSchema = z
   })
   .strict();
 
-export const updateLabTestSchema = createLabTestSchema.partial();
+const clearableNumber = z.number().finite().min(0).max(9_999_999).nullable().optional().transform(value=>value===null?undefined:value);
+export const updateLabTestSchema = createLabTestSchema.partial().extend({priceIp:clearableNumber,priceInsIp:clearableNumber,priceEr:clearableNumber,doctorPrice:clearableNumber,referralPercent:z.number().finite().min(0).max(100).nullable().optional().transform(value=>value===null?undefined:value)});
 
 export type LabTestFormData = z.infer<typeof createLabTestSchema>;

@@ -1,3 +1,5 @@
+import reportShareRoutes from "../modules/test-results/report-share.routes";
+import {reportRequestTiming,timedReportAuthentication} from "../modules/test-results/report-request-timing";
 import { Router } from "express";
 import { getDatabaseStatus } from "../config/db";
 import { authenticate } from "../middleware/authenticate";
@@ -31,7 +33,9 @@ router.get("/health", (_req, res) => {
 });
 
 router.use("/auth", authRoutes);
-router.use(authenticate);
+router.use("/report-shares",reportShareRoutes);
+router.use(reportRequestTiming);
+router.use(timedReportAuthentication(authenticate));
 router.use("/vendor-portal", vendorPortalRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/patients", patientRoutes);

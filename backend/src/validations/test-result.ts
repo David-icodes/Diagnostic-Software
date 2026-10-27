@@ -34,6 +34,8 @@ const resultEntrySchema = z
   .object({
     parameterId: z.string().refine(isValidObjectId, "Invalid parameter ID"),
     resultDisplay: z.string().max(2000).optional(),
+    manuallyEdited:z.boolean().optional(),
+    calculationOverride:z.boolean().optional(),
     result: z.union([
       z.string().trim().min(1, "Result cannot be empty"),
       z.number().finite("Result must be a finite number"),

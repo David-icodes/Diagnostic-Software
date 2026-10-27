@@ -1,9 +1,11 @@
+import type {ResultEditMetadata} from "../utils/result-edit-metadata";
 import { model, Schema, type Types } from "mongoose";
 
 export type ResultValue = string | number | boolean;
 
-export interface CalculationSnapshot {definitionKind?:"DEVELOPMENT_ONE_TIME"|"DEVELOPMENT_CONFIGURED";expression?:string;dependencyIds?:string[];formulaId:string;version:string;precision:number;bindingRevision?:number;rounding?:string;sourceVerification?:string;approvedBy?:string;approvedAt?:Date;acceptedBy?:string;acceptedAt?:Date;inputs:Array<{parameterId:string;value:number|string;unit?:string}>}
+export interface CalculationSnapshot {manualOverride?:{by:string;at:Date};definitionKind?:"DEVELOPMENT_ONE_TIME"|"DEVELOPMENT_CONFIGURED"|"MANUAL_OVERRIDE";expression?:string;dependencyIds?:string[];formulaId:string;version:string;precision:number;bindingRevision?:number;rounding?:string;sourceVerification?:string;approvedBy?:string;approvedAt?:Date;acceptedBy?:string;acceptedAt?:Date;inputs:Array<{parameterId:string;value:number|string;unit?:string}>}
 export interface IResultRevision {
+  editMetadata?:ResultEditMetadata;
   calculationSnapshot?: CalculationSnapshot;
   result: ResultValue;
   resultDisplay?: string;
@@ -42,6 +44,7 @@ export interface IReferenceSnapshot {
 }
 
 export interface ILabTestResult {
+  editMetadata?:ResultEditMetadata;
   collectionId?: Types.ObjectId;
   superseded?: boolean;
   billId: Types.ObjectId;
@@ -93,8 +96,11 @@ const referenceSnapshotSchema = new Schema<IReferenceSnapshot>(
   { _id: false },
 );
 
+const editMetadataSchema=new Schema({origin:{type:String,enum:["DEFAULT","ENTERED","LEGACY","CALCULATED"],required:true},defaultValue:String,manuallyChanged:{type:Boolean,required:true},changedAt:Date,changedBy:String},{_id:false});
+
 const resultRevisionSchema = new Schema<IResultRevision>(
   {
+    editMetadata:{type:editMetadataSchema,default:undefined},
     calculationSnapshot:{type:Schema.Types.Mixed,default:undefined},
     result: { type: Schema.Types.Mixed, required: true },
     resultDisplay: { type: String, maxlength: 2000 },
@@ -107,6 +113,7 @@ const resultRevisionSchema = new Schema<IResultRevision>(
 
 const labTestResultSchema = new Schema<ILabTestResult>(
   {
+    editMetadata:{type:editMetadataSchema,default:undefined},
     collectionId: { type: Schema.Types.ObjectId, ref: "SampleCollection" },
     superseded: { type: Boolean, default: false },
     billId: { type: Schema.Types.ObjectId, ref: "LabBill", required: true, index: true },

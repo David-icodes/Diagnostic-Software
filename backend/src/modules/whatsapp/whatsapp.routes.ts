@@ -1,3 +1,4 @@
+import communicationRoutes from "./communication.routes";
 import { Router } from "express";
 import { authenticate } from "../../middleware/authenticate";
 import { requirePermission } from "../../middleware/require-permission";
@@ -22,6 +23,7 @@ import {
  * `requirePermission` middleware and is never public.
  */
 const router = Router();
+router.use("/communications",communicationRoutes);
 
 router.get("/webhook", verifyWebhook);
 router.post("/webhook", receiveWebhook);

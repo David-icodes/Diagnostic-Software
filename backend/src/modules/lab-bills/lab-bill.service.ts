@@ -1,3 +1,5 @@
+import {thankYouIntent} from "../whatsapp/communication-guards";
+import {dueCollectionPlan} from "./due-collection-plan";
 import {createHash} from "node:crypto";
 import { patientCodePattern } from "../../utils/patient-code";
 import mongoose, { Types, type FilterQuery } from "mongoose";
@@ -281,6 +283,7 @@ export async function createLabBill(
   const paidAmount = round2(input.paidAmount ?? 0);
 
   const bill = await LabBill.create({
+    ...thankYouIntent(billType,input.status,input.whatsappServiceOptIn,patient.mobile),
     billNumber,
     billType,
     patientId: patient._id,
@@ -800,74 +803,19 @@ export async function collectLabDue(
     throw new ApiError(400, "Invalid bill ID");
   }
 
-  const bill = await LabBill.findById(billId).exec();
-  if (!bill) {
-    throw new ApiError(404, "Bill not found");
-  }
-  if (bill.status !== "generated") {
-    throw new ApiError(
-      422,
-      bill.status === "cancelled"
-        ? "This bill has been cancelled and cannot receive payment"
-        : "This bill is not eligible for due collection",
-    );
-  }
-
-  const outstanding = round2(bill.dueAmount);
-  if (outstanding <= 0) {
-    throw new ApiError(422, "This bill has no outstanding balance");
-  }
-
-  const discount = round2(input.discountAmount ?? 0);
-  if (discount > outstanding) {
-    throw new ApiError(
-      422,
-      `Discount cannot exceed the outstanding balance of ₹${outstanding.toFixed(2)}`,
-    );
-  }
-
-  const payable = round2(outstanding - discount);
-  const amount = round2(input.amount);
-  if (amount > payable) {
-    throw new ApiError(
-      422,
-      `Amount cannot exceed the payable balance of ₹${payable.toFixed(2)}`,
-    );
-  }
-
-  await LabBillPayment.create({
-    billId: bill._id,
-    amount,
-    discountAmount: discount,
-    paymentMode: input.paymentMode,
-    comments: input.comments,
-    collectedAt: new Date(),
-    collectedBy: userId,
+  await mongoose.connection.transaction(async session=>{
+    const bill=await LabBill.findById(billId).session(session).exec();
+    if(!bill)throw new ApiError(404,"Bill not found");
+    const plan=dueCollectionPlan(bill,input);if(plan.replay)return;
+    const paymentId=new Types.ObjectId(),collectedAt=new Date();
+    Object.assign(bill,plan.totals,{paymentMode:input.paymentMode,updatedBy:new Types.ObjectId(userId)});
+    if(input.requestId){bill.dueCollections??=[];bill.dueCollections.push({requestId:input.requestId,fingerprint:plan.fingerprint,paymentMode:input.paymentMode,paymentId:String(paymentId),amount:plan.amount,discountAmount:plan.discount,remainingBalance:plan.totals.dueAmount,collectedAt});}
+    await bill.save({session});
+    await LabBillPayment.create([{_id:paymentId,billId:bill._id,requestId:input.requestId,amount:plan.amount,discountAmount:plan.discount,paymentMode:input.paymentMode,comments:input.comments,collectedAt,collectedBy:userId,remainingBalance:plan.totals.dueAmount}],{session});
+    await AuditLog.create([{user:userId,action:"lab_bill.payment_collected",entityType:"LabBill",entity:bill._id,timestamp:collectedAt}],{session});
   });
 
-  // A collection-time concession increases the bill's total discount and
-  // reduces its net — keeping net == total - discount and due == net - paid.
-  if (discount > 0) {
-    bill.discountAmount = round2(bill.discountAmount + discount);
-    bill.discountPercent = round2(
-      bill.totalAmount > 0 ? (bill.discountAmount / bill.totalAmount) * 100 : 0,
-    );
-    bill.netAmount = round2(Math.max(0, bill.totalAmount - bill.discountAmount));
-  }
-  bill.paidAmount = round2(bill.paidAmount + amount);
-  bill.dueAmount = round2(bill.netAmount - bill.paidAmount);
-  bill.paymentMode = input.paymentMode as ILabBill["paymentMode"];
-  bill.updatedBy = new Types.ObjectId(userId);
-  await bill.save();
-
-  await recordAudit({
-    user: userId,
-    action: "lab_bill.payment_collected",
-    entityType: "LabBill",
-    entity: bill._id,
-  });
-
-  return LabBill.findById(bill._id)
+  return LabBill.findById(billId)
     .populate("patientId", "patientId title firstName lastName fullName gender dateOfBirth age mobile")
     .populate("referringDoctorId", "name qualification specialization")
     .populate("clientId", "clientCode name")

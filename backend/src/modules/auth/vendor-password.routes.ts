@@ -1,3 +1,4 @@
+import {credentialsSchema, configureVendorCredentials, deactivateVendorClient} from "./vendor-client-management.service";
 import { Router } from "express";
 import { z } from "zod";
 import { Types } from "mongoose";
@@ -13,35 +14,16 @@ import { listLabBills } from "../lab-bills/lab-bill.service";
 import { AuditLog } from "../../models/audit-log.model";
 const router = Router();
 router.use(authenticate, (req,_res,next) => next(req.user?.role === "admin" ? undefined : new ApiError(403,"Administrator access required")));
-const credentialsSchema = z.object({
-  username: z.string().trim().min(3).max(50).refine(value=>!/[\u0000-\u001f\u007f]/.test(value), "Username cannot contain control characters").transform(value=>value.toLowerCase()),
-  password: z.union([z.literal(""),z.string().min(6).max(100)]).optional(),
-}).strict();
-/** Existing account only. Client/role/ID reassignment is never accepted here. */
 router.patch("/clients/:id/credentials", validate(credentialsSchema), asyncHandler(async(req,res)=>{
-  if(!Types.ObjectId.isValid(req.params.id))throw new ApiError(404,"Vendor account not found");
-  const client=await LabClient.findById(req.params.id).exec();
-  if(!client)throw new ApiError(404,"Vendor client not found");
-  const account=await User.findOne({clientId:client._id,role:"vendor"}).exec();
-  if(!account)throw new ApiError(404,"Vendor account not found");
-  const usernameChanged=account.username!==req.body.username;
-  const passwordChanged=typeof req.body.password==="string" && req.body.password!=="";
-  if(usernameChanged && await User.exists({username:req.body.username,_id:{$ne:account._id}}))throw new ApiError(409,"Username is already in use");
-  if(usernameChanged || passwordChanged){
-    account.username=req.body.username;
-    if(passwordChanged)account.passwordHash=await hashPassword(req.body.password);
-    account.sessionVersion=(account.sessionVersion??0)+1;
-    try{await account.save();}catch(error){if((error as {code?:number}).code===11000)throw new ApiError(409,"Username is already in use");throw error;}
-    await recordAudit({user:req.user!.id,action:"vendor.credentials_updated",entityType:"User",entity:account._id,details:{usernameChanged,passwordChanged}});
-  }
-  return sendSuccess(res,{id:String(account._id),username:account.username});
+  return sendSuccess(res,await configureVendorCredentials(req.params.id,req.user!,req.body));
 }));
+router.delete("/clients/:id",asyncHandler(async(req,res)=>sendSuccess(res,await deactivateVendorClient(req.params.id,req.user!))));
 router.get("/", asyncHandler(async (_req,res) => sendSuccess(res,await User.find({role:"vendor"}).select("username name clientId status").populate("clientId", "clientCode name active").exec())));
-router.get("/clients",asyncHandler(async(_req,res)=>sendSuccess(res,await LabClient.find({}).select("clientCode name active").sort({name:1}).exec())));
-router.patch("/clients/:id",validate(z.object({name:z.string().trim().min(2).max(120)}).strict()),asyncHandler(async(req,res)=>{
+router.get("/clients",asyncHandler(async(_req,res)=>sendSuccess(res,await LabClient.find({}).select("clientCode name city active").sort({name:1}).exec())));
+router.patch("/clients/:id",validate(z.object({name:z.string().trim().min(2).max(120),city:z.string().trim().max(100).optional()}).strict()),asyncHandler(async(req,res)=>{
  if(!Types.ObjectId.isValid(req.params.id))throw new ApiError(404,"Vendor client not found");
  try{
-  const client=await LabClient.findByIdAndUpdate(req.params.id,{$set:{name:req.body.name,updatedBy:req.user!.id}},{new:true,runValidators:true}).exec();
+  const client=await LabClient.findByIdAndUpdate(req.params.id,{$set:{name:req.body.name,...(req.body.city!==undefined?{city:req.body.city}:{}),updatedBy:req.user!.id}},{new:true,runValidators:true}).exec();
   if(!client)throw new ApiError(404,"Vendor client not found");
   await User.updateMany({role:"vendor",clientId:client._id},{$inc:{sessionVersion:1}}).exec();
   await recordAudit({user:req.user!.id,action:"vendor.client_updated",entityType:"LabClient",entity:client._id});

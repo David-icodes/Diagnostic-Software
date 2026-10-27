@@ -1,3 +1,4 @@
+import {reportRequestTiming} from "./modules/test-results/report-request-timing";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { type Request } from "express";
@@ -10,6 +11,7 @@ import whatsappRoutes from "./modules/whatsapp/whatsapp.routes";
 import v1Router from "./routes/v1";
 
 const app = express();
+app.use(reportRequestTiming);
 
 /**
  * Browser origins allowed to call the API.
@@ -67,6 +69,7 @@ app.use(
   cors({
     origin: allowedOrigins.length > 0 ? allowedOrigins : false,
     credentials: true,
+    exposedHeaders: ["Content-Disposition"],
   }),
 );
 app.use(

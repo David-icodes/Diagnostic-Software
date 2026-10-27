@@ -1,3 +1,4 @@
+import {requestSession} from "../utils/session-scope";
 import type { NextFunction, Request, Response } from "express";
 import { env } from "../config/env";
 import { User } from "../models/user.model";
@@ -12,7 +13,7 @@ export async function authenticate(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const token: string | undefined = req.cookies?.[env.COOKIE_NAME];
+    const {token,scope} = requestSession(req);
 
     // TEMPORARY DIAGNOSTIC LOGGING (safe) — presence only, never the value.
     // Remove these [auth] lines once the session flow is fixed.
@@ -35,6 +36,8 @@ export async function authenticate(
     if (!user) {
       throw new ApiError(401, "User no longer exists");
     }
+
+    if ((user.role === "vendor") !== (scope === "vendor")) throw new ApiError(403, "Session does not belong to this portal");
 
     if (user.status !== "active") {
       throw new ApiError(403, "Account is not active");

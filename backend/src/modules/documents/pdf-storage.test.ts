@@ -49,7 +49,8 @@ test("PDF integrity rejects incomplete/empty files and verifies every page's A4 
   const [, , { validatePdf }] = await modules;
   await validatePdf(await fixture(), "report");
   await validatePdf(await fixture(true), "invoice");
-  await assert.rejects(validatePdf(await fixture(), "invoice"), /orientation/);
+  await validatePdf(await fixture(), "invoice");
+  const compact=await PDFDocument.create();compact.addPage([420,300]).drawText("Synthetic compact invoice");await validatePdf(Buffer.from(await compact.save()),"invoice");
   await assert.rejects(validatePdf(await fixture(true), "report"), /orientation/);
   for (const bad of [Buffer.alloc(0), Buffer.from("%PDF-1.4\n%%EOF"), (await fixture()).subarray(0, 200)]) {
     await assert.rejects(validatePdf(bad, "report"), /invalid/);

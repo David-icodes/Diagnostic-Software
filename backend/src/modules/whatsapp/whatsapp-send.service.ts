@@ -104,6 +104,7 @@ export async function sendWhatsAppTemplateMessage(
 
   try {
     const response = await fetch(url, {
+      signal:AbortSignal.timeout(20000),
       method: "POST",
       headers: {
         // Value is the access token; it is never logged.

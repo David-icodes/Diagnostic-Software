@@ -35,6 +35,7 @@ export interface DashboardSummary {
 }
 
 export interface TodayBill {
+  patientRecordId?:string;
   vendorName?: string;
   id: string;
   billNo: string;
@@ -196,6 +197,7 @@ export async function getTodayBills({
       id: String(bill._id),
       billNo: bill.billNumber,
       ...(bill.billType === "vendor" ? { vendorName: bill.clientName ?? "Vendor client" } : {}),
+      patientRecordId: String((patient as (IPatient & {_id?:unknown}) | null)?._id ?? ""),
       patientId: displayPatientCode(patient?.patientId ?? "—"),
       patientName: patient?.fullName ?? "—",
       age: patient ? ageLabel(patient) : "—",

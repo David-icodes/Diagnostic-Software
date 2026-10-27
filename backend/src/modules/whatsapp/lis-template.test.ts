@@ -48,6 +48,8 @@ test("each template selects its own exact language without a legacy fallback", (
 test("review workflows are explicit and unknown scopes cannot bypass validation", () => {
   const input = { patientId: "a".repeat(24), billId: "b".repeat(24), templateName: "lab_report_ready" };
   assert.equal(reviewLisMessageSchema.parse(input).workflow, undefined);
-  assert.equal(reviewLisMessageSchema.parse({ ...input, workflow: "lab-reprint" }).workflow, "lab-reprint");
+  assert.equal(reviewLisMessageSchema.parse({ ...input, templateName:"lab_invoice_ready", workflow: "lab-reprint" }).workflow, "lab-reprint");
   assert.equal(reviewLisMessageSchema.safeParse({ ...input, workflow: "ignore-validation" }).success, false);
+  assert.equal(reviewLisMessageSchema.safeParse({...input,workflow:"lab-reprint"}).success,false);
+  assert.equal(reviewLisMessageSchema.safeParse({...input,workflow:"parameter-results",templateName:"lab_invoice_ready"}).success,false);
 });

@@ -1,3 +1,4 @@
+import type {DueReceipt} from "../modules/lab-bills/due-collection-plan";
 import { model, Schema, type Types } from "mongoose";
 
 export type PatientType = "osp" | "op" | "ip" | "emergency" | "corporate";
@@ -25,6 +26,8 @@ export interface IBillItem {
 }
 
 export interface ILabBill {
+  whatsappThanksPending?:boolean;whatsappThanksConsentAt?:Date;whatsappThanksMobileHash?:string;
+  dueCollections?:DueReceipt[];
   amendments?: Array<{
     paymentRequestId?: string;
     paymentFingerprint?: string;
@@ -94,6 +97,7 @@ const billItemSchema = new Schema<IBillItem>(
 
 const labBillSchema = new Schema<ILabBill>(
   {
+    dueCollections:{type:[new Schema({requestId:String,fingerprint:String,paymentMode:String,paymentId:String,amount:Number,discountAmount:Number,remainingBalance:Number,collectedAt:Date},{_id:false})],default:undefined},
     amendments: { type: [new Schema({
       paymentRequestId: String,
       paymentFingerprint: String,
@@ -131,6 +135,7 @@ const labBillSchema = new Schema<ILabBill>(
     updatedBy: { type: Schema.Types.ObjectId, ref: "User" },
     cancelledAt: { type: Date },
     cancelledBy: { type: Schema.Types.ObjectId, ref: "User" },
+    whatsappThanksPending:{type:Boolean},whatsappThanksConsentAt:Date,whatsappThanksMobileHash:String,
     cancellationRemarks: { type: String, trim: true, maxlength: 500 },
   },
   {

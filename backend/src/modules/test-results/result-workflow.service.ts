@@ -1,3 +1,4 @@
+import {currentCollectionResult} from "../../utils/current-collection-result";
 import { newestReportUpload } from "./report-upload-order";
 import { Types } from "mongoose";
 import { LabBill } from "../../models/lab-bill.model";
@@ -61,10 +62,10 @@ export async function getResultWorkflow(billId: string) {
   const uploads = outsideIds.length ? await LabReportUpload.find({billId:bill._id,patientId:bill.patientId,testId:{$in:outsideIds}})
     .select("testId collectionId size selectedAt createdAt").sort({createdAt:-1,_id:-1}).lean().exec() : [];
   const tests = [...new Set(bill.items.map((item) => String(item.testId)))].map((testId) => {
-    const saved = results.filter((row) => String(row.testId) === testId);
+    const item = bill.items.find(item=>String(item.testId)===testId)!;
+    const saved = results.filter((row) => String(row.testId) === testId&&currentCollectionResult(row,item.activeCollectionId));
     const savedIds = new Set(saved.map((row) => String(row._id)));
     const latest = confirmations.find((row) => savedIds.has(String(row.entity)));
-    const item = bill.items.find(item=>String(item.testId)===testId)!;
     const upload = item.outsideLabId ? newestReportUpload(uploads).find(row => String(row.testId) === testId && row.size > 0 &&
       String(row.collectionId ?? "") === String(item.activeCollectionId ?? "")) : undefined;
     return { testId, collectionId: item.activeCollectionId?.toString(), submitted: persistedSubmission(saved, latest?.action),

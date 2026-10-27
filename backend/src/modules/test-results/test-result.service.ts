@@ -1,3 +1,6 @@
+import {manualCalculationOverrides} from "../../utils/manual-calculation-overrides";
+import {currentCollectionResult} from "../../utils/current-collection-result";
+import {resultEditMetadata} from "../../utils/result-edit-metadata";
 import { displayPatientCode } from "../../utils/patient-code";
 import { formatPatientDisplayName } from "../../utils/patient-name";
 import { cbcCountValueOnly } from "../../utils/cbc-report-display";
@@ -167,6 +170,8 @@ export interface BillTestEntry {
     parameterType?: string;
     defaultValue?: string;
     unit?: string;
+  configuredUnit?:string;
+  unitSource?:"SAVED"|"CATALOGUE";
     method?: string;
     options?: string[];
     onlyReferenceRange?: boolean;
@@ -261,7 +266,7 @@ export async function getBillResultEntry(
       testLinked: Boolean(item.testId && item.testName),
       parameters: (() => {
         const rows = routed.map((master) => {
-          const saved=savedRows.find(row=>String(row.testId)===testId&&String(row.parameterId)===String(master._id));
+          const saved=savedRows.find(row=>String(row.testId)===testId&&String(row.parameterId)===String(master._id)&&currentCollectionResult(row,item.activeCollectionId));
           const projection=recordedParameterProjection(master.toObject ? master.toObject() : master,saved);
           const parameter=development && development.bindings.some(b=>b.targetId===String(master._id)||b.calculation.dependencyIds?.includes(String(master._id))) ? {...projection,resultType:"NUMBER" as const} : projection;
           const persisted = parameter.calculation && hasExecutableCalculation(parameter) && !bindingIssues(routed,parameter).length ? parameter.calculation : undefined;
@@ -300,6 +305,8 @@ export async function getBillResultEntry(
           ? { defaultValue: parameter.defaultValue }
           : {}),
         ...(parameter.unit !== undefined ? { unit: parameter.unit } : {}),
+        configuredUnit: routed.find(row=>String(row._id)===String(parameter._id))?.unit??"",
+        unitSource:saved?"SAVED":"CATALOGUE",
         ...(parameter.method !== undefined ? { method: parameter.method } : {}),
         ...(parameter.options ? { options: parameter.options } : {}),
         ...(parameter.onlyReferenceRange !== undefined
@@ -402,7 +409,7 @@ export async function listTestResults(
  */
 export async function submitTestResults(
   userId: string,
-  input: { billId: string; testId: string; collectionId?: string; calculationProposals?:CalculationProposal[]; acceptedCalculationIds?:string[]; acceptedCalculationRevisions?:Record<string,number>; entries: Array<{ parameterId: string; result: ResultValue; resultDisplay?: string }> },
+  input: { billId: string; testId: string; collectionId?: string; calculationProposals?:CalculationProposal[]; acceptedCalculationIds?:string[]; acceptedCalculationRevisions?:Record<string,number>; entries: Array<{ parameterId: string; result: ResultValue; resultDisplay?: string; manuallyEdited?: boolean; calculationOverride?:boolean }> },
 ): Promise<{ results: ILabTestResult[]; testId: string }> {
   if (!Types.ObjectId.isValid(input.billId) || !Types.ObjectId.isValid(input.testId)) {
     throw new ApiError(400, "Invalid bill or test ID");
@@ -485,6 +492,7 @@ export async function submitTestResults(
   if (accepted.size !== (input.acceptedCalculationIds ?? []).length || [...accepted].some(id=>!executable(parameterMap.get(id)))) throw new ApiError(422,"Accept only configured calculations in this test");
   if(proposals.some(p=>!accepted.has(p.parameterId)))throw new ApiError(422,"Preview and accept each proposed calculation before submitting");
   const submitted = Object.fromEntries(input.entries.map(entry=>[entry.parameterId,entry.result]));
+  const manualOverrides=manualCalculationOverrides(input.entries,new Set(calculationParameters.filter(row=>row.calculation).map(row=>row.parameterId)),accepted,savedRows);
   const kept = new Set<string>();
   for (const parameter of parameters.filter(row=>executable(row))) {
     const id = String(parameter._id);
@@ -498,11 +506,11 @@ export async function submitTestResults(
       kept.add(id);
     }
   }
-  const calculation = recalculateConfigured(calculationParameters.map(row=>kept.has(row.parameterId)?{...row,calculation:undefined}:row),submitted);
+  const calculation = recalculateConfigured(calculationParameters.map(row=>kept.has(row.parameterId)||manualOverrides.has(row.parameterId)?{...row,calculation:undefined}:row),submitted);
   if(Object.keys(calculation.errors).length)throw new ApiError(422,Object.values(calculation.errors)[0]);
   for (const parameter of parameters.filter(row=>executable(row))) {
     const id = String(parameter._id);
-    if (!kept.has(id) && submitted[id] !== undefined && (typeof submitted[id]!=="number" || submitted[id]!==calculation.values[id])) throw new ApiError(422,`Calculation for "${parameter.parameterName}" is missing or stale; preview and accept it again`);
+    if (!kept.has(id) && !manualOverrides.has(id) && submitted[id] !== undefined && (typeof submitted[id]!=="number" || submitted[id]!==calculation.values[id])) throw new ApiError(422,`Calculation for "${parameter.parameterName}" is missing or stale; preview and accept it again`);
   }
   // Never invent a result the user did not accept, or revise a kept result.
   const entries=input.entries.filter(entry=>!kept.has(entry.parameterId));
@@ -531,13 +539,13 @@ export async function submitTestResults(
   const anchorId = anchor?._id ?? new Types.ObjectId();
   const confirmationData = { user: enteredBy, action: SUBMISSION_PENDING,
     entityType: "LabTestResult", entity: anchorId, timestamp: now,
-    details:{acceptedCalculationIds:[...accepted],keptCalculationIds:[...kept],calculationAcceptance:"USER_ACCEPTED_AND_SERVER_VERIFIED"} };
+    details:{acceptedCalculationIds:[...accepted],keptCalculationIds:[...kept],manualOverrideIds:[...manualOverrides],calculationAcceptance:manualOverrides.size?"USER_ACCEPTED_WITH_AUDITED_MANUAL_OVERRIDES":"USER_ACCEPTED_AND_SERVER_VERIFIED"} };
   const confirmation = session ? (await AuditLog.create([confirmationData], options))[0] : await AuditLog.create(confirmationData);
   const saveEntry = async (entry: typeof first) => {
       const parameter = parameterMap.get(entry.parameterId)!;
       const effective = executable(parameter);
       const proposal=proposals.find(p=>p.parameterId===entry.parameterId);
-      const calculationSnapshot = effective ? {expression:effective.expression,...(development?{definitionKind:"DEVELOPMENT_CONFIGURED" as const,developmentAuthorizedBy:development.authorizedBy,clinicalApproval:false}:{}),...(proposal?{definitionKind:"DEVELOPMENT_ONE_TIME" as const,expression:proposal.expression,dependencyIds:proposal.dependencyIds}:{}),formulaId:effective.formulaId,version:parameter.calculationApproval?.formulaVersion??"1",bindingRevision:parameter.calculationApproval?.revision??0,rounding:parameter.calculationApproval?.rounding??"HALF_UP",approvedBy:proposal||development?undefined:parameter.calculationApproval?.approvedBy??"registry",approvedAt:proposal||development?undefined:parameter.calculationApproval?.approvedAt??now,acceptedBy:userId,acceptedAt:now,precision:effective.precision??2,inputs:resolveCalculationDependencyIds(calculationParameters,calculationParameters.find(row=>row.parameterId===entry.parameterId)!).map(id=>({parameterId:id,value:calculation.values[id] as string|number,unit:parameterMap.get(id)?.unit}))} : undefined;
+      const calculationSnapshot = effective ? {expression:effective.expression,...(development?{definitionKind:"DEVELOPMENT_CONFIGURED" as const,developmentAuthorizedBy:development.authorizedBy,clinicalApproval:false}:{}),...(proposal?{definitionKind:"DEVELOPMENT_ONE_TIME" as const,expression:proposal.expression,dependencyIds:proposal.dependencyIds}:{}),...(manualOverrides.has(entry.parameterId)?{definitionKind:"MANUAL_OVERRIDE" as const,manualOverride:{by:userId,at:now}}:{}),formulaId:effective.formulaId,version:parameter.calculationApproval?.formulaVersion??"1",bindingRevision:parameter.calculationApproval?.revision??0,rounding:parameter.calculationApproval?.rounding??"HALF_UP",approvedBy:proposal||development?undefined:parameter.calculationApproval?.approvedBy??"registry",approvedAt:proposal||development?undefined:parameter.calculationApproval?.approvedAt??now,acceptedBy:userId,acceptedAt:now,precision:effective.precision??2,inputs:resolveCalculationDependencyIds(calculationParameters,calculationParameters.find(row=>row.parameterId===entry.parameterId)!).map(id=>({parameterId:id,value:calculation.values[id] as string|number,unit:parameterMap.get(id)?.unit}))} : undefined;
       const existing = await LabTestResult.findOne({
         billId: bill._id,
         testId: input.testId,
@@ -545,8 +553,10 @@ export async function submitTestResults(
         superseded: {$in:[true,false,null]},
       }, null, options).exec();
 
+      const editMetadata=manualOverrides.has(entry.parameterId)?(existing?.result===entry.result&&existing.editMetadata?.manuallyChanged?existing.editMetadata:{origin:"CALCULATED" as const,manuallyChanged:true,changedAt:now,changedBy:userId}):resultEditMetadata(entry,existing&&!existing.superseded?existing:undefined,parameter.defaultValue,Boolean(effective),userId,now);
       if (!existing) {
         const data = {
+          editMetadata,
           collectionId, superseded:false,
           ...(entry === first && !anchor ? { _id: anchorId } : {}),
           billId: bill._id,
@@ -579,6 +589,7 @@ export async function submitTestResults(
       }
 
       existing.revisions.push({
+        editMetadata:existing.editMetadata,
         result: existing.result,
         resultDisplay: existing.resultDisplay,
         calculationSnapshot:existing.calculationSnapshot,
@@ -596,6 +607,7 @@ export async function submitTestResults(
       }
       existing.collectionId = collectionId;
       existing.superseded = false;
+      existing.editMetadata=editMetadata;
       existing.result = entry.result;
       existing.resultDisplay = entry.resultDisplay;
       existing.calculationSnapshot = calculationSnapshot;
