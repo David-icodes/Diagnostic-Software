@@ -1,4 +1,4 @@
-import { openAuthorizedReportPdf } from "@/lib/browser-report";
+import { generateBrowserReport, openAuthorizedReportPdf } from "@/lib/browser-report";
 import { api, ApiError } from "@/lib/api";
 import {announceActionSuccess} from '@/lib/action-feedback';
 
@@ -32,7 +32,7 @@ export async function downloadResultUpload(billId: string, testId: string, repor
 }
 
 export function viewResultUpload(billId:string,testId:string,id:string,header?:"header"|"none"|"letterhead") {
+  if(header)return generateBrowserReport({billId,testIds:[testId],includeHeader:header==="header",letterhead:header!=="header",printMode:"test"});
   const params=query(billId,testId);params.set("view","true");
-  if(header)params.set("header",header);
-  return openAuthorizedReportPdf(`${base}/lab-test-results/report-uploads/${encodeURIComponent(id)}${header?"/print":""}?${params}`);
+  return openAuthorizedReportPdf(`${base}/lab-test-results/report-uploads/${encodeURIComponent(id)}?${params}`);
 }

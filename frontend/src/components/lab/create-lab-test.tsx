@@ -541,7 +541,7 @@ export function CreateLabTestContent() {
                   disabled={saveMutation.isPending}
                 />
               </FormField>
-              <FormField id="test-note-1" label="Report Note 1">
+              <FormField id="test-note-1" label="Report Note 1" className="lis-report-note-field">
                 <Textarea
                   id="test-note-1"
                   value={form.reportNote1}
@@ -549,7 +549,7 @@ export function CreateLabTestContent() {
                   disabled={saveMutation.isPending}
                 />
               </FormField>
-              <FormField id="test-note-2" label="Report Note 2">
+              <FormField id="test-note-2" label="Report Note 2" className="lis-report-note-field">
                 <Textarea
                   id="test-note-2"
                   value={form.reportNote2}

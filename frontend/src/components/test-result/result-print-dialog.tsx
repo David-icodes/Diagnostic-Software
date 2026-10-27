@@ -15,7 +15,7 @@ export function ResultPrintDialog({ bill, testIds, technicians = [], onClose, in
   bill: LabBill; testIds: string[]; technicians?: LabTechnician[]; onClose: () => void;
   initialOnlyEntered?: boolean; printMode?: ResultPrintMode;
 }) {
-  const [includeHeader, setIncludeHeader] = useState(false);
+  const [includeHeader, setIncludeHeader] = useState(true);
   const [onlyEntered, setOnlyEntered] = useState(initialOnlyEntered);
   const [technicianId, setTechnicianId] = useState("");
   const [layout, setLayout] = useState<ResultPrintMode>(printMode);

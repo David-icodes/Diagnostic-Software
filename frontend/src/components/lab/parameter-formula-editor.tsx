@@ -6,32 +6,36 @@ import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Select} from '@/components/ui/select';
 import {api} from '@/lib/api';
-import {CALCULATION_FORMULAS} from '@/lib/configured-calculations';
+import {CALCULATION_FORMULAS,calculationUnitsMatch,isNumericOnlyCalculation} from '@/lib/configured-calculations';
 import {fetchLabParameters} from '@/services/lab-masters';
 import type {ParameterRow} from '@/types/lab-masters';
 import {formulaSourceOptions,validFormulaSources,loadFormulaSources} from '@/lib/formula-source-options';
 
-export function ParameterFormulaEditor({parameter,onClose,onChanged}:{parameter:ParameterRow;onClose:()=>void;onChanged:()=>void}){
+export function ParameterFormulaEditor({parameter,onClose,onChanged}:{parameter:ParameterRow;onClose:()=>void;onChanged:()=>void|Promise<unknown>}){
  const existing=parameter.calculation;
  const [formulaId,setFormulaId]=useState(existing?.formulaId??'');
  const [expression,setExpression]=useState(existing?.expression??'');
  const [sources,setSources]=useState<string[]>(existing?.dependencyIds??[]);
+ const [unit,setUnit]=useState(parameter.unit??'');
  const [active,setActive]=useState(existing?.enabled!==false);
  const [message,setMessage]=useState(''),[busy,setBusy]=useState(false);
  const query=useQuery({queryKey:['lab-test-parameters','formula-editor-sources',parameter.testId],queryFn:()=>loadFormulaSources(parameter.testId,page=>fetchLabParameters({testId:parameter.testId,limit:100,page})),staleTime:0});
  const formula=CALCULATION_FORMULAS.find(f=>f.id===formulaId);
  const eligible=formulaSourceOptions(query.data??[],parameter);
  const isTargetValid=(parameter.itemType??'PARAMETER')==='PARAMETER';
- const canSave=!!formula&&isTargetValid&&!query.isPending&&!query.isError&&validFormulaSources(sources,formula.sources.length,query.data??[],parameter);
+ const sourceUnits=sources.map(id=>query.data?.find(row=>row.id===id)?.unit??'');
+ const unitsValid=!!formula&&(isNumericOnlyCalculation(formula.id)||calculationUnitsMatch(formula,sourceUnits,unit));
+ const canSave=unitsValid&&!!formula&&isTargetValid&&!query.isPending&&!query.isError&&validFormulaSources(sources,formula.sources.length,query.data??[],parameter);
  async function save(){
+  if(busy||!canSave)return;
   setBusy(true);
   try{
    await api.post(`/lab-test-parameters/${parameter.id}/calculation`,{
-    unit:parameter.unit??'',
+    unit:unit.trim(),
     calculation:{enabled:active,formulaId,expression:expression||undefined,dependencyIds:sources,precision:formula?.precision??2,overwrite:'CONFIRM'}
    });
    setMessage('Formula configuration saved.');
-   onChanged();
+   await onChanged();
   }catch(e){
    setMessage(e instanceof Error?e.message:'Save failed');
   }finally{
@@ -64,7 +68,12 @@ export function ParameterFormulaEditor({parameter,onClose,onChanged}:{parameter:
  <label className="block">Expression
   <Input value={expression} onChange={e=>setExpression(e.target.value)} disabled={!formula?.expression}/>
  </label>
- <p className="text-sm">Display unit: {parameter.unit||'blank'} · Rounding: HALF_UP</p>
+ <label className="block">Output unit
+  <Input aria-label="Output unit" value={unit} disabled={busy} maxLength={50} onChange={e=>{setUnit(e.target.value);setMessage('');}}/>
+ </label>
+ {formula?.outputUnit==='ratio'&&<div className="flex items-center gap-2 text-sm"><span>This formula produces a dimensionless ratio.</span><Button type="button" variant="outline" disabled={busy} onClick={()=>setUnit('ratio')}>Use ratio</Button></div>}
+ {!unitsValid&&formula&&validFormulaSources(sources,formula.sources.length,query.data??[],parameter)&&<p role="alert" className="text-sm text-destructive">Choose compatible source and output units{formula.outputUnit==='ratio'?' — output must be ratio':''}.</p>}
+ <p className="text-xs text-muted-foreground">Rounding: HALF_UP. Unit changes apply to future results; saved results retain their original units.</p>
  {message&&<p role="status">{message}</p>}{query.error&&<p role="alert">Unable to load source parameters.</p>}
  <Button type="button" disabled={busy||!canSave} onClick={save}>Save</Button>
  <Button type="button" variant="outline" onClick={onClose}>Close</Button>

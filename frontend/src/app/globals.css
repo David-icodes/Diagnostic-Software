@@ -532,3 +532,8 @@ html[data-action-feedback="active"] [data-action-success] {display:none!importan
 .lis-results .lis-result-bill-list tbody td:not(:nth-child(3)) {font-size:15px;line-height:21px;}
 
 .lis-report-final-rows { break-inside: avoid; page-break-inside: avoid; }
+
+/* Notes are independent full-width fields, not constrained by adjacent controls. */
+.lis-content .lis-dm.lis-lab-test .lis-report-note-field {grid-column:1 / -1;}
+.lis-content .lis-dm.lis-lab-test .lis-report-note-field textarea {width:100%;max-width:100%;min-height:110px;resize:both;white-space:pre-wrap;}
+.lis-report-paper .lis-clinical-ending > .lis-configured-report-note {font:9pt/12pt "Times New Roman",Times,serif;white-space:pre-wrap;overflow-wrap:anywhere;margin:2mm 0;}

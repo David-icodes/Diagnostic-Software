@@ -1,7 +1,6 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import { BillsPanel } from "@/components/dashboard/bills-panel";
 import { BillsTable, type ColumnDef } from "@/components/dashboard/bills-table";
 import { queryKeys } from "@/lib/query-keys";
@@ -14,17 +13,10 @@ const columns: ColumnDef<TodayBill>[] = [
     key: "billNo", width: "15%",
     label: "Bill No",
     className: "w-[16.5%] whitespace-nowrap",
-    render: (bill) => (
-      <Link
-        href={`/billing/osp/${bill.id}`}
-        className="font-medium text-primary hover:underline"
-      >
-        {bill.billNo}
-      </Link>
-    ),
+    render: (bill) => <span className="font-medium">{bill.billNo}</span>,
   },
   { key: "patientId", width: "20%", label: "Pat Id", className: "w-[20%] whitespace-nowrap" },
-  { key: "patientName", width: "30%", label: "Pat Name", className: "w-[27%] whitespace-normal", render: (bill) => <Link href={`/billing/osp/${bill.id}`} title={bill.patientName}>{bill.patientName}{bill.vendorName&&<small className="block text-[11px] font-normal">Vendor: {bill.vendorName}</small>}</Link> },
+  { key: "patientName", width: "30%", label: "Pat Name", className: "w-[27%] whitespace-normal", render: (bill) => <span title={bill.patientName}>{bill.patientName}{bill.vendorName&&<small className="block text-[11px] font-normal">Vendor: {bill.vendorName}</small>}</span> },
   { key: "age", width: "15%", label: "Age", className: "w-[20%] whitespace-normal" },
   { key: "gender", width: "15%", label: "Gender", className: "w-[12%]" },
 ];

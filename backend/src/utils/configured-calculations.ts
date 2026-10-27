@@ -74,7 +74,7 @@ export const CALCULATION_FORMULAS: Formula[] = [
   * formulas fail closed above the conventional 400 mg/dL (4.52 mmol/L)
   * triglyceride limit and require laboratory approval before clinical use.
   */
- {id:"ldl-friedewald",expression:"S1 - S2 - S3 / 5",label:"LDL = Total cholesterol − HDL − Triglycerides ÷ 5 (Friedewald, mg/dL)",method:"Friedewald estimate; valid only with triglycerides ≤ 400 mg/dL and all inputs in mg/dL. Require laboratory approval.",sources:["Total cholesterol","HDL","Triglycerides"],aliases:[["total cholesterol","cholesterol total","cholesterol total serum","serum cholesterol","s cholesterol","tc"],["hdl","hdl cholesterol","hdl c","hdl-c","high density lipoprotein","high density lipoprotein cholesterol"],["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["LDL","LDL Cholesterol","LDL-C","LDL C","Calculated LDL","LDL (Calculated)"],units:["mg/dl","mg/dl","mg/dl"],outputUnit:"mg/dl",validate:v=>v[2]>400?"Friedewald LDL is not valid when triglycerides exceed 400 mg/dL.":undefined,compute:v=>v[0]-v[1]-v[2]/5},
+ {id:"ldl-friedewald",expression:"S1 - S2 - S3 / 5",label:"LDL = Total cholesterol − HDL − Triglycerides ÷ 5 (Friedewald, mg/dL)",method:"Friedewald estimate; valid only with triglycerides < 400 mg/dL and all inputs in mg/dL. Require laboratory approval.",sources:["Total cholesterol","HDL","Triglycerides"],aliases:[["total cholesterol","cholesterol total","cholesterol total serum","serum cholesterol","s cholesterol","tc"],["hdl","hdl cholesterol","hdl c","hdl-c","high density lipoprotein","high density lipoprotein cholesterol"],["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["LDL","LDL Cholesterol","LDL-C","LDL C","Calculated LDL","LDL (Calculated)"],units:["mg/dl","mg/dl","mg/dl"],outputUnit:"mg/dl",validate:v=>v[2]>=400?"Friedewald LDL is not valid when triglycerides are 400 mg/dL or higher.":undefined,compute:v=>v[0]-v[1]-v[2]/5},
  {id:"ldl-friedewald-mmol",expression:"S1 - S2 - S3 / 2.2",label:"LDL = Total cholesterol − HDL − Triglycerides ÷ 2.2 (Friedewald, mmol/L)",method:"Friedewald estimate; valid only with triglycerides ≤ 4.52 mmol/L and all inputs in mmol/L. Require laboratory approval.",sources:["Total cholesterol","HDL","Triglycerides"],aliases:[["total cholesterol","cholesterol total","cholesterol total serum","serum cholesterol","s cholesterol","tc"],["hdl","hdl cholesterol","hdl c","hdl-c","high density lipoprotein","high density lipoprotein cholesterol"],["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["LDL","LDL Cholesterol","LDL-C","LDL C","Calculated LDL","LDL (Calculated)"],units:["mmol/l","mmol/l","mmol/l"],outputUnit:"mmol/l",validate:v=>v[2]>4.52?"Friedewald LDL is not valid when triglycerides exceed 4.52 mmol/L.":undefined,compute:v=>v[0]-v[1]-v[2]/2.2},
  {id:"vldl",expression:"S1 / 5",label:"VLDL ≈ Triglycerides ÷ 5 (mg/dL)",method:"Triglyceride-based VLDL estimate; all inputs in mg/dL. Require laboratory approval.",sources:["Triglycerides"],aliases:[["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["VLDL","VLDL Cholesterol","VLDL-C","VLDL C"],units:["mg/dl"],outputUnit:"mg/dl",compute:v=>v[0]/5},
  {id:"vldl-mmol",expression:"S1 / 2.2",label:"VLDL ≈ Triglycerides ÷ 2.2 (mmol/L)",method:"Triglyceride-based VLDL estimate; all inputs in mmol/L. Require laboratory approval.",sources:["Triglycerides"],aliases:[["triglycerides","triglyceride","serum triglycerides","triglycerides serum","tgl","tg","t g"]],targets:["VLDL","VLDL Cholesterol","VLDL-C","VLDL C"],units:["mmol/l"],outputUnit:"mmol/l",compute:v=>v[0]/2.2},
@@ -109,14 +109,14 @@ export const FORMULA_APPROVAL: Record<string, FormulaApproval> = {
   mch: "APPROVED",
   mchc: "APPROVED",
   pcv: "APPROVED",
-  // Lipid formulas are implemented but intentionally not clinically executable
-  // until the laboratory approves the method, unit system and Friedewald limit.
-  "ldl-friedewald": "PENDING",
+  // Laboratory approval confirmed on 2026-10-27 for mg/dL LDL/VLDL and cholesterol/HDL and LDL/HDL ratios.
+  // Other lipid methods retain their independent approval requirements.
+  "ldl-friedewald": "APPROVED",
   "ldl-friedewald-mmol": "PENDING",
-  vldl: "PENDING",
+  vldl: "APPROVED",
   "vldl-mmol": "PENDING",
-  "chol-hdl-ratio": "PENDING",
-  "ldl-hdl-ratio": "PENDING",
+  "chol-hdl-ratio": "APPROVED",
+  "ldl-hdl-ratio": "APPROVED",
   "chol-tgl-ratio": "PENDING",
 };
 export function formulaApproval(formulaId: string): FormulaApproval {
@@ -195,7 +195,7 @@ export function resolveSourcesByName(parameters: CalculationParameter[], formula
     row.active !== false
     && row.itemType !== "SUBTITLE" && row.itemType !== "TEXT_AREA"
     && (!row.resultType || ["NUMBER", "RANGE"].includes(row.resultType))
-    && aliases.includes(normalizeName(row.parameterName))));
+    && (aliases.includes(normalizeName(row.parameterName)) || (["ldl-friedewald", "vldl", "chol-hdl-ratio", "ldl-hdl-ratio"].includes(formula.id) && aliases.includes(calculatorNameKey(row.parameterName))))));
   if (!matches.length || !matches.every(rows => rows.length === 1)) return undefined;
   return matches.map(rows => rows[0].parameterId);
 }

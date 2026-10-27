@@ -83,7 +83,8 @@ test('lipid formulas use explicit mg/dL and mmol/L variants without silent conve
   assert.equal(resolved.get('cholhdl')?.config.formulaId,'chol-hdl-ratio');
   assert.equal(resolved.get('ldlhdl')?.config.formulaId,'ldl-hdl-ratio');
   assert.equal(resolved.get('choltg')?.config.formulaId,'chol-tgl-ratio');
-  for(const id of ['ldl','vldl','cholhdl','ldlhdl','choltg'])assert.equal(resolved.get(id)?.status,'PENDING');
+  for(const id of ['ldl','vldl','cholhdl','ldlhdl'])assert.equal(resolved.get(id)?.status,'APPROVED');
+  for(const id of ['choltg'])assert.equal(resolved.get(id)?.status,'PENDING');
 
   const result=recalculateConfigured([...mgdl,...mgdl.filter(p=>['ldl','vldl','cholhdl','ldlhdl','choltg'].includes(p.parameterId)).map(p=>({...p,calculation:resolved.get(p.parameterId)?.config}))],{tc:200,hdl:50,tg:100,ldl:999});
   assert.deepEqual(result.errors,{});
@@ -117,7 +118,7 @@ test('lipid calculations fail closed on missing, zero and incompatible units or 
     {...source('choltgOut','CHOL/TGL RATIO','ratio'),calculation:{formulaId:'chol-tgl-ratio',dependencyIds:['tc','tg']}},
   ];
   const highTg=recalculateConfigured(params,{tc:200,hdl:50,tg:401,ldlOut:999});
-  assert.match(highTg.errors.ldlOut,/exceed 400 mg\/dL/);
+  assert.match(highTg.errors.ldlOut,/400 mg\/dL or higher/);
   assert.equal(highTg.values.ldlOut,'');
   assert.equal(highTg.values.vldlOut,80.2);
 

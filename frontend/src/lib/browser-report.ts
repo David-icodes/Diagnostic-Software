@@ -44,12 +44,17 @@ export async function openAuthorizedReportPdf(url: string, download = false) {
       window.setTimeout(() => URL.revokeObjectURL(retainedUrl), 60000);
       return;
     }
-    // Native PDF viewers derive Save As from Content-Disposition only when the
-    // document has its authenticated server URL, not a generated blob UUID.
-    // The viewer's fresh request repeats authorization and report-freshness checks.
-    const tab = window.open(url, "_blank");
-    if (!tab) { window.location.assign(url); return; }
+    // Use the already-authorized bytes. A second top-level API navigation can
+    // omit a cross-site session cookie and must never be used as the print handoff.
+    objectUrl = URL.createObjectURL(pdf);
+    const viewerUrl = URL.createObjectURL(new Blob([reportViewerHtml(objectUrl, reportDownloadFilename(response.headers.get("content-disposition")))], {type:"text/html"}));
+    const tab = window.open(viewerUrl, "_blank");
+    if (!tab) { window.location.assign(viewerUrl); return; }
     tab.opener = null;
+    const retainedPdf = objectUrl;
+    const cleanup = window.setInterval(() => {
+      if (tab.closed) { URL.revokeObjectURL(retainedPdf); URL.revokeObjectURL(viewerUrl); window.clearInterval(cleanup); }
+    }, 1000);
     performance.mark("lis-report-viewer-handoff");
   } catch (error) {
     if (objectUrl) URL.revokeObjectURL(objectUrl);
@@ -65,4 +70,11 @@ export function reportDownloadFilename(disposition: string | null): string {
   let name = "report.pdf";
   try { name = encoded ? decodeURIComponent(encoded) : plain ?? name; } catch { /* safe fallback */ }
   return name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 150).replace(/(?:\.pdf)?$/i, ".pdf");
+}
+
+/** Self-contained, memory-only viewer. Names are escaped; no scripts or URLs come from report content. */
+export function reportViewerHtml(pdfUrl: string, filename: string): string {
+  if (!pdfUrl.startsWith("blob:")) throw new Error("Invalid local PDF URL");
+  const escape = (text:string) => text.replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]!));
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src blob:; style-src 'unsafe-inline'; script-src 'sha256-9w3OC/w3ds/5OatgjB7R3wVIf21CnZcEYwHP4vayIoE='; base-uri 'none'; form-action 'none'"><title>${escape(filename)}</title><style>body{margin:0;font:14px Arial;background:#333;color:white}header{display:flex;gap:16px;align-items:center;padding:10px}a,button{background:white;color:#111;border:0;padding:8px 16px;text-decoration:none;border-radius:4px;cursor:pointer}iframe{display:block;border:0;width:100%;height:calc(100vh - 54px)}</style></head><body><header><span>${escape(filename)}</span><button id="print" type="button">Print</button><a href="${escape(pdfUrl)}" download="${escape(filename)}">Download</a></header><iframe id="pdf" title="Report PDF" src="${escape(pdfUrl)}"></iframe><script>document.getElementById('print').addEventListener('click',function(){var frame=document.getElementById('pdf');frame.contentWindow.focus();frame.contentWindow.print();});</script></body></html>`;
 }

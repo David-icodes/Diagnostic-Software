@@ -48,7 +48,7 @@ export function ResultReportUpload({ billId, testId, testName, billNumber, patie
       {(reports.data ?? []).some(report=>report.external) && <label className="my-2 block text-sm">External report print header
         <select aria-label="External report print header" value={header} onChange={event=>setHeader(event.target.value as typeof header)} disabled={downloading}>
           <option value="header">Including Header</option><option value="none">Without Header</option>
-        </select><span className="block text-xs">Include Header adds stationery above the original first page without shrinking its content. The derived first page is taller; use Original size or a suitable paper size when printing. Stored PDFs are never changed. Printing does not submit or approve in-house results.</span>
+        </select><span className="block text-xs">The print copy uses the report’s A4 stationery and QR. The original upload stays unchanged.</span>
       </label>}
       {(reports.data ?? []).map((report,index) => <div key={report.id} className="my-2 flex flex-wrap items-center gap-2 border-t py-2">
         <span className="break-all text-sm">{report.fileName}{index === 0 ? " — Current report" : " — Previous version"}</span>
@@ -56,7 +56,7 @@ export function ResultReportUpload({ billId, testId, testName, billNumber, patie
         <Button variant="outline" size="sm" disabled={downloading || upload.isPending} onClick={async()=>{
           setError(null);setDownloading(true);try {await downloadResultUpload(billId,testId,report);} catch(reason){setError(reason instanceof Error?reason.message:"Unable to download report.");}finally{setDownloading(false);}
         }}>Download original</Button>
-        {report.external && <Button variant="outline" size="sm" disabled={downloading || upload.isPending} onClick={()=>void openPdf(report.id,true)}>Review and print external report</Button>}
+        {report.external && index === 0 && <Button variant="outline" size="sm" disabled={downloading || upload.isPending} onClick={()=>void openPdf(report.id,true)}>Review and print external report</Button>}
       </div>)}
       {downloading && <p role="status">Preparing PDF…</p>}
       <div className="mt-3 flex justify-end gap-2"><Button disabled={!file || upload.isPending || reports.isError} onClick={()=>{

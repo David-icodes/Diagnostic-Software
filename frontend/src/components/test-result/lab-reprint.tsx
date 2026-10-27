@@ -688,7 +688,7 @@ function ReportInfoRow({ label, value }: { label: string; value: string }) {
 }
 
 export function PrintPreview({
-  shareQrDataUrl,
+  reportNote1, reportNote2, shareQrDataUrl,
   bill,
   testName,
   departmentName,
@@ -729,9 +729,10 @@ export function PrintPreview({
   reportNote1?:string;reportNote2?:string;shareQrDataUrl?:string;
 }) {
   const patient = bill ? toPatientBill(bill) : null;
-  const reportEnding = (includeQr = true) => (
+  const reportEnding = (notes: {reportNote1?: string; reportNote2?: string} = {reportNote1, reportNote2}, includeQr = true) => (
     <tr><td colSpan={4} className="lis-clinical-ending-cell">
       <div className="lis-clinical-ending">
+        {[notes.reportNote1, notes.reportNote2].filter(note => note?.trim()).map((note, index) => <p key={index} className="lis-configured-report-note">{note}</p>)}
         <ReportPageFooter technicianName={technician?.name} signatureNote={signatureNote} signatureAsset={signatureAsset} reportQrDataUrl={includeQr ? shareQrDataUrl : undefined} />
       </div>
     </td></tr>
@@ -832,7 +833,7 @@ export function PrintPreview({
               <tbody data-report-test={test.testName}><tr><th colSpan={4} className="pt-[2mm] pb-[1mm] text-center font-bold uppercase">{test.testName}</th></tr>
 
               </tbody>
-              <ReportParameterRows {...test} onlyEntered={onlyEntered} ending={reportEnding(index===reportTests.length-1)}/>
+              <ReportParameterRows {...test} onlyEntered={onlyEntered} ending={reportEnding(test,index===reportTests.length-1)}/>
             </Fragment>) : <><ReportParameterRows parameters={parameters} results={results} onlyEntered={onlyEntered} resolvedReferences={resolvedReferences} referenceResolutions={referenceResolutions} ending={reportEnding()}/></>}
 
 
