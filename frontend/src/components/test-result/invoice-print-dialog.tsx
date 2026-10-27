@@ -1,4 +1,5 @@
 "use client";
+import {LisSendDialog} from "@/components/whatsapp/lis-send-dialog";
 import {api} from "@/lib/api";
 import {PackageInvoiceDetails} from "@/components/billing/package-invoice-details";
 
@@ -23,6 +24,7 @@ import { organisationBranding } from "@/config/organisation";
 /** Billing reprint, separate from clinical test-result reports. No writes. */
 export function InvoicePrintDialog({ bill, onClose, autoPrint = false, paymentReceipt }: { bill: LabBill; onClose: () => void; autoPrint?: boolean;paymentReceipt?:DueReceipt }) {
   const { user } = useAuth();
+  const [whatsappOpen,setWhatsappOpen]=useState(false);
   const documentRef = useRef<HTMLDivElement>(null);
   const [printError, setPrintError] = useState<string | null>(null);
   const printing = useRef(false);
@@ -51,8 +53,10 @@ export function InvoicePrintDialog({ bill, onClose, autoPrint = false, paymentRe
       {printError && <p role="alert" className="mr-auto text-xs text-destructive">{printError}</p>}
       <Button disabled={!patient || busy} onClick={() => void startPrint(true)}>{busy ? "Preparing…" : "Print with Header"}</Button>
       <Button disabled={!patient || busy} variant="secondary" onClick={() => void startPrint(false)}>Print without Header</Button>
+      {user?.role==="admin"&&patient&&<Button variant="outline" disabled={!patient.mobile?.trim()||busy} onClick={()=>setWhatsappOpen(true)}>WhatsApp Invoice</Button>}
       <Button variant="outline" onClick={onClose}>Close preview</Button>
     </div>
+    {whatsappOpen&&patient&&<LisSendDialog input={{patientId:patient.id,billId:bill.id,workflow:"lab-reprint",testIds:[],onlyEntered:false,printMode:"continuous"}} onClose={()=>setWhatsappOpen(false)}/>}
     {!patient ? <p role="alert">Patient information is not available for this bill.</p> : <div ref={documentRef}><InvoiceDocument bill={bill} printedBy={user?.name ?? ""} includeHeader={includeHeader} paymentReceipt={paymentReceipt} /></div>}
   </Dialog>, document.body);
 }

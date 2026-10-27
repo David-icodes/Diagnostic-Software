@@ -219,6 +219,7 @@ export interface BillItemsRequest {
 }
 
 export interface CreateLabBillRequest {
+  whatsappServiceOptIn?:boolean;
   patientId: string;
   patientType: PatientType;
   billType?: BillType;

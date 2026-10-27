@@ -36,7 +36,7 @@ export async function logoutRequest(): Promise<{ success: boolean }> {
   return api.post<{ success: boolean }>("/auth/logout", {});
 }
 
-export async function getMe(): Promise<User> {
-  const response = await api.get<AuthResponse>("/auth/me");
-  return response.user;
+export async function getMe(scope:"admin"|"vendor"="admin"): Promise<User> {
+  const response = await api.request<AuthResponse>("/auth/me",{headers:{"X-LIS-Session":scope}});
+  return response.data!.user;
 }

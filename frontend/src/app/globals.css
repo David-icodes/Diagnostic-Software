@@ -537,3 +537,41 @@ html[data-action-feedback="active"] [data-action-success] {display:none!importan
 .lis-content .lis-dm.lis-lab-test .lis-report-note-field {grid-column:1 / -1;}
 .lis-content .lis-dm.lis-lab-test .lis-report-note-field textarea {width:100%;max-width:100%;min-height:110px;resize:both;white-space:pre-wrap;}
 .lis-report-paper .lis-clinical-ending > .lis-configured-report-note {font:9pt/12pt "Times New Roman",Times,serif;white-space:pre-wrap;overflow-wrap:anywhere;margin:2mm 0;}
+
+/* Patient-information emphasis is limited to the name; clinical flags are separate. */
+.lis-report-paper .lis-clinical-info :is([data-info-label="Patient Id"],[data-info-label="Mobile No"]) .lis-info-value > span:last-child {font-weight:400;}
+@media screen and (max-width:767px) {
+ .lis-shell {height:100dvh;min-height:0;}
+ .lis-content {min-width:0;max-width:100vw;overflow-x:hidden;overscroll-behavior:contain;}
+ .lis-content > :not(.lis-print-document) {max-width:100%;min-width:0;}
+ .lis-content :is(.lis-dm,.lis-tmis,.lis-results,.lis-reprint,.lis-osp,.lis-vendor-bill,.lis-sample-collection) {padding:10px;min-width:0;}
+ .lis-content :is(.lis-form-grid,.lis-patient-grid,.lis-billing-grid,.lis-result-grid,.lis-dm-fields,.lis-osp-grid) {display:grid;grid-template-columns:minmax(0,1fr)!important;gap:12px;}
+ .lis-content .lis-form-field {display:flex!important;flex-direction:column;align-items:stretch;gap:5px;grid-column:1 / -1!important;min-width:0;}
+ .lis-content .lis-form-field > :not(label):not(p) {width:100%;max-width:100%!important;min-width:0;}
+ .lis-content :is(input,select,textarea) {max-width:100%;font-size:16px;min-height:40px;}
+ .lis-content button {min-height:38px;white-space:normal;}
+ .lis-content :is(.lis-page-header,.lis-report-toolbar,.lis-filter-bar) {height:auto;flex-wrap:wrap;gap:8px;}
+ .lis-content :is(.lis-page-header h1,.lis-page-header h2) {font-size:20px;line-height:1.3;}
+ .lis-content :is(.lis-result-bill-list,.lis-result-test-list) {max-height:40vh;overflow:auto;}
+ .lis-content :is(.lis-report-table,.lis-sample-table,.lis-bill-summary) {font-size:13px;}
+ .lis-content :is(table) {max-width:none;}
+ .lis-content :is(.lis-osp-tests,.lis-department-tests,.lis-test-selector) {grid-template-columns:minmax(0,1fr)!important;}
+ .lis-content [class*="overflow-x-auto"] {max-width:100%;overscroll-behavior-x:contain;}
+ [role="dialog"] {max-width:calc(100vw - 24px)!important;max-height:calc(100dvh - 32px);overflow:auto;}
+ [role="dialog"] :is(input,select,textarea) {font-size:16px;max-width:100%;}
+ .lis-header-support {display:none;}
+ .lis-header .lis-brand-title {font-size:17px!important;line-height:21px;white-space:normal;}
+}
+
+@media screen and (max-width:767px) {
+ .lis-app-header {padding-right:8px;gap:4px;min-height:60px;}
+ .lis-app-header .lis-header-name {font-size:17px!important;line-height:21px;white-space:normal;max-width:155px;}
+ .lis-app-header button:is([aria-label="Application"],[aria-label="Toggle fullscreen"]) {display:none;}
+ .lis-content :has(>table) {min-width:0;max-width:100%;overflow-x:auto;}
+ .lis-content .lis-osp-patient > div {grid-template-columns:minmax(0,1fr)!important;}
+ .lis-content .lis-osp-patient > div > div {flex-direction:column;align-items:stretch;gap:4px;}
+ .lis-content .lis-osp-patient > div > div > span:first-child {width:auto;}
+ .lis-content .lis-osp-patient > div > div > div {max-width:100%;width:100%;}
+ .lis-content .lis-billing-payment > div {grid-template-columns:minmax(0,1fr)!important;gap:14px;}
+ .lis-content .lis-test-selector > * {min-width:0;max-width:100%;width:100%;flex-basis:auto;}
+}

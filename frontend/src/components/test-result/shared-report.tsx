@@ -18,5 +18,5 @@ export function SharedReport(){
  },[]);
  if(error)return <main className="p-5"><h1 className="text-xl">Report unavailable</h1><p role="alert">{error}</p></main>;
  if(!url)return <main className="p-5" role="status">Opening your report…</main>;
- return <main className="min-h-screen bg-white"><div className="flex justify-end p-2"><a className="rounded border px-4 py-2" href={url} download={filename}>Download report</a></div><iframe src={url} title="Complete laboratory report" className="h-[90vh] w-full border-0"/><p className="p-2 text-sm">If the report preview is unavailable on your phone, use Download report.</p></main>;
+ return <main className="min-h-screen bg-white"><div className="flex justify-end p-2"><a className="rounded border px-4 py-2" href={url} target="_blank" rel="noopener" download={filename}>Download report</a></div><iframe src={url} title="Complete laboratory report" className="h-[90vh] w-full border-0"/><p className="p-2 text-sm">If the report preview is unavailable on your phone, use Download report.</p></main>;
 }

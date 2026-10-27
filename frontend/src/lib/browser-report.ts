@@ -1,3 +1,4 @@
+import {browserSessionHeaders} from "./session-scope.ts";
 interface ReportOptions {billId:string;testIds:string[];technicianId?:string;onlyEntered?:boolean;includeHeader?:boolean;letterhead?:boolean;printMode?:string;download?:boolean}
 export function browserReportUrl(base:string,options:ReportOptions) {
   const query=new URLSearchParams({billId:options.billId,testIds:options.testIds.join(","),onlyEntered:String(Boolean(options.onlyEntered)),includeHeader:String(Boolean(options.includeHeader)),letterhead:String(Boolean(options.letterhead)),printMode:options.printMode??"continuous",download:String(Boolean(options.download))});
@@ -28,7 +29,7 @@ export async function openAuthorizedReportPdf(url: string, download = false) {
   const timeout = window.setTimeout(() => controller.abort(), 90000);
   let objectUrl: string | undefined;
   try {
-    const response = await fetch(url, { credentials: "include", signal: controller.signal });
+    const response = await fetch(url, { credentials: "include", headers:browserSessionHeaders(), signal: controller.signal });
     performance.mark("lis-report-response-headers");
     const pdf = await validatedReportPdf(response);
     performance.mark("lis-report-bytes-ready");
@@ -39,7 +40,9 @@ export async function openAuthorizedReportPdf(url: string, download = false) {
       const link = document.createElement("a");
       link.href = objectUrl;
       link.download = reportDownloadFilename(response.headers.get("content-disposition"));
-      link.click();
+      link.target = "_blank"; link.rel = "noopener";
+      document.body?.appendChild(link);
+      link.click(); link.remove?.();
       const retainedUrl = objectUrl;
       window.setTimeout(() => URL.revokeObjectURL(retainedUrl), 60000);
       return;
@@ -76,5 +79,5 @@ export function reportDownloadFilename(disposition: string | null): string {
 export function reportViewerHtml(pdfUrl: string, filename: string): string {
   if (!pdfUrl.startsWith("blob:")) throw new Error("Invalid local PDF URL");
   const escape = (text:string) => text.replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]!));
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src blob:; style-src 'unsafe-inline'; script-src 'sha256-9w3OC/w3ds/5OatgjB7R3wVIf21CnZcEYwHP4vayIoE='; base-uri 'none'; form-action 'none'"><title>${escape(filename)}</title><style>body{margin:0;font:14px Arial;background:#333;color:white}header{display:flex;gap:16px;align-items:center;padding:10px}a,button{background:white;color:#111;border:0;padding:8px 16px;text-decoration:none;border-radius:4px;cursor:pointer}iframe{display:block;border:0;width:100%;height:calc(100vh - 54px)}</style></head><body><header><span>${escape(filename)}</span><button id="print" type="button">Print</button><a href="${escape(pdfUrl)}" download="${escape(filename)}">Download</a></header><iframe id="pdf" title="Report PDF" src="${escape(pdfUrl)}"></iframe><script>document.getElementById('print').addEventListener('click',function(){var frame=document.getElementById('pdf');frame.contentWindow.focus();frame.contentWindow.print();});</script></body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src blob:; style-src 'unsafe-inline'; script-src 'sha256-9w3OC/w3ds/5OatgjB7R3wVIf21CnZcEYwHP4vayIoE='; base-uri 'none'; form-action 'none'"><title>${escape(filename)}</title><style>body{margin:0;font:14px Arial;background:#333;color:white}header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px}header span{overflow-wrap:anywhere}a,button{background:white;color:#111;border:0;padding:8px 16px;text-decoration:none;border-radius:4px;cursor:pointer}iframe{display:block;border:0;width:100%;height:calc(100vh - 54px)}</style></head><body><header><span>${escape(filename)}</span><button id="print" type="button">Print</button><a target="_blank" rel="noopener" href="${escape(pdfUrl)}" download="${escape(filename)}">Download</a></header><iframe id="pdf" title="Report PDF" src="${escape(pdfUrl)}"></iframe><script>document.getElementById('print').addEventListener('click',function(){var frame=document.getElementById('pdf');frame.contentWindow.focus();frame.contentWindow.print();});</script></body></html>`;
 }

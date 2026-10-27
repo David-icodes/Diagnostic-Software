@@ -1,4 +1,5 @@
 "use client";
+import {CommunicationJobNotifications} from "@/components/whatsapp/communication-job-notifications";
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -76,6 +77,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
         <main className="lis-content min-w-0 flex-1 overflow-y-auto bg-background">
           {children}
+          <CommunicationJobNotifications/>
         </main>
       </div>
     </div>

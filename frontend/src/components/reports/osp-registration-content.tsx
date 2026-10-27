@@ -3,6 +3,8 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { localToday } from "@/lib/report-filter-state";
 import { useQueryClient } from "@tanstack/react-query";
+import {PatientConsentDialog} from "@/components/whatsapp/patient-consent-dialog";
+import {useAuth} from "@/hooks/use-auth";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -75,6 +77,7 @@ function formatAge(row: OspRegistrationReportRow): string {
 
 export function OspRegistrationContent() {
   const queryClient = useQueryClient();
+  const {user}=useAuth();const [consentPatient,setConsentPatient]=useState<{id:string;patientName:string;patientId:string}|null>(null);
   const [filters, setFilters] = useState<Filters>(() => ({ ...EMPTY_FILTERS, fromDate: localToday(), toDate: localToday() }));
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [result, setResult] = useState<OspRegistrationResponse | null>(null);
@@ -270,6 +273,7 @@ export function OspRegistrationContent() {
         className: "w-20 whitespace-nowrap",
         render: () => "Lab",
       },
+      ...(user?.role==="admin"?[{key:"whatsappConsent",header:"WhatsApp",className:"w-24",render:(row:OspRegistrationReportRow)=><Button type="button" variant="outline" size="xs" onClick={()=>setConsentPatient({id:row.id,patientName:row.patientName,patientId:row.patientId})}>Consent</Button>}]:[]),
       {
         key: "delete",
         header: "Delete",
@@ -290,7 +294,7 @@ export function OspRegistrationContent() {
         ),
       },
     ],
-    [deleting, openDeleteDialog, pendingDelete?.id, serialById],
+    [deleting, openDeleteDialog, pendingDelete?.id, serialById,user?.role],
   );
 
   const criteriaText = useMemo(() => {
@@ -322,6 +326,7 @@ export function OspRegistrationContent() {
         subtitle="Registrations created within the selected date range."
       />
 
+      {consentPatient&&<PatientConsentDialog patient={consentPatient} onClose={()=>setConsentPatient(null)}/>}
       <ReportFilterBar
         compact
         onSearch={handleSearch}

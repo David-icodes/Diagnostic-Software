@@ -232,6 +232,7 @@ export function RemoteLabBillForm({
   const [paidAmountInput, setPaidAmountInput] = useState("0");
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("cash");
   const [comments, setComments] = useState("");
+  const [serviceOptIn,setServiceOptIn]=useState(false);
   const [displayOnBill, setDisplayOnBill] = useState(true);
   const [patientExpanded, setPatientExpanded] = useState(true);
   const [formError, setFormError] = useState<string | null>(null);
@@ -380,6 +381,7 @@ export function RemoteLabBillForm({
         comments: comments.trim() || undefined,
         displayComments: displayOnBill ? comments.trim() || undefined : undefined,
         status,
+        ...(!isVendor?{whatsappServiceOptIn:serviceOptIn}:{}),
       });
       return { ...saved, patientId: patientForBill };
     },
@@ -465,6 +467,7 @@ export function RemoteLabBillForm({
   };
 
   const handlePatientSelect = (patient: Patient) => {
+    setServiceOptIn(false);
     setSelectedPatient(patient);
     setDetails(patientToDetails(patient));
     setFieldErrors({});
@@ -486,7 +489,7 @@ export function RemoteLabBillForm({
     setPaidAmountInput("0");
     setPaymentMode("cash");
     setComments("");
-    setDisplayOnBill(true);
+    setDisplayOnBill(true);setServiceOptIn(false);
     setFormError(null);
     setFieldErrors({});
     setPatientExpanded(true);
@@ -585,6 +588,7 @@ const saveDraft = () => {
           <OspPatientDetails
             value={details}
             onChange={(next) => {
+              if(next.mobile!==details.mobile)setServiceOptIn(false);
               setDetails(next);
               if (fieldErrors.age) {
                 setFieldErrors((current) => ({ ...current, age: undefined }));
@@ -640,6 +644,7 @@ const saveDraft = () => {
         />
       </section>
 
+      {!isVendor&&<label className="flex items-start gap-2 p-3 text-sm"><input type="checkbox" checked={serviceOptIn} disabled={!details.mobile.trim()} onChange={event=>setServiceOptIn(event.target.checked)}/>Patient consents to a WhatsApp thank-you.</label>}
       <BillingPaymentSection
         paymentMode={paymentMode}
         onPaymentModeChange={setPaymentMode}

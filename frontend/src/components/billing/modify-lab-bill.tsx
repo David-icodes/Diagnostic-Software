@@ -334,7 +334,7 @@ export function ModifyLabBill() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
             <Input
               id="modifyBillSearch"
               type="search"
@@ -343,7 +343,7 @@ export function ModifyLabBill() {
               onKeyDown={(event) => {
                 if (event.key === "Enter") setSearch(searchInput.trim());
               }}
-              className="h-[34px] w-64 text-xs"
+              className="h-[34px] min-w-0 flex-1 text-xs sm:w-64 sm:flex-none"
               aria-label="Search bills"
             />
             <Button

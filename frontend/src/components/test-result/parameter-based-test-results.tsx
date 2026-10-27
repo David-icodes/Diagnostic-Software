@@ -594,16 +594,14 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
             </div>
             {selectedBill && <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border p-3">
               <span className="mr-auto text-xs text-muted-foreground">{printIds.length} selected · Print All combines only checked, eligible tests by department.</span>
-              <Button type="button" disabled={checkingPrint || submitMutation.isPending || !printIds.length} onClick={openPrint}><Printer />{checkingPrint ? "Checking…" : "Print All"}</Button>
+              <Button type="button" disabled={checkingPrint || submitMutation.isPending || !printIds.length} onClick={openPrint}><Printer />{checkingPrint ? "Checking…" : "Print All"}</Button><Button type="button" variant="outline" disabled={!printIds.length || !selectedBill || !toPatientBill(selectedBill)?.mobile?.trim()} onClick={()=>setWhatsAppOpen(true)}>WhatsApp Reports</Button>
             </div>}
           </CardContent>
         </Card>
       </div>
 
       {selectedBill && workflowQuery.isError && <p role="alert">Unable to verify submitted results and patient dues. Printing is unavailable: {workflowQuery.error.message}</p>}
-      <div className="flex justify-end">
-        <Button type="button" variant="outline" disabled={!selectedBill || !toPatientBill(selectedBill)?.mobile?.trim() || submitMutation.isPending} onClick={() => setWhatsAppOpen(true)}>Send WhatsApp</Button>
-      </div>
+
 
       {!selectedBill && (
         <div className="lis-empty-result-grid overflow-x-auto" aria-label="Parameter results">
@@ -668,7 +666,7 @@ export function ParameterBasedTestResults({ context }: { context?: SampleContext
         onClose={() => setPrintOpen(false)} />}
       {whatsAppOpen && selectedBill && <LisSendDialog key={selectedBill.id} input={{
         patientId: typeof selectedBill.patientId === "object" ? selectedBill.patientId.id : selectedBill.patientId,
-        billId: selectedBill.id, testIds: printIds, onlyEntered: false, printMode: "test",
+        billId: selectedBill.id, workflow:"parameter-results", testIds: printIds, onlyEntered: false, printMode: "test",
       }} onClose={() => setWhatsAppOpen(false)} />}
     </div>
   );

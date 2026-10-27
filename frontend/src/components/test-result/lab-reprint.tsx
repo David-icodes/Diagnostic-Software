@@ -692,6 +692,7 @@ export function PrintPreview({
   bill,
   testName,
   departmentName,
+  collectedOn,
   parameters,
   results,
   technician,
@@ -795,6 +796,7 @@ export function PrintPreview({
                 value={formatReportDateTime(bill.createdAt)}
               />
 
+              <ReportInfoRow label="Collected On" value={formatReportDateTime(collectedOn)} />
               <ReportInfoRow
                 label="Reported On"
                 value={formatReportDateTime(reportedOn)}

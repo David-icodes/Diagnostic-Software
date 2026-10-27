@@ -1,3 +1,4 @@
+import {browserSessionHeaders} from "./session-scope.ts";
 import {announceActionSuccess} from './action-feedback.ts';
 export interface ApiEnvelope<T> {
   success: boolean;
@@ -41,6 +42,7 @@ type RequestOptions = {
   method?: RequestMethod;
   body?: unknown;
   signal?: AbortSignal;
+  headers?: Record<string,string>;
 };
 
 async function requestEnvelope<T>(
@@ -55,7 +57,7 @@ async function requestEnvelope<T>(
       method: options.method ?? "GET",
       credentials: "include",
       signal: options.signal,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...browserSessionHeaders(),...options.headers },
       body:
         options.body !== undefined ? JSON.stringify(options.body) : undefined,
     });

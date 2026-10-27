@@ -1,4 +1,5 @@
 "use client";
+import {sessionScope} from "@/lib/session-scope";
 
 import {
   createContext,
@@ -39,8 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
 
   const meQuery = useQuery({
-    queryKey: ME_QUERY_KEY,
-    queryFn: getMe,
+    queryKey: [...ME_QUERY_KEY,sessionScope(pathname)],
+    queryFn: ()=>getMe(sessionScope(pathname)),
     enabled:pathname!=="/shared-report",
     retry: false,
   });
